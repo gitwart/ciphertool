@@ -1,0 +1,44 @@
+[docHeader "Cipher Program - dumproute"]
+[Command dumproute "show all possible routes for a cipher"]
+
+[SynopsisHeader]
+[Synopsis dumproute "filename width"]
+
+[StartDescription]
+
+[Description "dumproute filename width" {} \
+"<B>dumproute</B> prints out route transposition blocks for the cipher
+with the given width.  Only non-redundant routes are printed.  For example,
+the route made from alternating verticals starting from the top-left corner
+is redundant with the route made from alternating verticals starting from the
+bottom-right corner.
+<P>
+The following routes are used for writing in the cipher:
+<P>
+<UL>
+<LI>Horizontal rows
+<LI>Alternating horizontal rows
+<LI>Vertical columns
+<LI>Alternating vertical columns
+<LI>Diagonals starting in the top-left corner
+<LI>Diagonals starting in the bottom-left corner
+<LI>Diagonals starting in the top-right corner
+<LI>Diagonals starting in the bottom-right corner
+<LI>Alternate diagonals starting in the top-left corner
+<LI>Alternate diagonals starting in the bottom-left corner
+<LI>Alternate diagonals starting in the top-right corner
+<LI>Alternate diagonals starting in the bottom-right corner
+<LI>Clockwise spiral starting in the top-left corner.
+<LI>Counter-clockwise spiral starting in the top-left corner.
+<LI>Clockwise spiral starting in the center and ending in the top-left corner.
+<LI>Counter-clockwise spiral starting in the center and ending in the
+top-left corner.
+</UL>
+<P>
+Visual analysis of the resulting route squares should confirm which, if any,
+are the correct routes.
+"]
+
+[EndDescription]
+
+[footer]

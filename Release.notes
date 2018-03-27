@@ -1,0 +1,5 @@
+* Encoding functions for all cipher types.
+* 64-bit packages now available
+* Fedora Core 2 packages now available (built against tcl8.4)
+* new portable cipher save file format
+* miscellaneous bug fixes

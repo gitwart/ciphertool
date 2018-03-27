@@ -1,0 +1,83 @@
+<HTML>
+<TITLE>Cipher Program - keysquaresearch</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+keysquaresearch - autosolver for ciphers that use a single keysquare
+
+
+<H2>SYNOPSIS</H2>
+
+<B>keysquaresearch</B> <I>-file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="keysquaresearch"><B><CODE>keysquaresearch -file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?</CODE></B></A></DT>
+        <DD><B>keysquaresearch</B> is an autosolver for cipher types that use a single
+keysquare.  These include
+<P>
+<UL>
+<LI><A HREF="bifid.html">bifid</A>
+<LI><A HREF="bigbifid.html">bigbifid (6x6 bifid)</A>
+<LI><A HREF="phillips.html">phillips</A>
+<LI><A HREF="playfair.html">playfair</A>
+</UL>
+<P>
+This program loads keywords from an external dictionary.
+The dictionary must be laid out as a set
+of files, with each file containing a list of words (in
+any order) all of the same length, one word per line.
+The filenames must start with the string <B>len</B> and
+end with a 2 digit number describing the length of the
+words inside the file.  For example, the file
+<B>len04</B> could contain:
+<P>
+<CODE>
+very<BR>
+that<BR>
+lean<BR>
+keys<BR>
+used<BR>
+type<BR>
+foot<BR>
+mine<BR>
+eery<BR>
+flee<BR>
+</CODE>
+
+<P>
+The <B>keysquaresearch</B> program looks through every dictionary file and
+attempts to use each word found as the keyword.  The keywords are used to
+generate keysquares by writing in the keyed alphabet in
+48 different routes.  Each resulting
+keysquare is then applied to the cipher and the keysquare with the best
+digram/trigram frequency count is displayed.  If the keyword is already known
+then the <b>-keyword</b> option can be used to decrypt the cipher quickly.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.  This can be changed to any scoring method supported by the <A HREF="cipher/score.html">score</A> command.  The <b>-language</b> option is used to load
+a scoring table for the specified language, if such a scoring table exists.
+<P>The <b>-addspace</b> option will attempt to locate word boundaries after the final solution has been found.  This can be a time and memory intensive process on older computers so it is turned off by default.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

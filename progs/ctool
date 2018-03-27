@@ -1,0 +1,120 @@
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+
+# ctool --
+#
+#	Main routine for the GUI to the Tcl "cipher" package.
+#
+# RCS: @(#) $Id: ctool,v 1.4 2008/03/16 23:59:01 wart Exp $
+#
+# Copyright (C) 1999-2002  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require Tk
+
+wm iconify .
+option add *Entry*background	white
+option add *Text*background	white
+option add *Menu.selectColor	green
+option add *Text.font		-adobe-courier-bold-r-normal--14-140-75-75-m-90-iso8859-1
+
+package require opt
+package require cipher
+package require ciphertool
+
+set cipherfile [lindex $argv 0]
+set ciphertype [lindex $argv 1]
+
+frame	.mbar -relief raised -bd 2
+array set alphabet {
+    0 a 1 b 2 c 3 d 4 e 5 f 6 g 7 h 8 i 9 j 10 k 11 l 12 m 13 n 14 o 15 p
+    16 q 17 r 18 s 19 t 20 u 21 v 22 w 23 x 24 y 25 z}
+
+array set cipherinfo {
+    ctext	{}
+    sub,ct	{}
+    sub,pt	{}
+    type	{}
+    type,new	{}
+    object	{}
+    file	{}
+    load_file	{}
+}
+
+menubutton .mbar.file -text File -menu .mbar.file.menu
+menu	.mbar.file.menu -tearoff 0
+.mbar.file.menu add command -label "New Cipher" -command {load_new_cipher [tk_getOpenFile -title "Open new cipher"] $cipherinfo(type) cipherinfo}
+.mbar.file.menu add command -label "Save" -command {save_cipher}
+.mbar.file.menu add command -label "Save as..." -command {save_cipher_as}
+.mbar.file.menu add command -label "Load" -command {load_saved_cipher [tk_getOpenFile -title "Load saved cipher"]}
+.mbar.file.menu add command -label "Type..." -command {set_cipher_type}
+.mbar.file.menu add separator
+.mbar.file.menu add command -label "Print" -command {print_workspace}
+.mbar.file.menu add separator
+.mbar.file.menu add command -label "Exit" -command exit
+
+menubutton .mbar.view -text View -menu .mbar.view.menu
+menu	.mbar.view.menu -tearoff 0
+.mbar.view.menu add checkbutton -label "Histogram" -command {show_histogram}\
+	-variable cipherinfo(hist,show)
+.mbar.view.menu add checkbutton -label "Key" -command {show_key}\
+	-variable cipherinfo(key,show)
+
+pack	.mbar.file .mbar.view -anchor w -side left
+pack	.mbar -fill x
+
+frame	.toolbar -relief raised
+pack	.toolbar -side top -fill x
+
+frame	.bbar -relief raised
+button	.bbar.sub -text "Substitute" -command do_sub -takefocus 0
+button	.bbar.clear -text "Clear" -command clear_key -takefocus 0
+button	.bbar.locate -text "Locate Tip" -command locate_tip -takefocus 0
+button	.bbar.solve -text "Solve" -command solve_cipher -takefocus 0
+button	.bbar.period -text "Set Period" -command set_period -takefocus 0
+frame	.bbar.misc
+pack	.bbar.sub .bbar.locate .bbar.clear .bbar.solve .bbar.period\
+	-side left -anchor w
+pack	.bbar.misc -side left -fill both -expand 1
+pack	.bbar -side top -fill x
+
+frame	.stats -height 0
+canvas	.stats.hist  -bg white -height 70 -relief sunken -bd 2
+pack	.stats -fill both -expand 1
+
+text	.stats.key  -bg white -relief sunken -height 5 -bd 2
+
+text	.t -width 80 -height 24 -wrap none -state disabled -exportselection 1
+pack	.t -fill both -expand 1
+set cipherinfo(text) .t
+
+bind .stats.hist <Configure> { show_histogram }
+
+set cipherinfo(typelist) [cipher types]
+
+update
+
+wm deiconify .
+
+raise .
+
+update
+
+if {$cipherfile != "" && $ciphertype != ""} {
+    load_new_cipher $cipherfile $ciphertype cipherinfo
+}

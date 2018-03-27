@@ -1,0 +1,151 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# nicsolve --
+#
+#	Automatic solver for nicodemus ciphers.
+#
+# RCS: @(#) $Id: nicsolve,v 1.15 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Scoredata
+package require Dictionary
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list encoding.arg "vigenere" "The encoding type.  must be one of vigenere, variang, or beaufort."] \
+    [list period.arg 0 "The period for the cipher."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list stepinterval.arg 100000 "The interval between progress updates."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+set typeList	[list vigenere variant beaufort]
+
+if {[lsearch $typeList $encoding] == -1} {
+    puts stderr "Invalid encoding type.  Must be one of $typeList."
+    exit 1
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    set defaultScore [score create $scoretype]
+    if {$elemsize != ""} {
+	$defaultScore elemsize $elemsize
+    }
+    Scoredata::loadData $defaultScore $language
+
+    score default $defaultScore
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+# Convert the ciphertext to pairs of letters
+
+set cipher [cipher create nicodemus -period $period -encoding $encoding \
+	-ct $ct]
+
+proc nicodemusFitCmd {cipher order} {
+    global count
+    global period
+    global maxValue
+    global maxKey
+    global stepInterval
+
+    set order [string map "{ } {} 0 a 1 b 2 c 3 d 4 e 5 f 6 g 7 h 8 i 9 j 10 k 11 l 12 m 13 n 14 o 15 p 16 q 17 r 18 s 19 t 20 u 21 v 22 w 23 x 24 y 25 z" $order]
+    $cipher restore [string repeat a $period] $order
+
+    incr count
+
+    for {set i 1} {$i <= $period} {incr i} {
+	$cipher fit $i
+    }
+    set pt [$cipher cget -pt]
+    set value [score value $pt]
+    #puts "$value ([$cipher cget -key]): $pt"
+    if {$value > $maxValue} {
+	set maxValue $value
+	set maxKey [$cipher cget -key]
+	puts "$count:  $maxKey  Fit:  $value"
+	puts "$pt"
+	puts ""
+    }
+
+    if {$count%$stepInterval == 0} {
+	puts "$count:  $order"
+	puts "$pt"
+	puts ""
+    }
+}
+
+$cipher configure -bestfitcommand show_best_fit -stepcommand show_fit -stepinterval $stepinterval
+
+proc show_best_fit {step key value pt} {
+    puts "#$key\tFit:  $value"
+    puts "#$step: $pt"
+    puts ""
+}
+
+proc show_fit {step key pt} {
+    puts #$key
+    puts "#$step: $pt"
+    puts ""
+}
+
+set maxValue 0
+set maxKey 0
+set count 0
+#permute $period "nicodemusFitCmd $cipher"
+$cipher solve
+
+if {$addspace} {
+    set Dictionary::cache [list word length]
+    set readablePt [Dictionary::findWords [$cipher cget -pt]]
+}
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts ""
+puts "#=========="

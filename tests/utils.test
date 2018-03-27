@@ -1,0 +1,606 @@
+# utils.test
+# Tests of the procedures in the CipherUtil package.
+
+package require cipher
+package require CipherUtil
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+test utils-1.1 {Load properties from a file} {
+    ::tcltest::makeFile "ciphertext=abcde" testData
+
+    set result [CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {ciphertext abcde}
+
+test utils-1.2 {Load properties from a file with comment} {
+    ::tcltest::makeFile "ciphertext=abcde
+type=aristocrat
+#this is a comment" testData
+
+    set result [CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {ciphertext abcde type aristocrat}
+
+test utils-1.3 {Load a cipher from a file with a multiline value} {
+    ::tcltest::makeFile {cipher1.ciphertext=start of ciphertext \\
+end of ciphertext
+cipher1.type=aristocrat} testData
+
+    set result [CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {cipher1.type aristocrat cipher1.ciphertext {start of ciphertext end of ciphertext}}
+
+test utils-1.4 {Load a cipher from a file with a multiline comment} {
+    ::tcltest::makeFile {cipher1.ciphertext=start of ciphertext \\
+end of ciphertext
+# start of multi=line comment\\
+end of multiline comment} testData
+
+    set result [CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {cipher1.ciphertext {start of ciphertext end of ciphertext}}
+
+test utils-1.5 {Load a cipher from a file with a duplicate key} {
+    ::tcltest::makeFile "cipher1.ciphertext=abcde
+cipher1.ciphertext=fghij" testData
+
+    set result [list [catch {CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} [list 1 "Duplicate key found in file '$::tcltest::temporaryDirectory/testData':  cipher1.ciphertext"]
+
+test utils-1.6 {Load a cipher from a file with no key/value separator} {
+    ::tcltest::makeFile "cipher1.ciphertext abcde" testData
+
+    set result [list [catch {CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} {1 {Invalid line in file:  no separator found:  cipher1.ciphertext abcde}}
+
+test utils-1.7 {Load a cipher from a file with invalid key} {
+    ::tcltest::makeFile "=abcde" testData
+
+    set result [list [catch {CipherUtil::loadPropertiesFile $::tcltest::temporaryDirectory/testData} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} {1 {Invalid line in file:  key length is zero:  =abcde}}
+
+test utils-1.8 {Read ciphertext from a file} {
+    ::tcltest::makeFile "abcde
+" testData
+
+    set result [CipherUtil::readCiphertext $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {abcde}
+
+test utils-1.9 {Read ciphertext from a file with no final line terminator} {
+    set fileid [open $::tcltest::temporaryDirectory/testData w]
+    puts $fileid "abcde"
+    puts -nonewline $fileid "fghij"
+    close $fileid
+
+    set result [CipherUtil::readCiphertext $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {abcde fghij}
+
+test utils-2.1 {load cipher data from a file} {
+    ::tcltest::makeFile "ciphertext=abcde" testData
+
+    set result [CipherUtil::loadCipher $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {ciphertext abcde}
+
+test utils-2.2 {load cipher data from a file with multiple ids} {
+    ::tcltest::makeFile "ciphertext=abcde
+cipher1.ciphertext=foobar" testData
+
+    set result [CipherUtil::loadCipher $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {ciphertext abcde}
+
+test utils-2.3 {load a specific cipher from a file with multiple ids} {
+    ::tcltest::makeFile "ciphertext=abcde
+cipher1.ciphertext=foobar" testData
+
+    set result [CipherUtil::loadCipher $::tcltest::temporaryDirectory/testData cipher1]
+    ::tcltest::removeFile testData
+
+    set result
+} {ciphertext foobar}
+
+test utils-2.4 {load a cipher from a file with no default id} {
+    ::tcltest::makeFile "cipher2.ciphertext=abcde
+cipher1.ciphertext=foobar" testData
+
+    set result [CipherUtil::loadCipher $::tcltest::temporaryDirectory/testData]
+    ::tcltest::removeFile testData
+
+    set result
+} {}
+
+test utils-2.5 {load a specific cipher from a file with no matching id} {
+    ::tcltest::makeFile "cipher2.ciphertext=abcde
+cipher1.ciphertext=foobar" testData
+
+    set result [CipherUtil::loadCipher $::tcltest::temporaryDirectory/testData cipher3]
+    ::tcltest::removeFile testData
+
+    set result
+} {}
+
+test utils-3.1 {create a cipher from a file with no ciphertext} {
+    ::tcltest::makeFile "type=amsco
+key=cab" testData
+
+    set result [list [catch {CipherUtil::createCipherFromFile $::tcltest::temporaryDirectory/testData} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} {1 {No ciphertext found for cipher.}}
+
+test utils-3.2 {create a cipher from a file with no type} {
+    ::tcltest::makeFile "ciphertext=abcde
+key=cab" testData
+
+    set result [list [catch {CipherUtil::createCipherFromFile $::tcltest::temporaryDirectory/testData} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} {1 {No type found for cipher.}}
+
+foreach type [list amsco columnar myszcowski nitrans] {
+    test load-$type-1.1 {create cipher from a file} {
+	::tcltest::makeFile "ciphertext=abcdefghi
+type=$type
+period=3
+key=cab" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type cab abcdefghi]
+
+    test load-$type-1.2 {create cipher from a file with no period} {
+	::tcltest::makeFile "ciphertext=abcdefghi
+type=$type
+key=cab" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type cab abcdefghi]
+
+    test load-$type-1.3 {create cipher from a file with quoted key} {
+	::tcltest::makeFile "ciphertext=abcdefghi
+type=$type
+key=\"cab\"" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type cab abcdefghi]
+}
+
+#TODO:  grille swagman railfence
+set testdata(gromark,key,full) abcdefghijklmnopqrstuvwxyz
+set testdata(gromark,key,partial) " bcd  gh  klmnopqrstuvw   "
+set testdata(gromark,ct) "qwertyuiop"
+set testdata(grandpre,key,full) "aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffffgggggggghhhhhhhh"
+set testdata(grandpre,key,partial) " ab    cl   qe                                                  "
+set testdata(grandpre,ct) "111213141516"
+set testdata(phillips,key,full) abcdefghiklmnopqrstuvwxyz
+set testdata(phillips,key,partial) " bcd  gh klmnopqrstuvw   "
+set testdata(phillips,ct) "qwertyuiop"
+set testdata(playfair,key,full) abcdefghiklmnopqrstuvwxyz
+set testdata(playfair,key,partial) " bcd  gh klmnopqrstuvw   "
+set testdata(playfair,ct) "qwertyuiop"
+set testdata(bigplayfair,key,full) a1b2c3d4e5f6g7h8i9j0klmnopqrstuvwxyz
+set testdata(bigplayfair,key,partial) " bcd  gh klmnopqrstuvw              "
+set testdata(bigplayfair,ct) "qwertyuiop"
+set testdata(ragbaby,key,full) abcdefghiklmnopqrstuvwyz
+set testdata(ragbaby,key,partial) " bcd  gh klmnopqrstuv   "
+set testdata(ragbaby,ct) "qwertyuiop"
+set testdata(trifid,key,full) abcdefghijklmnopqrstuvwxyz#
+set testdata(trifid,key,partial) " bcd  gh k#lmnopqrstuvwx   "
+set testdata(trifid,ct) "qwertyu#iop"
+
+foreach type [list grandpre gromark phillips playfair bigplayfair ragbaby trifid] {
+    test load-$type-1.1 {create cipher from a file} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=$testdata($type,key,full)" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) $testdata($type,ct)]
+
+    test load-$type-1.2 {create cipher from a file with quoted key} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=\"$testdata($type,key,full)\"" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) $testdata($type,ct)]
+
+    test load-$type-1.3 {create cipher from a file with partial key} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=$testdata($type,key,partial)" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,partial) $testdata($type,ct)]
+
+    test load-$type-1.4 {create cipher from a file with quoted partial key} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=\"$testdata($type,key,partial)\"" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,partial) $testdata($type,ct)]
+}
+
+set testdata(aristocrat,key,full) "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz"
+set testdata(aristocrat,key,partial) [list " bcd  gh  klmnopqrstuvwx  " "a bcd  gh klmnopqrstuvwx  "]
+set testdata(aristocrat,ct) "qwertyuiop"
+set testdata(aristocrat,key,partial,result) [list abcdefghijklmnopqrstuvwxyz "  bc   g  klmnopqrstuvwx  "]
+set testdata(baconian,key,full) "abcdefghijklmnopqrstuvwxyz aabbaabbaabbaabbaabbaabbaa"
+set testdata(baconian,key,partial) [list "abcdefghijklmnopqrstuvwxyz" "  b a b a   bbb    aaaaab "]
+set testdata(baconian,ct) "qwertyuiop"
+set testdata(baconian,key,partial,result) $testdata(baconian,key,partial)
+set testdata(fmorse,key,full) "abcdefghijklmnopqrstuvwxyz .x..x--.-.---..-.x--.-----x-x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.xx-"
+set testdata(fmorse,key,partial) [list " bcde   ijklmnopqrstuvwxy " .x..x--.-.---..-.x--.-----x-x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.xx-]
+set testdata(fmorse,ct) "qwertyuiop"
+set testdata(fmorse,key,partial,result) [list "abcdefghijklmnopqrstuvwxyz" "   .x--.-.---..         --x-x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.   "]
+set testdata(morbit,key,full) "123456789 x.--x--..-xx-x.x.."
+set testdata(morbit,key,partial) [list "1 3456789" "x.--  -..-xx-x.x.."]
+set testdata(morbit,ct) "8675319"
+set testdata(morbit,key,partial,result) [list "123456789" "x.    -..-xx-x.x.."]
+set testdata(pollux,key,full) "0123456789 .x-.x-.x-."
+set testdata(pollux,key,partial) [list " 1 3456789" " x-  -.x-."]
+set testdata(pollux,ct) "86753190"
+set testdata(pollux,key,partial,result) [list 0123456789 " x   -.x-."]
+set testdata(foursquare,key,full) "abcdefghiklmnopqrstuvwxyz abcdefghiklmnopqrstuvwxyz"
+set testdata(foursquare,key,partial) [list " bc   ghiklmnopqrstuvwxy " " bcdefghiklmnopqrs   wxy "]
+set testdata(foursquare,ct) "qwertuiop"
+set testdata(foursquare,key,partial,result) $testdata(foursquare,key,partial)
+set testdata(twosquare,key,full) $testdata(foursquare,key,full)
+set testdata(twosquare,key,partial) $testdata(foursquare,key,partial)
+set testdata(twosquare,ct) $testdata(foursquare,ct)
+set testdata(twosquare,key,partial,result) $testdata(foursquare,key,partial,result)
+set testdata(homophonic,key,full) [list "01 26 51 76" abcd]
+set testdata(homophonic,key,partial) [list "01 26 51 76" "x  s"]
+set testdata(homophonic,ct) "0121314151618890"
+set testdata(homophonic,key,partial,result) $testdata(homophonic,key,partial)
+
+foreach type [list aristocrat baconian fmorse morbit pollux foursquare twosquare homophonic] {
+    test load-$type-1.1 {create cipher from a file} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=$testdata($type,key,full)" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) $testdata($type,ct)]
+
+    test load-$type-1.2 {create cipher from a file with quoted key} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=\"[lindex $testdata($type,key,full) 0]\" \"[lindex $testdata($type,key,full) 1]\"" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) $testdata($type,ct)]
+
+    test load-$type-1.3 {create cipher from a file with quoted partial key} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=\"[lindex $testdata($type,key,partial) 0]\" \"[lindex $testdata($type,key,partial) 1]\"" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,partial,result) $testdata($type,ct)]
+
+    test load-$type-1.4 {create cipher from a file with invalid number of key parts} {
+	::tcltest::makeFile "ciphertext=$testdata($type,ct)
+type=$type
+key=\"[lindex $testdata($type,key,partial) 0]\" \"[lindex $testdata($type,key,partial) 1]\" \"[lindex $testdata($type,key,partial) 1]\"" testData
+
+	set result [list [catch {set cipherObj [CipherUtil::createCipherFromFile $::tcltest::temporaryDirectory/testData]} msg] $msg]
+	::tcltest::removeFile testData
+
+	set result
+    } [list 1 "Wrong # parts found in the $type '' key:  \"[lindex $testdata($type,key,partial) 0]\" \"[lindex $testdata($type,key,partial) 1]\" \"[lindex $testdata($type,key,partial) 1]\""]
+}
+
+set testdata(vigenere,key,full) "den aaa"
+set testdata(variant,key,full) "aaa xwn"
+set testdata(beaufort,key,full) "aaa den"
+set testdata(gronsfeld,key,full) "dea aaa"
+set testdata(porta,key,full) "aaa nnn"
+
+foreach type [list vigenere variant beaufort gronsfeld porta] {
+    test load-$type-1.1 {create cipher from a file with period} {
+	::tcltest::makeFile "ciphertext=abcdefghijkl
+type=$type
+period=3
+key=$testdata($type,key,full)" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct] [$cipherObj cget -period]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) abcdefghijkl 3]
+
+    test load-$type-1.2 {create cipher from a file with no period} {
+	::tcltest::makeFile "ciphertext=abcdefghijkl
+type=$type
+key=$testdata($type,key,full)" testData
+
+	set cipherObj [CipherUtil::createCipherFromFile \
+		$::tcltest::temporaryDirectory/testData]
+	set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+		[$cipherObj cget -ct] [$cipherObj cget -period]]
+	::tcltest::removeFile testData
+	rename $cipherObj {}
+
+	set result
+    } [list $type $testdata($type,key,full) abcdefghijkl 3]
+
+    test load-$type-1.3 {create cipher from a file with wrong # key parts} {
+	::tcltest::makeFile "ciphertext=abcdefghijkl
+type=$type
+key=$testdata($type,key,full) $testdata($type,key,full)" testData
+
+	set result [list [catch {set cipherObj [CipherUtil::createCipherFromFile $::tcltest::temporaryDirectory/testData]} msg] $msg]
+	::tcltest::removeFile testData
+
+	set result
+    } [list 1 "Wrong # parts found in the $type '' key:  $testdata($type,key,full) $testdata($type,key,full)"]
+}
+
+test load-route-1.1 {create route cipher from a file with period specified} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+period=3
+type=route
+key=10 20" testData
+
+    set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]
+    set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+	    [$cipherObj cget -ct]]
+    ::tcltest::removeFile testData
+    rename $cipherObj {}
+
+    set result
+} [list route {10 20} abcdefghi]
+
+test load-route-1.2 {create route cipher from a file with no period or key} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+type=route" testData
+
+    set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]
+    set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+	    [$cipherObj cget -ct]]
+    ::tcltest::removeFile testData
+    rename $cipherObj {}
+
+    set result
+} [list route {1 1} abcdefghi]
+
+test load-route-1.3 {create route cipher from a file with period but no key} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+period=3
+type=route" testData
+
+    set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]
+    set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+	    [$cipherObj cget -ct]]
+    ::tcltest::removeFile testData
+    rename $cipherObj {}
+
+    set result
+} [list route {1 1} abcdefghi]
+
+test load-route-1.4 {create route cipher from a file with key but no period} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+key=10 20
+type=route" testData
+
+    set result [list [catch {set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} [list 1 "No period found for saved route cipher."]
+
+test load-route-1.5 {create route cipher from a file with wrong # key elements} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+key=10 20 30
+period=3
+type=route" testData
+
+    set result [list [catch {set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} [list 1 "Wrong # parts found in the route '' key:  10 20 30"]
+
+test load-nicodemus-1.1 {create nicodemus cipher from a file with period specified} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+period=3
+type=nicodemus
+key=qwe bac" testData
+
+    set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]
+    set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+	    [$cipherObj cget -ct]]
+    ::tcltest::removeFile testData
+    rename $cipherObj {}
+
+    set result
+} [list nicodemus "qwe bac" abcdefghi]
+
+test load-nicodemus-1.2 {create nicodemus cipher from a file with too many key parts} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+period=3
+type=nicodemus
+key=qwe bac 123" testData
+
+    set result [list [catch {set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]} msg] $msg]
+    ::tcltest::removeFile testData
+
+    set result
+} [list 1 "Wrong # parts found in the nicodemus '' key:  qwe bac 123"]
+
+test load-nicodemus-1.3 {create nicodemus cipher from a file with no period specified} {
+    ::tcltest::makeFile "ciphertext=abcdefghi
+type=nicodemus
+key=qwe bac" testData
+
+    set cipherObj [CipherUtil::createCipherFromFile \
+	    $::tcltest::temporaryDirectory/testData]
+    set result [list [$cipherObj cget -type] [$cipherObj cget -key] \
+	    [$cipherObj cget -ct]]
+    ::tcltest::removeFile testData
+    rename $cipherObj {}
+
+    set result
+} [list nicodemus "qwe bac" abcdefghi]
+
+test convert-1.1 {Convert an aristocrat key to a columnar cipher} {
+    set cipherObj [cipher create aristocrat -ct foobarwashere]
+    $cipherObj restore "abcdefghijklmnopqrstuvwxyz" "abcdefghijklmnopqrstuvwxyz"
+    set columnarObj [CipherUtil::aristocratKeyToColumnar $cipherObj]
+    set result [$columnarObj cget -ct]
+} {aaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz}
+
+test convert-1.2 {Convert an aristocrat key to a columnar cipher with holes} {
+    set cipherObj [cipher create aristocrat -ct foobarwashere]
+    $cipherObj restore "abcdefghijklmnopqrstuvwxyz" " bcd fgh jklmn pqrst vwxyz"
+    set columnarObj [CipherUtil::aristocratKeyToColumnar $cipherObj]
+    set result [$columnarObj cget -ct]
+} {-a-bbbcccddd-e-fffggghhh-i-jjjkkklllmmmnnn-o-pppqqqrrrsssttt-u-vvvwwwxxxyyyzzz}
+
+test convert-1.3 {Attempt to convert a non-aristocrat} {
+    set cipherObj [cipher create amsco -ct foobarwashere -period 3]
+    set result [list [catch {CipherUtil::aristocratKeyToColumnar $cipherObj} msg] $msg]
+} {1 {aristocratKeyToColumnar called on a non-aristocrat cipher.}}
+
+test convert-1.4 {Convert an aristocrat k1 key to columnar} {
+    set cipherObj [cipher create aristocrat -ct foobarwashere]
+    $cipherObj restore "abcdefghijklmnopqrstuvwxyz" " bcd fgh jklmn pqrst vwxyz"
+    set columnarObj [CipherUtil::aristocratKeyToColumnar $cipherObj k1]
+    set result [$columnarObj cget -ct]
+} {-abbccdd-effgghh-ijjkkllmmnn-oppqqrrsstt-uvvwwxxyyzz}
+
+test convert-1.5 {Convert an aristocrat k2 key to columnar} {
+    set cipherObj [cipher create aristocrat -ct foobarwashere]
+    $cipherObj restore "abcdefghijklmnopqrstuvwxyz" " bcd fgh jklmn pqrst vwxyz"
+    set columnarObj [CipherUtil::aristocratKeyToColumnar $cipherObj k2]
+    set result [$columnarObj cget -ct]
+} {a-bbccdde-ffgghhi-jjkkllmmnno-ppqqrrssttu-vvwwxxyyzz}
+
+test convert-1.6 {Convert a checkerboard to a patristocrat cipher} {
+    set ciphertext "aaabacadaebabbbcbdbecacbcccdcedadbdcdddeeaebecedee"
+    array set map [CipherUtil::checkerboard2pat $ciphertext]
+    set result [list $map(ciphertext) $map(pre) $map(post)]
+} {abcdefghiklmnopqrstuvwxyz abcde abcde}
+
+test convert-1.7 {Convert a 6x6 checkerboard to a patristocrat cipher} {unsupported} {
+    set ciphertext "aaabacadaeafbabbbcbdbebfcacbcccdcecfdadbdcdddedfeaebecedeeeffafbfcfdfeff"
+    array set map [CipherUtil::checkerboard2pat $ciphertext]
+    set result [list $map(ciphertext) $map(pre) $map(post)]
+} {abcdefghiklmnopqrstuvwxyz abcde abcde}
+
+::tcltest::cleanupTests

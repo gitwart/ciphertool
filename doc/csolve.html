@@ -1,0 +1,87 @@
+<HTML>
+<TITLE>Cipher Program - csolve</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+csolve - autosolver for many cipher types
+
+
+<H2>SYNOPSIS</H2>
+
+<B>csolve</B> <I>-file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="csolve"><B><CODE>csolve -file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?</CODE></B></A></DT>
+        <DD><B>csolve</B> is an autosolver for cipher types that implement
+<B>solve</B> subcommands.  This currently includes:
+<P>
+<UL>
+<LI><A HREF="baconian.html">baconian</A>
+<LI><A HREF="beaufort.html">beaufort</A>
+<LI><A HREF="cadenus.html">cadenus</A>
+<LI><A HREF="columnar.html">columnar (complete and incomplete)</A>
+<LI><A HREF="grille.html">grille</A>
+<LI><A HREF="gronsfeld.html">gronsfeld</A>
+<LI><A HREF="homophonic.html">homophonic</A>
+<LI><A HREF="morbit.html">morbit</A>
+<LI><A HREF="nitrans.html">nitrans (nihilist transposition)</A>
+<LI><A HREF="pollux.html">pollux</A>
+<LI><A HREF="porta.html">porta</A>
+<LI><A HREF="railfence.html">railfence</A>
+<LI><A HREF="route.html">route</A>
+<LI><A HREF="swagman.html">swagman</A>
+<LI><A HREF="variant.html">variant</A>
+<LI><A HREF="vigenere.html">vigenere</A>
+</UL>
+<P>
+Periodic ciphers must have a period specified on the command line.  The csolve
+program does not iterate through all possible periods.  Cipher types whose
+period is fixed based on the cipher length do not need periods specified.
+These include <B><A HREF="cipher/cadenus.html">cadenus</A></B> and <B><A HREF="nitrans.html">nitrans</A></B>.
+<P>
+The format for the input file is simple.  It should contain only the ciphertext.
+It may be split up across multiple lines, separated into 5-character groups, etc.  Any invalid characters in the ciphertext will be silently ignored.
+<P>
+<B>csolve</B> produces an output file called <I>filename</I>.csol.  The
+contents of this file are identical to the contents that are printed to the
+screen.  If a file with the same name already exists it is silently overwritten.
+<P>
+<B>csolve</B> sets the <B>-stepinterval</B>, <B>-stepcommand</B>,
+and <B>-bestfitcommand</B> options for the cipher before solving so that
+you get some useful feedback while it's running.  By watching this progress
+you can get an estimate on how long it will take to complete.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.
+This can be changed to any scoring method supported by the
+<A HREF="cipher/score.html">score</A> command.  The <b>-language</b> option is used to
+load a scoring table for the specified language, if such a scoring table
+exists.
+<P>
+The <b>-addspace</b> option will attempt to locate word boundaries after the
+final solution has been found.  This can be a time and memory intensive process
+on older computers so it is turned off by default.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

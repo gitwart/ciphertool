@@ -1,0 +1,109 @@
+[docHeader "Cipher Type - route"]
+[Ciphertype route]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureLanguage]
+    [ConfigureOption -width n \
+"This is the same as setting the period for the cipher."]
+    [ConfigureOption -in n \
+"Use method #<B>n</B> for writing the ciphertext into the block.  There are
+[[cipher create route] cget -numroutes] defined routes:
+<OL>
+<LI>row by row, left to right, top to bottom.
+<LI>alternating rows, top to bottom.
+<LI>column by column, top to bottom, left to right.
+<LI>alternating columns, left to right.
+<LI>diagonals, starting on the left and proceeding upward.
+<LI>diagonals, starting on the left and proceeding downward.
+<LI>diagonals, starting on the right and proceeding upward.
+<LI>diagonals, starting on the right and proceeding downward.
+<LI>diagonals, starting on the top and proceeding to the left.
+<LI>diagonals, starting on the top and proceeding to the right.
+<LI>diagonals, starting on the bottom and proceeding to the left.
+<LI>diagonals, starting on the bottom and proceeding to the right.
+<LI>alternate diagonals, starting on the left and proceeding upward.
+<LI>alternate diagonals, starting on the left and proceeding downward.
+<LI>alternate diagonals, starting on the right and proceeding upward.
+<LI>alternate diagonals, starting on the right and proceeding downward.
+<LI>alternate diagonals, starting on the top and proceeding to the left.
+<LI>alternate diagonals, starting on the top and proceeding to the right.
+<LI>alternate diagonals, starting on the bottom and proceeding to the left.
+<LI>alternate diagonals, starting on the bottom and proceeding to the right.
+<LI>clockwise spiral starting in top-left corner.
+<LI>counter-clockwise spiral starting in top-left corner.
+<LI>clockwise spiral starting in bottom-left corner.
+<LI>counter-clockwise spiral starting in bottom-left corner.
+<LI>clockwise spiral starting in top-right corner.
+<LI>counter-clockwise spiral starting in top-right corner.
+<LI>clockwise spiral starting in bottom-right corner.
+<LI>counter-clockwise spiral starting in bottom-right corner.
+<LI>clockwise spiral ending in top-left corner.
+<LI>counter-clockwise spiral ending in top-left corner.
+<LI>clockwise spiral ending in bottom-left corner.
+<LI>counter-clockwise spiral ending in bottom-left corner.
+<LI>clockwise spiral ending in top-right corner.
+<LI>counter-clockwise spiral ending in top-right corner.
+<LI>clockwise spiral ending in bottom-right corner.
+<LI>counter-clockwise spiral ending in bottom-right corner.
+<LI>Row by row starting in the top-right corner.
+<LI>Alternating rows starting in the top-right corner.
+<LI>Column by column starting in the top-right corner.
+<LI>Alternating columns starting in the top-right corner.
+<LI>Row by row starting in the bottom-left corner.
+<LI>Alternating rows starting in the bottom-left corner.
+<LI>Column by column starting in the bottom-left corner.
+<LI>Alternating columns starting in the bottom-left corner.
+<LI>Row by row starting in the bottom-right corner.
+<LI>Alternating rows starting in the bottom-right corner.
+<LI>Column by column starting in the bottom-right corner.
+<LI>Alternating columns starting in the bottom-right corner.
+</OL>
+"]
+    [ConfigureOption -out n \
+"Use method #<B>n</B> for reading the ciphertext from the block.  There are
+[[cipher create route] cget -numroutes] defined routes."]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetOption -ptblock \
+"undocumented feature"]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetOption -numroutes \
+"Return the number of routes known by the route cipher type."]
+    [CgetOption -width \
+"Return the width of the route block.  This is the same as the period."]
+    [CgetOption -height \
+"Return the height of the route block.  This is the same as
+<B>length / width</B>."]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Iterate through all [[cipher create route] cget -numroutes]*[[cipher create route] cget -numroutes] combinations of possible routes.  The in/out
+route pair that produces the best digram frequency count is used as
+the solution."]
+
+[EndDescription]
+
+[footer]

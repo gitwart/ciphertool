@@ -1,0 +1,790 @@
+# columnar.test
+# Test of the columnar cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample columnar cipher:
+#
+# nldof lbcui elk
+#
+# Laid out:
+#
+# n l i
+# l b e
+# d c l
+# o u k
+# f
+#
+# Solution: (3 1 2)
+#
+# u n f
+# i l l
+# e d b
+# l o c
+# k
+
+proc createValidCipher {} {
+    set c [cipher create columnar -ct "nldof lbcui elk"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Restore tests
+#       5.x     Column swap tests
+#       6.x     Shift tests
+#       7.x     Encode tests
+
+test columnar-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test columnar-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test columnar-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test columnar-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test columnar-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test columnar-1.6 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key}}
+
+test columnar-1.7 {attempt to substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No substitute command defined for columnar ciphers.}}
+
+test columnar-1.8 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test columnar-1.9 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test columnar-1.10 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period 1000} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test columnar-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test columnar-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test columnar-1.13 {invalid use columnar command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar swap col1 col2
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test columnar-2.1 {bad swap columns} {
+    set c [createValidCipher]
+
+    $c configure -period 3
+    set result [catch {$c swap a d} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test columnar-2.2 {bad swap columns} {
+    set c [createValidCipher]
+
+    $c configure -period 3
+    set result [catch {$c swap 1 b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test columnar-2.3 {swap with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test columnar-2.4 {swap with no ciphertext set} {
+    set c [cipher create columnar]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test columnar-2.5 {no valid characters in ciphertext} {
+    set c [cipher create columnar]
+
+    set result [catch {$c configure -ct 11111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test columnar-2.6 {restore with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test columnar-2.7 {restore with invalid characters} {
+    set c [createValidCipher]
+
+    $c configure -period 3
+    set result [catch {$c restore 111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test columnar-2.8 {restore with characters out of range} {
+    set c [createValidCipher]
+
+    $c configure -period 3
+    set result [catch {$c restore abd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key character out of range}}
+
+test columnar-2.9 {restore with no ciphertext} {
+    set c [cipher create columnar]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test columnar-2.10 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    $c configure -period 2
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match period}}
+
+test columnar-2.11 {restore with invalid key (duplicate chars)} {
+    set c [createValidCipher]
+
+    $c configure -period 3
+    set result [catch {$c restore aac} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test columnar-2.12 {solve with no ciphertext} {
+    set c [cipher create columnar]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test columnar-2.13 {solve with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test columnar-2.14 {shift with no ciphertext} {
+    set c [cipher create columnar]
+
+    set result [catch {$c shift a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test columnar-2.15 {shift with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test columnar-2.16 {shift an invalid column} {
+    set c [createValidCipher]
+    $c configure -period 3
+
+    set result [catch {$c shift g 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test columnar-2.17 {shift first column backwards} {
+    set c [createValidCipher]
+    $c configure -period 3
+
+    set result [catch {$c shift a -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test columnar-2.18 {shift last column backwards too far} {
+    set c [createValidCipher]
+    $c configure -period 3
+
+    set result [catch {$c shift c -3} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test columnar-2.19 {encode with non-listified key} {
+    set c [cipher create columnar]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test columnar-2.20 {encode with too many key elements} {
+    set c [cipher create columnar]
+
+    set result [catch {$c encode foobar "1 2"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key '1 2'.  Should have found 1.}}
+
+#test columnar-2.21 {encode with short key elements} {
+#    set c [cipher create columnar]
+#    $c configure -period 5
+#
+#    set result [catch {$c encode foobar "123"} msg]
+#
+#    regsub -all $c $msg ciphervar msg
+#    lappend result $msg
+#    rename $c {}
+#    
+#    set result
+#} {1 {Length of key does not match the period.}}
+
+test columnar-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {13}
+
+test columnar-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test columnar-3.3 {get period} {
+    set c [createValidCipher]
+    $c configure -period 3
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {3}
+
+test columnar-3.4 {successful use of cget -ct (empty)} {
+    set c [cipher create columnar]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test columnar-3.5 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {nldoflbcuielk}
+
+test columnar-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {columnar}
+
+test columnar-3.7 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "aaaaabbbbbcccccdddddeeeee----"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbcccccdddddeeeee----}
+
+test columnar-3.8 {set ciphertext with uppercase letters} {
+    set c [cipher create columnar -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test columnar-3.9 {successful use of undo} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c swap a c
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abc nlilbedcloukf}
+
+test columnar-3.10 {successful retrieval of ciphertext} {
+    set c [createValidCipher]
+    $c configure -period 3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abc nlilbedcloukf}
+
+test columnar-3.11 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test columnar-3.12 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test columnar-3.13 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test columnar-3.14 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test columnar-3.15 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test columnar-3.16 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test columnar-3.17 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test columnar-3.18 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test columnar-3.19 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test columnar-3.20 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test columnar-3.21 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test columnar-3.22 {Set the ciphertext after setting the period} {
+    set c [cipher create columnar -period 3]
+    $c configure -ct "nldof lbcui elk"
+    set result [list [$c cget -period] [$c cget -pt]]
+} {3 nlilbedcloukf}
+
+
+test columnar-3.23 {Set the ciphertext after setting the period triggers a period reset} {
+    set c [cipher create columnar -period 15]
+    $c configure -ct "nldof lbcui elk"
+    set result [$c cget -period]
+} {0}
+
+test columnar-4.1 {restore} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c restore abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abc nlilbedcloukf}
+
+test columnar-4.2 {restore} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c restore cab
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cab unfilledblock}
+
+test columnar-5.1 {swap} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c swap a b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bac fnillebdlcoku}
+
+test columnar-5.2 {multiple swap} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c swap a b
+    $c swap b c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cab unfilledblock}
+
+test columnar-6.1 {shift by 0 has no effect} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift b 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abc nlilbedcloukf}
+
+test columnar-6.2 {simple shift by 1} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift a 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bac fnillebdlcoku}
+
+test columnar-6.3 {shift by 4 stops at end of columns} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift a 4
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bca finlelbldckou}
+
+test columnar-6.4 {shift by negative amount} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift b -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bac fnillebdlcoku}
+
+test columnar-6.5 {shift by negative amount} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift c -2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cab unfilledblock}
+
+test columnar-6.6 {shift twice} {
+    set c [createValidCipher]
+    $c configure -period 3
+    $c shift a 1
+    $c shift b 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abc nlilbedcloukf}
+
+test columnar-7.1 {encode columnar} {
+    set c [cipher create columnar]
+
+    set result [$c encode "unfilled block" [list cab]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key] [$c cget -period]
+    rename $c {}
+
+    set result
+} {nldoflbcuielk nldoflbcuielk unfilledblock cab 3}
+
+test columnar-7.2 {encode columnar reset key length} {
+    set c [cipher create columnar -period 5]
+
+    set result [$c encode "unfilled block" [list cab]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key] [$c cget -period]
+    rename $c {}
+
+    set result
+} {nldoflbcuielk nldoflbcuielk unfilledblock cab 3}

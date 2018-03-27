@@ -1,0 +1,87 @@
+<HTML>
+<TITLE>Cipher Program - ctool</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+ctool - graphical interface for manipulating ciphers
+
+
+<H2>SYNOPSIS</H2>
+
+<B>ctool</B> <I></I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><B><CODE>ctool</CODE></B></DT>
+        <DD>The <B>ctool</B> program is designed to be a general interface for
+manipulating all of the cipher types available to the cipher package.
+Currently only the following ciphers can be used with <B>ctool</B>:
+<P>
+<UL>
+<LI><A HREF="aristocrat.html">aristocrat (patristocrat)</A>
+<LI><A HREF="baconian.html">baconian</A>
+<LI><A HREF="beaufort.html">beaufort</A>
+<LI><A HREF="cadenus.html">cadenus</A>
+<LI><A HREF="columnar.html">columnar (complete and incomplete)</A>
+<LI><A HREF="grille.html">grille</A>
+<LI><A HREF="gronsfeld.html">gronsfeld</A>
+<LI><A HREF="homophonic.html">homophonic</A>
+<LI><A HREF="morbit.html">morbit</A>
+<LI><A HREF="myszcowski.html">myszcowski</A>
+<LI><A HREF="pollux.html">pollux</A>
+<LI><A HREF="porta.html">porta</A>
+<LI><A HREF="swagman.html">swagman</A>
+<LI><A HREF="variant.html">variant</A>
+<LI><A HREF="vigenere.html">vigenere</A>
+</UL>
+
+        </DD>
+
+
+</DL>
+
+
+<H2>Features</H2>
+<BR>
+<UL>
+<LI>Load a new cipher from the contents of a file
+<LI>Save the current workspace
+<LI>Load a previously saved workspace
+<LI>View the key for the current cipher
+<LI>Perform substitutions, locate tips, and change periods for ciphers.  The
+actual operations that can be performed depend on the current cipher type.
+</UL>
+
+<H2>Misfeatures</H2>
+<BR>
+<UL>
+<LI>Many cipher types can't be used with this tool, but they are still listed
+when you load a new cipher.
+<LI>Pollux plaintext doesn't quite line up with the morse code text
+<LI>The user input areas are very lame.  Their only redeeming value is that
+they are functional.  There are often buttons on the display that do nothing
+but generate error messages.
+<LI>No drag and drop support on the ciphertext itself.  One should be able
+to, for example, drag and drop columns in a columnar cipher to change the key.
+<LI>You can't change a cipher's type after it's been loaded.
+<LI>Loading aristocrat ciphers sometimes cause the entire program to crash.
+<LI>Bugs abound.  See the TODO file for details.
+</UL>
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

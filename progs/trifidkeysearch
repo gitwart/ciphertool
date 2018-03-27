@@ -1,0 +1,191 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# trifidkeysearch --
+#
+#	Automatic solver for trifid ciphers.
+#
+# RCS: @(#) $Id: trifidkeysearch,v 1.13 2008/03/05 03:54:59 wart Exp $
+#
+# Copyright (C) 2000-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg 0 "The period for this cipher."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list stepinterval.arg 5000 "The interval between progress updates."] \
+    [list keyword.arg {} "The single keyword to use for solving."] \
+    [list addspace 0 "Locate spaces in the resulting plaintext."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+set type trifid
+
+if {$scoretype != ""} {
+    set defaultScore [score create $scoretype]
+    Scoredata::loadData $defaultScore
+
+    score default $defaultScore
+}
+
+if {![string is integer $period] || ([string length $period] == 0)} {
+    puts stderr "Invalid or missing period specified."
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $type -ct $ct]
+$cipher configure -period $period
+
+# Iterate over all possible keys
+
+set key [lindex $argv 0]
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+set stepInterval 5000
+
+# This procedure returns the best key from a list of keywords.
+proc bestkey {cipherProc keywordList countVar {maxValue 0}} {
+    global stepInterval
+    upvar $countVar count
+
+    set maxKeyword {}
+    set maxKey {}
+
+    foreach keyword $keywordList {
+	incr count
+
+	# Take special note that we are appending the '#' character to the
+	# end of the key.  This is a requirement for a trifid cipher.
+
+	if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	    set keylist $fixedKey#
+	    lappend keylist #$fixedKey
+
+	    # Generate a second key that has a # character between the
+	    # keyword and the rest of the alphabet.  This is a common
+	    # variation on the trifid key for more complex puzzles.
+
+	    set keyend [string trimleft $fixedKey $keyword]
+	    set keystart [string trimright $fixedKey $keyend]
+	    lappend keylist $keystart#$keyend
+	    lappend keylist $keyend#$keystart
+
+	    foreach key $keylist {
+		$cipherProc restore $key
+
+		set value [score value [$cipherProc cget -pt]]
+		#puts "value for $keyword is $value"
+
+		if {$value > $maxValue} {
+		    set maxValue $value
+		    set maxKeyword $keyword
+		    set maxKey [$cipherProc cget -key]
+
+		    puts "# $keyword ($maxKey)  Fit: $value"
+		    puts "# $count: [$cipherProc cget -pt]"
+		    puts ""
+		}
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+	if {$count%$stepInterval == 0} {
+	    puts "# $keyword"
+	    puts "# $count: [$cipherProc cget -pt]"
+	    puts ""
+	}
+    }
+
+    return [list $maxValue $maxKeyword $maxKey]
+}
+
+# If the user didn't supply a keyword then look through the dictionary.
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	foreach {val word key} \
+		[bestkey $cipher [Dictionary::lookupByLength $wordLength] \
+			count $maxValue] {
+	    if {$val > $maxValue} {
+		set maxValue $val
+		set maxKeyword $word
+		set maxKey $key
+	    }
+	}
+    }
+} else {
+# The user gave us a keyword to try.
+    foreach {val word key} [bestkey $cipher $keyword count] {
+	if {$val > $maxValue} {
+	    set maxValue $val
+	    set maxKeyword $word
+	    set maxKey $key
+	}
+    }
+}
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+$cipher restore $maxKey
+# Try to find the word divisions in this string of plaintext.
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords [$cipher cget -pt]]
+} else {
+    set readablePt [$cipher cget -pt]
+}
+
+set outChanId stdout
+
+puts $outChanId "#=========="
+puts $outChanId ""
+CipherUtil::writeCipherToFile $cipher $outChanId
+if {$addspace} {
+    puts $outChanId "#plaintext=$readablePt"
+}
+puts $outChanId "keyword=$maxKeyword"

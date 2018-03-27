@@ -1,0 +1,268 @@
+# crithm.test
+# Test of the crithm command
+
+package require Crithm
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Test groups:
+#	1.x	Crithm::sortKey
+#	2.x	Crithm::getWordType
+#	3.x	Crithm::wordToCode
+#	4.x	Crithm::createConstraint
+#	5.x	Crithm::isValidOperator
+#	6.x	Crithm::getUniqueLetters
+#	7.x	Crithm::createCheckKeyProc
+
+if {$tcl_version <= 8.3} {
+    set resultArray(1.1) {1 {no value given for parameter "keyList" to "Crithm::sortKey"}}
+} else {
+    set resultArray(1.1) {1 {wrong # args: should be "Crithm::sortKey keyList"}}
+}
+
+test crithm-1.1 {sortKey bad # args} {
+    set result [list [catch {Crithm::sortKey} msg] $msg]
+} $resultArray(1.1)
+
+test crithm-1.2 {sortKey odd # list elements} {
+    set keyList [list a b c]
+    set result [list [catch {Crithm::sortKey $keyList} msg] $msg]
+    set result
+} {1 {list must have an even number of elements}}
+
+test crithm-1.3 {sortKey with element out of range} {
+    set keyList [list a 1 b 3 c 0]
+    set result [list [catch {Crithm::sortKey $keyList} msg] $msg]
+    set result
+} {1 {Bad key value 3.  Must be less than the length of the list}}
+
+test crithm-1.4 {sortKey with nonintegral element} {
+    set keyList [list 1 a b 3 c 0]
+    set result [list [catch {Crithm::sortKey $keyList} msg] $msg]
+    set result
+} {1 {Bad key value a.  Must be less than the length of the list}}
+
+test crithm-1.5 {sortKey with valid list} {
+    set keyList [list a 1 b 2 c 0]
+    set result [list [catch {Crithm::sortKey $keyList} msg] $msg]
+    set result
+} {0 {{c a b} {0 1 2}}}
+
+test crithm-2.1 {getWordType with empty argument} {
+    set result [Crithm::getWordType {}]
+} {unknown}
+
+test crithm-2.2 {getWordType with integer argument} {
+    set result [Crithm::getWordType 23]
+} {number}
+
+test crithm-2.3 {getWordType with single letter argument} {
+    set result [Crithm::getWordType a]
+} {letter}
+
+test crithm-2.4 {getWordType with an expression} {
+    set result [Crithm::getWordType "a+b"]
+} {expression}
+
+test crithm-2.5 {getWordType with string argument} {
+    set result [Crithm::getWordType foobar]
+} {string}
+
+test crithm-2.6 {getWordType with mixed argument} {
+    set result [Crithm::getWordType a23]
+} {unknown}
+
+test crithm-3.1 {wordToCode with string argument} {
+    set result [Crithm::wordToCode foobar]
+} {[crithm value foobar]}
+
+test crithm-3.2 {wordToCode with numeric argument} {
+    set result [Crithm::wordToCode 42]
+} {42}
+
+test crithm-3.3 {wordToCode with single letter argument} {
+    set result [Crithm::wordToCode z]
+} {[crithm cvalue z]}
+
+test crithm-3.4 {wordToCode with expression argument} {
+    set result [Crithm::wordToCode "a+b"]
+} {([crithm cvalue a] + [crithm cvalue b])}
+
+test crithm-3.5 {wordToCode with exponential expression argument} {
+    set result [Crithm::wordToCode "a^b"]
+} {pow([crithm cvalue a], [crithm cvalue b])}
+
+test crithm-3.6 {wordToCode with incomplete expression argument} {
+    set result [list [catch {Crithm::wordToCode "a+"} msg] $msg]
+} {1 {Can't evaluate a+ as an expression}}
+
+test crithm-3.7 {wordToCode with incomplete expression argument} {
+    set result [list [catch {Crithm::wordToCode "*b"} msg] $msg]
+} {1 {Can't evaluate *b as an expression}}
+
+test crithm-3.8 {wordToCode with null argument} {
+    set result [list [catch {Crithm::wordToCode {}} msg] $msg]
+} {1 {Can't evaluate  as an expression}}
+
+test crithm-3.9 {wordToCode with complex argument} {
+    set result [Crithm::wordToCode "a+b*c"]
+} {([crithm cvalue a] + ([crithm cvalue b] * [crithm cvalue c]))}
+
+test crithm-3.10 {wordToCode with complex argument} {
+    set result [Crithm::wordToCode "a+b+c"]
+} {(([crithm cvalue a] + [crithm cvalue b]) + [crithm cvalue c])}
+
+test crithm-3.11 {wordToCode with complex argument} {
+    set result [Crithm::wordToCode "a^b + c^d"]
+} {(pow([crithm cvalue a], [crithm cvalue b]) + pow([crithm cvalue c], [crithm cvalue d]))}
+
+test crithm-4.1 {createConstraint with wrong # args} {
+    set result [list [catch {Crithm::createConstraint "a"} msg] $msg]
+} {1 {Could not create a constraint from 'a'.  Missing '=' comparator.}}
+
+test crithm-4.2 {createConstraint with missing ==} {
+    set result [list [catch {Crithm::createConstraint a + b bad c} msg] $msg]
+} {1 {Could not create a constraint from 'a + b bad c'.  Missing '=' comparator.}}
+
+test crithm-4.3 {createConstraint with 5 args} {
+    set result [Crithm::createConstraint a + b == cde]
+} {([crithm cvalue a] + [crithm cvalue b]) == [crithm value cde]}
+
+test crithm-4.4 {createConstraint with 7 args} {
+    set result [Crithm::createConstraint 3 + ab == c - 4]
+} {(3 + [crithm value ab]) == ([crithm cvalue c] - 4)}
+
+test crithm-4.5 {createConstraint with complex expression} {
+    set result [Crithm::createConstraint "foo+bar+baz = help"]
+} {(([crithm value foo] + [crithm value bar]) + [crithm value baz]) == [crithm value help]}
+
+test crithm-4.6 {createConstraint with invalid first operator} {
+    set result [list [catch {Crithm::createConstraint a ? b == c - d} msg] $msg]
+} {1 {Can't evaluate a ? b as an expression}}
+
+test crithm-4.7 {createConstraint with invalid second operator} {
+    set result [list [catch {Crithm::createConstraint a + b == c ? d} msg] $msg]
+} {1 {Can't evaluate c ? d as an expression}}
+
+test crithm-4.8 {createConstraint with first arg null} {
+    set result [list [catch {Crithm::createConstraint {} + ab == c - 4} msg] $msg]
+} {1 {Can't evaluate {} as an expression}}
+
+test crithm-5.1 {isValidOperator on {}} {
+    set result [Crithm::isValidOperator {}]
+} {0}
+
+test crithm-5.2 {isValidOperator on +} {
+    set result [Crithm::isValidOperator +]
+} {1}
+
+test crithm-5.3 {isValidOperator on -} {
+    set result [Crithm::isValidOperator -]
+} {1}
+
+test crithm-5.4 {isValidOperator on *} {
+    set result [Crithm::isValidOperator *]
+} {1}
+
+test crithm-5.5 {isValidOperator on /} {
+    set result [Crithm::isValidOperator /]
+} {1}
+
+test crithm-6.1 {getUniqueLetters on empty string} {
+    set result [Crithm::getUniqueLetters {}]
+} {}
+
+test crithm-6.2 {getUniqueLetters on numeric list} {
+    set result [Crithm::getUniqueLetters {1 2}]
+} {}
+
+test crithm-6.3 {getUniqueLetters on mixed numbers and letters} {
+    set result [Crithm::getUniqueLetters {1 a b}]
+} {ab}
+
+test crithm-6.4 {getUniqueLetters on letters only} {
+    set result [Crithm::getUniqueLetters {abcdefg}]
+} {abcdefg}
+
+test crithm-7.1 {createCheckKeyProc with empty list} {
+    set generatedProc [Crithm::createCheckKeyProc {}]
+
+    set result $generatedProc
+} "
+
+    return 0
+"
+
+test crithm-7.2 {createCheckKeyProc with one constraint} {
+    set generatedProc [Crithm::createCheckKeyProc foo]
+
+    set result $generatedProc
+} "
+    if {foo} {
+        return 1
+    }
+
+    return 0
+"
+
+test crithm-7.3 {createCheckKeyProc with multiple constraints} {
+    set generatedProc [Crithm::createCheckKeyProc [list a b c d e]]
+
+    set result $generatedProc
+} "
+    if {a} {
+    if {b} {
+    if {c} {
+    if {d} {
+    if {e} {
+        return 1
+    }
+    }
+    }
+    }
+    }
+
+    return 0
+"
+
+test crithm-8.1 {createNonzeroConstraint on a single letter} {
+    set constraintList [Crithm::createNonzeroConstraint f]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.2 {createNonzeroConstraint on a single letter} {
+    set constraintList [Crithm::createNonzeroConstraint " f"]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.3 {createNonzeroConstraint on a single letter} {
+    set constraintList [Crithm::createNonzeroConstraint "f "]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.4 {createNonzeroConstraint on a single letter} {
+    set constraintList [Crithm::createNonzeroConstraint " f "]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.5 {createNonzeroConstraint on a single word} {
+    set constraintList [Crithm::createNonzeroConstraint barbaz]
+    set result [list [llength $constraintList] $constraintList]
+} {1 {{[crithm cvalue b] != 0}}}
+
+test crithm-8.6 {createNonzeroConstraint on an empty string} {
+    set constraintList [Crithm::createNonzeroConstraint {}]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.7 {createNonzeroConstraint with no letters} {
+    set constraintList [Crithm::createNonzeroConstraint "3 + 2 = 5"]
+    set result [list [llength $constraintList] $constraintList]
+} {0 {}}
+
+test crithm-8.8 {createNonzeroConstraint on a full expression} {
+    set constraintList [Crithm::createNonzeroConstraint "foo + bar = cat - q"]
+    set result [list [llength $constraintList] $constraintList]
+} {3 {{[crithm cvalue f] != 0} {[crithm cvalue b] != 0} {[crithm cvalue c] != 0}}}

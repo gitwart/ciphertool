@@ -1,0 +1,35 @@
+[docHeader "Tcl Command - permute"]
+[Command permute "Generate permutations of numbers."]
+[SynopsisHeader]
+[Synopsis permute "n cmd"]
+
+[StartDescription]
+
+[Description "permute n cmd" {} \
+"Given a number <B>n</B>, this command will generate <B>n!</B> strings.
+Each string is a unique permutation of the numbers from 0 to <B>n - 1</B>.
+For example, if <B>n</B> is 3, the following strings are generated:
+<P>
+<CODE>
+0 1 2<BR>
+0 2 1<BR>
+2 0 1<BR>
+2 1 0<BR>
+1 2 0<BR>
+1 0 2<BR>
+</CODE>
+<P>
+The <B>cmd</B> argument is a Tcl command that is invoked for every permutation
+that is generated.  This command must accept a single argument.  The argument
+will be a Tcl list consisting of the permuted numbers.  To print the
+permutations to the screen, one could use the Tcl command <B>puts</B>:
+<P>
+<B><CODE>permute 3 puts</CODE></B>
+<P>
+Or the command could be defined by the user and do something like set
+the key for a columnar cipher to the permuted string.
+"]
+
+[EndDescription]
+
+[footer]

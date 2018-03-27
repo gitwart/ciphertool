@@ -1,0 +1,184 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# geneticsearch --
+#
+#	Basic genetic search program for solving ciphers.
+#
+# RCS: @(#) $Id: geneticsearch,v 1.2 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require GeneticPerm
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg {} "The cipher type"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list mutateamount.arg 10 "The amount to mutate the key when a mutation occurs."] \
+    [list generations.arg 0 "The maximum number of generations before stopping.  Set to '0' to continue endlessly."] \
+    [list poolsize.arg 64 "The size of the gene pool."] \
+    [list crossover.arg 0.9 "The probability of mating to occur between two genes."] \
+    [list maxchromosomes.arg 4 "The max number of chromosomes that will be involved in a gene crossover."] \
+    [list mutate.arg 0.1 "The probability of mutations to occur between two genes."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list stepinterval.arg 20 "Show the best result of every nth generation."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Command line validation
+
+if {$type == ""} {
+    puts stderr "[::cmdline::usage $options {option '-type' missing}]"
+    exit 1
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+# Load the cipher
+set ct [CipherUtil::readCiphertext $file]
+
+if {$type == "aristocrat"} {
+    regsub -all { } $ct {} ct
+}
+
+if {$type == "gromark"} {
+    set c [cipher create $type -ct $ct -primer $period]
+} elseif {$period != "" && $period > 0} {
+    set c [cipher create $type -ct $ct -period $period]
+} else {
+    set c [cipher create $type -ct $ct]
+}
+
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc($type)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType($type)
+set Hillclimb::mateProc $Hillclimb::mateProcFromType($type)
+set Hillclimb::stepInterval 0
+set Hillclimb::stepCommand {}
+set Hillclimb::bestFitCommand {}
+set Hillclimb::cipherObject $c
+set Hillclimb::scoreObj score
+set Hillclimb::mutationAmount $mutate
+set GeneticPerm::mateProc GeneticPerm::rouletteMate
+set maxKey {}
+set maxValue {}
+
+set fixedKeywordList $Hillclimb::singleSeedKey($type)
+if {$type == "aristocrat" && [llength [lindex $fixedKeywordList 0]] != 0} {
+    set fixedKeywordList [list [list abcdefghijklmnopqrstuvwxyz $fixedKeywordList]]
+    set fullKey [::Hillclimb::mutate [lindex $fixedKeywordList 0] 100]
+}
+
+# Generate an initial gene pool using random sequences.
+set genePool {}
+puts -nonewline "#Generating initial gene pool"
+flush stdout
+for {set i 0} {$i < $poolsize} {incr i} {
+#    set keyword $Hillclimb::singleSeedKey($type)
+#    lappend genePool [Hillclimb::mutate $keyword 100 $type]
+    foreach {bestKey val} [Hillclimb::start $fullKey] {}
+
+    if {$val > $maxValue} {
+        set maxValue $val
+        set maxKey $bestKey
+    }
+
+    if {[expr {rand()}] < 0.1} {
+        set fullKey [::Hillclimb::mutate $bestKey $mutate]
+    } else {
+        set fullKey [::Hillclimb::mutate $maxKey $mutate]
+    }
+    lappend genePool $fullKey
+    puts -nonewline "."
+    flush stdout
+}
+puts ""
+
+# Configure the GA engine.
+set GeneticPerm::probability(crossover) $crossover
+set GeneticPerm::probability(mutate) $mutate
+
+set currentGen 0
+#GeneticPerm::dumpPool $genePool $currentGen
+Hillclimb::showFit $bestKey $currentGen $maxValue
+
+while {$generations == 0 || $currentGen < $generations} {
+    set newGeneration [$GeneticPerm::mateProc $genePool $maxchromosomes]
+    set genePool [GeneticPerm::mutatePool $newGeneration]
+    set newGeneration {}
+#    foreach gene $genePool {
+#        foreach {bestKey val} [Hillclimb::start $gene] {}
+#        lappend newGeneration $bestKey
+#    }
+#    set genePool $newGeneration
+
+    #puts "#Generation $currentGen"
+    #GeneticPerm::dumpPool $genePool $currentGen
+    #puts "#======================"
+    foreach {bestKey val} [GeneticPerm::getBestFit $genePool] {}
+    if {$val > $maxValue} {
+        set maxValue $val
+        set maxKey $bestKey
+        Hillclimb::showFit $bestKey $currentGen $maxValue
+    }
+
+    if {$stepinterval && $currentGen % $stepinterval == 0} {
+        Hillclimb::showFit $bestKey $currentGen
+    }
+    incr currentGen
+}

@@ -1,0 +1,294 @@
+<HTML>
+<TITLE>Cipher Package - Hillclimb</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+Hillclimb - Procedures for creating and using hill climbers.
+
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>package require Hillclimb</I>
+<BR>
+
+
+<H2>VARIABLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="neighborProc"><B><CODE>Hillclimb::neighborProc</CODE></B></A></DT>
+        <DD>This variable stores the name of the command that is used to generate
+'nearby' keys in the key search space.  Most neighborProc procedures generate
+neighbor keys by swapping elements of the current key.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="valueProc"><B><CODE>Hillclimb::valueProc</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherProc"><B><CODE>Hillclimb::decipherProc</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="stepInterval"><B><CODE>Hillclimb::stepInterval</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="stepCommand"><B><CODE>Hillclimb::stepCommand</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="bestFitCommand"><B><CODE>Hillclimb::bestFitCommand</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="keycipher"><B><CODE>Hillclimb::keycipher</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="registerProc"><B><CODE>Hillclimb::registerProc</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="mutationRequested"><B><CODE>Hillclimb::mutationRequested</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="mutationAmount"><B><CODE>Hillclimb::mutationAmount</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="statMethod"><B><CODE>Hillclimb::statMethod</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="cipherObject"><B><CODE>Hillclimb::cipherObject</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherProc"><B><CODE>Hillclimb::decipherProc</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherProcFromType"><B><CODE>Hillclimb::decipherProcFromType</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="fullKeyList"><B><CODE>Hillclimb::fullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="fullKeyListFromType"><B><CODE>Hillclimb::fullKeyListFromType</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="swapKeyProc"><B><CODE>Hillclimb::swapKeyProc</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="singleSeedKey"><B><CODE>Hillclimb::singleSeedKey</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="fixedKeyPositions"><B><CODE>Hillclimb::fixedKeyPositions</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+</DL>
+
+
+<H2>COMMANDS</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="mutate"><B><CODE>Hillclimb::mutate</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="randomizeList"><B><CODE>Hillclimb::randomizeList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="generateSwapNeighborKeys"><B><CODE>Hillclimb::generateSwapNeighborKeys</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="generateInsertNeighborKeys"><B><CODE>Hillclimb::generateInsertNeighborKeys</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="plugKeyHoles"><B><CODE>Hillclimb::plugKeyHoles</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="showFit"><B><CODE>Hillclimb::showFit</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="registerMaxKey"><B><CODE>Hillclimb::registerMaxKey</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="recstart"><B><CODE>Hillclimb::recstart</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="start"><B><CODE>Hillclimb::start</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="pattipsearch"><B><CODE>Hillclimb::pattipsearch</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherSimple"><B><CODE>Hillclimb::decipherSimple</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherAristocrat"><B><CODE>Hillclimb::decipherAristocrat</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="decipherGromark"><B><CODE>Hillclimb::decipherGromark</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getKeysquareFullKeyList"><B><CODE>Hillclimb::getKeysquareFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="get6x6KeysquareFullKeyList"><B><CODE>Hillclimb::get6x6KeysquareFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getTrifidFullKeyList"><B><CODE>Hillclimb::getTrifidFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getDigrafidFullKeyList"><B><CODE>Hillclimb::getDigrafidFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getRagbabyFullKeyList"><B><CODE>Hillclimb::getRagbabyFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getAristocratFullKeyList"><B><CODE>Hillclimb::getAristocratFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="getTwosquareFullKeyList"><B><CODE>Hillclimb::getTwosquareFullKeyList</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="swapAristocratKey"><B><CODE>Hillclimb::swapAristocratKey</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="swapTwosquareKey"><B><CODE>Hillclimb::swapTwosquareKey</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="swapGenericKey"><B><CODE>Hillclimb::swapGenericKey</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:23 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

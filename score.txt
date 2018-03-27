@@ -1,0 +1,126 @@
+I've added a new score command to enable more flexible and
+pluggable plaintext scoring methods.  The 'score' command
+uses the sum of digram log frequencies as a default scoring
+method, but new scoring methods can be added and used
+instead of the default.  The currently supported scoring
+methods are:
+
+    digramlog - Sum of logs of digram frequencies
+    digramcount - Sum of raw digram frequencies
+    wordtree - Sum of square of word lengths
+
+More scoring methods, such as 3,4-gram frequency tables and
+n-gram frequency and wordtree tables for foreign languages,
+will be added in the future.
+
+In addition, you can create a new Tcl procedure to return
+the scoring values.  The procedure must accept 2 arguments:
+"value <string>".  The first argument is always "value".
+The second argument is the plaintext string to score.  This
+example scoring method scores by returning the length of the
+string.
+
+    proc myScoringMethod {command string} {
+	# command is always "value" for now.  Later we will
+	# implement new subcommands.
+
+	if {$command == "value"} {
+	    return [string length $string]
+	} else {
+	    error "Unknown subcommand $command"
+	}
+    }
+
+Usage:
+
+# Use the default sum-of-digram-logs on a string of plaintext
+
+    % score value "my dog has fleas"
+    1302.0
+
+# Create a new sum-of-digram-logs scoring table based on a
+# custom frequency table.  Note that the "normalize"
+# sub-command is a misnomer.  In this case, it merely
+# computes the log of every value that was added by "score
+# add".  This allows you to enter the raw frequency counts
+# and let the score command calculate the logs for you.
+
+    % score create digramlog
+    score1
+    % score1 add my 2
+    my
+    % score add do 2
+    do
+    % score1 normalize
+    % score1 value "my dog has fleas"
+    1.38629436112
+
+# Create a new sum-of-digram-logs scoring table based on a
+# custom frequency table.  In this example the input digram
+# values have already been converted to log values, so the
+# normalize sub-command is not used.
+
+    % score create digramlog
+    score1
+    % score1 add my 0.693
+    my
+    % score add do 0.693
+    do
+    % score1 normalize
+    % score1 value "my dog has fleas"
+    1.386
+
+# The normalize sub-command for the sum-of-frequency-counts
+# scoring table does nothing.  This table stores only the
+# raw frequency counts.
+
+    % score create digramcount
+    score1
+    % score1 add my 2
+    my
+    % score add do 2
+    do
+    % score1 normalize
+    % score1 value "my dog has fleas"
+    4.0
+
+# The "wordtree" scoring table calculates scores based on
+# the square of the lengths of valid words in the plaintext.
+# 1- and 2-letter words are ignored.  Again, normalization
+# is not needed here.
+
+    % score create wordtree
+    score1
+    % score1 add my
+    my
+    % score1 add dog
+    dog
+    % score1 add has
+    has
+    % score1 add fleas
+    fleas
+    % score1 value "my dog has fleas"
+    43.0
+
+# Change the default scoring method to a custom "wordtree"
+# table.  Note that we use the "score" command to get the
+# value here instead of calling the new "score1" command.
+# The "score default score1" command associates "score1" as
+# the default scoring method.
+
+    % score create wordtree
+    score1
+    % score1 add dog
+    dog
+    % score default score1
+    score1
+    % score value "my dog has fleas"
+    9.0
+
+# Change the default scoring method to the new custom
+# scoring method above.
+
+    % score default myScoringMethod
+    myScoringMethod
+    % score value "my dog has fleas"
+    16

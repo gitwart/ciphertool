@@ -1,0 +1,108 @@
+[docHeader "Tcl cipher extension"]
+<H2>Introduction</H2>
+The Tcl cipher extension is an ambitious effort to be a generic cipher
+manipulation architecture for cipher types in use by the [Link http://www.cryptogram.org {American Cryptogram Association}].
+<P>
+This package includes an extension the Tcl language that implements new
+Tcl commands for manipulating ciphers.  In addition, there are a handful
+of scripts that use these new Tcl commands to do useful things with
+these new Tcl commands.  For example, the command
+"[Link cipher/key.html {key generate}]" is used in conjunction with the
+"[Link cipher/aristocrat.html {cipher create aristocrat}]" command to
+implement a brute force search for solving patristocrat ciphers.
+<P>
+There are also a couple of graphical tools for performing these cipher
+manipulations.
+<P>
+The English frequency tables were obtained by performing a tally on the
+text from Mary Shelley's novel <I><B>Frankenstein</B></I>.  The text was
+obtained from <A HREF="http://promo.net/pg/">Project Gutenburg</A>.
+<P>
+<H3>Quick Links</H3>
+Download the latest release ([package present cipher]) as a [Link "http://prdownloads.sourceforge.net/ciphertool/ciphertool-[package present cipher]-1.i386.rpm?download" {Binary RPM}] or a [Link "http://prdownloads.sourceforge.net/ciphertool/Ciphertool_[string map {. _} [package present cipher]]_Setup.exe?download" {Windows self-extracting installer}].  Or just get the [Link "http://prdownloads.sourceforge.net/ciphertool/ciphertool-[package present cipher].tar.gz?download" "Source Code"] ([Link "http://prdownloads.sourceforge.net/ciphertool/ciphertool-[package present cipher]-1.src.rpm?download" "as a source rpm"]) and build it yourself.
+See the [Link "http://sourceforge.net/projects/ciphertool/" "Project Page"] at SourceForge for earlier versions, access to the [Link "http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ciphertool" "CVS repository"], and message boards.
+<P>
+<H3>New Tcl Packages</H3>
+Several new Tcl packages are provided by this software.  Each package provides a handful of new Tcl commands.  These packages include:
+<ul>
+<li><b>[Link cipher/package.html cipher]</b> - This package contains the core support for the various
+    cipher types and statistical analysis commands.  Almost every program will
+    use this package.</li>
+<li><b>[Link Crithm/package.html Crithm]</b> - This package contains useful
+    wrapper commands for the <b>crithm</b> command provided by the cipher
+    package.  This includes routines for setting up a new cryptarithm solver
+    and generating constraints based on user-provided equations.</li>
+<li><b>[Link CipherUtil/package.html CipherUtil]</b> - This package contains
+    miscellaneous useful commands, including commands for reading/writing
+    ciphers and their solutions to files.</li>
+<li><b>[Link Hillclimb/package.html Hillclimb]</b> - This package contains
+    commands for running a hillclimber, with some key mutators for some common cipher types.</li>
+<li><b>[Link Dictionary/package.html Dictionary]</b> - This package contains
+    commands for reading words from a dictionary.</li>
+<li><b>[Link Scoredata/package.html Scoredata]</b> - This package contains
+    commands for reading and writing scoring tables to a file.</li>
+<li><b>K3Board</b> - This experimental package contains commands for displaying
+    a fragmented K3 alphabet so that it can be reconstructed.</li>
+<li><b>PatWord</b> - This experimental package contains utility commands for
+    implementing a brute-force patristocrat solver.</li>
+<li><b>PatWordUI</b> - This experimental package contains commands for
+    managing the UI for the brute-force patristocrat solver.</li>
+</ul>
+<p>
+<H3>Applications</H3>
+<DL>
+    <DT><B>tcipher</B></DT>
+	<DD>Tcl interpreter with the cipher package already loaded.
+	</DD>
+    <DT><B>[Link ctool.html ctool]</B></DT>
+	<DD>Graphical tool for manipulating ciphers.
+	</DD>
+    <DT><B>tkcrithm</B></DT>
+	<DD>Graphical tool for autosolving cryptarithm ciphers.
+	</DD>
+    <DT><B>[Link csolve.html csolve]</B></DT>
+	<DD>Autosolver for a variety of cipher types.  This program iterates
+	through all possible keys and uses a customizable scoring function to
+	determine the best solution.
+	</DD>
+    <DT><B>[Link keysquaresearch.html keysquaresearch]</B></DT>
+	<DD>Autosolver for cipher types that use keysquares.  A dictionary
+	of possible keywords is used to generate possible keysquares.  A
+	customizable scoring function is used to determine the best solution.
+	</DD>
+    <DT><B>[Link nicsolve.html nicsolve]</B></DT>
+	<DD>Autosolver for nicodemus ciphers.
+	</DD>
+    <DT><B>[Link patsearch.html patsearch]</B></DT>
+	<DD>Autosolver for K1, K2, and K3 keyed patristocrats.  A dictionary
+	of possible keywords is used to generate the keyed alphabets.  A
+	customizable scoring function is used to determine the best solution.
+	</DD>
+    <DT><B>[Link dumproute.html dumproute]</B></DT>
+	<DD>Show the plaintext resulting from all possible routes for a
+	given route cipher block width.
+	</DD>
+    <DT><B>[Link genboard.html genboard]</B></DT>
+	<DD>Generate a tableau for solving many ciphers by hand.
+	</DD>
+    <DT><B>[Link key2col.html key2col]</B></DT>
+	<DD>Generate a columnar cipher from a saved aristocrat/patristocrat
+	solution so that the keyword may be sought after.
+	</DD>
+    <DT><B>[Link k3search.html k3search]</B></DT>
+	<DD>Search for K3 keyed alphabets that match a given key.  A
+	dictionary of possible keywords is used to find matches.
+	</DD>
+    <DT><B>[Link k4search.html k4search]</B></DT>
+	<DD>Attempt to resolve a K4 alphabet into its component keywords.  A
+	dictionary of possible keywords is used for one of the K4 keywords.
+	Likely keyed alphabets for the other keyword are shown.
+	</DD>
+    <DT><B>[Link genscores.html genscores]</B></DT>
+	<DD>Generate scoring tables from samples of plaintext.
+	</DD>
+    <DT><B>[Link lethist.html lethist]</B></DT>
+	<DD>Useful letter frequency analyzer.
+	</DD>
+</DL>
+[footer]

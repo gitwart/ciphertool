@@ -1,0 +1,30 @@
+[docHeader "Cipher Program - nicsolve"]
+[Command nicsolve "autosolver for nicodemus ciphers"]
+
+[SynopsisHeader]
+[Synopsis nicsolve "-file filename -encoding encoding -period period ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?"]
+
+[StartDescription]
+
+[Description "nicsolve -file filename -encoding vigenere|variant|beaufort -period period ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?" csolve \
+"<B>nicsolve</B> is an autosolver for nicodemus ciphers.
+<P>
+This program will loop through every possible permutation of columns for
+the nicodemus cipher and then perform a frequency fit on each column.  The
+resulting plaintext that maximizes the plaintext scoring function is
+reported as the best solution.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.
+This can be changed to any scoring method supported by the
+[Link cipher/score.html score] command.  The <b>-language</b> option is used to
+load a scoring table for the specified language, if such a scoring table
+exists.
+<P>
+The <b>-addspace</b> option will attempt to locate word boundaries after the
+final solution has been found.  This can be a time and memory intensive process
+on older computers so it is turned off by default.
+"]
+
+[EndDescription]
+
+[footer]

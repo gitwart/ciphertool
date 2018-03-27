@@ -1,0 +1,101 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# testscore --
+#
+#	Test a new scoring method.
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require Scoredata
+
+# Command line processing
+set options [list \
+    [list type.arg {} "The plaintext scoring method.  Use this to set the base scoring type.  Use the *count types to prevent normalization."] \
+    [list verbose "Increase the amount of status information that will be displayed."] \
+    [list elemsize.arg 0 "The size of elements for a ngram scoring table"] \
+    [list output.arg "-" "The name of the file to which the new score table will be written."] \
+    [list validchars.arg abcdefghijklmnopqrstuvwxyz "The valid characters for the scoring table.  Defaults to set of characters from a-z"]]
+
+foreach {var val} [::cmdline::getoptions argv $options] {
+    set $var $val
+}
+
+if {$type == ""} {
+    error "Option -type not specified."
+}
+if {[lsearch [score types] $type] == -1} {
+    error "type '$type' not recognized.  Must be one of [score types]"
+}
+
+if {($type == "ngramlog" || $type == "ngramcount") && $elemsize < 1} {
+    puts "Element size for a ngram based scoring table must be greater than 0"
+}
+
+# Setup
+set Scoredata::allowedCharacters $validchars
+
+proc verbose {msg} {
+    global verbose
+    if {$verbose} {
+	puts $msg
+    }
+}
+
+set scoreObj [score create $type]
+catch {$scoreObj elemsize $elemsize} msg
+
+proc newScoreOption {baseScoreObj} {
+    set newScoreObj [score create [$baseScoreObj type]]
+    catch {$newScoreObj elemsize [$baseScoreObj elemsize]} msg
+
+    $baseScoreObj dump [list newScoreValue $newScoreObj]
+
+    return $newScoreObj
+}
+
+proc newScoreValue {scoreObj data} {
+    set element [lindex $data 0]
+    set value [lindex $data 1]
+
+############ MODIFY HERE  #################
+    # Simple calculation to show how to modify the value.
+    set newValue [expr $value * $value]
+############ MODIFY HERE  #################
+
+    $scoreObj add $element $newValue
+}
+
+# Load the data from the input files that were specified on the command line.
+foreach filename $argv {
+    verbose "Loading data from $filename..."
+    Scoredata::generate $scoreObj $filename
+}
+
+# Create a new scoring table using a custom normalizer.
+
+verbose "Generating new scores..."
+set scoreObj [newScoreOption $scoreObj]
+
+# Write the results.
+verbose "Writing results..."
+Scoredata::saveData $scoreObj $output

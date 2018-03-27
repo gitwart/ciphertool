@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Ciphertool
+GenericName=Ciphertool
+Comment=Classical cipher blackboard
+Exec=ctool
+Icon=
+Terminal=false
+Type=Application
+Categories=Application;Utility;
+Version=1.0
+StartupNotify=false

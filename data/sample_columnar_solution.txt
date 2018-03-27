@@ -1,0 +1,8 @@
+type	columnar
+period	4
+ciphertext	auctdceoyntuafmcsinantngisghemiyfeyadhosinslognfilveclidiibra
+plaintext	anysufficientlyadvancedtechnologyisindistinguishablefrommagic
+key	adcb
+language	english
+keyword	adcb
+# Score value:  416.582512135

@@ -1,0 +1,263 @@
+<HTML>
+<TITLE>Cipher Type - amsco</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+amsco - Create and manipulate a amsco cipher
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>set cipherProc [cipher create amsco]</I>
+<BR>
+
+<BR>
+<A HREF="#configure"><B><I>cipherProc</I></B> <I>configure ?options?</I></A>
+<BR>
+
+<A HREF="#cget"><B><I>cipherProc</I></B> <I>cget option</I></A>
+<BR>
+
+<A HREF="#restore"><B><I>cipherProc</I></B> <I>restore key</I></A>
+<BR>
+
+<A HREF="#shift"><B><I>cipherProc</I></B> <I>shift col amount</I></A>
+<BR>
+
+<A HREF="#swap"><B><I>cipherProc</I></B> <I>swap col1 col2</I></A>
+<BR>
+
+<A HREF="#undo"><B><I>cipherProc</I></B> <I>undo</I></A>
+<BR>
+
+<A HREF="#solve"><B><I>cipherProc</I></B> <I>solve</I></A>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="configure"><B><CODE><I>cipherProc</I> configure ?options?</CODE></B></A></DT>
+        <DD>Configure the settings for the amsco cipher.  Valid options are:
+<P>
+<DL>
+    
+    <DT><B><CODE><I>cipherProc</I> configure -ciphertext string</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> configure -ct string</CODE></B></DT>
+	<DD>Set the ciphertext for this cipher instance to <B>string</B>.
+	Invalid letters or numbers in the ciphertext are silently discarded.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -period n</CODE></B></DT>
+	<DD>Set the period for this cipher to <B>n</B>.
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -startcellsize 1|2</CODE></B></DT>
+	<DD>The number of characters to place in the top-left corner of the amsco
+cipher.  Amsco ciphers use alternating single letters and digraphs, and it's
+allowed to start taking off the ciphertext starting with either a single letter
+or a digraph.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -stepinterval n</CODE></B></DT>
+	<DD>Set the display interval while solving to <B>n</B>.  The
+	<I><B>stepcommand</B></I> procedure will be called for every
+	<B>n</B>th iteration while solving.  This is used to provide user
+	feedback while solving is taking place.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -stepcommand <I>proc</I></CODE></B></DT>
+	<DD>Set the display command while solving to <B><I>proc</I></B>.  This
+	command will be called for every <B>n</B>th iteration while solving.
+	The arguments for this procedure are:
+	<P>
+	<B><CODE><I>stepcommand</I> iter key pt</CODE></B>
+	<P>
+	<B>iter</B> is the current iteration number.  <B>key</B> is the
+	current value of the key that is being used.  <B>pt</B> is the
+	plaintext that is produced with this key.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -bestfitcommand <I>proc</I></CODE></B></DT>
+	<DD>Set the best fit display command while solving to
+	<B><I>proc</I></B>.  This command will be called every time a better
+	solution is found while autosolving.
+	The arguments for this procedure are:
+	<P>
+	<B><CODE><I>bestfitcommand</I> iter key value pt</CODE></B>
+	<P>
+	<B>iter</B> is the current iteration number.  <B>key</B> is the
+	current value of the key that is being used.  <B>value</B> is the
+	value of the metric used to judge how good this solution is.  The
+	<B>value</B> is often a digram or trigram frequency count.  <B>pt</B>
+	is the plaintext that is produced with this key.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -language <I>language</I></CODE></B></DT>
+	<DD><B>This option is currently ignored for all cipher types.</B>  Set
+	the current cipher language to <B><I>language</I></B>.  If the cipher
+	has a solve method then digram frequencies for this language are used
+	to determine the best fit.  If the language is not specified or not
+	known then english is used.
+
+
+</DL>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="cget"><B><CODE><I>cipherProc</I> cget option</CODE></B></A></DT>
+        <DD>Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    
+    <DT><B><CODE><I>cipherProc</I> cget -type</CODE></B></DT>
+	<DD>Returns the type of this cipher.  In this case, <B>amsco</B>
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -ciphertext</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> cget -ct</CODE></B></DT>
+	<DD>Return the ciphertext for this cipher.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -plaintext</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> cget -pt</CODE></B></DT>
+	<DD>Return the plaintext for this cipher based on the current
+	key setting.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -key</CODE></B></DT>
+	<DD>Returns the current key setting for this cipher.  The result
+	can be passed back to this cipher instance or another cipher
+	with the <I>cipherProc restore</I> subcommand.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -length</CODE></B></DT>
+	<DD>Returns the length of the ciphertext for this cipher.  <B>0</B>
+	is returned if the ciphertext has not been set.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -period</CODE></B></DT>
+	<DD>Return the period for this cipher.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -startcellsize</CODE></B></DT>
+	<DD>The number of characters to place in the top-left corner of the amsco
+cipher.  A value of <B>1</B> means the amsco starts off with a single letter,
+and a value of <B>2</B> means that it starts with a digraph.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -stepinterval</CODE></B></DT>
+	<DD>Returns the current value of the stepinterval.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -stepcommand</CODE></B></DT>
+	<DD>Returns the name of the procedure currently set for the
+	<B>stepcommand</B>.  An empty string is returned if no stepcommand
+	is set.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -bestfitcommand</CODE></B></DT>
+	<DD>Returns the name of the procedure currently set for the
+	<B>bestfitcommand</B>.  An empty string is returned if no bestfitcommand
+	is set.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -language</CODE></B></DT>
+	<DD>Returns the name of the language used for this cipher.
+	</DD>
+	<P>
+
+</DL>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="restore"><B><CODE><I>cipherProc</I> restore key</CODE></B></A></DT>
+        <DD>The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key [$firstCipher cget -key]</CODE></B>
+<BR>
+<B><CODE>$secondCipher restore $key</CODE></B>
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="shift"><B><CODE><I>cipherProc</I> shift col amount</CODE></B></A></DT>
+        <DD>Shift a column to the right or left by a number of columns.  Shifting by
+a negative amount performs a left shift.  Positive amounts are right shifts.
+Columns can't be shifted past the start or end.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="swap"><B><CODE><I>cipherProc</I> swap column1 column2</CODE></B></A></DT>
+        <DD>Swap the two specified columns.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="undo"><B><CODE><I>cipherProc</I> undo</CODE></B></A></DT>
+        <DD>Clears all changes that have been made to the ciphertext.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="solve"><B><CODE><I>cipherProc</I> solve</CODE></B></A></DT>
+        <DD>Iterate through all 2 * (period !) combinations of possible keys.  The key
+that produces plaintext with the highest digram frequency count is used
+as the solution.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

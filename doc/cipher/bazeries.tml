@@ -1,0 +1,92 @@
+[docHeader "Cipher Type - bazeries"]
+[Ciphertype bazeries]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "swap row|col col1 col2" swap]
+[Synopsis <I>cipherProc</I> "substitute row column value" substitute]
+[Synopsis <I>cipherProc</I> "undo ?row col?" undo]
+[Synopsis <I>cipherProc</I> "restore key" restore]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureOption -keysequence n \
+"$cipherType ciphers are fractionated.  Every ciphertext group is reversed.
+The length of the ciphertext groups are determined by the <B>key sequence</B>.
+For example, if the key sequence is <B>347</B>, then the first three ciphertext
+characters are reversed as a group, then the next 4, then the next 7.  After
+that the sequence repeats, so the following 3 characters are reversed.  The
+American Cryptogram Association constrains the key sequence to be the same
+as the keyword spelled out in letters.  This implementation of the bazeries
+cipher does not impose that restriction however, so you could have a keyword
+of <B>logarithm</B> and a key sequence of <B>123</B>."]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+    [ConfigureLanguage]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> swap row|col item1 item2" swap \
+"Swap two rows or columns in the key.  Key rows and columns are numbered from
+<B>1</B> to <B>5</B> starting with <B>1</B> on the left and top sides.
+<P>
+<B><CODE><I>cipherProc</I> swap row 2 5</CODE></B>
+<BR>
+<B><CODE><I>cipherProc</I> swap col 1 3</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> substitute row column letter" substitute \
+"This command performs a substitution in the $cipherType key.  The
+key value located in the specified row and column is set to <B>letter</B>.
+<P>
+<B><CODE><I>cipherProc</I> substitute 1 3 e</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> undo ?row column?" undo \
+"This command removes a substitution in the $cipherType key.  The
+key value located in the specified row and column is cleared.  If row
+and column are not specified, all key entries are cleared.
+<P>
+<B><CODE><I>cipherProc</I> undo</CODE></B>
+<BR>
+<B><CODE><I>cipherProc</I> undo 1 3</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \$key</CODE></B>
+"]
+
+[EndDescription]
+
+[footer]

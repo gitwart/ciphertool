@@ -1,0 +1,294 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# hillclimb --
+#
+#	Statistical analysis of hill climbing paramaters
+#
+# RCS: @(#) $Id: hillclimb,v 1.24 2005/04/20 21:13:21 wart Exp $
+#
+# Copyright (C) 2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require Hillclimb
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+package require math
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg {} "The cipher type"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list maxhills.arg 0 "The maximum number of hills to climb before exitting.  If not specified then the program will run forever."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list comboweight.arg {} "The weight to apply to the wordtree in the custom comboscore scoring function."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list mutate.arg 18 "The maximum amount to mutate the key when searching for a new hill to climb."] \
+    [list randommutate "If specified, then mutations will be of a random amount up to -mutate."] \
+    [list mutatechance.arg 0.2 "The chance that the mutation will occur on the current hilltop as opposed to the global maximum."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list maxvalue.arg {} "Hillclimbing will stop when this score value has been met or exceeded."] \
+    [list iterations.arg 1 "The number of times the hill climber should be run to get good statistics."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Command line validation
+
+if {$type == ""} {
+    puts stderr "[::cmdline::usage $options {option '-type' missing}]"
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+
+    if {$comboweight != ""} {
+        set Scoretypes::comboweight $comboweight
+    }
+}
+
+set filename $file
+
+set keyword $Hillclimb::singleSeedKey($type)
+
+set fixedKeywordList $keyword
+
+set tempList {}
+foreach key $fixedKeywordList {
+    if {[string first { } $key] != -1} {
+	foreach {newkey holes} [Hillclimb::plugKeyHoles $key] {}
+	lappend tempList $newkey
+	lappend Hillclimb::fixedKeyPositions $holes
+    } else {
+	lappend tempList $key
+    }
+}
+if {[llength $tempList] != 0} {
+    set fixedKeywordList [list $tempList]
+} else {
+    set fixKeywordList {}
+}
+
+# Load the cipher
+set ct [CipherUtil::readCiphertext $filename]
+
+if {$type == "aristocrat"} {
+    regsub -all { } $ct {} ct
+}
+
+if {$type == "gromark"} {
+    set c [cipher create $type -ct $ct -primer $period]
+} elseif {$period != "" && $period > 0} {
+    set c [cipher create $type -ct $ct -period $period]
+} else {
+    set c [cipher create $type -ct $ct]
+}
+
+if {[info exists ::env(CIPHER_LANGUAGE)]} {
+    $c configure -language $::env(CIPHER_LANGUAGE)
+    puts "Using language=[$c cget -language]"
+}
+
+proc sortByValue {arrVar a b} {
+    upvar $arrVar arr 
+
+    return [expr {$arr($a) - $arr($b)}]
+}
+
+proc mySigma {val1 val2 args} {
+     set sum [ expr { $val1+$val2 } ]
+     set N [ expr { [ llength $args ] + 2 } ]
+     foreach val $args {
+        set sum [ expr { $sum+$val } ]
+     }
+     set mean [ expr { $sum/$N } ]
+     set sigma_sq 0
+     set hi_sigma_sq 0
+     set lo_sigma_sq 0
+     set hi_N 0
+     set lo_N 0
+     foreach val [ concat $val1 $val2 $args ] {
+        set sigma_sq [ expr { $sigma_sq+pow(($val-$mean),2) } ]
+        if {$val >= $mean} {
+            set hi_sigma_sq [ expr { $hi_sigma_sq+pow(($val-$mean),2) } ]
+            incr hi_N
+        }
+        if {$val <= $mean} {
+            set lo_sigma_sq [ expr { $lo_sigma_sq+pow(($val-$mean),2) } ]
+            incr lo_N
+        }
+     }
+     set sigma_sq [ expr { $sigma_sq/($N-1) } ] 
+     set sigma [ expr { sqrt($sigma_sq) } ]
+     if {$hi_N > 1} {
+         set hi_sigma_sq [ expr { $hi_sigma_sq/($hi_N-1) } ] 
+         set hi_sigma [ expr { sqrt($hi_sigma_sq) } ]
+     } else {
+         set hi_sigma_sq NaN
+         set hi_sigma NaN
+     }
+     if {$lo_N > 1} {
+         set lo_sigma_sq [ expr { $lo_sigma_sq/($lo_N-1) } ] 
+         set lo_sigma [ expr { sqrt($lo_sigma_sq) } ]
+     } else {
+         set lo_sigma_sq NaN
+         set lo_sigma NaN
+     }
+     list $sigma $hi_sigma $lo_sigma
+}     
+
+# Iterate over all possible keys
+
+set Dictionary::cache {}
+#set key [lindex $argv 0]
+
+catch {[$c configure -bestfitcommand show_best_fit -stepcommand show_fit -stepinterval $stepInterval]}
+
+if {$type == "aristocrat" && [llength [lindex $fixedKeywordList 0]] != 0} {
+    set fixedKeywordList [list [list abcdefghijklmnopqrstuvwxyz $fixedKeywordList]]
+}
+
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc($type)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType($type)
+set Hillclimb::stepInterval 0
+set Hillclimb::stepCommand {}
+set Hillclimb::bestFitCommand {}
+set Hillclimb::cipherObject $c
+set Hillclimb::scoreObj score
+set Hillclimb::mutationAmount $mutate
+set stepInterval 50
+set maxValue 0
+set maxKey {}
+
+set result {}
+array set visited {}
+
+for {set iter 0} {$iter < $iterations} {incr iter} {
+    catch {array unset visited}
+    set maxValue 0
+    set maxKey {}
+    set curIteration 0
+    set fullKey [lindex $fixedKeywordList 0]
+
+# Give the initial key a good bit of randomizing.
+    set fullKey [::Hillclimb::mutate $fullKey 100]
+
+    #puts "keywordlist is $fixedKeywordList"
+
+    while {1} {
+        foreach {bestKey val} [Hillclimb::start $fullKey] {}
+        incr curIteration
+        if {![info exists visited($bestKey)]} {
+            set visited($bestKey) 0
+        }
+        incr visited($bestKey)
+
+        if {$val > $maxValue} {
+            set maxValue $val
+            set maxKey $bestKey
+            Hillclimb::showFit $bestKey $iter,$curIteration $maxValue
+        }
+
+        if {$stepInterval && $curIteration % $stepInterval == 0} {
+            Hillclimb::showFit $bestKey $iter,$curIteration
+        }
+        if {$curIteration >= $maxhills && $maxhills != 0} {
+            break
+        }
+        if {$maxvalue != {} && $maxValue >= $maxvalue} {
+            break
+        }
+
+        if {$randommutate} {
+            set mutateAmount [expr {int(rand() * $mutate)}]
+        } else {
+            set mutateAmount $mutate
+        }
+        if {[expr {rand()}] < $mutatechance} {
+            set fullKey [::Hillclimb::mutate $bestKey $mutateAmount]
+        } else {
+            set fullKey [::Hillclimb::mutate $maxKey $mutateAmount]
+        }
+    }
+
+    lappend result $curIteration
+
+    # This next step has the side effect of setting the key in the cipher
+    # object.
+
+    $Hillclimb::decipherProc $c $maxKey
+
+    set sortedHilltops [lsort -decreasing -command [list sortByValue visited] [array names visited]]
+
+    foreach channel [list stdout] {
+        puts $channel "#=========="
+        puts $channel ""
+        CipherUtil::writeCipherToFile $c $channel
+        puts $channel "#Score value:  [score value [$c cget -pt]]"
+        puts $channel "#Unique hilltops: [llength [array names visited]]"
+        for {set i 0} {$i < 4 && $i < [llength $sortedHilltops]} {incr i} {
+            puts $channel "#hilltop $i count:  [format %4.1f%% [expr 100.0 * $visited([lindex $sortedHilltops $i]) / $curIteration]] ($visited([lindex $sortedHilltops $i]))"
+        }
+        puts $channel "#Iteration:  $curIteration"
+    }
+    #parray visited
+}
+
+if {[llength $result] >= 2} {
+    puts "#[eval math::mean $result] +- [lindex [eval mySigma $result] 0]"
+    puts "#[eval math::mean $result] +[lindex [eval mySigma $result] 1]"
+    puts "#[eval math::mean $result] -[lindex [eval mySigma $result] 2]"
+    puts "#$mutate [format %7.1f [eval math::mean $result]] [format +%7.1f [lindex [eval mySigma $result] 1]] [format -%7.1f [lindex [eval mySigma $result] 2]]"
+}
+puts "max mutation amount:  $mutate"
+puts "mutation chance:  $mutatechance"

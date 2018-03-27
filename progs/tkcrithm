@@ -1,0 +1,255 @@
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+
+# tkcrithm --
+#
+#	Graphical interface for the cryptarithm solver.
+#
+# RCS: @(#) $Id: tkcrithm,v 1.7 2008/03/10 23:20:57 wart Exp $
+#
+# Copyright (C) 2000  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+option add *Listbox.background white
+option add *Listbox.font fixed
+option add *Text.background white
+option add *Entry.background white
+option add *Entry.width 8
+
+package require Tk 8.3
+package require cipher
+package require Crithm
+package require Crithm_gui
+
+proc initParms {} {
+    global parms
+
+    array set parms {
+	lhs1 {}
+	lhsop {}
+	lhs2 {}
+	rhs1 {}
+	rhsop {}
+	rhs2 {}
+	equation {}
+	code {}
+	base {0}
+	letterList { }
+	constraintList {}
+	equationList {}
+	progress {}
+	timeStart {}
+    }
+}
+
+# addConstraint
+#
+#	Add a constraint to the stored list and update the display.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc addConstraints {} {
+    global parms
+
+    $Gui::window(solutionText) delete 0.0 end
+    set parms(progress) {}
+
+    set parms(equation) [list $parms(lhs1) $parms(lhsop) $parms(lhs2) {==} \
+	    $parms(rhs1) $parms(rhsop) $parms(rhs2)]
+
+    if {[string equal $parms(rhsop) {}]} {
+	set parms(equation) [list $parms(lhs1) $parms(lhsop) $parms(lhs2) {==} \
+		$parms(rhs1)]
+
+	# Generate the equation constraint on the solution.
+	if {[catch {set parms(code) [Crithm::createConstraint \
+	    	$parms(lhs1) $parms(lhsop) $parms(lhs2) == \
+		$parms(rhs1)]} errMsg]} {
+	    puts $errMsg
+	    return
+	}
+    } else {
+	if {[catch {set parms(code) [Crithm::createConstraint \
+	    	$parms(lhs1) $parms(lhsop) $parms(lhs2) == \
+		$parms(rhs1) $parms(rhsop) $parms(rhs2)]} errMsg]} {
+	    puts $errMsg
+	    return
+	}
+    }
+    lappend parms(constraintList) $parms(code)
+    lappend parms(equationList) $parms(equation)
+
+    updateBaseInfo
+
+    return
+}
+
+# updateBaseInfo
+#
+#	Updates the display to reflect the current set of letters and
+#	base of the cipher.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc updateBaseInfo {} {
+    global parms
+
+    set parms(letterList) [Crithm::getUniqueLetters \
+	    [join $parms(equationList) {}]]
+    set parms(base) [string length $parms(letterList)]
+
+    return
+}
+
+# removeConstraint
+#
+#	Removes a specified constraint from the stored list.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc removeConstraint {index} {
+    global parms
+
+    if {$index >= [llength $parms(equationList)]} {
+	error "Index ($index) out of bounds"
+    }
+
+    if {[llength $parms(equationList)] != [llength $parms(equationList)]} {
+	error "Equation list length != constraint list length"
+    }
+
+    set parms(equationList) [lreplace $parms(equationList) $index $index]
+    set parms(constraintList) [lreplace $parms(constraintList) $index $index]
+
+    updateBaseInfo
+
+    return
+}
+
+# doSolve
+#
+#	This routine initiates the solving of a cryptarithm cipher.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc doSolve {} {
+    global parms
+
+    if {[string trim $parms(letterList)] == ""} {
+        error "No letters found to solve for"
+    }
+
+    set parms(totalIterations) 1
+    for {set i 1} {$i <= $parms(base)} {incr i} {
+	set parms(totalIterations) [expr $parms(totalIterations) * $i]
+    }
+
+    set Crithm::iterCount 0
+    set Crithm::stepInterval 3000
+
+    proc Crithm::checkKey {} [Crithm::createCheckKeyProc $parms(constraintList)]
+
+    $Gui::window(solutionText) delete 0.0 end
+    focus .
+
+    set parms(timeStart) [clock clicks -milliseconds]
+
+    Crithm::start $parms(letterList)
+
+    set parms(progress) "Solving:  100% complete"
+
+    return
+}
+
+# doStop
+#
+#	Stop a running instance of a permutation run.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc doStop {} {
+    crithm stop
+}
+
+# Crithm::permProc
+#
+#	This routine is called for every new permutation of the cipher.
+#	This replaces the default stub.
+#
+# Arguments:
+#	None.
+#
+# Result:
+#	None.
+
+proc Crithm::permProc {} {
+    variable iterCount
+    variable stepInterval
+    variable solutionList
+
+    if {[checkKey]} {
+	global parms
+
+	$Gui::window(solutionText) insert end "\n"
+	$Gui::window(solutionText) insert end "Iteration [crithm iteration] of\
+		$parms(totalIterations):\n"
+	$Gui::window(solutionText) insert end \
+	     	"\t[lindex [sortKey [crithm state]] 0]\n"
+	$Gui::window(solutionText) insert end \
+	     	"\t[lindex [sortKey [crithm state]] 1]\n"
+	lappend ::Crithm::solutionList [lindex [sortKey [crithm state]] 0]
+    }
+
+    if {([crithm iteration] % $stepInterval) == 0} {
+	global parms
+
+	set percentageComplete \
+		[expr {100. * [crithm iteration] / $parms(totalIterations)}]
+	set timeRemaining [expr {int(($parms(totalIterations) - [crithm iteration]) * (1.0 * ([clock clicks -milliseconds] - $parms(timeStart)) / [crithm iteration]) / 1000.0)}]
+
+	set parms(progress) "Solving:  [format %.2f $percentageComplete]%\
+		complete.   Time Left: [clock format $timeRemaining -gmt 1 \
+		-format %T]"
+
+	update
+    }
+
+    return
+}
+
+initParms
+Gui::createGui

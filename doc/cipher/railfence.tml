@@ -1,0 +1,84 @@
+[docHeader "Cipher Type - railfence"]
+[Ciphertype railfence]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore ct pt" restore]
+[Synopsis <I>cipherProc</I> "move rail direction" move]
+[Synopsis <I>cipherProc</I> "swap rail1 rail2" swap]
+[Synopsis <I>cipherProc</I> "undo" undo]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureOption -period n \
+"The number of rails for the cipher.  This value is converted to a
+myszcowski-based period by using <B><CODE>period * 2 - 2</CODE></B>.
+Be warned that the period (number of rails) that you set is not the same
+as the period that is returned with <B>cget -period</B> (myszcowski period).
+    [ConfigureLanguage]
+"]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \[lindex \$key 0\] \[lindex \$key 1\]</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> move rail direction" move \
+"Set the starting rail to the specified <B>rail</B>.  The top rail is
+rail <B>0</B>.  The <B>direction</B> parameter describes the direction
+of the next rail in the sequence.  For example:
+<P>
+<B><CODE><I>cipherProc</I> move 3 up</CODE></B>
+<P>
+Will set the starting rail to the third rail from the top.  The ciphertext
+will them be written out in an upward direction:
+<PRE>
+Example needed
+</PRE>
+This operation clears any swap operations that have been performed.
+"]
+
+[Description "<I>cipherProc</I> swap rail1 rail2" swap \
+"Swap the two specified rails.  This is not really a valid railfence
+operation, but is used for redefence ciphers."]
+
+[Description "<I>cipherProc</I> undo" undo \
+"Clears all changes that have been made to the ciphertext."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Iterate through all combinations of possible starting rails and
+directions.  The key that produces plaintext with the highest digram
+frequency count is used as the solution."]
+
+[EndDescription]
+
+[footer]

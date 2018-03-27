@@ -1,0 +1,75 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# scoretext --
+#
+#	Score some plaintext using different scoring methods.
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+package require Dictionary
+package require cmdline
+package require Scoredata
+package require Scoretypes
+
+set scoreTypes [list digramlog trigramlog wordtree ::Scoretypes::comboscore]
+
+foreach scoreName $scoreTypes {
+    set elemsize {}
+    if {[regexp {(^[0-9]+)(gram.*)} $scoreName null elemsize realtype]} {
+        set scoreType n${realtype}
+    } else {
+        set scoreType $scoreName
+    }
+    set total($scoreName) 0
+    set totalSquares($scoreName) 0
+    if {[lsearch [score types] $scoreType] == -1} {
+        set scoreCmd($scoreName) $scoreType
+    } else {
+        set scoreCmd($scoreName) [score create $scoreType]
+        if {$elemsize != ""} {
+            $scoreCmd($scoreName) elemsize $elemsize
+        }
+        Scoredata::loadData $scoreCmd($scoreName)
+    }
+}
+set numScores 0
+
+foreach file $argv {
+    # Load the plaintext from the savefile
+    array set cipherdata [CipherUtil::loadCipher $file]
+
+    #puts $cipherdata(plaintext)
+    regsub -all {[- ']} $cipherdata(plaintext) {} plaintext
+    # Score the plaintext with digrams
+    foreach scoreType $scoreTypes {
+        set score [$scoreCmd($scoreType) value $plaintext]
+        set total($scoreType) [expr {$total($scoreType) + $score}]
+        set totalSquares($scoreType) [expr {$totalSquares($scoreType) + $score*$score}]
+    }
+    incr numScores
+}
+
+puts "Average scores:"
+foreach scoreType $scoreTypes {
+    puts "$scoreType\t\t[expr {$total($scoreType) / $numScores}]"
+}

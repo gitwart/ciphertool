@@ -1,0 +1,91 @@
+[docHeader "Cipher Type - baconian"]
+[Ciphertype baconian]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "substitute ct pt" substitute]
+[Synopsis <I>cipherProc</I> "restore ct pt" restore]
+[Synopsis <I>cipherProc</I> "undo ct" undo]
+[Synopsis <I>cipherProc</I> "locate pt ?ct?" locate]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+    [ConfigureLanguage]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetOption -alphabet \
+"undocumented feature"]
+    [CgetOption -bacontext \
+"undocumented feature"]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> substitute ct pt" substitute \
+"Substitutes the <B>ct</B> string for <B>pt</B>.  If <B>ct</B> and <B>pt</B>
+are the same length, then <B>pt</B> is interpreted as bacon text and should
+consist solely of bacon values <B>a</B> and <B>b</B>.
+Otherwise the <B>pt</B> must be exactly 1/5 the length of the <B>ct</B>.
+The <B>pt</B> is first translated to its corresponding bacon text and then
+the substitution is performed.
+<P>
+<B>pt</B> does not need to appear in the ciphertext.  <B>ct</B> and <B>pt</B>
+must be the same length.  The <B>substitute</B> command calculates what
+key letter(s) would produce the specified <B>ct</B> from the <B>pt</B> and
+enters it in the cipher's key.  After performing a substitution, you can use
+the <B><I>cipherProc</I> cget -plaintext</B> command to look at the rest
+of the substitutions that the key change produced."]
+
+[Description "<I>cipherProc</I> undo ct" undo \
+"The <B>undo</B> command erases the bacon values for the specified ct letters."]
+
+[Description "<I>cipherProc</I> restore ct pt" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \[lindex \$key 0\] \[lindex \$key 1\]</CODE></B>
+<P>
+"]
+
+[Description "<I>cipherProc</I> locate tip ?ct?" locate \
+"Locate a possible position for the <B>tip</B> in the ciphertext. The tip
+is dragged along the ciphertext until a valid substitution is found.  If
+the <B>ct</B> argument is specified, the tip is dragged along starting where
+<B>ct</B> appears in the ciphertext."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Solve the current cipher.  Solutions are found by looping through all
+possible 26^2 bacon alphabet keys.  When this command returns, it will
+set the current key for the cipher to the best one that was found."]
+
+[EndDescription]
+
+[footer]

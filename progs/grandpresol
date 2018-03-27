@@ -1,0 +1,201 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# grandpresol --
+#
+#	Automatic solver for grandpre ciphers.  This program takes so
+#	long to run that it's not very useful.
+#
+# RCS: @(#) $Id: grandpresol,v 1.6 2008/03/10 23:21:11 wart Exp $
+#
+# Copyright (C) 2000-2002  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+package require cmdline
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+set ciphertype grandpre
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $ciphertype -ct $ct]
+
+# Iterate over all possible keys
+
+array set patlist {
+    start	????????
+    row1	????????
+    row2	????????
+    row3	????????
+    row4	????????
+    row5	????????
+    row6	????????
+    row7	????????
+    row8	????????
+}
+
+foreach letter {a b c d e f g h i j k l m n o p q r s t u v w x y z} {
+    set wordList($letter,row1) {}
+    set wordList($letter,row2) {}
+    set wordList($letter,row3) {}
+    set wordList($letter,row4) {}
+    set wordList($letter,row5) {}
+    set wordList($letter,row6) {}
+    set wordList($letter,row7) {}
+    set wordList($letter,row8) {}
+}
+
+# Read in all possible words for the keysquare and sort them
+# by first letter.
+
+foreach word [Dictionary::lookupByLength 8] {
+    if {[string is alpha $word]} {
+        lappend wordList([string index $word 0]) $word
+        lappend fullWordList $word
+        foreach el [array names patlist] {
+            if {[string match $patlist($el) $word]} {
+                lappend ${el}WordList $word
+                lappend wordList([string index $word 0],$el) $word
+            }
+        }
+    }
+}
+
+#puts "startWordList = $startWordList"
+#puts "row6WordList = $row6WordList"
+
+foreach el [lsort [array names patlist]] {
+    puts "Length of wordList($el) = [llength [set ${el}WordList]]"
+}
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+set stepInterval 2000
+
+puts "Solving..."
+foreach startWord $startWordList {
+    foreach row1Word $wordList([string index $startWord 0],row1) {
+    foreach row2Word $wordList([string index $startWord 1],row2) {
+    foreach row3Word $wordList([string index $startWord 2],row3) {
+    puts "$startWord $row1Word $row2Word $row3Word ..."
+    foreach row4Word $wordList([string index $startWord 3],row4) {
+    foreach row5Word $wordList([string index $startWord 4],row5) {
+    foreach row6Word $wordList([string index $startWord 5],row6) {
+    foreach row7Word $wordList([string index $startWord 6],row7) {
+    foreach row8Word $wordList([string index $startWord 7],row8) {
+	#puts "$row1Word $row2Word $row3Word $row4Word $row5Word $row6Word $row7Word $row8Word"
+	incr count
+	$cipher restore "$row1Word$row2Word$row3Word$row4Word$row5Word$row6Word$row7Word$row8Word"
+	set pt [$cipher cget -pt]
+	set value [score value $pt]
+	if {$value > $maxValue} {
+	    set maxValue $value
+	    set maxKeyword $startWord
+	    set maxKey [$cipher cget -key]
+	    set maxKeyBlock [list $row1Word $row2Word $row3Word $row4Word $row5Word $row6Word $row7Word $row8Word]
+
+	    foreach row $maxKeyBlock {
+		puts "#\t[string toupper $row]"
+	    }
+	    puts "# $startWord\tFit: $value"
+	    puts "# $count: [$cipher cget -pt]"
+	    puts ""
+	}
+    } } } } } } } }
+}
+exit
+
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+$cipher restore [lindex $maxKey 0] [lindex $maxKey 1]
+
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords [$cipher cget -pt]]
+}
+
+puts "#=========="
+puts ""
+puts "type	[list [$cipher cget -type]]"
+puts "period	[list [$cipher cget -period]]"
+puts "key	[list $maxKey]"
+puts "plaintext	[list [$cipher cget -pt]]"
+puts "ciphertext	[list [$cipher cget -ct]]"
+puts "# Score value: [score value [$cipher cget -pt]]"
+puts "# Keyword: $maxKeyword"
+foreach row $maxKeyBlock {
+    puts "#\t[string toupper $row]"
+}
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts ""
+puts "#=========="

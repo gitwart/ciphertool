@@ -1,0 +1,162 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# gromarksolve --
+#
+#	Automatic solver for periodic gromark ciphers
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 1999-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require Hillclimb
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list primer.arg "" "The gromark offset primer."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list keyword.arg {} "The single keyword to use for solving."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+set type gromark
+
+if {$primer == ""} {
+    puts stderr "[::cmdline::usage $options {option '-primer' missing}]"
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    set defaultScore [score create $scoretype]
+    if {$elemsize != ""} {
+	$defaultScore elemsize $elemsize
+    }
+    Scoredata::loadData $defaultScore $language
+
+    score default $defaultScore
+}
+
+set ct [CipherUtil::readCiphertext $file]
+
+set c [cipher create $type -ct $ct -primer $primer \
+	-period [string length $primer]]
+$c configure -period [string length $primer]
+
+set inputPattern $primer
+set keywordList {}
+if {$keyword == ""} {
+    foreach word [Dictionary::lookupByLength [string length $primer]] {
+	set dictionaryPattern [CipherUtil::wordToOrder $word true]
+	if {[string match $dictionaryPattern $inputPattern]} {
+	    lappend keywordList $word
+	}
+    }
+
+    if {[llength $keywordList] == 0} {
+        puts "No dictionary words matched the primer for this periodic gromark cipher."
+        exit 1
+    }
+}
+
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc($type)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType($type)
+set Hillclimb::stepInterval 0
+set Hillclimb::stepCommand {}
+set Hillclimb::bestFitCommand {}
+set Hillclimb::cipherObject $c
+set maxValue 0
+set maxKey {}
+set mutationAmount 10
+set stepInterval 10
+set numIterations 50
+
+set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+set keySeed "abcdefghijklmnopqrstuvwxyz"
+
+if {$keyword == ""} {
+    foreach keyword $keywordList {
+        if {[string first - $keyword] != -1 \
+            || [string first ' $keyword] != -1} {
+            continue
+        }
+        $c configure -chain $keyword
+        set curIteration 0
+        set fullKey $keySeed
+
+        while {$curIteration < $numIterations } {
+            foreach {bestKey value} [Hillclimb::start $fullKey] {}
+            incr curIteration
+
+            if {$value > $maxValue} {
+                set maxValue $value
+                set maxKey [list $bestKey [$c cget -chain]]
+                puts "#chain:  [lindex $maxKey 1]"
+                Hillclimb::showFit $bestKey $curIteration $maxValue
+            }
+            set fullKey [::Hillclimb::mutate $bestKey $mutationAmount]
+        }
+
+        puts "#chain:  $keyword"
+        Hillclimb::showFit [lindex $bestKey 0] $curIteration
+    }
+} else {
+    set maxKey [list $keyword ""]
+}
+
+$c restore [lindex $maxKey 0] abcdefghijklmnopqrstuvwxyz
+$c configure -chain [lindex $maxKey 1]
+
+proc printComment {string} {
+    puts #$string
+}
+
+if {$addspace} {
+    set readablePt [Dictionary::findWords [$c cget -pt] printComment]
+}
+
+CipherUtil::writeCipherToFile $c stdout
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}

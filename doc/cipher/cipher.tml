@@ -1,0 +1,29 @@
+[docHeader "Tcl Command - cipher"]
+[Command cipher "Create cipher instances"]
+[SynopsisHeader]
+[Synopsis cipher "create ?options?"]
+[Synopsis cipher "types"]
+
+[StartDescription]
+
+[Description "cipher types" types \
+"Display the list of known cipher types.  Returns a Tcl list of types that
+can be used with <B><CODE>cipher create</CODE></B>"]
+
+[Description "cipher create ?args?" create \
+"Create a new cipher instance.  This cipher instance can then be used to
+manipulate a given string of ciphertext.  The return value is a handle
+that can be used as a Tcl command:
+<P>
+<B><CODE>set cipherInstance \[cipher create vigenere\]</CODE></B>
+<BR>
+<B><CODE>\$cipherInstance configure -ciphertext &quot;pgtwf gqpvx fmzfg vwimq uhvgg&quot;</CODE></B>
+<BR>
+<B><CODE>\$cipherInstance configure -period 8</CODE></B>
+<P>
+See the help pages for the individual cipher types for more information on
+the available options."]
+
+[EndDescription]
+
+[footer]

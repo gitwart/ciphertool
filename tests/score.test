@@ -1,0 +1,390 @@
+# score.test
+# Tests of the "score" Tcl command.
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+set defaultScore [score default]
+
+proc createScore {type {elemsize 0}} {
+    set scoreObj [score create $type]
+
+    if {$type == "ngramcount" || $type == "ngramlog"} {
+	$scoreObj elemsize $elemsize
+    }
+
+    return $scoreObj
+}
+
+test score-1.1 {basic usage} {
+    set result [list [catch {score} msg] $msg]
+} {1 {Usage:  score ?option? ?args?}}
+
+test score-1.2 {invalid option} {
+    set result [list [catch {score foo} msg] $msg]
+} {1 {Usage:  score ?option? ?args?}}
+
+test score-1.3 {list types} {
+    set result [score types]
+} {digramlog digramcount trigramlog trigramcount ngramlog ngramcount wordtree}
+
+test score-1.4 {get default score command} {
+    set result [score default]
+
+} {score0}
+
+test score-1.5 {attempt to use default score command} {
+    set result [[score default] value er]
+
+} {8.64064899534}
+
+test score-1.6 {get default score type} {
+    set result [score type]
+
+} {digramlog}
+
+test score-1.7 {use default score value} {
+    set result [score value er]
+
+} {8.64064899534}
+
+test score-1.8 {use default score elemvalue} {
+    set result [score elemvalue er]
+} {8.64064899534}
+
+test score-1.9 {set new default score to invalid procedure} {
+    set result [list [catch {score default foo} msg] $msg]
+} {1 {Command 'foo' not found.}}
+
+test score-1.10 {use new score command created by 'score'} {
+    set newScore [score create digramcount]
+    $newScore add ab 3.0
+    score default $newScore
+
+    set result [score value ab]
+    lappend result [score elemvalue ab]
+
+    rename $newScore {}
+
+    set result
+} {3.0 3.0}
+
+test score-1.11 {use new score command created as a Tcl proc} {
+    proc tclScore {args} {
+	return 1.5
+    }
+
+    score default tclScore
+    set result [score isinternal tclScore]
+    lappend result [score value ab]
+    lappend result [score elemvalue ab]
+    lappend result [tclScore value ab]
+    lappend result [tclScore elemvalue ab]
+    rename tclScore {}
+
+    set result
+} {0 1.5 1.5 1.5 1.5}
+
+test score-1.12 {use new score command created as a Tcl proc, then rename proc} {
+    proc tclScore {args} {
+	return 1.5
+    }
+
+    score default tclScore
+    rename tclScore newTclScore
+
+    set result [list [catch {score value ab} msg] $msg]
+    set result [concat $result [list [catch {score elemvalue ab} msg] $msg]]
+    rename newTclScore {}
+
+    set result
+} {1 {invalid command name "tclScore"} 1 {invalid command name "tclScore"}}
+
+test score-1.13 {use new score command as Tcl proc, then delete proc} {
+    proc tclScore {args} {
+	return 1.5
+    }
+
+    score default tclScore
+    rename tclScore {}
+
+    set result [list [catch {score value ab} msg] $msg]
+    set result [concat $result [list [catch {score elemvalue ab} msg] $msg]]
+
+    set result
+} {1 {invalid command name "tclScore"} 1 {invalid command name "tclScore"}}
+
+test score-1.14 {use new score command created by 'score', then rename proc} {
+    set newScore [score create digramcount]
+    $newScore add ab 3.0
+    score default $newScore
+    rename $newScore newTclScore
+
+    set result [list [catch {score value ab} msg] $msg]
+    set result [concat $result [list [catch {score elemvalue ab} msg] $msg]]
+    rename newTclScore {}
+
+    set result
+} {0 3.0 0 3.0}
+
+test score-1.15 {use new score command created by 'score', then delete proc} {
+    set newScore [score create digramcount]
+    score default $newScore
+    rename $newScore {}
+
+    set result [list [catch {score value ab} msg] $msg]
+    set result [concat $result [list [catch {score elemvalue ab} msg] $msg]]
+
+    set result
+} {1 {Default score command not found.} 1 {Default score command not found.}}
+
+test score-1.16 {Invalid use of the elemsize subcommand} {
+    set newScore [score create digramlog]
+    set result [list [catch {$newScore elemsize 1 2} msg] $msg]
+    regsub -all $newScore $result scorevar result
+
+    rename $newScore {}
+
+    set result
+} {1 {usage:  scorevar elemsize ?size?}}
+
+test score-1.17 {Invalid use of the elemsize subcommand} {
+    set newScore [score create ngramlog]
+    set result [list [catch {$newScore elemsize -1} msg] $msg]
+
+    rename $newScore {}
+
+    set result
+} {1 {Element size must be >= zero.}}
+
+test score-1.18 {dump an uninitialized ngram} {
+    set newScore [score create ngramlog]
+    set values {}
+    set result [list [catch {$newScore dump "lappend values"} msg] $msg]
+    lappend result $values
+
+    rename $newScore {}
+
+    set result
+} {0 {} {}}
+
+test score-1.19 {score with invalid trigram characters.} {
+    set newScore [score create trigramlog]
+    set result [$newScore add abc 1.0]
+    set result [list [catch {$newScore value a#b} msg] $msg]
+
+    rename $newScore {}
+
+    set result
+} {0 0.0}
+
+test score-1.20 {score ngrams with string longer than the element size} {
+    set newScore [score create ngramcount]
+    $newScore elemsize 4
+    $newScore add abcd 1.0
+    $newScore add bcde 1.0
+    set result [$newScore value abcde]
+
+    rename $newScore {}
+
+    set result
+} {2.0}
+
+
+set typeData(digramlog,elemsize)		2
+set typeData(digramcount,elemsize)		2
+set typeData(trigramlog,elemsize)		3
+set typeData(trigramcount,elemsize)		3
+set typeData(wordtree,elemsize)			0
+set typeData(ngramcount,elemsize)		4
+set typeData(ngramlog,elemsize)			4
+
+set typeData(digramlog,element,1.2)		ab
+set typeData(digramlog,element,1.3)		ab
+set typeData(digramlog,element,1.4)		ab
+
+set typeData(trigramlog,element,1.2)		abc
+set typeData(trigramlog,element,1.3)		abc
+set typeData(trigramlog,element,1.4)		abc
+
+set typeData(ngramlog,element,1.2)		abcd
+set typeData(ngramlog,element,1.3)		abcd
+set typeData(ngramlog,element,1.4)		abcd
+
+set typeData(digramcount,element,1.2)		ab
+set typeData(digramcount,element,1.3)		ab
+set typeData(digramcount,element,1.4)		ab
+
+set typeData(trigramcount,element,1.2)		abc
+set typeData(trigramcount,element,1.3)		abc
+set typeData(trigramcount,element,1.4)		abc
+
+set typeData(ngramcount,element,1.2)		abcd
+set typeData(ngramcount,element,1.3)		abcd
+set typeData(ngramcount,element,1.4)		abcd
+
+set typeData(wordtree,element,1.2)		the
+set typeData(wordtree,element,1.3)		the
+set typeData(wordtree,element,1.4)		the
+
+
+set typeData(digramlog,value,1.2)		3.0
+set typeData(digramlog,value,1.3)		4.0
+set typeData(digramlog,value,1.4)		3.0
+set typeData(digramlog,normalvalue,1.4)		1.0986122886681098
+
+set typeData(trigramlog,value,1.2)		3.0
+set typeData(trigramlog,value,1.3)		4.0
+set typeData(trigramlog,value,1.4)		3.0
+set typeData(trigramlog,normalvalue,1.4)	1.0986122886681098
+
+set typeData(ngramlog,value,1.2)		3.0
+set typeData(ngramlog,value,1.3)		4.0
+set typeData(ngramlog,value,1.4)		3.0
+set typeData(ngramlog,normalvalue,1.4)		1098.0
+
+set typeData(digramcount,value,1.2)		3.0
+set typeData(digramcount,value,1.3)		4.0
+set typeData(digramcount,value,1.4)		3.0
+set typeData(digramcount,normalvalue,1.4)	3.0
+
+set typeData(trigramcount,value,1.2)		3.0
+set typeData(trigramcount,value,1.3)		4.0
+set typeData(trigramcount,value,1.4)		3.0
+set typeData(trigramcount,normalvalue,1.4)	3.0
+
+set typeData(ngramcount,value,1.2)		3.0
+set typeData(ngramcount,value,1.3)		4.0
+set typeData(ngramcount,value,1.4)		3.0
+set typeData(ngramcount,normalvalue,1.4)	3.0
+
+set typeData(wordtree,value,1.2)		3.0
+set typeData(wordtree,value,1.3)		3.0
+set typeData(wordtree,value,1.4)		3.0
+set typeData(wordtree,normalvalue,1.4)		9.0
+
+
+foreach type [score types] {
+    test $type-1.1 "$type invalid subcommand" {
+	set s [createScore $type]
+	set result [catch {$s foo} msg]
+	regsub -all $s $msg scorevar msg
+	lappend result $msg
+
+	rename $s {}
+
+	set result
+    } {1 {Unknown option foo
+Must be one of:  scorevar type
+                 scorevar elemsize ?newsize?
+                 scorevar normalize
+                 scorevar value string ?weight?
+                 scorevar elemvalue element ?weight?
+                 scorevar add element ?value?}}
+
+    test $type-1.2 "$type used uninitialized" {
+	set s [createScore $type]
+	set result [catch {$s value foobar} msg]
+	regsub -all $s $msg scorevar msg
+	lappend result $msg
+
+	rename $s {}
+
+	set result
+    } {1 {Attempt to use uninitialized scoring object.}}
+
+    test $type-1.3 "$type used uninitialized" {
+	set s [createScore $type]
+	set result [catch {$s elemvalue $typeData($type,element,1.3)} msg]
+	regsub -all $s $msg scorevar msg
+	lappend result $msg
+
+	rename $s {}
+
+	set result
+    } {1 {Attempt to use uninitialized scoring object.}}
+
+    test $type-1.4 "$type add value" {
+	set s [createScore $type $typeData($type,elemsize)]
+	set result [$s add $typeData($type,element,1.2) $typeData($type,value,1.2)]
+	lappend result [$s value $typeData($type,element,1.2)]
+
+	rename $s {}
+
+	set result
+    } [list $typeData($type,element,1.2) $typeData($type,value,1.2)]
+
+    test $type-1.5 "$type add elemvalue" {
+	set s [createScore $type $typeData($type,elemsize)]
+	set result [$s add $typeData($type,element,1.3) $typeData($type,value,1.3)]
+	lappend result [$s elemvalue $typeData($type,element,1.3)]
+
+	rename $s {}
+
+	set result
+    } [list $typeData($type,element,1.3) $typeData($type,value,1.3)]
+
+    test $type-1.6 "$type add value and normalize" {
+	set s [createScore $type $typeData($type,elemsize)]
+	set result [$s add $typeData($type,element,1.4) $typeData($type,value,1.4)]
+	$s normalize
+	lappend result [$s value $typeData($type,element,1.4)]
+
+	rename $s {}
+
+	set result
+    } [list $typeData($type,element,1.4) $typeData($type,normalvalue,1.4)]
+
+    test $type-1.7 "$type as scoring default" {
+	set s [createScore $type $typeData($type,elemsize)]
+	$s add $typeData($type,element,1.3) $typeData($type,value,1.3)
+	score default $s
+
+	set result [score isinternal $s]
+	lappend result [string match [score default] $s]
+	lappend result [score value $typeData($type,element,1.3)]
+
+	rename $s {}
+
+	set result
+    } [list 1 1 $typeData($type,value,1.3)]
+
+    test $type-1.8 "$type introspection" {
+	set s [createScore $type $typeData($type,elemsize)]
+	set result [$s type]
+	lappend result [$s elemsize]
+	rename $s {}
+
+	set result
+    } [list $type $typeData($type,elemsize)]
+
+    test $type-1.9 "$type changing element size" {
+	set s [createScore $type $typeData($type,elemsize)]
+	set result [list [catch {$s elemsize 0} msg] $msg]
+
+	rename $s {}
+
+	set result
+    } [list 1 "Can't change the element size once it has been set."]
+
+    test $type-1.10 "$type dump" {
+	set s [createScore $type $typeData($type,elemsize)]
+
+	$s add $typeData($type,element,1.3) $typeData($type,value,1.3)
+	set result {}
+	$s dump "lappend result"
+
+	rename $s {}
+
+	set result
+    } [list [list $typeData($type,element,1.3) $typeData($type,value,1.3)]]
+}
+
+test score-2.1 {Delete score command} {deletedcommand} {
+    set result [rename score {}]
+} {}
+
+score default $defaultScore

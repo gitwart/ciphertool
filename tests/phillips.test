@@ -1,0 +1,696 @@
+# phillips.test
+# Test of the phillips cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample phillips cipher:
+#
+# kzwly tgedt qetar btygt lfxwl ppoxl tykut kgkyt kzwly
+# tgxse qetir zqaaq
+#
+#
+# Key:
+#	diago  cbsln  cbsln  cbsln
+#	cbsln  diago  efhkm  efhkm
+#	efhkm  efhkm  diago  utrqp
+#	utrqp  utrqp  utrqp  diago
+#	vwxyz  vwxyz  vwxyz  vwxyz
+#	
+#	cbsln  efhkm  efhkm  efhkm
+#	efhkm  cbsln  utrqp  utrqp
+#	utrqp  utrqp  cbsln  vwxyz
+#	vwxyz  vwxyz  vwxyz  cbsln
+#	diago  diago  diago  diago
+#
+#
+# squar esone andfi veare actua llyth esame asare squar 
+# estwo andei ghtth
+
+proc createValidCipher {} {
+    set c [cipher create phillips -ct "kzwly tgedt qetar btygt lfxwl ppoxl tykut kgkyt kzwly tgxse qetir zqaaq"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Restore tests
+#       6.x     Row swap tests
+#       7.x     Misc tests on problematic ciphertext
+#       8.x     Encode tests
+
+test phillips-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test phillips-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test phillips-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test phillips-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test phillips-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test phillips-1.6 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test phillips-1.7 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test phillips-1.8 {attempt to set period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test phillips-1.9 {bad use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test phillips-1.10 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column value.  Value must be between 1 and 5.}}
+
+test phillips-1.11 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column value.  Value must be between 1 and 5.}}
+
+test phillips-1.12 {attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for phillips ciphers.}}
+
+test phillips-1.13 {attempt to solve} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Solving phillips ciphers is not yet implemented.}}
+
+test phillips-1.14 {bad use of substitute command} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute row col val}}
+
+test phillips-1.15 {bad use of undo command} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo row col}}
+
+test phillips-1.16 {bad use of restore command} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key ?junk?}}
+
+test phillips-1.17 {invalid use phillips command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar substitute row col val
+                 ciphervar swap row1 row2
+                 ciphervar undo row col
+                 ciphervar encode pt key}}
+
+test phillips-2.1 {get plaintext with no ciphertext} {
+    set c [cipher create phillips]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test phillips-2.2 {set bad ciphertext} {
+    set result [catch {cipher create phillips -ct 1111} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test phillips-2.3 {set bad number of blocks:  invalid value} {
+    set result [catch {cipher create phillips -blocks a} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {Bad number of blocks.  Integer expected:  a}}
+
+test phillips-2.4 {set bad number of blocks:  value out of range} {
+    set result [catch {cipher create phillips -blocks 0} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {Number of phillips blocks must be between 1 and 20.  found:  0}}
+
+test phillips-2.5 {set bad number of blocks:  value out of range} {
+    set result [catch {cipher create phillips -blocks 21} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {Number of phillips blocks must be between 1 and 20.  found:  21}}
+
+test phillips-2.6 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in phillips swap}}
+
+test phillips-2.7 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 6 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in phillips swap}}
+
+test phillips-2.8 {restore with no ciphertext} {
+    set c [cipher create phillips]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test phillips-2.9 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key length.}}
+
+test phillips-2.10 {restore with invalid characters in key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1234512345123451234512345} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test phillips-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aaaaabbbbbcccccdddddeeeee} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test phillips-2.12 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 0 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row specification}}
+
+test phillips-2.13 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 0 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column specification}}
+
+test phillips-2.14 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 1 #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key value}}
+
+test phillips-2.15 {encode with non-listified key} {
+    set c [cipher create phillips]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test phillips-2.16 {encode with too many key elements} {
+    set c [cipher create phillips]
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
+
+test phillips-2.17 {encode with short key} {
+    set c [cipher create phillips]
+
+    set result [catch {$c encode foobar "abc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key.}}
+
+test phillips-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {60}
+
+test phillips-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {5}
+
+test phillips-3.3 {successful use of cget -ct (empty)} {
+    set c [cipher create phillips]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test phillips-3.4 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq}
+
+test phillips-3.5 {set ciphertext with uppercase letters} {
+    set c [cipher create phillips -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test phillips-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {phillips}
+
+test phillips-3.7 {successful use of cget -blocks (default)} {
+    set c [createValidCipher]
+    set result [$c cget -blocks]
+    rename $c {}
+    
+    set result
+} {8}
+
+test phillips-3.8 {successful use of cget -blocks after changing} {
+    set c [createValidCipher]
+    $c configure -blocks 10
+    set result [$c cget -blocks]
+    rename $c {}
+    
+    set result
+} {10}
+
+test phillips-3.9 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "abcde"]
+    rename $c {}
+    
+    set result
+} {abcde}
+
+test phillips-3.10 {successful use of undo} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                         } {                                                            }}
+
+test phillips-3.11 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test phillips-3.12 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test phillips-3.13 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test phillips-3.14 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test phillips-3.15 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test phillips-3.16 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test phillips-3.17 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test phillips-3.18 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test phillips-3.19 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test phillips-3.20 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test phillips-3.21 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test phillips-4.1 {single substitution} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    set result [list [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {{a                        }}
+
+test phillips-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute 2 4 l
+    $c substitute 1 3 a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{  a     l                } {   a                a   a                  a                }}
+
+test phillips-5.1 {restore} {
+    set c [createValidCipher]
+    $c restore diagocbslnefhkmutrqpvwxyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {diagocbslnefhkmutrqpvwxyz squaresoneandfiveareactuallythesameasaresquarestwoandeightth}
+
+test phillips-5.2 {restore with spaces in key} {
+    set c [createValidCipher]
+    $c restore {di gocbslnefhkmutrqpvwxyz}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{di gocbslnefhkmutrqpvwxyz} {squ resone nd ive re ctu llythes me s resqu restwo ndeigh  h}}
+
+test phillips-6.1 {swap columns} {
+    set c [createValidCipher]
+    $c restore diagocbslnefhkmutrqpvwxyz
+    $c swap 1 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {idagobcslnfehkmturqpwvxyz sqparmsibmaboedzmarmanupallyuhmsafmasarmsqparmsuviabomdghuuh}
+
+test phillips-7.1 {test cipher} {
+    set c [cipher create phillips -ct "ixwbrgaxbqivyfliezbcfbbwikaxdeblfbghhukbgwbnfwiufcpdifyegdcqlfcdpfekfbqdfiluogbxrnfbwqxpfqldcxcmhxaqwodpfkdxamfeqxmwwuacpfcgeboqgwbdnqplkxezdcqfuqoucylrlfkufgw"]
+    $c restore tfgnurdhowacipxvbkqyelmsz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {tfgnurdhowacipxvbkqyelmsz donaudunaidunavdunareaanddunayarealllocalnamesforthedanuberivertheyderivefromdanumeaningriverorflowingthedanubewindssoutherlyamidsteightcountrieshistoryrecords}
+
+test phillips-7.1 {encode} {
+    set c [cipher create phillips]
+
+    set result [list [$c encode "squares one and five are actually the same as are squares two and eight th" diagocbslnefhkmutrqpvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq squaresoneandfiveareactuallythesameasaresquarestwoandeightth diagocbslnefhkmutrqpvwxyz}

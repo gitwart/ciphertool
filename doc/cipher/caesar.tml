@@ -1,0 +1,54 @@
+[docHeader "Cipher Type - caesar"]
+[Ciphertype caesar]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore shift" restore]
+[Synopsis <I>cipherProc</I> "substitute ct pt" substitute]
+[Synopsis <I>cipherProc</I> "undo" undo]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureLanguage]
+    [ConfigureOption -shift n \
+"The amount of shift to apply to the ciphertext.  This must be a value from 0 to 26 inclusive.  Shifts of 0 and 26 have no effect."]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetOption -period "This always returns <B>0</B>"]
+    [CgetLanguage]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore shift" restore \
+"Restore a caesar cipher key.  This has the same effect as calling <b><i>cipherProc configure -shift shift</i></b>."]
+
+[Description "<I>cipherProc</I> substitute ct pt" restore \
+"Apply a shift to the cipher based on the difference between the plaintext and ciphertext letters.  The amount of shift is defined as <code>(pt-ct+26)%26</code>."]
+
+[Description "<I>cipherProc</I> undo" undo \
+"Undo the shift for the cipher.  This effectively sets the shift to 0."]
+
+[EndDescription]
+
+[footer]

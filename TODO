@@ -1,0 +1,298 @@
+Todo:
+-----
+
+1.6.3
+=================
+
+Implement lookupByPattern in C using CadenusGenerateKeyOrder as a template
+
+Fill out quagmire tests for more error conditions
+
+Check for result of Tcl_SplitList() not being freed
+    Tcl_Free((char *) argv);
+
+quag2keysearch gives a confusing error if no solution is found (such as
+    using a vertical keyword length that does not match the cipher period)
+
+Add tests for encoding bad input
+
+Validate cadenus key order for restore and encoding commands
+
+Add configure switch for setting default dictionary location
+
+tkcrithm should have a "clear" button for erasing the current equations
+    and solution(s).
+
+Modify new word splitter to ignore numbers
+
+Allow invalid words in new word splitter
+    see test wordtree-4.5
+
+slidesolve does not convert all ciphertext to plaintext
+    ma2008:e11 (period 7, type vigenere)
+
+(done) Remove references to obsolete 'CipherUtil::readSavedCipher' procedure
+
+Modify ptval to use score initialization code as found in csolve
+
+Fix the usage info for the "key" command
+    [key foo] does not show all possible subcommands (convert)
+
+hillclimb:  add routines for generating neighbor keys from keywords,
+    in contrast to generating neighbor keys by swapping letters in full
+    keys.
+
+Write true SA algorithm
+
+Replace all calls to Tcl_CreateCommand with Tcl_CreateObjCommand
+
+Implement Hillclimb::start and many of the Hillclimb::* support methods in
+    C for faster operation.
+
+Some setProc and encodeProc functions have bugs that allows invalid characters.
+    Model new ciphers after twosquare.c
+    How to handle 'j' in ciphers that use keysquares?
+
+tkcrithm runs multiple times if the "solve" button is pressed while it
+    is already solving.
+
+(done) hillclimb fails with fmorse due to key restore errors
+
+(done) CIPHERTOOL_DICTIONARY environment variable isn't being honored
+
+(done) Remove old references to dictionaryDir and replace with
+    Dictionary::directory.
+    (grep for 'dictionaryDir' in progs/*)
+
+(done) Perform uppercase -> lowercase conversion of ciphertext when reading in
+    from a file.
+
+(done) Add "save as" menu entry to ctool
+
+(done) More thorough word splitting by not stopping at the first solution,
+    but recursing through all solutions and maximizing the trie score of
+    the result.
+
+(done) Add spaces to plaintext for all ciphers when saving via ctool
+
+(done) csolve does not record the period (width) for a route transposition
+    cipher
+
+(done) Loading a baconian cipher generates an error (nd2000:solve.x09.sol)
+    Can't reproduce with the new cipher save format
+
+(done) tkcrithm needs a ^ operator for exponential expressions.
+
+Sometime else in the future
+============================
+
+Write hillclimber for grandpre
+
+Abstract the hill climber algorithm so that it's easier to add another layer
+    that iterates through hillclimbs.  For example, adding the churn
+    algorithm onto the hillclimber requires iterating a hillclimber across
+    26 different seed keys.
+
+More links in the documentation.
+    Commands
+    cipher types
+
+Add test for using DefaultScoreValue() inside of a cipher type,
+    with a custom Tcl-based default score method.
+
+Add custom subcommands to the score items.  This will allow the full
+    deprecation of the wordtree command:
+
+    score create wordtree
+    wordtree add foo	# uses standard score command impl.
+    wordtree add bar	# uses standard score command impl.
+    wordtree exists bar	# uses custom wordtree command impl.
+
+    The standard score command impl must call the custom impl if it is
+    not null.
+
+Use Tcl object-style command line processing in all new Tcl commands.
+
+Add info to the main doc page describing that this is not a Tcl tutorial.
+
+Fix solver.c so that it puts common words at the front of the dictionary file.
+Write tcl utility for moving plaintext words in a solution file to the
+    start of the dictionary.
+
+Write board generator for digrafid
+
+Use /etc/ciphertool and $HOME/.ciphertoolrc to store the default dictionary
+    location?  the cipher init procedure (pkgIndex.tcl or similar) should check
+    both these locations and "set" any key/value pairs in them.
+
+Write a hillclimb object that stores the hillclimb properties.  This will help
+    allow multiple hillclimbs to run simultaneously.
+
+Turn playfair.c:PlayfairLetterToKeyIndex into a macro for speed optimization
+
+profile (big|cm)bifid.  This seems to be a popular type.
+
+Add cipher type identification.  Tcltest should be a good candidate for
+    writing identification tests.
+
+Add a '-sdev' flag to ioc to print the standard deviation instead of
+    the ioc.
+
+Fill in the blanks for some of the cipher docs.
+    Look for "undocumented feature" in the text.
+    Document command line tools:
+	kasiski
+	ioc
+	rot
+
+Test suites for all cipher types.
+    railfence
+
+Add tests for operations on null ciphertext (homophonic, bacon?)
+Add tests for invalid porta/gronsfeld substitutions
+Add tests for vvb locate and locatebest
+Add tests for save/restore
+Add tests for setting ciphertext when ciphertext is already set
+    test for both valid and invalid ciphertext
+
+Allocate memory for the plaintext when the ciphertext is configured.  This
+    should help reduce the cost of getting the plaintext since we won't
+    have to constantly allocate/free memory all the time.
+
+Use TCL_STATIC with Tcl_SetResult() when possible.  Should make interp result
+    storage more efficient and reduce the number of calls to malloc().
+
+Add support for gromark tip location
+The chain for a periodic gromark should be part of the key.  What key
+    structure should be used?
+
+Add the homophonic "locate" command. (locate tip)
+homophonic cipher in ctool outputs full key for the keyword when saving
+    instead of just the keyword alone.
+
+Write interfaces for:
+	bazeries
+	6x6 bifid	(port from bifid)
+	trifid		(port from bifid)
+	gromark
+	playfair
+	phillips
+	ragbaby
+	railfence
+	route
+	others?
+
+grille ciphers should support an odd block width.
+
+Add "shift" command to ciphers:
+    cadenus
+
+Generalize the Bifid cipher so that it works as a CM bifid.
+bifid should have routines for swapping key values (row 4 -> 3 should
+    also switch col 4 -> 3)
+Generalize the Bazeries cipher so that it works as a CM bifid, ie,
+    the plaintext keysquare can be arbitrary.  This will allow us to
+    bend the rules and use v/w pairing instead of i/j pairing.
+
+Add routines in the Dictionary package for:
+    Removing a word from the dictionary
+    Mass-adding words to the dictionary
+    Locating the dictionary via the DICT_DIR environment variable.
+
+Dictionary location should be an option in ctool.
+
+hillclimb:  Generating keys with holes does not work with trifid ciphers.
+    Somehow we end up with a key length that is not the same as the input
+    key. (test.  works with digrafid.)
+
+Test addition of keyword field in ctool save option.
+
+Activate solve option for all ciphers in ctool.  Use dictionary for
+    keyword hunting if needed.
+
+Add more robust undo support for phillips/playfair:
+    undo row col
+    undo chars
+    undo
+Add option to "key generate" that will create a keyed alphabet with specified
+    letters removed.  Ex:
+    For phillips:
+    % key generate -missing j
+    For ragbaby:
+    % key generate -missing jv
+Add "key generate -k2m" method.
+Add Key Phrase cipher (copy from aristocrat)
+ctool:  pollux plaintext display does not line up with morse text
+
+Add more tests for BifidLocateTip
+    Invalid initial location will try the next location
+Allow bifid tip location with a non-empty initial key.
+    Save the initial key and restore it before every tip letter attempt
+    Don't perform the initial tip letter substitution if initial key is
+	not empty.
+Highlight tip start location in ctool
+Perform automatic fill-in of key during tip location 
+    Example:  a=1,1 and e=1,0 should then sub e=1,2
+Add check for > 5 letters in a key row/column during BifidSubstitute()
+Add tests for trifid->cget -trifidtext
+Model after bifid routines:
+	trifid->undo
+	trifid->substitute
+
+Add tests cases for 'key convert type' with invalid input.
+
+Document nicodemussolve
+
+Code cleanup.  Conform to the Tcl coding standards
+
+Need icons for documentation:
+    Icon for designating periodic ciphers
+    Icon for designating ciphers with "solve" command
+    Icon for designating ciphers that can be solved with an external script
+    Icon for designating ciphers that can be displayed in ctool
+
+tkcrithm needs labels for listbox and solution output
+tkcrithm should disable listbox and constraint entry while solving
+tkcrithm should use a progress bar and round percentages to the nearest
+    whole percent.
+tkcrithm should automatically set nonzero constraints on some letters based
+    on their appearance at the start of any expression.
+tkcrithm should store only the equations internally.  The constraint list
+    should be regenerated as needed (saving puzzle, starting solve)
+
+UI Quirks
+_________
+
+ctool:  swagman bindings for row, col entries don't work if the period
+    entry is empty.  We should be looking at the cipher's period, not the
+    value in the entry widget.
+
+BUGS
+----
+Porta display is screwy in the last block (so2000:x11)
+Some ciphers don't respond to "cget -stepinterval" and others do.
+    digrafid
+Usage output from some cipher types don't specify that the ct option to
+    locate tip/restore is optional
+Usage output for most cipher types is completely wrong.
+ctool:  Can't change cipher types when opening the second and subsequent new
+    ciphers.
+Don't reset result on error when executing stepcommand/bestfitcommand.
+    Add a test for all ciphers that make use of this attribute.
+
+WISHLIST
+--------
+Make the interface a little more friendly:
+	Allow the user to change the type of cipher.
+Use two substitute methods in the API:  character substitution and positional
+    substitution
+The display routines for the cipher types in ctool should have the ability
+    to mess with the event bindings in the text widget.
+	Need a handy method to disable/re-enable all keyboard events.
+K3 keyword alphabet manipulator.  A simple GUI that allows moving around
+    fragments of a K3 alphabet in order to help deduce the actual full K3
+    alphabet.  Useful for locating K3 keywords in aristocrat ciphers.
+	* Load K3 fragments from aristocrat savefile.
+	* Drag-and-drop fragments around the board.
+	* Auto-fill the blackboard when fragments are placed.
+	* chain fragments together.

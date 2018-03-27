@@ -1,0 +1,124 @@
+[docHeader "Cipher Type - vigenere"]
+[Ciphertype vigenere]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "substitute pt ct ?column?" substitute]
+[Synopsis <I>cipherProc</I> "undo column" undo]
+[Synopsis <I>cipherProc</I> "restore ct pt" restore]
+[Synopsis <I>cipherProc</I> "locate tip ?ct?" locate]
+[Synopsis <I>cipherProc</I> "locatebest tip" locatebest]
+[Synopsis <I>cipherProc</I> "fit column" fit]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+    [ConfigureLanguage]
+    [ConfigureOption -solvemethod fast|thorough \
+"$cipherType ciphers have two possible autosolve methods.  The first method,
+<B>fast</B>, finds the best digram fit for the first and second columns.  It
+then fixes the key for the first two columns and then finds the best digram
+fit for the second and third column.  The third column's key is then fixed.
+This procedure is repeated for all of the columns in the cipher.  This method
+is very quick, but has the drawback that if an error is made in the key for
+one of the first few columns, the error may propogate through and the resulting
+solution could be far from correct.
+<P>
+The second method, <B>thorough</B>, performs a brute force search through
+every possible key.  This takes much longer since it must search the keyspace
+for 26<SUP>period</SUP> possible keys.
+<P>
+A digram frequency count is used to determine which key is the most likely."]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetOption -keyword \
+"Returns the keyword for this cipher based on the current key."]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+    [CgetOption -solvemethod \
+"Returns the current setting for the <B>solvemethod</B> option, either
+<B>fast</B> or <B>thorough</B>."]
+</DL>"]
+
+[Description "<I>cipherProc</I> substitute ct pt column" substitute \
+"Substitutes the <B>ct</B> string for <B>pt</B> starting at <B>column</B>.
+<B>pt</B> does not need to appear in the ciphertext.  <B>ct</B> and <B>pt</B>
+must be the same length.  The <B>substitute</B> command calculates what
+key letter(s) would produce the specified <B>ct</B> from the <B>pt</B> and
+enters it in the cipher's key.  After performing a substitution, you can use
+the <B><I>cipherProc</I> cget -plaintext</B> command to look at the rest
+of the substitutions that the key change produced."]
+
+[Description "<I>cipherProc</I> undo column" undo \
+"The <B>undo</B> command erases the key entry for the specified <B>column</B>."]
+
+[Description "<I>cipherProc</I> restore ct pt" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \[lindex \$key 0\] \[lindex \$key 1\]</CODE></B>
+<P>
+It operates the same as if you had run <B><I>cipherProc</I> substitute
+ct pt 0</B>."]
+
+[Description "<I>cipherProc</I> locate tip ?ct?" locate \
+"Locate a possible position for the <B>tip</B> in the ciphertext. The tip
+is dragged along the ciphertext until a valid substitution is found.  If
+the <B>ct</B> argument is specified, the tip is dragged along starting where
+<B>ct</B> appears in the ciphertext."]
+
+[Description "<I>cipherProc</I> locatebest tip" locatebest \
+"This routine drags the tip through all of the positions in the ciphertext
+and returns the one that produces the best plaintext, as determined by
+digram frequencies."]
+
+[Description "<I>cipherProc</I> fit column" fit \
+"This routines tries all 26 possible keys for the given column and sets
+the key to the one that produces the best single-letter frequency count."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Solve the current cipher.  Solutions are found by looping through a set
+of keys and calculating the frequency of the digrams in the resulting plaintext.
+The key that produces the highest digram frequency count will be listed as
+being the most likely solution.  In order to provide some user feedback (to
+let you know that it's actually running), the solve method can be set to call
+a user-defined procedure at every <B>n</B>th key that is tried.  See the
+descriptions for <B>-stepcommand</B> and <B>-stepinterval</B> on how to use
+this feature.  The solve routine will also call a user-defined procedure every
+time it finds a solution better than the currentbest.  The
+<B>-bestfitcommand</B> option describes this in more detail.
+<BR>
+When this command returns, it will set the current key for the cipher to
+the best one that was found."]
+
+[EndDescription]
+
+[footer]

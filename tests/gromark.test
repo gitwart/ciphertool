@@ -1,0 +1,841 @@
+# gromark.test
+# Test of the gromark cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the gromark cipher
+# Laid out, the cipher looks like:
+#
+# nfyck btijc nwzyc acjna ynlqp wwstw pjqfl
+# 23452 57977 26649 82037 02307 25379 78066
+#
+# Solution:
+#
+# there areup toten subst itute sperl etter 
+# 23452 57977 26649 82037 02307 25379 78066
+# nfyck btijc nwzyc acjna ynlqp wwstw pjqfl
+#
+# pt: abcdefghijklmnopqrstuvwxyz
+# ct: AJRXEBKSYGFPVIDOUMHQWNCLTZ
+#
+# Periodic gromark uses a "chain added key".  Chain of 'M':
+#
+#pt:                  abcdefghijklmnopqrstuvwxyz
+#ct: AJRXEBKSYGFPVIDOUMHQWNCLTZAJRXEBKSYGFPVIDOUMHQWNCLTZ
+
+proc createValidCipher {{doPeriodic 0}} {
+    if {$doPeriodic} {
+	set c [cipher create gromark -ct "rhnaax nruzbn iuarxc rtpatb rligds vcircv oypvra azzmus reqyev mmurgw"]
+    } else {
+	set c [cipher create gromark -ct "nfyck btijc nwzyc acjna ynlqp wwstw pjqfl"]
+    }
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Undo tests
+#	7.x	Save/Restore tests
+#	7.x	Encode tests
+
+test gromark-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test gromark-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test gromark-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test gromark-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test gromark-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test gromark-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test gromark-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct ?pt?}}
+
+test gromark-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test gromark-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test gromark-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test gromark-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test gromark-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test gromark-1.13 {invalid use of configure -primer} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -primer a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid primer.}}
+
+test gromark-1.14 {invalid use of configure -period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period.}}
+
+test gromark-1.17 {invalid use gromark command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct pt
+                 ciphervar restore ct ?pt?
+                 ciphervar undo ct
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test gromark-2.1 {key conflicts during restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcd aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test gromark-2.2 {key conflicts during substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc zbcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test gromark-2.3 {locate with null cipher} {unsupported} {
+    set c [cipher create gromark]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test gromark-2.4 {locate with invalid starting position} {unsupported} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Starting location not found.}}
+
+test gromark-2.5 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test gromark-2.6 {undo invalid character} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {0 {}}
+
+test gromark-2.7 {substitute with null cipher} {
+    set c [cipher create gromark]
+
+    set result [catch {$c substitute a b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test gromark-2.8 {undo with null cipher} {
+    set c [cipher create gromark]
+
+    set result [catch {$c undo a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test gromark-2.9 {get plaintext with no primer} {
+    set c [cipher create gromark]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't get plaintext until a primer has been set}}
+
+test gromark-2.10 {chain substitute with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c chainsub a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't modify chain until a period has been set.}}
+
+test gromark-2.11 {chain substitute with invalid position} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c chainsub a 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid chain position}}
+
+test gromark-2.12 {chain substitute with invalid position} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c chainsub a 8} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid chain position}}
+
+test gromark-2.13 {chain substitute with invalid character} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c chainsub # 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid chain character}}
+
+test gromark-2.14 {configure chain with invalid character} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -chain ab#d} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in chain:  #}}
+
+test gromark-2.12 {encode with non-listified key} {
+    set c [cipher create gromark]
+    $c configure -primer 23452
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test gromark-2.13 {encode with too many key elements} {
+    set c [cipher create gromark]
+    $c configure -primer 23452
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
+
+test gromark-2.14 {encode with short key} {
+    set c [cipher create gromark]
+    $c configure -primer 23452
+
+    set result [catch {$c encode foobar "abc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key.}}
+
+test gromark-2.15 {encode with no primer} {
+    set c [cipher create gromark]
+
+    set result [catch {$c encode foobar "abc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't encode plaintext until a primer has been set.}}
+
+test gromark-2.16 {restore with empty key component} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore {} abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Restoration key components are not the same length:  (0) vs. abc (3)}}
+
+test gromark-3.1 {invalid cipher characters} {
+    set c [cipher create gromark]
+
+    set result [catch {$c configure -ct foo1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {0 foo}
+
+test gromark-3.2 {use of cget -length} {
+    set c [cipher create gromark]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test gromark-3.3 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {35}
+
+test gromark-3.4 {use of cget -period (empty)} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test gromark-3.5 {use of cget -period} {
+    set c [createValidCipher]
+    $c configure -period 5
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {5}
+
+test gromark-3.6 {use of cget -ct} {
+    set c [cipher create gromark]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test gromark-3.7 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {nfyckbtijcnwzycacjnaynlqpwwstwpjqfl}
+
+test gromark-3.8 {set ciphertext with uppercase letters} {
+    set c [cipher create gromark -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test gromark-3.9 {use of configure -primer} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    set result [$c cget -primer]
+    rename $c {}
+    
+    set result
+} {23452}
+
+test gromark-3.10 {use of configure -chain} {
+    set c [createValidCipher]
+    $c configure -chain abcde
+    set result [$c cget -chain]
+    rename $c {}
+    
+    set result
+} {abcde}
+
+test gromark-3.11 {use of cget -offset} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    set result [$c cget -offset]
+    rename $c {}
+    
+    set result
+} {23452579772664982037023072537978066}
+
+test gromark-3.12 {use of cget -key} {
+    set c [createValidCipher]
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {                          }
+
+test gromark-3.13 {use of cget -keyword} {
+    set c [createValidCipher]
+    $c restore ajrxebksygfpvidoumhqwncltz abcdefghijklmnopqrstuvwxyz
+    set result [$c cget -keyword]
+    rename $c {}
+    
+    set result
+} {ajrxebksygfpvidoumhqwncltz}
+
+test gromark-3.14 {use of cget -pt} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                                   }
+
+test gromark-3.15 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {gromark}
+
+test gromark-3.16 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test gromark-3.17 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test gromark-3.18 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test gromark-3.19 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test gromark-3.20 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test gromark-3.21 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test gromark-3.22 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test gromark-3.23 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test gromark-4.1 {single valid substitution} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c substitute j b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{ j                        } {        u        b             t   }}
+
+test gromark-4.2 {multiple valid substitutions} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c substitute jn bv
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{ j                   n    } {t       u t      bs  t         t   }}
+
+test gromark-4.3 {alt substitution} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c substitute jn bv
+    $c substitute j q
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                j    n    } {t       j t      qs  t         i   }}
+
+test gromark-4.4 {single valid chain substitution} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c chainsub a 1
+    set result [$c cget -chain]
+    rename $c {}
+    
+    set result
+} {a    }
+
+test gromark-4.5 {chain substitute with empty character} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c chainsub a 1
+    $c chainsub b 2
+    $c chainsub "" 1
+
+    set result [$c cget -chain]
+    rename $c {}
+    
+    set result
+} { b   }
+
+test gromark-4.6 {substitute with chain} {
+    set c [createValidCipher 1]
+    $c configure -primer 264351
+    $c configure -chain enigma
+    $c substitute r c
+    $c substitute e e
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{  r e                     } {w                                       y                   }}
+
+test gromark-4.7 {substitute with chain} {
+    set c [createValidCipher 1]
+    $c configure -primer 264351
+    $c configure -chain enigma
+    $c substitute r c
+    $c substitute e e
+    $c substitute n v
+    $c substitute i n
+    $c substitute g j
+    $c substitute m r
+    $c substitute a a
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{a r e    g   i   m   n    } {w ntr sh   rs il  o  i  e or    ex      ysa  o  in  o he or }}
+
+test gromark-5.1 {undo with no effect} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c undo a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                          } {                                   }}
+
+test gromark-5.2 {undo} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c substitute jn bv
+    $c undo j
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                     n    } {t         t       s  t             }}
+
+test gromark-7.1 {save/restore test} {} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c restore abcdefghijklmnopqrstuvwxyz afwoekjsnbgxrvpltchyqmudiz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {ajrxebksygfpvidoumhqwncltz thereareuptotensubstitutesperletter}
+
+test gromark-7.2 {save/restore test, ct only} {} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c restore ajrxebksygfpvidoumhqwncltz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {ajrxebksygfpvidoumhqwncltz thereareuptotensubstitutesperletter}
+
+test gromark-7.3 {save/restore test, unordered ciphertext} {} {
+    set c [createValidCipher]
+    $c configure -primer 23452
+    $c restore ajrxebksygfpvidoumhqwncltz abcdefghijklmnopqrstuvwxyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {ajrxebksygfpvidoumhqwncltz thereareuptotensubstitutesperletter}
+
+test gromark-7.4 {save/restore test, with chain} {} {
+    set c [createValidCipher 1]
+    $c configure -primer 264351
+    $c configure -chain enigma
+    $c restore ajrxebksygfpvidoumhqwncltz abcdefghijklmnopqrstuvwxyz
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {ajrxebksygfpvidoumhqwncltz wintryshowerswillcontinueforthenextfewdaysaccordingtothefore}
+
+test gromark-8.1 {encode} {
+    set c [cipher create gromark]
+    $c configure -primer 23452
+
+    set result [list [$c encode "there are up to ten substitutes per letter" ajrxebksygfpvidoumhqwncltz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {nfyckbtijcnwzycacjnaynlqpwwstwpjqfl nfyckbtijcnwzycacjnaynlqpwwstwpjqfl thereareuptotensubstitutesperletter ajrxebksygfpvidoumhqwncltz}
+
+test gromark-8.2 {encode with chain} {
+    set c [cipher create gromark]
+    $c configure -primer 264351
+    $c configure -chain enigma
+
+    set result [list [$c encode "wintry showers will continue for the next few days according to the fore" ajrxebksygfpvidoumhqwncltz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {rhnaaxnruzbniuarxcrtpatbrligdsvcircvoypvraazzmusreqyevmmurgw rhnaaxnruzbniuarxcrtpatbrligdsvcircvoypvraazzmusreqyevmmurgw wintryshowerswillcontinueforthenextfewdaysaccordingtothefore ajrxebksygfpvidoumhqwncltz}

@@ -1,0 +1,59 @@
+Feature Requirements
+--------------------
+
+Create a new cipher
+    contents from file
+    user types in to UI
+Save the state of an editting session to file
+    key
+    ciphertext
+    plaintext
+    keyword
+    period
+Load a previously saved state from file
+Change the type of a cipher
+
+
+Print the contents of an editting session
+    should be possible to continue work by hand on paper
+
+Perform statistical analyses on ciphertext
+    kasiski
+    sdev/ioc
+	As a function of period
+    histogram
+	character
+	digram
+    character count
+    contact chart
+
+*No Solve Functionality*
+
+Pluggable UI for manipulating ciphers
+    provide a workarea for performing manipulations
+    provide a frame for typing in commands/inputs
+    provide a display for showing the key
+    provide a buttonbar for common commands
+    modify the ciphertext for an existing cipher (fix typos)
+Allow multiple ciphers to be open for manipulating
+
+
+File -> New
+    Opens a new cipher in a new tab
+File -> Open
+    Loads a saved cipher in a new tab and sets the name of the current
+    savefile
+File -> Save
+    Saves the current cipher to the current savefile
+File -> Save As
+    Saves the current cipher to a file specified by the user and sets
+    the name of the current savefile.
+File -> Close
+    Closes the current tab.
+File -> Exit
+    Exits the application
+
+Commands -> (cipher specific)
+    Locate Tip
+    Set Period
+    Clear

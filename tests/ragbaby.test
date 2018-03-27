@@ -1,0 +1,585 @@
+# ragbaby.test
+# Test of the ragbaby cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the ragbaby cipher
+# Laid out, the cipher looks like:
+#
+# dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.
+#
+# Solution:
+#
+# english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance.
+#
+#
+# Key: glamorizedbcfhknpqstuvwy
+#
+#
+
+proc GetCt {} {
+    return "dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn."
+}
+
+proc GetPt {} {
+    return "english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance."
+}
+
+proc GetKey {} {
+    return "glamorizedbcfhknpqstuvwy"
+}
+
+proc createValidCipher {} {
+	set c [cipher create ragbaby -ct "dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn."]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#	7.x	Save/Restore tests
+#       8.x     Encoding tests
+
+test ragbaby-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test ragbaby-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test ragbaby-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test ragbaby-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test ragbaby-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test ragbaby-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test ragbaby-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key}}
+
+test ragbaby-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt offset}}
+
+test ragbaby-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ?ct?}}
+
+test ragbaby-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test ragbaby-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test ragbaby-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test ragbaby-1.13 {use of configure -period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test ragbaby-1.14 {invalid use ragbaby command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct pt
+                 ciphervar undo ct
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test ragbaby-2.1 {key conflicts during restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcd aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length for key.}}
+
+test ragbaby-2.3 {Attempt to locate} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for ragbaby ciphers.}}
+
+test ragbaby-2.5 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test ragbaby-2.6 {Attempt to undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No undo function defined for ragbaby ciphers.}}
+
+test ragbaby-2.7 {Attempt to substitute} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c substitute a b 4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Substitution is not yet defined for ragbaby ciphers}}
+
+test ragbaby-2.8 {Substitute with invalid pt} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c substitute # b 4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Substitution is not yet defined for ragbaby ciphers}}
+
+test ragbaby-2.9 {Substitute with invalid pt} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c substitute a # 4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Substitution is not yet defined for ragbaby ciphers}}
+
+test ragbaby-2.10 {Substitute with invalid offset} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c substitute a b #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid offset '#' in substitution.}}
+
+test ragbaby-3.1 {invalid cipher characters} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c configure -ct foo1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {0 foo}
+
+test ragbaby-3.2 {use of cget -length} {
+    set c [cipher create ragbaby]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test ragbaby-3.3 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {163}
+
+test ragbaby-3.4 {use of cget -period (empty)} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test ragbaby-3.5 {use of cget -ct} {
+    set c [cipher create ragbaby]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test ragbaby-3.6 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.}
+
+test ragbaby-3.7 {set ciphertext with uppercase letters} {
+    set c [cipher create ragbaby -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcde fghij klmno}
+
+test ragbaby-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -key]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {24 {                        }}
+
+test ragbaby-3.9 {use of cget -keyoffset} {
+    set c [createValidCipher]
+    set result [$c cget -keyoffset]
+    rename $c {}
+    
+    set result
+} {bcdefgh cdef ghijklmn defghijk efg fghijk gh hijklmn ijklmn jklm klmnop  lmnopqrst mnopqr nopqrs  opqr  pqrstuv qrstuv rstuv stuvw tuvw  uvwxabcd vwxab wxabcdefgh }
+
+test ragbaby-3.10 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {            -                                                          ,                        ;     ,                                ,     t       l    p       .}
+
+test ragbaby-3.11 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {ragbaby}
+
+test ragbaby-3.12 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test ragbaby-3.13 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test ragbaby-3.14 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test ragbaby-3.15 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test ragbaby-3.16 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test ragbaby-3.17 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test ragbaby-3.18 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test ragbaby-3.19 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test ragbaby-7.1 {save/restore test} {} {
+    set c [createValidCipher]
+    $c restore abcdefghiklmnopqrstuvwyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcdefghiklmnopqrstuvwyz {coinwan dvdi-qagalezt kesnawwd pyh chsgwi eu dudlezt dyaqrh izrz weiiyh, adcimufkz tcebph hlvpvo; azkd, izbyqgz lspali tgbvq qgvuo nfpk, ddlmtyoi qfmlf iopcmbepkf.}}
+
+test ragbaby-7.2 {save/restore test, unordered ciphertext} {} {
+    set c [createValidCipher]
+    $c restore glamorizedbcfhknpqstuvwy 
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {glamorizedbcfhknpqstuvwy {english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance.}}
+
+test ragbaby-7.3 {save/restore test, key contains spaces} {} {
+    set c [createValidCipher]
+    $c restore " lamori   bcfhknpqstuvw "
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{ lamori   bcfhknpqstuvw } { n li h b   -pi rcin  fa hio s n w  wt    to s icin  ton     o n mi  l , pro uc     ork    ff ct; also,  lacin  t fl n b a s un  r skin,  r at n  s al   pp a anc .}}
+
+# grosbeakcdfhilmnpqtuvwyz
+# word divisions are kept
+# ybbl hngqdufgl def hfyr
+
+test ragbaby-7.4 {save/restore test, unordered ciphertext} {} {
+    set c [cipher create ragbaby -ct "ybbl hngqdufgl def hfyr"]
+    $c restore grosbeakcdfhilmnpqtuvwyz 
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {grosbeakcdfhilmnpqtuvwyz {word divisions are kept}}
+
+test ragbaby-7.5 {restore test, ciphertext contains 'j'} {} {
+    set c [cipher create ragbaby -ct "ybbl hngqdufgl def hfyr jhzo xims"]
+    $c restore grosbeakcdfhilmnpqtuvwyz 
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {grosbeakcdfhilmnpqtuvwyz {word divisions are kept kept neat}}
+
+# dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.
+# english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance.
+# glamorizedbcfhknpqstuvwy
+
+
+test ragbaby-8.1 {empty plaintext is not allowed} {} {
+    set c [cipher create ragbaby]
+    set result [catch {$c encode "" [GetKey]} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Empty plaintext.}}
+
+test ragbaby-8.2 {short simple encoding test} {} {
+    set c [cipher create ragbaby]
+    set result [$c encode "word divisions are kept" grosbeakcdfhilmnpqtuvwyz]
+    rename $c {}
+    set result
+} {ybbl hngqdufgl def hfyr}
+
+test ragbaby-8.3 {long simple encoding test} {} {
+    set c [cipher create ragbaby]
+    set result [$c encode [GetPt] [GetKey]]
+    rename $c {}
+    set result
+} {dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.}
+
+test ragbaby-8.4 {simple test with keyword rather than full key} {} {
+    set c [cipher create ragbaby]
+    set result [$c encode "word divisions are kept" grossbeak]
+    rename $c {}
+    set result
+} {ybbl hngqdufgl def hfyr}
+
+test ragbaby-8.5 {full encoding test} {} {
+    set c [cipher create ragbaby]
+    set result {}
+    lappend result [$c encode [GetPt] [GetKey]]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {{dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.} {english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance.} glamorizedbcfhknpqstuvwy {dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.}}
+
+test ragbaby-8.6 {full encoding test with keyword rather than full key} {} {
+    set c [cipher create ragbaby]
+    set result {}
+    lappend result [$c encode [GetPt] glamorized]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {{dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.} {english body-piercing fashions now ewtend to slicing tongue down middle, producing forked effect; also, placing teflon beads under skin, creating scaly appearance.} glamorizedbcfhknpqstuvwy {dqmrcgu fzho-whpkvqmh niythfgo tdo hoapgt lc ldnvqmh mhlcev skdm hqvwny, mqqycmydt gqtrga vamgoh; ppbv, zqtrlcv cliugf mavrn kbrrm hbmh, zailtzqm ndllg gnpdoeiuqn.}}
+
+

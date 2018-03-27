@@ -1,0 +1,79 @@
+[docHeader "Cipher Type - aristocrat"]
+[Ciphertype aristocrat]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore ct pt" restore]
+[Synopsis <I>cipherProc</I> "substitute ct pt" substitute]
+[Synopsis <I>cipherProc</I> "undo ct" undo]
+[Synopsis <I>cipherProc</I> "locate tip ?ct?" locate]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureLanguage]
+    [ConfigureOption -strict true|false \
+"Set the strictness for alternate substitutions.  If this is set to true
+then attempting to override an existing substitution will generate an error.
+For example, with strict = <b>true</b>, the second statement will fail:
+    <BR><CODE>aristocrat sub a b</CODE>
+    <BR><CODE>aristocrat sub a c</CODE>
+    <BR>
+    The strictness defaults to <b>false</b>
+"]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetLanguage]
+    [CgetOption -period "This always returns <B>0</B>"]
+    [CgetOption -K1key \
+"Print the key as a K1 keyed alphabet."]
+    [CgetOption -K2key \
+"Print the key as a K2 keyed alphabet."]
+    [CgetOption -strict \
+"Get the strictness setting.  Returns either 1 or 0."]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore ct pt" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \[lindex \$key 0\] \[lindex \$key 1\]</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> substitute ct pt" substitute \
+"Substitute the ciphertext string <B>ct</B> with the plaintext string
+<B>pt</B>.  Conflicting substitutions will raise an error.
+"]
+
+[Description "<I>cipherProc</I> undo ct" undo \
+"Clears all key entries for the given ciphertext values."]
+
+[Description "<I>cipherProc</I> locate tip ?ct?" locate \
+"Locate a possible position for the <B>tip</B> in the ciphertext. The tip
+is dragged along the ciphertext until a valid substitution is found.  If
+the <B>ct</B> argument is specified, the tip is dragged along starting where
+<B>ct</B> appears in the ciphertext."]
+
+[EndDescription]
+
+[footer]

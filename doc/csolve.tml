@@ -1,0 +1,62 @@
+[docHeader "Cipher Program - csolve"]
+[Command csolve "autosolver for many cipher types"]
+
+[SynopsisHeader]
+[Synopsis csolve "-file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?"]
+
+[StartDescription]
+
+[Description "csolve -file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-stepinterval interval? ?-addspace?" csolve \
+"<B>csolve</B> is an autosolver for cipher types that implement
+<B>solve</B> subcommands.  This currently includes:
+<P>
+<UL>
+<LI>[Link baconian.html baconian]
+<LI>[Link beaufort.html beaufort]
+<LI>[Link cadenus.html cadenus]
+<LI>[Link columnar.html {columnar (complete and incomplete)}]
+<LI>[Link grille.html grille]
+<LI>[Link gronsfeld.html gronsfeld]
+<LI>[Link homophonic.html homophonic]
+<LI>[Link morbit.html morbit]
+<LI>[Link nitrans.html {nitrans (nihilist transposition)}]
+<LI>[Link pollux.html pollux]
+<LI>[Link porta.html porta]
+<LI>[Link railfence.html railfence]
+<LI>[Link route.html route]
+<LI>[Link swagman.html swagman]
+<LI>[Link variant.html variant]
+<LI>[Link vigenere.html vigenere]
+</UL>
+<P>
+Periodic ciphers must have a period specified on the command line.  The csolve
+program does not iterate through all possible periods.  Cipher types whose
+period is fixed based on the cipher length do not need periods specified.
+These include <B>[Link cipher/cadenus.html cadenus]</B> and <B>[Link nitrans.html nitrans]</B>.
+<P>
+The format for the input file is simple.  It should contain only the ciphertext.
+It may be split up across multiple lines, separated into 5-character groups, etc.  Any invalid characters in the ciphertext will be silently ignored.
+<P>
+<B>csolve</B> produces an output file called <I>filename</I>.csol.  The
+contents of this file are identical to the contents that are printed to the
+screen.  If a file with the same name already exists it is silently overwritten.
+<P>
+<B>csolve</B> sets the <B>-stepinterval</B>, <B>-stepcommand</B>,
+and <B>-bestfitcommand</B> options for the cipher before solving so that
+you get some useful feedback while it's running.  By watching this progress
+you can get an estimate on how long it will take to complete.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.
+This can be changed to any scoring method supported by the
+[Link cipher/score.html score] command.  The <b>-language</b> option is used to
+load a scoring table for the specified language, if such a scoring table
+exists.
+<P>
+The <b>-addspace</b> option will attempt to locate word boundaries after the
+final solution has been found.  This can be a time and memory intensive process
+on older computers so it is turned off by default.
+"]
+
+[EndDescription]
+
+[footer]

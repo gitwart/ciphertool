@@ -1,0 +1,69 @@
+<HTML>
+<TITLE>Cipher Program - dumproute</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+dumproute - show all possible routes for a cipher
+
+
+<H2>SYNOPSIS</H2>
+
+<B>dumproute</B> <I>filename width</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><B><CODE>dumproute filename width</CODE></B></DT>
+        <DD><B>dumproute</B> prints out route transposition blocks for the cipher
+with the given width.  Only non-redundant routes are printed.  For example,
+the route made from alternating verticals starting from the top-left corner
+is redundant with the route made from alternating verticals starting from the
+bottom-right corner.
+<P>
+The following routes are used for writing in the cipher:
+<P>
+<UL>
+<LI>Horizontal rows
+<LI>Alternating horizontal rows
+<LI>Vertical columns
+<LI>Alternating vertical columns
+<LI>Diagonals starting in the top-left corner
+<LI>Diagonals starting in the bottom-left corner
+<LI>Diagonals starting in the top-right corner
+<LI>Diagonals starting in the bottom-right corner
+<LI>Alternate diagonals starting in the top-left corner
+<LI>Alternate diagonals starting in the bottom-left corner
+<LI>Alternate diagonals starting in the top-right corner
+<LI>Alternate diagonals starting in the bottom-right corner
+<LI>Clockwise spiral starting in the top-left corner.
+<LI>Counter-clockwise spiral starting in the top-left corner.
+<LI>Clockwise spiral starting in the center and ending in the top-left corner.
+<LI>Counter-clockwise spiral starting in the center and ending in the
+top-left corner.
+</UL>
+<P>
+Visual analysis of the resulting route squares should confirm which, if any,
+are the correct routes.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

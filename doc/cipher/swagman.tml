@@ -1,0 +1,81 @@
+[docHeader "Cipher Type - swagman"]
+[Ciphertype swagman]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "swap row1 row2" swap]
+[Synopsis <I>cipherProc</I> "substitute row col ?val?" substitute]
+[Synopsis <I>cipherProc</I> "restore key" restore]
+[Synopsis <I>cipherProc</I> "undo ?row col?" undo]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+    [ConfigureLanguage]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetOption -ctblock \
+"undocumented feature"]
+    [CgetPt]
+    [CgetOption -ptblock \
+"undocumented feature"]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetOption -width \
+"This is the same as the period."]
+    [CgetOption -height \
+"This is the same as the period."]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \$key</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> substitute row col ?val?" substitute \
+"undocumented feature"]
+
+[Description "<I>cipherProc</I> swap row1 row2" swap \
+"Swap the two key rows."]
+
+[Description "<I>cipherProc</I> undo ?row col?" undo \
+"Clears all changes that have been made to the key.  If row and col
+are both specified then only the key value in that particular cell is cleared."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Iterate through all combinations of possible keys.  The key
+that produces plaintext with the highest digram frequency count is used
+as the solution."]
+
+[EndDescription]
+
+[footer]

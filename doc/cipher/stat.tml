@@ -1,0 +1,39 @@
+[docHeader "Tcl Command - stat"]
+[Command stat "Perform statistical analysis on a string"]
+[SynopsisHeader]
+[Synopsis stat "option string"]
+
+[StartDescription]
+
+[Description "stat ioc string" ioc \
+"Calculates the index of coincidence of the given string.  The index of
+coincidence is defined as
+<BR>
+(sum of (n<SUB>j</SUB> * (n<SUB>j</SUB>-1))) / (n<SUB>total</SUB> * (n<SUB>total</SUB> - 1))
+<BR>for all letters <I><B>j</B></I> where n<SUB>j</SUB> is the number of times the letter
+<I><B>j</B></I> appears in the string."]
+
+[Description "stat histogram string" histogram \
+"Generates a histogram of the characters from <B>a</B> to <B>z</B> in string.
+For example:
+<P>
+<B><CODE>stat histogram foobar</CODE></B>
+<P>
+returns <B><CODE>a 1 b 1 c 0 d 0 e 0 f 1 g 0 h 0 i 0 j 0 k 0 l 0 m 0 n 0 o 2 p 0 q 0 r 1 s 0 t 0 u 0 v 0 w 0 x 0 y 0 z 0</CODE></B>"]
+
+[Description "stat histfit histogram1 histogram2" histfit \
+"Slides the second histogram along the first looking for the best match.  The best left shift for the second histogram is returned."]
+
+[Description "stat histvals histogram1 histogram2" histvals \
+"Display the histogram fit values when the second histogram is slid along the first.  Each value are calculated by multiplying the values for each corresponding bin of the histograms and adding up the results."]
+
+[Description "stat alphfit string" alphfit \
+"This performs the same function as the histfit method, except that a histogram is generated from a single string and the histogram is fit against a standard English distribution."]
+
+[Description "stat kasiski string ?minperiod maxperiod?" kasiski \
+"Perform a kasiski analysis on the string.  The minimum and maximum
+periods to use may be specified and default to the range 3 - 15."]
+
+[EndDescription]
+
+[footer]

@@ -1,0 +1,143 @@
+[docHeader "Cipher Package - Hillclimb"]
+[Command Hillclimb "Procedures for creating and using hill climbers."]
+
+[SynopsisHeader]
+[Synopsis {} "package require Hillclimb"]
+
+[StartDescription VARIABLES]
+
+[Description "Hillclimb::neighborProc" neighborProc \
+"This variable stores the name of the command that is used to generate
+'nearby' keys in the key search space.  Most neighborProc procedures generate
+neighbor keys by swapping elements of the current key."]
+
+[Description "Hillclimb::valueProc" valueProc \
+""]
+
+[Description "Hillclimb::decipherProc" decipherProc \
+""]
+
+[Description "Hillclimb::stepInterval" stepInterval \
+""]
+
+[Description "Hillclimb::stepCommand" stepCommand \
+""]
+
+[Description "Hillclimb::bestFitCommand" bestFitCommand \
+""]
+
+[Description "Hillclimb::keycipher" keycipher \
+""]
+
+[Description "Hillclimb::registerProc" registerProc \
+""]
+
+[Description "Hillclimb::mutationRequested" mutationRequested \
+""]
+
+[Description "Hillclimb::mutationAmount" mutationAmount \
+""]
+
+[Description "Hillclimb::statMethod" statMethod \
+""]
+
+[Description "Hillclimb::cipherObject" cipherObject \
+""]
+
+[Description "Hillclimb::decipherProc" decipherProc \
+""]
+
+[Description "Hillclimb::decipherProcFromType" decipherProcFromType \
+""]
+
+[Description "Hillclimb::fullKeyList" fullKeyList \
+""]
+
+[Description "Hillclimb::fullKeyListFromType" fullKeyListFromType \
+""]
+
+[Description "Hillclimb::swapKeyProc" swapKeyProc \
+""]
+
+[Description "Hillclimb::singleSeedKey" singleSeedKey \
+""]
+
+[Description "Hillclimb::fixedKeyPositions" fixedKeyPositions \
+""]
+
+[EndDescription]
+
+[StartDescription COMMANDS]
+
+[Description "Hillclimb::mutate" mutate \
+""]
+
+[Description "Hillclimb::randomizeList" randomizeList \
+""]
+
+[Description "Hillclimb::generateSwapNeighborKeys" generateSwapNeighborKeys \
+""]
+
+[Description "Hillclimb::generateInsertNeighborKeys" generateInsertNeighborKeys \
+""]
+
+[Description "Hillclimb::plugKeyHoles" plugKeyHoles \
+""]
+
+[Description "Hillclimb::showFit" showFit \
+""]
+
+[Description "Hillclimb::registerMaxKey" registerMaxKey \
+""]
+
+[Description "Hillclimb::recstart" recstart \
+""]
+
+[Description "Hillclimb::start" start \
+""]
+
+[Description "Hillclimb::pattipsearch" pattipsearch \
+""]
+
+[Description "Hillclimb::decipherSimple" decipherSimple \
+""]
+
+[Description "Hillclimb::decipherAristocrat" decipherAristocrat \
+""]
+
+[Description "Hillclimb::decipherGromark" decipherGromark \
+""]
+
+[Description "Hillclimb::getKeysquareFullKeyList" getKeysquareFullKeyList \
+""]
+
+[Description "Hillclimb::get6x6KeysquareFullKeyList" get6x6KeysquareFullKeyList \
+""]
+
+[Description "Hillclimb::getTrifidFullKeyList" getTrifidFullKeyList \
+""]
+
+[Description "Hillclimb::getDigrafidFullKeyList" getDigrafidFullKeyList \
+""]
+
+[Description "Hillclimb::getRagbabyFullKeyList" getRagbabyFullKeyList \
+""]
+
+[Description "Hillclimb::getAristocratFullKeyList" getAristocratFullKeyList \
+""]
+
+[Description "Hillclimb::getTwosquareFullKeyList" getTwosquareFullKeyList \
+""]
+
+[Description "Hillclimb::swapAristocratKey" swapAristocratKey \
+""]
+
+[Description "Hillclimb::swapTwosquareKey" swapTwosquareKey \
+""]
+
+[Description "Hillclimb::swapGenericKey" swapGenericKey \
+""]
+
+[EndDescription]
+
+[footer]

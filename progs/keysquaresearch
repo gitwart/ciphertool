@@ -1,0 +1,341 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# keysquaresearch --
+#
+#	Automatic solver for a variety of cipher types that use a
+#	single key square for their key.  A route cipher is used
+#	to generate 48 possible keys for each keyed alphabet.
+#
+# RCS: @(#) $Id: keysquaresearch,v 1.27 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require Dictionary
+package require Scoretypes
+package require Scoredata
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg {} "The cipher type"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list keyword.arg {} "The single keyword to use for solving."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list stepinterval.arg {5000} "The interval between progress updates.  Use a step interval of 0 to print all attempts."] \
+]
+
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Command line validation
+
+if {$type == ""} {
+    puts stderr "[::cmdline::usage $options {option '-type' missing}]"
+    exit 1
+}
+
+if {[lsearch [cipher types] $type] == -1} {
+    puts stderr "Unknown cipher type $type"
+    exit 1
+}
+
+if {[lsearch "trifid bigbifid bifid" $type] != -1} {
+    if {![string is integer $period]
+	|| ([string length $period] == 0)
+	|| $period < 2} {
+
+	puts stderr "Periods > 1 must be used with the $type cipher."
+	exit 1
+    } else {
+	puts "#Using $period for period"
+    }
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $type -ct $ct]
+if {[string length $period] > 0 && $period != 0} {
+    $cipher configure -period $period
+}
+
+# Iterate over all possible keys
+
+set Dictionary::cache {}
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+
+# Defaults for the various cipher types
+set cipherParms(keyperiod) 5
+set cipherParms(keylength) 25
+set cipherParms(keypattern) {j}
+set cipherParms(keysub) {{}}
+set cipherParms(bestkeyProc) {bestkey}
+set cipherParms(key,part2) {}
+
+if {[lsearch [list bigbifid bigplayfair] $type] != -1} {
+    set cipherParms(keyperiod) 6
+    set cipherParms(keylength) 36
+    set cipherParms(bestkeyProc) {bigbifidBestkey}
+}
+
+if {[string match "bifid" $type]} {
+    set cipherParms(key,part2) {11121314152122232425313233343541424344455152535455}
+}
+
+proc bestkey {cipherProc keywordList countVar {maxValue 0}} {
+    global stepinterval cipherParms
+    upvar $countVar count
+
+    set maxKeyword {}
+    set maxKey {}
+    set keycipher [cipher create route \
+	    -ct [string repeat a $cipherParms(keylength)] \
+	    -period $cipherParms(keyperiod)]
+
+    foreach keyword $keywordList {
+	# Change 'j' to 'i', since these letters are doubled in the keysquare.
+	set keyword [string map {j i} $keyword]
+
+	incr count
+
+	if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	    # Remove 'j' from the key
+	    set fixedKey [string map {j {}} $fixedKey]
+
+	    $keycipher configure -ct $fixedKey
+
+	    # There are many possible routes to try
+
+	    for {set i 1} {$i <= [$keycipher cget -numroutes]} {incr i} {
+		$keycipher configure -out $i
+
+		$cipherProc restore [$keycipher cget -pt]
+
+		set value [score value [$cipherProc cget -pt]]
+		#puts "value for $keyword is $value"
+
+		if {$value > $maxValue || $stepinterval == 0} {
+		    if {$value > $maxValue} {
+			set maxValue $value
+			set maxKeyword $keyword
+			set maxKey [$cipherProc cget -key]
+			set maxKeyBlock [$keycipher cget -ptblock]
+		    }
+
+		    foreach row [$keycipher cget -ptblock] {
+			puts "#\t[string toupper $row]"
+		    }
+		    if {$stepinterval == 0} {
+			puts "# $keyword ([$cipherProc cget -key])"
+			puts "# $keyword ([$keycipher cget -pt])"
+		    } else {
+			puts "# $keyword ([$cipherProc cget -key])  Fit: $value"
+		    }
+		    puts "# $count,$i: [$cipherProc cget -pt]"
+		    puts ""
+		}
+
+		# If searching for some known plaintext then uncomment
+		# this next section.
+#		if {[string first todoslos [$cipherProc cget -pt]] != -1} {
+#		    foreach row [$keycipher cget -ptblock] {
+#			puts "#\t[string toupper $row]"
+#		    }
+#		    puts "# $keyword ($maxKey)  Found tip"
+#		    puts "# $count,$i: [$cipherProc cget -pt]"
+#		    puts ""
+#		}
+
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+	if {$stepinterval <= 0 || $count%$stepinterval == 0} {
+	    puts "# $keyword"
+	    puts "# $count: [$cipherProc cget -pt]"
+	    puts ""
+	}
+    }
+
+    rename $keycipher {}
+
+    return [list $maxValue $maxKeyword $maxKey]
+}
+
+proc bigbifidBestkey {cipherProc keywordList countVar {maxValue 0}} {
+    global stepinterval cipherParms
+    upvar $countVar count
+
+    set maxKeyword {}
+    set maxKey {}
+    set keycipher [cipher create route \
+	    -ct [string repeat a $cipherParms(keylength)] \
+	    -period $cipherParms(keyperiod)]
+
+    foreach keyword $keywordList {
+	incr count
+
+	if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	    set fixedKey [string map \
+		    {a a1 b b2 c c3 d d4 e e5 f f6 g g7 h h8 i i9 j j0} \
+		    $fixedKey]
+
+	    $keycipher configure -ct $fixedKey
+
+	    # There are many possible routes to try
+
+	    for {set i 1} {$i <= [$keycipher cget -numroutes]} {incr i} {
+		$keycipher configure -out $i
+
+		$cipherProc restore [$keycipher cget -pt]
+
+		set value [score value [$cipherProc cget -pt]]
+
+		if {$value > $maxValue || $stepinterval == 0} {
+		    if {$value > $maxValue} {
+			set maxValue $value
+			set maxKeyword $keyword
+			set maxKey [$cipherProc cget -key]
+			set maxKeyBlock [$keycipher cget -ptblock]
+		    }
+
+		    foreach row [$keycipher cget -ptblock] {
+			puts "#\t[string toupper $row]"
+		    }
+		    if {$stepinterval == 0} {
+			puts "# $keyword ([$cipherProc cget -key])"
+			puts "# $keyword ([$keycipher cget -pt])"
+		    } else {
+			puts "# $keyword ([$cipherProc cget -key])  Fit: $value"
+		    }
+		    puts "# $count,$i: [$cipherProc cget -pt]"
+		    puts ""
+		}
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+	if {$stepinterval <= 0 || $count%$stepinterval == 0} {
+	    puts "# $keyword"
+	    puts "# $count: [$cipherProc cget -pt]"
+	    puts ""
+	}
+    }
+
+    rename $keycipher {}
+
+    return [list $maxValue $maxKeyword $maxKey]
+}
+
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	foreach {val keyword key} \
+		[$cipherParms(bestkeyProc) $cipher \
+			[Dictionary::lookupByLength $wordLength] \
+			count $maxValue] {
+	    if {$val > $maxValue} {
+		set maxValue $val
+		set maxKeyword $keyword
+		set maxKey $key
+	    }
+	}
+    }
+} else {
+    foreach {val keyword key} [$cipherParms(bestkeyProc) $cipher \
+	    $keyword count] {
+	if {$val > $maxValue} {
+	    set maxValue $val
+	    set maxKeyword $keyword
+	    set maxKey $key
+	}
+    }
+}
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+$cipher restore [lindex $maxKey 0] [lindex $maxKey 1]
+
+proc printComment {string} {
+    puts #$string
+}
+
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords [$cipher cget -pt]]
+}
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts "keyword=$maxKeyword"
+foreach row $maxKeyBlock {
+    puts "#key.block=[string toupper $row]"
+}

@@ -1,0 +1,37 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# key2col --
+#
+#	Transform the key from a saved aristocrat cipher to a columnar
+#	to aid in keyword recovery.
+#
+# RCS: @(#) $Id: key2col,v 1.6 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2002  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+
+set filename [lindex $argv 0]
+
+set cipherObj [CipherUtil::createCipherFromFile $filename]
+
+set colCipher [CipherUtil::aristocratKeyToColumnar $cipherObj]
+
+CipherUtil::writeCipherToFile $colCipher stdout

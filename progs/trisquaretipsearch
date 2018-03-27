@@ -1,0 +1,48 @@
+#!/usr/bin/tclsh
+
+package require cmdline
+package require CipherUtil
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list tip.arg {} "The plaintext tip"] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$tip == ""} {
+    puts stderr "[::cmdline::usage $options {option '-tip' missing}]"
+    exit 1
+}
+
+set ct [CipherUtil::readCiphertext $file]
+regsub -all { } $ct {} ct
+
+set reduced {}
+for {set i 0} {$i < [string length $ct]} {incr i} {
+    if {[expr {$i % 3}] != 1} {
+	append reduced [string index $ct $i]
+    }
+}
+
+#puts "reduced = ([string length $reduced]) $reduced"
+
+# For every tip start position...
+for {set i 0} {$i < [expr [string length $reduced] - [string length $tip]]} {incr i} {
+    set matches 0
+    # For every letter in the tip...
+    #puts "matching $tip to [string range $reduced $i [expr {$i + [string length $tip]}]]"
+    for {set j 0} {$j < [string length $tip]} {incr j} {
+	if {[string index $tip $j] == [string index $reduced [expr $i + $j]]} {
+	    incr matches
+	}
+    }
+    puts "Matches:  $matches ($i) [string range $reduced $i [expr $j + $i]]"
+}

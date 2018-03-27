@@ -1,0 +1,8 @@
+#!/usr/bin/tclsh
+
+package require SOAP
+
+SOAP::create getLanguages -uri urn:tclsoap:cipher -proxy http://localhost:8015/cipher -params {}
+#SOAP::create getCipherTypes -uri urn:tclsoap:cipher -proxy http://localhost:8015 -params {}
+
+puts "Languages available:  [getLanguages]"

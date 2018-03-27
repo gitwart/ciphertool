@@ -1,0 +1,30 @@
+[docHeader "Cipher Program - k4search"]
+[Command k4search "find one keyword for a K4 mixed alphabet"]
+
+[SynopsisHeader]
+[Synopsis k4search "keystring"]
+
+[StartDescription]
+
+[Description "k4search keystring" {} \
+"<B>k3search</B> attempts to find one keyword for a K4 mixed alphabet.
+<B>keystring</B> is a K4 mixed alphabet.  Any one of the 26 K4 mixed alphabets
+may be used.  Spaces may be used to designate uknown letters:
+<P>
+<B><CODE>k3search &quot;log rithmbcd     qsu wx z&quot;</CODE></B>
+<P>
+The keystring must be entered as a K1 alphabet.
+<P>
+[DictionaryDescription]
+<P>
+<B>k4search</B> takes each word found in the dictionary files and generates
+a K1 mixed alphabet.  The <B>keystring</B> is then reordered based on the
+new K1 alphabet.  An <I>order value</I> is calculated from the result of
+reordering the <B>keystring</B>.  This <I>order value</I> is a measure of how
+many letters in the string are sequential.  The keyword that generates the
+highest <I>order value</I> is printed.
+"]
+
+[EndDescription]
+
+[footer]

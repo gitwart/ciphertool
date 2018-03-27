@@ -1,0 +1,715 @@
+# morbit.test
+# Test of the morbit cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the morbit cipher
+# Laid out, the cipher looks like:
+#
+# 27435 88151 28274 65679 378
+#
+# Solution:
+#
+#    o  n    c e    u    p   o  n   a  t  i  m e
+# ---x-.x-.-.x.xx..-x.--.x---x-.xx.-xx-x..x--x.x
+# 2 7 4 3 5 8 8 1 5 1 2 8 2 7 4 6 5 6 7 9 3 7 8
+#
+# Key: x.--x--..-xx-x.x..
+# 9 5 8 4 2 7 1 3 6
+# . . . _ _ _ x x x
+# . _ x . _ x . _ x
+
+proc createValidCipher {} {
+    set c [cipher create morbit -ct "27435 88151 28274 65679 378"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#	7.x	Save/Restore tests
+#       8.x     Encoding tests
+
+test morbit-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test morbit-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test morbit-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test morbit-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test morbit-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test morbit-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test morbit-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct mt}}
+
+test morbit-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct mt}}
+
+test morbit-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ?ct?}}
+
+test morbit-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test morbit-1.11 {invalid use morbit command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct mt
+                 ciphervar restore ct mt
+                 ciphervar locate pt
+                 ciphervar undo ?ct?
+                 ciphervar encode pt key}}
+
+test morbit-2.1 {invalid cipher characters} {
+    set c [cipher create morbit]
+
+    set result [catch {$c configure -ct aaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test morbit-2.2 {Attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for morbit ciphers.}}
+
+test morbit-2.3 {Attempt to substitute with bad morsetext character} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute 1 q-} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution morsetext}}
+
+test morbit-2.4 {Attempt to substitute with bad ciphertext character} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute a --} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution ciphertext}}
+
+test morbit-2.5 {Attempt to substitute with bad morsetext length} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute 1 ---} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Plaintext length must be an even number of characters}}
+
+test morbit-2.6 {Attempt to substitute with mismatched ciphertext/morsetext length} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute 12 ...---} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Plaintext and ciphertext don't match in length (pt = 2 * ct)}}
+
+test morbit-2.7 {Attempt to substitute same morse pattern twice} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute 12 ....} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test morbit-2.8 {Attempt to substitute same ciphertext character twice} {
+    set c [cipher create morbit]
+
+    set result [catch {$c substitute 11 ...-} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test morbit-2.9 {Get plaintext with no ciphertext} {
+    set c [cipher create morbit]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test morbit-2.10 {Solve with no ciphertext} {
+    set c [cipher create morbit]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test morbit-3.1 {use of cget -length} {
+    set c [cipher create morbit]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test morbit-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {23}
+
+test morbit-3.3 {use of cget -ct} {
+    set c [cipher create morbit]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test morbit-3.4 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {27435881512827465679378}
+
+test morbit-3.5 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {}
+
+test morbit-3.6 {use of cget -morsetext} {
+    set c [createValidCipher]
+    $c restore 123456789 x.--x--..-xx-x.x..
+    set result [$c cget -morsetext]
+    rename $c {}
+    
+    set result
+} {---x-.x-.-.x.xx..-x.--.x---x-.xx.-xx-x..x--x.x}
+
+test morbit-3.7 {use of cget -fullplaintext} {
+    set c [createValidCipher]
+    $c restore 123456789 x.--x--..-xx-x.x..
+    set result [$c cget -fullplaintext]
+    rename $c {}
+    
+    set result
+} {   o  n    c e    u    p   o  n   a  t  i  m e}
+
+test morbit-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -key]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {30 {123456789 {                  }}}
+
+test morbit-3.9 {use of cget -keyword (empty)} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -keyword]] [$c cget -keyword]]
+    rename $c {}
+    
+    set result
+} {9 {         }}
+
+test morbit-3.10 {use of cget -keyword (not empty)} {
+    set c [createValidCipher]
+    $c restore 213456798 ...-.x-.---xx.x-xx
+    set result [$c cget -keyword]
+    rename $c {}
+    
+    set result
+} {213456798}
+
+test morbit-3.11 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test morbit-3.12 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test morbit-3.13 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test morbit-3.14 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test morbit-3.15 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test morbit-3.16 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test morbit-3.17 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test morbit-3.18 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test morbit-3.19 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test morbit-3.20 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {morbit}
+
+test morbit-3.21 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test morbit-3.22 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test morbit-4.1 {single substitution} {
+    set c [createValidCipher]
+
+    $c substitute 2 --
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {  --              }}
+
+test morbit-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+
+    $c substitute 24 ..xx
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {  ..  xx          }}
+
+test morbit-4.3 {multiple substitutions with space for morse text} {
+    set c [createValidCipher]
+
+    $c substitute 1234 {--..  xx}
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {--..  xx          }}
+
+test morbit-4.4 {multiple valid substitutions of the same letter} {
+    set c [createValidCipher]
+
+    $c substitute 1231 {--..xx--}
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {--..xx            }}
+
+test morbit-5.1 {undo with no substitutions} {
+    set c [createValidCipher]
+    $c undo 1
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {                  }}
+
+test morbit-5.2 {undo single substitution} {
+    set c [createValidCipher]
+    $c substitute 1 ..
+    $c undo 1
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {                  }}
+
+test morbit-5.3 {undo one of multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute 123 ..--xx
+    $c undo 2
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {..  xx            }}
+
+test morbit-5.4 {undo all} {
+    set c [createValidCipher]
+    $c substitute 123 ..--xx
+    $c undo
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {123456789 {                  }}
+
+test morbit-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c restore 123456789 x.--x--..-xx-x.x..
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{123456789 x.--x--..-xx-x.x..} {once upon a time}}
+
+test morbit-7.2 {save/restore test, empty key} {} {
+    set c1 [createValidCipher]
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{123456789 {                  }} {}}
+
+test morbit-7.3 {save/restore test, full key} {} {
+    set c1 [createValidCipher]
+    $c1 restore 123456789 x.--x--..-xx-x.x..
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{123456789 x.--x--..-xx-x.x..} {once upon a time}}
+
+test morbit-7.4 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 restore 1234567 x.--x--..-xx-x
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{123456789 {x.--x--..-xx-x    }} {on u n a t m}}
+
+test morbit-7.5 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 restore "1  456789" x.--x--..-xx-x.x..
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{123456789 {x.    -..-xx-x.x..}} {  e u  n a t e}}
+
+
+
+# 27435881512827465679378
+# x.--x--..-xx-x.x..
+# 958427136
+# 758429631
+
+test morbit-8.1 {simple encoding test} {} {
+    set c [cipher create morbit]
+    set result [$c encode "once upon a time" 958427136]
+    rename $c {}
+    set result
+} {27435881512827465679378}
+
+test morbit-8.2 {try a key with fewer than 9 characters} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "come at once" 95842713} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be a permutation of the digits between 1 and 9.}}
+
+test morbit-8.3 {try a key with more than 9 characters} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "come at once" 958427130} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be a permutation of the digits between 1 and 9.}}
+
+test morbit-8.4 {try a key with a non-digit character} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "come at once" 95B427136} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be a permutation of the digits between 1 and 9.}}
+
+test morbit-8.5 {try a key with a zero character} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "come at once" 950427136} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be a permutation of the digits between 1 and 9.}}
+
+test morbit-8.6 {try a key with a repeated digit} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "come at once" 958427186} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be a permutation of the digits between 1 and 9.}}
+
+test morbit-8.7 {empty plaintext is not allowed} {} {
+    set c [cipher create morbit]
+    set result [catch {$c encode "" 958427136} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Empty plaintext.}}
+
+test morbit-8.8 {encode "once upon a time" using key 958427136} {} {
+    set c [cipher create morbit]
+    set result [$c encode "once upon a time" 958427136]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {27435881512827465679378 {once upon a time} 758429631 27435881512827465679378}
+
+test morbit-8.9 {make sure the padding works correctly} {} {
+    set c [cipher create morbit]
+    set result {}
+    lappend result [$c encode "once upon a time" 958427136]
+    lappend result [$c cget -pt]
+    lappend result [$c encode "once upon a tome" 958427136]
+    lappend result [$c cget -pt]
+    rename $c {}
+    set result
+} {27435881512827465679378 {once upon a time} 27435881512827465672721 {once upon a tome}}

@@ -1,0 +1,50 @@
+# morse.test
+# Test of the morse command
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Test groups:
+#	1.x	Error messages
+#	2.x	Valid morse -> text  translation
+#	3.x	Valid text  -> morse translation
+
+test morse-1.1 {Bad number of arguments} {
+    set result [list [catch {morse} msg] $msg]
+
+} {1 {Usage:  morse string}}
+
+test morse-2.1 {simple morse -> text} {
+    set result [morse ...x---x...]
+} {sos}
+
+test morse-3.1 {simple text -> morse} {
+    set result [morse sos]
+} {...x---x...}
+
+test morse-3.2 {text -> morse of single x should assume text} {
+    set result [morse x]
+} {-..-}
+
+test morse-3.3 {text -> morse of single characters} {
+    set result [list [morse x] [morse -] [morse .] [morse a]]
+} {-..- -....- .-.-.- .-}
+
+test morse-3.4 {Translate 6-character morse sequences} {
+    set result [list [morse {;?,-.}]]
+    # Note that the morse sequence for a period is the same as
+    # a question mark.  The reverse translation will convert the
+    # morse sequence back to a question mark.
+    lappend result [morse $result]
+} {-.-.-.x.-.-.-x--..--x-....-x.-.-.- {;?,-?}}
+
+test morse-3.5 {Translate an empty string.} {
+    set result [morse {}]
+} {}
+
+test morse-3.6 {Translate a string with uppercase letters.} {
+    set result [morse SOS]
+} {...x---x...}

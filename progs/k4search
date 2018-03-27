@@ -1,0 +1,130 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# k4search --
+#
+#	Tool for finding probable matches to a K4 mixed alphabet.
+#
+# RCS: @(#) $Id: k4search,v 1.5 2008/03/17 01:07:19 wart Exp $
+#
+# Copyright (C) 2000,2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg "" "The key type to convert.  Must be one of 'k1' or 'k2'"] \
+    [list keyword.arg "" "The single keyword to use."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+set cipherObj [CipherUtil::createCipherFromFile $file]
+
+# Read the ciphertext from the input file
+
+set colCipher [CipherUtil::aristocratKeyToColumnar $cipherObj $type]
+
+# Iterate over all possible keys
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set count 0
+set stepInterval 0
+
+proc findBestFit {colCipher keyword} {
+    global type
+    set maxValue 0
+    set maxKey {}
+
+    regsub -all -- - $keyword {} keyword
+    if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+        set keyList $fixedKey
+        foreach key $keyList {
+            $colCipher restore $key
+            set pt [$colCipher cget -pt]
+            switch $type {
+                k2 {
+                    set value [key ordervalue [string range $pt 26 52]]
+                }
+                default {
+                    set value [key ordervalue [string range $pt 0 25]]
+                }
+            }
+            # puts "comparing $keyPattern $k3alphabet ($keyword)"
+
+            if {$value >= $maxValue} {
+                set maxValue $value
+                set maxKey [$colCipher cget -key]
+            }
+        }
+    }
+
+    return [list $maxKey $maxValue]
+}
+
+if {$keyword == ""} {
+    foreach length [lsort -integer -decreasing [Dictionary::availableLengths]] {
+        foreach keyword [Dictionary::lookupByLength $length] {
+            regsub -all -- - $keyword {} keyword
+            foreach {key value} [findBestFit $colCipher $keyword] {}
+            if {$key != ""} {
+                $colCipher restore $key
+                set pt [$colCipher cget -pt]
+
+                if {$value >= $maxValue} {
+                    set maxValue $value
+                    set maxKeyword $keyword
+                    set maxKey [$colCipher cget -key]
+
+                    puts "# $value:  ($keyword)  Fit: $value"
+                    for {set i 0} {$i < [string length $pt]} {incr i 26} {
+                        puts "# $value:  [string range $pt $i [expr {$i + 25}]]"
+                    }
+                    puts ""
+                }
+            }
+        }
+    }
+} else {
+    foreach {key value} [findBestFit $colCipher $keyword] {}
+    if {$key != ""} {
+        $colCipher restore $key
+        set pt [$colCipher cget -pt]
+        puts "# $value:  ($keyword)  Fit: $value"
+        for {set i 0} {$i < [string length $pt]} {incr i 26} {
+            puts "# $value:  [string range $pt $i [expr {$i + 25}]]"
+        }
+    }
+}

@@ -1,0 +1,69 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# ioc --
+#
+#	Calculate the index of coincidence for a string of ciphertext.
+#
+# RCS: @(#) $Id: ioc,v 1.8 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2003  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg "0" "The name of the input cipher file"] \
+    [list type.arg "generic" "The name of the input cipher file"]]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Command line validation
+
+set ct [CipherUtil::readCiphertext $file]
+regsub -all { } $ct {} ct
+
+if {$type == "phillips"} {
+    set period 8
+}
+
+if {$period < 2} {
+    puts [format %.5f [stat ioc $ct]]
+} else {
+    if {$type == "phillips"} {
+	set iocList [CipherUtil::phillipsIoc $ct]
+    } else {
+	set iocList [CipherUtil::periodicIoc $period $ct]
+    }
+
+    for {set i 1} {$i <= $period} {incr i} {
+	puts "[format %2d $i]: [format %.4f [lindex $iocList $i]]"
+    }
+    puts "Mean: [format %.4f [lindex $iocList 0]]"
+}

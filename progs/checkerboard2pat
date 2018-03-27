@@ -1,0 +1,51 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# checkerboard2pat --
+#
+#	Convert a string of checkerboard ciphertext to a patristocrat cipher.
+#
+# RCS: @(#) $Id: checkerboard2pat,v 1.3 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+set ct [CipherUtil::readCiphertext $file]
+
+array set map [CipherUtil::checkerboard2pat $ct]
+set patCt $map(ciphertext)
+
+#puts "firstLetters = $firstLetters"
+#puts "secondLetters = $secondLetters"
+puts "$patCt"

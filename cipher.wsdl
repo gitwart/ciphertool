@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="cipher" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="cipher" xmlns:intf="cipher" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <wsdl:types>
+  <schema targetNamespace="cipher" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="ArrayOf_xsd_string">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:string[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+
+   <complexType name="CipherInfo">
+    <sequence>
+     <element name="id" type="xsd:string"/>
+     <element name="type" type="xsd:string"/>
+     <element name="period" nillable="true" type="xsd:int"/>
+     <element name="ciphertext" nillable="true" type="xsd:string"/>
+     <element name="plaintext" nillable="true" type="xsd:string"/>
+     <element name="keyword" nillable="true" type="xsd:string"/>
+     <element name="key" nillable="true" type="xsd:string"/>
+     <element name="author" nillable="true" type="xsd:string"/>
+     <element name="title" nillable="true" type="xsd:string"/>
+     <element name="notes" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="solveRequest">
+      <wsdl:part name="cipher" type="impl:CipherInfo"/>
+   </wsdl:message>
+
+   <wsdl:message name="solveResponse">
+      <wsdl:part name="jobid" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getJobStatusRequest">
+      <wsdl:part name="jobid" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getJobStatusResponse">
+      <wsdl:part name="cipher" type="impl:CipherInfo"/>
+   </wsdl:message>
+
+   <wsdl:message name="encodeRequest">
+      <wsdl:part name="cipher" type="impl:CipherInfo"/>
+   </wsdl:message>
+
+   <wsdl:message name="encodeResponse">
+      <wsdl:part name="result" type="impl:CipherInfo"/>
+   </wsdl:message>
+
+   <wsdl:message name="estimateCPUTimeRequest">
+      <wsdl:part name="cipher" type="impl:CipherInfo"/>
+   </wsdl:message>
+
+   <wsdl:message name="estimateCPUTimeResponse">
+      <wsdl:part name="cputime" type="xsd:long"/>
+   </wsdl:message>
+
+   <wsdl:message name="estimateJobTimeRequest">
+      <wsdl:part name="jobid" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:message name="estimateJobTimeResponse">
+      <wsdl:part name="cputime" type="xsd:long"/>
+   </wsdl:message>
+
+   <wsdl:message name="getLanguagesRequest">
+   </wsdl:message>
+
+   <wsdl:message name="getLanguagesResponse">
+      <wsdl:part name="languages" type="impl:ArrayOf_xsd_string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getCipherTypesRequest">
+   </wsdl:message>
+
+   <wsdl:message name="getCipherTypesResponse">
+      <wsdl:part name="types" type="impl:ArrayOf_xsd_string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getScoreTypesRequest">
+      <wsdl:part name="language" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getScoreTypesResponse">
+      <wsdl:part name="types" type="impl:ArrayOf_xsd_string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getScoreDataRequest">
+      <wsdl:part name="language" type="xsd:string"/>
+      <wsdl:part name="scoretype" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:message name="getScoreDataResponse">
+      <wsdl:part name="scoredata" type="xsd:string"/>
+   </wsdl:message>
+
+   <wsdl:portType name="cipher">
+      <wsdl:operation name="solve">
+         <wsdl:input message="impl:solveRequest" name="solveRequest"/>
+         <wsdl:output message="impl:solveResponse" name="solveResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobStatus">
+         <wsdl:input message="impl:getJobStatusRequest" name="getJobStatusRequest"/>
+         <wsdl:output message="impl:getJobStatusResponse" name="getJobStatusResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="encode">
+         <wsdl:input message="impl:encodeRequest" name="encodeRequest"/>
+         <wsdl:output message="impl:encodeResponse" name="encodeResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="estimateCPUTime">
+         <wsdl:input message="impl:estimateCPUTimeRequest" name="estimateCPUTimeRequest"/>
+         <wsdl:output message="impl:estimateCPUTimeResponse" name="estimateCPUTimeResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="estimateJobTime">
+         <wsdl:input message="impl:estimateJobTimeRequest" name="estimateJobTimeRequest"/>
+         <wsdl:output message="impl:estimateJobTimeResponse" name="estimateJobTimeResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="getLanguages">
+         <wsdl:input message="impl:getLanguagesRequest" name="getLanguagesRequest"/>
+         <wsdl:output message="impl:getLanguagesResponse" name="getLanguagesResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="getCipherTypes">
+         <wsdl:input message="impl:getCipherTypesRequest" name="getCipherTypesRequest"/>
+         <wsdl:output message="impl:getCipherTypesResponse" name="getCipherTypesResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="getScoreTypes" parameterOrder="language">
+         <wsdl:input message="impl:getScoreTypesRequest" name="getScoreTypesRequest"/>
+         <wsdl:output message="impl:getScoreTypesResponse" name="getScoreTypesResponse"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="getScoreData" parameterOrder="scoretype language">
+         <wsdl:input message="impl:getScoreDataRequest" name="getScoreDataRequest"/>
+         <wsdl:output message="impl:getScoreDataResponse" name="getScoreDataResponse"/>
+      </wsdl:operation>
+   </wsdl:portType>
+
+   <wsdl:binding name="cipherSoapBinding" type="impl:cipher">
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <wsdl:operation name="solve">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="solveRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="solveResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobStatus">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="getJobStatusRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="getJobStatusResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="encode">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="encodeRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="encodeResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="estimateCPUTime">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="estimateCPUTimeRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="estimateCPUTimeResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="estimateJobTime">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="estimateJobTimeRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="estimateJobTimeResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getLanguages">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="getLanguagesRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="getLanguagesResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getCipherTypes">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="getCipherTypesRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="getCipherTypesResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getScoreTypes">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="getScoreTypesRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="getScoreTypesResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getScoreData">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="getScoreDataRequest">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:input>
+
+         <wsdl:output name="getScoreDataResponse">
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="cipher" use="encoded"/>
+         </wsdl:output>
+      </wsdl:operation>
+   </wsdl:binding>
+
+   <wsdl:service name="cipherService">
+      <wsdl:port binding="impl:cipherSoapBinding" name="cipher">
+         <wsdlsoap:address location="http://www.kobold.org:8015/cipher"/>
+      </wsdl:port>
+   </wsdl:service>
+
+</wsdl:definitions>

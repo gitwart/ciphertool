@@ -1,0 +1,652 @@
+# pollux.test
+# Test of the pollux cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the pollux cipher
+# Laid out, the cipher looks like:
+#
+# 08639 34257 02417 68596 30414 56234 90874 53609
+#
+# Solution:  luck helps
+#
+#    l   u    c   k     h e    l    p   s 
+#.-..x..-x-.-.x-.-xx....x.x.-..x.--.x...x
+#0863934257024176859630414562349087453609
+#
+# Key: x - . . x . - - x .
+#      1 2 3 4 5 6 7 8 9 0
+proc createValidCipher {} {
+    set c [cipher create pollux -ct "08639 34257 02417 68596 30414 56234 90874 53609"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#	7.x	Save/Restore tests
+#	8.x	Encoding tests
+
+test pollux-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test pollux-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test pollux-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test pollux-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test pollux-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test pollux-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test pollux-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct mt}}
+
+test pollux-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct mt}}
+
+test pollux-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ?ct?}}
+
+test pollux-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test pollux-1.11 {invalid use morbit command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar restore ct mt
+                 ciphervar substitute ct mt
+                 ciphervar locate pt
+                 ciphervar undo ?ct?
+                 ciphervar encode pt key}}
+
+test pollux-2.1 {invalid cipher characters} {
+    set c [cipher create pollux]
+
+    set result [catch {$c configure -ct aaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test pollux-2.2 {Attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for pollux ciphers.}}
+
+test pollux-2.3 {Attempt to substitute with bad morsetext character} {
+    set c [cipher create pollux]
+
+    set result [catch {$c substitute 1 q} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution morsetext}}
+
+test pollux-2.4 {Attempt to substitute with bad ciphertext character} {
+    set c [cipher create pollux]
+
+    set result [catch {$c substitute a -} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution ciphertext}}
+
+test pollux-2.5 {Attempt to substitute with mismatched ciphertext/morsetext length} {
+    set c [cipher create pollux]
+
+    set result [catch {$c substitute 12 ...---} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Plaintext and ciphertext must be the same length.}}
+
+test pollux-2.6 {Attempt to substitute same ciphertext character twice} {
+    set c [cipher create pollux]
+
+    set result [catch {$c substitute 11 .-} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test pollux-2.7 {Get plaintext with no ciphertext} {
+    set c [cipher create pollux]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test pollux-2.8 {Solve with no ciphertext} {
+    set c [cipher create pollux]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test pollux-3.1 {use of cget -length} {
+    set c [cipher create pollux]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test pollux-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {40}
+
+test pollux-3.3 {use of cget -ct} {
+    set c [cipher create pollux]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test pollux-3.4 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {0863934257024176859630414562349087453609}
+
+test pollux-3.5 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {}
+
+test pollux-3.6 {use of cget -morsetext} {
+    set c [createValidCipher]
+    $c restore 1234567890 x-..x.--x.
+    set result [$c cget -morsetext]
+    rename $c {}
+    
+    set result
+} {.-..x..-x-.-.x-.-xx....x.x.-..x.--.x...x}
+
+test pollux-3.7 {use of cget -fullplaintext} {
+    set c [createValidCipher]
+    $c restore 1234567890 x-..x.--x.
+    set result [$c cget -fullplaintext]
+    rename $c {}
+    
+    set result
+} {    l   u    c   k     h e    l    p   s}
+
+test pollux-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -key]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {23 {0123456789 {          }}}
+
+test pollux-3.9 {use of cget -keyword (empty)} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -keyword]] [$c cget -keyword]]
+    rename $c {}
+    
+    set result
+} {10 {          }}
+
+test pollux-3.10 {use of cget -keyword (not empty)} {
+    set c [createValidCipher]
+    $c restore 0213456798 .-x.-x.-x.
+    set result [$c cget -keyword]
+    rename $c {}
+    
+    set result
+} {.x-.-x.-.x}
+
+test pollux-3.11 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test pollux-3.12 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test pollux-3.13 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test pollux-3.14 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test pollux-3.15 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test pollux-3.16 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test pollux-3.17 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test pollux-3.18 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test pollux-3.19 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test pollux-3.20 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {pollux}
+
+test pollux-3.21 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test pollux-3.22 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test pollux-4.1 {single substitution} {
+    set c [createValidCipher]
+
+    $c substitute 2 -
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 {  -       }}
+
+test pollux-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+
+    $c substitute 24 .x
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 {  . x     }}
+
+test pollux-4.3 {multiple substitutions with space for morse text} {
+    set c [createValidCipher]
+
+    $c substitute 1234 {x. -}
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 { x. -     }}
+
+test pollux-4.4 {multiple valid substitutions of the same letter} {
+    set c [createValidCipher]
+
+    $c substitute 1231 -.x-
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 { -.x      }}
+
+test pollux-5.1 {undo with no substitutions} {
+    set c [createValidCipher]
+    $c undo 1
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 {          }}
+
+test pollux-5.2 {undo single substitution} {
+    set c [createValidCipher]
+    $c substitute 1 .
+    $c undo 1
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 {          }}
+
+test pollux-5.3 {undo one of multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute 123 .x-
+    $c undo 2
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 { . -      }}
+
+test pollux-5.4 {undo all} {
+    set c [createValidCipher]
+    $c substitute 123 .x-
+    $c undo
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0123456789 {          }}
+
+test pollux-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c restore 1234567890 x-..x.--x.
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{0123456789 .x-..x.--x} {luck helps}}
+
+test pollux-7.2 {save/restore test, empty key} {} {
+    set c1 [createValidCipher]
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{0123456789 {          }} {}}
+
+test pollux-7.3 {save/restore test, full key} {} {
+    set c1 [createValidCipher]
+    $c1 restore 1234567890 x-..x.--x.
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{0123456789 .x-..x.--x} {luck helps}}
+
+test pollux-7.4 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 restore 12345678 x-..x.--
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{0123456789 { x-..x.-- }} {  k e }}
+
+test pollux-7.5 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 restore "123456789 " "x ..x.-- ."
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{0123456789 { x ..x.-- }} {  k e }}
+
+
+
+test pollux-8.1 {make sure the plaintext and key are consistent with the encoding function} {
+    set c [cipher create pollux]
+    $c encode "luck helps" x-..x.--x.
+    set result [list [$c cget -pt] [$c cget -key]]
+    rename $c {}
+    set result
+} {{luck helps} {0123456789 .x-..x.--x}}
+
+test pollux-8.2 {use 'encode' output as ciphertext input} {
+    set c [cipher create pollux]
+    set result {}
+    set ct [$c encode "luck helps" x-..x.--x.]
+    set c2 [cipher create pollux -ct $ct]
+    $c2 restore 1234567890 x-..x.--x.
+    set result [list [$c2 cget -pt] [$c2 cget -key]]
+    rename $c {}
+    rename $c2 {}
+    set result
+} {{luck helps} {0123456789 .x-..x.--x}}
+
+test pollux-8.3 {need one of each morse code symbol in the key} {} {
+    set c [cipher create pollux]
+    set result [catch {$c encode "luck helps" x-x-xx--x-} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Each morse code mark (. - x) needs to be present in the key.}}
+
+test pollux-8.4 {need 10 symbols in the key} {} {
+    set c [cipher create pollux]
+    set result [catch {$c encode "luck helps" x-..x.--x} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Plaintext and ciphertext must be the same length.}}
+
+test pollux-8.5 {no unknown symbols allowed} {} {
+    set c [cipher create pollux]
+    set result [catch {$c encode "luck helps" x-..x?--x.} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Bad character in substitution morsetext}}
+
+    

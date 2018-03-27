@@ -1,0 +1,100 @@
+<HTML>
+<TITLE>Cipher Program - lethist</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+lethist - Generate character histograms and contact charts.
+
+
+<H2>SYNOPSIS</H2>
+
+<B>lethist</B> <I>?-c? ?-D? ?-d? ?-n? ?-h? ?-v?</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="contact"><B><CODE>-c</CODE></B></A></DT>
+        <DD>Show a contact table.  The contact table shows which letters appear before and after each other letter.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="verbose"><B><CODE>-v</CODE></B></A></DT>
+        <DD>Show the standard histogram and contact chart with all outputs.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="digram"><B><CODE>-d</CODE></B></A></DT>
+        <DD>Generate a digram table for the input.  All digrams in the input are used.
+For example, the 1st and 2nd letters form the first digram, the 2nd and 3rd for
+the next digram, etc.  The string <code>foobar</code> would generate the
+following digrams:  <code>fo</code>, <code>oo</code>, <code>ob</code>,
+<code>ba</code>, <code>ar</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="true_digram"><B><CODE>-D</CODE></B></A></DT>
+        <DD>Generate a digram table for the input.  Digrams in this mode do not overlap.
+For example, the string <code>foobar> would generate the following digrams:
+<code>fo</code>, <code>ob</code>, <code>ar</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="numeric"><B><CODE>-n</CODE></B></A></DT>
+        <DD>Use the numbers from the input instead of the letters a-z.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="help"><B><CODE>-h</CODE></B></A></DT>
+        <DD>Show the very terse, non-helpful help string.
+        </DD>
+
+
+</DL>
+
+
+<H2>EXAMPLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="example1"><B><CODE>lethist < file1.txt</CODE></B></A></DT>
+        <DD>Show a histogram of the letter frequencies in <code>file1.txt</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example2"><B><CODE>lethist -c < file1.txt</CODE></B></A></DT>
+        <DD>Show a contact chart for the text in <code>file1.txt</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example3"><B><CODE>lethist -n -D < file1.txt</CODE></B></A></DT>
+        <DD>Show a numeric digram chart for the numbers in <code>file1.txt</code>.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

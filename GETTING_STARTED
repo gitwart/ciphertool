@@ -1,0 +1,39 @@
+First you need to create a file that contains only the ciphertext
+that you wish to analyze.  The data/ subdirectory has some
+samples that you can use.  Let's play with
+data/sample_aristocrat.txt for now.
+
+Start up the ctool application.  Go to the File menu -> New
+cipher.  It will open up a file browser and ask for a file to
+open.  Navigate to the data/sample_aristocrat.txt file and hit
+'ok'.  Next a listbox will open up with a list of possible cipher
+types.  Select "aristocrat" and hit 'ok'.  The display will
+update to show the current cipher, and update the inputs to
+reflect the actions you can take on this cipher type.  In the
+case of aristocrats, you can make simple substitutions, undo
+substitutions, or locate a tip.
+
+To make a substitution, select the plaintext letter by pressing
+one of the letters in the top row of buttons.  Try 't'.  Now
+select a ct letter by pressing one of the letters in the bottom
+row.  Try 'd'.  Now press the button labelled "substitute".  The
+display at the bottom will be updated to show that all 'd's stand
+for 't'.
+
+Another interesting part of the display is the key window.  Go to
+the 'view' menu and select "show key".  A new area will open up
+that shows the K1 and K2 keyed alphabets for this cipher.  These
+are updated every time you make a new substitution.
+
+You'll notice there are buttons for 'solve' and 'set period' in
+the aristocrat display.  Ignore them.  They don't do anything.
+Other cipher types like vigenere, bifid, and columnar
+transpositions make use of these buttons.
+
+Not all of the cipher types can be displayed in the interface.
+The README file describes which can and can't be used.
+
+If you run into any problems with the interface, or have opinions
+on what you do or don't like about it, please let me know.
+Feedback is much appreciated.
+

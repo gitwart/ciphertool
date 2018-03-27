@@ -1,0 +1,143 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# portaxbrute --
+#
+#	Brute force solver for portax ciphers.
+#
+# RCS: @(#) $Id: portaxbrute,v 1.5 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2002  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+
+# Command line processing
+
+if {[llength $argv] < 2 || [llength $argv] > 3} {
+    puts stderr "Usage:  $argv0 file period ?offset?"
+    exit 1
+}
+
+set filename	[lindex $argv 0]
+set period	[lindex $argv 1]
+set offset	[lindex $argv 2]
+set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+set stepInterval  1000
+
+set startIndex 0
+set endIndex [expr {$period - 1}]
+
+if {$offset != ""} {
+    set startIndex $offset
+    set endIndex [expr {$offset + 2}]
+}
+
+if {$endIndex > $period} {
+    set endIndex [expr {$period - 1}]
+}
+
+if {$startIndex > $period} {
+    puts stderr "Invalid offset $offset.  Must be less than the period $period"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ciphertext [CipherUtil::readCiphertext $filename]
+
+# Convert the ciphertext to pairs of letters
+
+regsub -all { } $ciphertext {} ciphertext
+set ciphertext [string trimright $ciphertext]
+
+proc decodePortax {ciphertext key period} {
+    set pt {}
+    for {set i 0} {$i < [string length $ciphertext]} {incr i} {
+	set row [expr {$i / $period}]
+	set col [expr {$i % $period}]
+	set keyLetter [string index $key $col]
+	set ct1 [string index $ciphertext $i]
+	set ct2 [string index $ciphertext [expr {$i + $period}]]
+
+	set ptpair [key convert portaxpt $keyLetter $ct1$ct2]
+	set pt1 [string index $ptpair 0]
+	set pt2 [string index $ptpair 1]
+
+	if {$pt1 == ""} {
+	    set pt1 " "
+	}
+	if {$pt2 == ""} {
+	    set pt2 " "
+	}
+
+	append ptrow1 $pt1
+	append ptrow2 $pt2
+
+	if {$col == [expr {$period - 1}]} {
+	    append pt $ptrow1$ptrow2
+	    set ptrow1 {}
+	    set ptrow2 {}
+	    incr i $period
+	}
+    }
+
+    return $pt
+}
+
+set maxValue 0
+set maxKey 0
+set maxPt 0
+set count 0
+set loopCode {}
+for {set i 0} {$i < $period} {incr i} {
+    set keyLetter$i { }
+}
+for {set i $startIndex} {$i <= $endIndex} {incr i} {
+    append loopCode "foreach keyLetter$i \"$alphabet\" \{\n"
+}
+append loopCode {    set key }
+for {set i 0} {$i < $period} {incr i} {
+    append loopCode "\$keyLetter$i"
+}
+append loopCode \n
+append loopCode "    set pt \[decodePortax \"$ciphertext\" \$key $period\]\n"
+append loopCode {
+    set value [score value $pt]
+    if {$value > $maxValue} {
+	regsub -all { } $pt {_} pt
+	set maxValue $value
+	set maxKey $key
+	set maxPt $pt
+	puts "Key:  $key  Fit:  $value"
+	puts "$pt"
+    }
+    if {$count % $stepInterval == 0} {
+	puts "$count:  $key"
+    }
+    incr count
+}
+for {set i $startIndex} {$i <= $endIndex} {incr i} {
+    append loopCode "\}\n"
+}
+
+puts "loopCode = $loopCode"
+eval $loopCode
+
+puts "maxValue = $maxValue"
+puts "maxKey = $maxKey"
+puts "maxPt = $maxPt"

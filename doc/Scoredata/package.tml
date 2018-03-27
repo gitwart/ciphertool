@@ -1,0 +1,28 @@
+[docHeader "Cipher Package - Scoredata"]
+[Command Scoredata "Procedures for reading, writing, and generating scoring tables."]
+
+[SynopsisHeader]
+[Synopsis {} "package require Scoredata"]
+
+[StartDescription VARIABLES]
+
+[Description "Scoredata::allowedCharacters" allowedCharacters \
+""]
+
+[EndDescription]
+
+[StartDescription COMMANDS]
+
+[Description "Scoredata::loadData command ?language? ?filename?" loadData \
+"Load a default or previously saved scoring table.
+The <code>command</code> argument is the name of the scoring table into which the data will be loaded.  The <code>language</code> argument indicates which precomputed language table should be loaded.  Use an empty string <code>{}</code> for the default language, English.  The <code>filename</code> argument is the name of the file containing the scoring data.  If <code>filename</code> is specified, then the <code>language</code> argument is ignored."]
+
+[Description "Scoredata::saveData command filename" saveData \
+"Save a scoring table to a file.  The <code>command</code> argument is the name of the scoring table object to save.  The <code>filename</code> argument is the name of the file to which the data will be written.  Use <code>-</code> as a filename to write to stdout."]
+
+[Description "Scoredata::generate command file1 ?file2 ...?" generate \
+"Generate and load data into a scoring table from sample files of plaintext.  The <code>command</code> argument is the name of the scoring table that will receive the new data.  Any number of files may be specified for the source data.  The data will be normalized after it has all been loaded."]
+
+[EndDescription]
+
+[footer]

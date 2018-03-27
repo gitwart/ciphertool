@@ -1,0 +1,769 @@
+# playfair.test
+# Test of the playfair cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample playfair cipher:
+#
+# dl hf sn cn cr zx cq qg fe eq on
+#
+#
+# Key:
+#	logar
+#	ithmb
+#	cdefk
+#	npqsu
+#	vwxyz
+#
+#
+# co me qu ic kl yw en ex ed he lp
+
+proc createValidCipher {{period 0}} {
+    if {$period == 0} {
+	set c [cipher create playfair -ct "dl hf sn cn cr zx cq qg fe eq on"]
+    } else {
+	set c [cipher create playfair -ct "nlbcs pcdfg xzqqc dcmgc gqtbh cftrh fgwhg b" -period $period]
+    }
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Restore tests
+#       6.x     Row swap tests
+#       7.x     Encode tests
+
+test playfair-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test playfair-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test playfair-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test playfair-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test playfair-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test playfair-1.6 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test playfair-1.7 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test playfair-1.8 {non-numeric period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad period.  Integer expected:  a}}
+
+test playfair-1.9 {negative period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Period must be greater than zero.}}
+
+test playfair-1.10 {bad use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap row|col item1 item2}}
+
+test playfair-1.11 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row/column value a.}}
+
+test playfair-1.12 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row/column value a.}}
+
+test playfair-1.13 {attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for playfair ciphers.}}
+
+test playfair-1.14 {attempt to solve} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Solving playfair ciphers is not yet implemented.}}
+
+test playfair-1.15 {bad use of substitute command} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute row col val}}
+
+test playfair-1.16 {bad use of undo command} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo row col}}
+
+test playfair-1.17 {bad use of restore command} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key ?junk?}}
+
+test playfair-1.18 {invalid use playfair command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar substitute row col val
+                 ciphervar swap row1 row2
+                 ciphervar undo row col
+                 ciphervar encode pt key}}
+
+test playfair-2.1 {get plaintext with no ciphertext} {
+    set c [cipher create playfair]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test playfair-2.2 {set bad ciphertext} {
+    set result [catch {cipher create playfair -ct 1111} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test playfair-2.3 {set bad ciphertext} {
+    set cipher [cipher create playfair -ct aa]
+    set result [catch {$cipher cget -pt} msg]
+
+    lappend result $msg
+    rename $cipher {}
+    
+    set result
+} {1 {Invalid double letters found in ciphertext}}
+
+test playfair-2.4 {set bad ciphertext} {
+    set result [catch {cipher create playfair -ct abcde} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {playfair ciphers must contain an even number of characters}}
+
+test playfair-2.5 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in playfair swap}}
+
+test playfair-2.6 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 6 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in playfair swap}}
+
+test playfair-2.7 {bad swap type} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap foo 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid parameter.  Must be 'row' or 'col'}}
+
+test playfair-2.8 {restore with no ciphertext} {
+    set c [cipher create playfair]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test playfair-2.9 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key length 3}}
+
+test playfair-2.10 {restore with invalid characters in key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1234512345123451234512345} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test playfair-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aaaaabbbbbcccccdddddeeeee} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test playfair-2.12 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 0 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row specification}}
+
+test playfair-2.13 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 0 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column specification}}
+
+test playfair-2.14 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 1 #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key value}}
+
+test playfair-2.15 {encode with non-listified key} {
+    set c [cipher create playfair]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test playfair-2.16 {encode with too many key elements} {
+    set c [cipher create playfair]
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
+
+test playfair-2.17 {encode with short key} {
+    set c [cipher create playfair]
+
+    set result [catch {$c encode foobar "abc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key.}}
+
+test playfair-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {22}
+
+test playfair-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test playfair-3.3 {get period (set)} {
+    set c [createValidCipher 6]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {6}
+
+test playfair-3.4 {successful use of cget -ct (empty)} {
+    set c [cipher create playfair]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test playfair-3.5 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {dlhfsncncrzxcqqgfeeqon}
+
+test playfair-3.6 {successful use of cget -ct with period set} {
+    set c [createValidCipher 6]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgb}
+
+test playfair-3.7 {set ciphertext with uppercase letters} {
+    set c [cipher create playfair -ct "Abcde Fghij Klmno Pqrst"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrst}
+
+test playfair-3.8 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {playfair}
+
+test playfair-3.9 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "abcdef"]
+    rename $c {}
+    
+    set result
+} {abcdef}
+
+test playfair-3.10 {successful use of undo} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                         } {                      }}
+
+test playfair-3.11 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test playfair-3.12 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test playfair-3.13 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test playfair-3.14 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test playfair-3.15 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test playfair-3.16 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test playfair-3.17 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test playfair-3.18 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test playfair-3.19 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test playfair-3.20 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test playfair-3.21 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test playfair-4.1 {single substitution} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    set result [list [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {{a                        }}
+
+test playfair-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute 3 5 k
+    $c substitute 1 1 l
+    $c substitute 1 5 r
+    $c substitute 3 1 c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{l   r     c   k          } {        kl            }}
+
+test playfair-5.1 {restore} {
+    set c [createValidCipher]
+    $c restore logarithmbcdefknpqsuvwxyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {logarithmbcdefknpqsuvwxyz comequicklywenexedhelp}
+
+test playfair-5.2 {restore with period set} {
+    set c [createValidCipher 6]
+    $c restore logarithmbcdefknpqsuvwxyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {logarithmbcdefknpqsuvwxyz comequicklyweneedhxelpimmediatelytom}
+
+test playfair-5.3 {restore with period set and incomplete final block} {
+    set c [cipher create playfair -ct "dewgs sgcho czkua ukyge fhydi egkqn nteyf nhgou wlwti huwfc kmnwo kmgki rboaq ccaoh bdhuy auprt hwdqb uvelc kevno hguou ouufo fadqo knfek spckc ocbog wbmyu nyenn bamua qanlh gaorq cxcnw doq" -period 7]
+    $c restore crboytfkglqzemnxphsdwviau
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {crboytfkglqzemnxphsdwviau xkatphlyecomgaidlbkmtsuhumkfnemgnctmdlciugxladaatwfeeucfgttworbsmbbvbsrpxicuwhykdusniaumkolkwzbdtiraywatygisnyfmtmthsotrbbortiyeoamumemriedimvmtptuconydomaxcn}
+
+test playfair-5.4 {restore with spaces in key} {
+    set c [createValidCipher]
+    $c restore {logarithmbcdef npqsuvwxyz}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{logarithmbcdef npqsuvwxyz} {comequic lywenexedhelp}}
+
+test playfair-5.5 {restore with 'j' in ciphertext} {
+    set c [cipher create playfair -ct "dl hj sn cn cr zx cq qg fe eq on"]
+    $c restore {logarithmbcdefknpqsuvwxyz}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {logarithmbcdefknpqsuvwxyz {co  quicklywenexedhelp}}
+
+test playfair-6.1 {swap columns} {
+    set c [createValidCipher]
+    $c restore logarithmbcdefknpqsuvwxyz 
+    $c swap col 1 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {olgartihmbdcefkpnqsuwvxyz comeqpicklyvenexechelp}
+
+test playfair-6.2 {swap rows} {
+    set c [createValidCipher]
+    $c restore logarithmbcdefknpqsuvwxyz 
+    $c swap row 1 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {ithmblogarcdefknpqsuvwxyz comequlcklywenehedgelp}
+
+test playfair-7.1 {encode} {
+    set c [cipher create playfair]
+
+    set result [list [$c encode "comequicklywenexedhelp" logarithmbcdefknpqsuvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {dlhfsncncrzxcqqgfeeqon dlhfsncncrzxcqqgfeeqon comequicklywenexedhelp logarithmbcdefknpqsuvwxyz}
+
+test playfair-7.2 {encode adds necessary nulls} {
+    set c [cipher create playfair]
+
+    set result [list [$c encode "comequicklyweneedheelp" logarithmbcdefknpqsuvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {dlhfsncncrzxcqqgfeeqcgqw dlhfsncncrzxcqqgfeeqcgqw comequicklywenexedheelpx logarithmbcdefknpqsuvwxyz}
+
+test playfair-7.3 {encode seriated playfair} {
+    set c [cipher create playfair]
+    $c configure -period 6
+
+    set result [list [$c encode "comequicklyweneedhxelpimmediatelytom" logarithmbcdefknpqsuvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgb nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgb comequicklyweneedhxelpimmediatelytom logarithmbcdefknpqsuvwxyz}
+
+test playfair-7.4 {encode seriated playfair adds necessary nulls} {
+    set c [cipher create playfair]
+    $c configure -period 6
+
+    set result [list [$c encode "comequicklyweneedhelpimmediatelytomx" logarithmbcdefknpqsuvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgbgx nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgbgx comequicklyweneedhxelpimmediatelytomxq logarithmbcdefknpqsuvwxyz}

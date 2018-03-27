@@ -1,0 +1,72 @@
+[docHeader "Cipher Type - nicodemus"]
+[Ciphertype nicodemus]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore key" restore]
+[Synopsis <I>cipherProc</I> "fit column" fit]
+[Synopsis <I>cipherProc</I> "swap col1 col2" swap]
+[Synopsis <I>cipherProc</I> "undo" undo]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureOption -encoding type \
+"Set the type of encipherment for the columns.  Must be one of <I>vigenere</I>,
+<I>variant</I>, <I>beaufort</I>, or <I>porta</I>."]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+    [ConfigureLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetOption -encoding "Return the type of encoding used for 
+the columns in this cipher."]
+    [CgetPeriod]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \$key</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> fit column" fit \
+"The <B>fit</B> command tries all 26 possible keys for the given column
+and sets the key to the one that produces the best single-letter frequency
+count."]
+
+[Description "<I>cipherProc</I> swap column1 column2" swap \
+"Swap the two specified columns."]
+
+[Description "<I>cipherProc</I> undo" undo \
+"Clears all changes that have been made to the ciphertext."]
+
+[EndDescription]
+
+[footer]

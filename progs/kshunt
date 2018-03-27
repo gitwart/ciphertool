@@ -1,0 +1,168 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# kshunt --
+#
+#	Search for a keysquare that fits a certain pattern.
+#
+# RCS: @(#) $Id: kshunt,v 1.9 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require Dictionary
+
+# Command line processing
+
+if {[llength $argv] < 0 || [llength $argv] > 1} {
+    puts stderr "Usage:  $argv0 ?keyword?"
+    exit 1
+}
+
+set fixedKeyword [lindex $argv 0]
+
+# Iterate over all possible keys
+
+set Dictionary::cache {}
+set key [lindex $argv 0]
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+set stepInterval 2000
+
+# Defaults for the various cipher types
+set cipherParms(keyperiod) 6
+set cipherParms(keyperiod) 5
+set cipherParms(keylength) \
+	[expr {$cipherParms(keyperiod) * $cipherParms(keyperiod)}]
+set cipherParms(keypattern) {j}
+set cipherParms(keysub) {{}}
+set cipherParms(bestkeyProc) {bestkey}
+set cipherParms(keycipher) [cipher create route \
+	-ct [string repeat a $cipherParms(keylength)] \
+	-period $cipherParms(keyperiod)]
+
+set targetKey 	 "downt"
+append targetKey "?????"
+append targetKey "g??s?"
+append targetKey "?x???"
+append targetKey "??i?a"
+set cipherParms(targetKey) $targetKey
+
+proc bestkey {cipherProc keywordList countVar {maxValue 0}} {
+    global stepInterval cipherParms
+    upvar $countVar count
+
+    set maxKeyword {}
+    set maxKey {}
+#    set keycipher [cipher create route \
+#	    -ct [string repeat a $cipherParms(keylength)] \
+#	    -period $cipherParms(keyperiod)]
+
+    foreach keyword $keywordList {
+	# Change 'j' to 'i', since these letters are doubled in the keysquare.
+	# regsub -all {j} $keyword i keyword
+
+	incr count
+
+	if {! [catch {set fixedKey [key generate -k1 ${keyword}]} err] } {
+	    # Remove 'j' from the key for a 25-letter alphabet
+	    if {$cipherParms(keylength) == 25} {
+		regsub -all {j} $fixedKey {} fixedKey
+	    }
+
+	    # Use a 36 character alphabet
+	    if {$cipherParms(keylength) == 36} {
+		set fixedKey [string map \
+			{a a1 b b2 c c3 d d4 e e5 f f6 g g7 h h8 i i9 j j0} \
+			$fixedKey]
+	    }
+
+	    # Use a 27 letter alphabet by adding 0 at the end.
+	    #append fixedKey 0
+
+	    $cipherParms(keycipher) configure -ct $fixedKey
+
+	    # There are many possible routes to try
+
+	    for {set i 1} \
+		    {$i <= [$cipherParms(keycipher) cget -numroutes]} \
+		    {incr i} {
+		$cipherParms(keycipher) configure -in $i
+
+		set result 0
+		set pt [$cipherParms(keycipher) cget -pt]
+		foreach row [$cipherParms(keycipher) cget -ptblock] {
+		    if {[string first d $row] != -1 \
+			&& [string first o $row] != -1 \
+			&& [string first w $row] != -1 \
+			&& [string first t $row] != -1 \
+			&& [string first n $row] != -1} {
+			incr result
+		    }
+		    if {[string first s $row] != -1 \
+			&& [string first g $row] != -1} {
+			incr result
+		    }
+		    if {[string first a $row] != -1 \
+			&& [string first i $row] != -1} {
+			incr result
+		    }
+		}
+		if {$result == 3} {
+		    foreach row [$cipherParms(keycipher) cget -ptblock] {
+			puts "#\t[string toupper $row]"
+		    }
+		    puts "# $count, $keyword"
+		    puts ""
+		}
+#		if {[string match $cipherParms(targetKey) \
+#			[$cipherParms(keycipher) cget -pt]]} {
+#		    foreach row [$cipherParms(keycipher) cget -ptblock] {
+#			puts "#\t[string toupper $row]"
+#		    }
+#		    puts "# $count, $keyword" #		    puts ""
+#		}
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+	if {$count%$stepInterval == 0} {
+	    puts "# $keyword"
+	    puts "# $count: [$cipherParms(keycipher) cget -pt]"
+	    puts ""
+	}
+    }
+
+#    rename $keycipher {}
+
+    return [list $maxValue $maxKeyword $maxKey]
+}
+
+if {$fixedKeyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	$cipherParms(bestkeyProc) foo \
+		[Dictionary::lookupByLength $wordLength] count $maxValue
+    }
+} else {
+    $cipherParms(bestkeyProc) foo $fixedKeyword count $maxValue
+}

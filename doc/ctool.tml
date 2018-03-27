@@ -1,0 +1,62 @@
+[docHeader "Cipher Program - ctool"]
+[Command ctool "graphical interface for manipulating ciphers"]
+
+[SynopsisHeader]
+[Synopsis ctool {}]
+
+[StartDescription]
+
+[Description "ctool" {} \
+"The <B>ctool</B> program is designed to be a general interface for
+manipulating all of the cipher types available to the cipher package.
+Currently only the following ciphers can be used with <B>ctool</B>:
+<P>
+<UL>
+<LI>[Link aristocrat.html {aristocrat (patristocrat)}]
+<LI>[Link baconian.html baconian]
+<LI>[Link beaufort.html beaufort]
+<LI>[Link cadenus.html cadenus]
+<LI>[Link columnar.html {columnar (complete and incomplete)}]
+<LI>[Link grille.html grille]
+<LI>[Link gronsfeld.html gronsfeld]
+<LI>[Link homophonic.html homophonic]
+<LI>[Link morbit.html morbit]
+<LI>[Link myszcowski.html myszcowski]
+<LI>[Link pollux.html pollux]
+<LI>[Link porta.html porta]
+<LI>[Link swagman.html swagman]
+<LI>[Link variant.html variant]
+<LI>[Link vigenere.html vigenere]
+</UL>
+"]
+
+[EndDescription]
+
+<H2>Features</H2>
+<BR>
+<UL>
+<LI>Load a new cipher from the contents of a file
+<LI>Save the current workspace
+<LI>Load a previously saved workspace
+<LI>View the key for the current cipher
+<LI>Perform substitutions, locate tips, and change periods for ciphers.  The
+actual operations that can be performed depend on the current cipher type.
+</UL>
+
+<H2>Misfeatures</H2>
+<BR>
+<UL>
+<LI>Many cipher types can't be used with this tool, but they are still listed
+when you load a new cipher.
+<LI>Pollux plaintext doesn't quite line up with the morse code text
+<LI>The user input areas are very lame.  Their only redeeming value is that
+they are functional.  There are often buttons on the display that do nothing
+but generate error messages.
+<LI>No drag and drop support on the ciphertext itself.  One should be able
+to, for example, drag and drop columns in a columnar cipher to change the key.
+<LI>You can't change a cipher's type after it's been loaded.
+<LI>Loading aristocrat ciphers sometimes cause the entire program to crash.
+<LI>Bugs abound.  See the TODO file for details.
+</UL>
+
+[footer]

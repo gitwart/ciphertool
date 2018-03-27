@@ -1,0 +1,206 @@
+<HTML>
+<TITLE>Cipher Type - homophonic</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+homophonic - Create and manipulate a homophonic cipher
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>set cipherProc [cipher create homophonic]</I>
+<BR>
+
+<BR>
+<A HREF="#configure"><B><I>cipherProc</I></B> <I>configure ?options?</I></A>
+<BR>
+
+<A HREF="#cget"><B><I>cipherProc</I></B> <I>cget option</I></A>
+<BR>
+
+<A HREF="#restore"><B><I>cipherProc</I></B> <I>restore key</I></A>
+<BR>
+
+<A HREF="#substitute"><B><I>cipherProc</I></B> <I>substitute ct pt</I></A>
+<BR>
+
+<A HREF="#undo"><B><I>cipherProc</I></B> <I>undo</I></A>
+<BR>
+
+<A HREF="#locate"><B><I>cipherProc</I></B> <I>locate tip ?ct?</I></A>
+<BR>
+
+<A HREF="#solve"><B><I>cipherProc</I></B> <I>solve</I></A>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="configure"><B><CODE><I>cipherProc</I> configure ?options?</CODE></B></A></DT>
+        <DD>Configure the settings for the homophonic cipher.  Valid options are:
+<P>
+<DL>
+    
+    <DT><B><CODE><I>cipherProc</I> configure -ciphertext string</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> configure -ct string</CODE></B></DT>
+	<DD>Set the ciphertext for this cipher instance to <B>string</B>.
+	Invalid letters or numbers in the ciphertext are silently discarded.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> configure -language <I>language</I></CODE></B></DT>
+	<DD><B>This option is currently ignored for all cipher types.</B>  Set
+	the current cipher language to <B><I>language</I></B>.  If the cipher
+	has a solve method then digram frequencies for this language are used
+	to determine the best fit.  If the language is not specified or not
+	known then english is used.
+
+
+</DL>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="cget"><B><CODE><I>cipherProc</I> cget option</CODE></B></A></DT>
+        <DD>Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    
+    <DT><B><CODE><I>cipherProc</I> cget -type</CODE></B></DT>
+	<DD>Returns the type of this cipher.  In this case, <B>homophonic</B>
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -ciphertext</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> cget -ct</CODE></B></DT>
+	<DD>Return the ciphertext for this cipher.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -plaintext</CODE></B></DT>
+    <DT><B><CODE><I>cipherProc</I> cget -pt</CODE></B></DT>
+	<DD>Return the plaintext for this cipher based on the current
+	key setting.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -key</CODE></B></DT>
+	<DD>Returns the current key setting for this cipher.  The result
+	can be passed back to this cipher instance or another cipher
+	with the <I>cipherProc restore</I> subcommand.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -length</CODE></B></DT>
+	<DD>Returns the length of the ciphertext for this cipher.  <B>0</B>
+	is returned if the ciphertext has not been set.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -language</CODE></B></DT>
+	<DD>Returns the name of the language used for this cipher.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -intlength</CODE></B></DT>
+	<DD>Returns the number of ciphertext values.  Since each pair of ciphertext
+digits represents a single plaintext letter, this will be half of the
+ciphertext length.
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -histogram</CODE></B></DT>
+	<DD>
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -fullkey</CODE></B></DT>
+	<DD>
+	</DD>
+	<P>
+
+    
+    <DT><B><CODE><I>cipherProc</I> cget -period</CODE></B></DT>
+	<DD>Return the period for this cipher.
+	</DD>
+	<P>
+
+</DL>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="substitute"><B><CODE><I>cipherProc</I> substitute ct pt</CODE></B></A></DT>
+        <DD>Substitute the numerical pairs <B>ct</B> with the plaintext values in
+<B>pt</B>.  An invalid substitution will generate an error.  For example:
+<P>
+<B><CODE><I>cipherProc</I> substitute 0102 aa</CODE></B>
+<P>
+causes conflicting substitutions (<B>01</B> -&gt; <B>a</B> and <B>02</B> -&gt;
+<B>a</B>).
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="restore"><B><CODE><I>cipherProc</I> restore key</CODE></B></A></DT>
+        <DD>The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key [$firstCipher cget -key]</CODE></B>
+<BR>
+<B><CODE>$secondCipher restore $key</CODE></B>
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="undo"><B><CODE><I>cipherProc</I> undo</CODE></B></A></DT>
+        <DD>Clears all changes that have been made to the ciphertext.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="locate"><B><CODE><I>cipherProc</I> locate tip ?ct?</CODE></B></A></DT>
+        <DD>Drag the tip along the ciphertext until a valid substitution is found.  If
+<B>ct</B> is specified then the tip dragging starts at the first occurrence
+of <B>ct</B> in the ciphertext.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="solve"><B><CODE><I>cipherProc</I> solve</CODE></B></A></DT>
+        <DD>Iterate through all 4 keyed alphabets.  The key letter for each alphabet is
+the one that produces the letter frequency distribution that best matches
+English.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

@@ -1,0 +1,801 @@
+# swagman.test
+# Test of the swagman cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample swagman cipher:
+#
+# endsc morda niboi sictn astgb ltewa oaree fsaid viyrm oeaia
+# fuilr ldoco tjnra aenou ncmit soaph skati
+#
+# Laid out:
+#
+# e m n s a   l o f v o   f l t a n    s s
+# n o i i s   t a s i e   u d j e c    o k
+# d r b c t   e r a y a   i o n n m    a a
+# s d o t g   w e i r i   l c r o i    p t
+# c a i n b   a e d m a   r o a u t    h i
+#
+# Solution: (3 2 1 4 5)
+#
+# dont be afraid to take a big leap if one is indicated.  you cannot
+# cross a river or a chasm in two small jumps.
+
+proc createValidCipher {} {
+    set c [cipher create swagman -ct "endsc morda niboi sictn astgb ltewa oaree fsaid vpyrm oeaia fuilr ldoco tjnra aenou ncmit soaph skati"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Restore tests
+#       6.x     Row swap tests
+
+test swagman-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test swagman-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test swagman-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test swagman-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test swagman-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test swagman-1.6 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test swagman-1.7 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test swagman-1.8 {set bad period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test swagman-1.9 {set bad period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test swagman-1.10 {set bad period (period longer than ciphertext)} {
+    set c [cipher create swagman -ct "abcd"]
+
+    set result [catch {$c configure -period 5} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test swagman-1.11 {set bad period (cipher length not multiple of period)} {
+    set c [cipher create swagman -ct "abcdef"]
+
+    set result [catch {$c configure -period 5} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test swagman-1.12 {bad use of swap} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap row1 row2}}
+
+test swagman-1.13 {bad swap arguments} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row value.  Value must be between 1 and block width.}}
+
+test swagman-1.14 {bad swap arguments} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row value.  Value must be between 1 and block width.}}
+
+test swagman-1.15 {attempt to locate tip} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for swagman ciphers.}}
+
+test swagman-1.16 {bad use of substitute command} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute row col ?val?}}
+
+test swagman-1.17 {bad use of substitute command} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c substitute 1 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key value.  Value must be between 1 and block width.}}
+
+test swagman-1.18 {bad use of undo command} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c undo foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo row col}}
+
+test swagman-1.19 {bad use of restore command} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key ?junk?}}
+
+test swagman-1.20 {invalid use swagman command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar substitute row col ?val?
+                 ciphervar swap row1 row2
+                 ciphervar undo row col}}
+
+test swagman-2.1 {get plaintext with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a block width has been set}}
+
+test swagman-2.2 {get plaintext with no ciphertext} {
+    set c [cipher create swagman]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test swagman-2.3 {set bad ciphertext} {
+    set result [catch {cipher create swagman -ct 1111} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test swagman-2.4 {bad swap rows} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row in swagman swap}}
+
+test swagman-2.5 {bad swap rows} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap 6 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row in swagman swap}}
+
+test swagman-2.6 {swap with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a block width has been set}}
+
+test swagman-2.7 {restore with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a block width has been set}}
+
+test swagman-2.8 {restore with no ciphertext} {
+    set c [cipher create swagman]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test swagman-2.9 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore 1234} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key length:  4 should be 25.  Invalid key was:  1234}}
+
+test swagman-2.10 {restore with invalid characters in key} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore aaaaaaaaaaaaaaaaaaaaaaaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test swagman-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore 1111122222333334444455555} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test swagman-2.12 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c sub 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row specification}}
+
+test swagman-2.13 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c sub 1 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column specification}}
+
+test swagman-2.14 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c sub 1 1 -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid value specification}}
+
+test swagman-2.15 {solve with no ciphertext} {
+    set c [cipher create swagman]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test swagman-2.16 {solve with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a block width has been set}}
+
+test swagman-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {85}
+
+test swagman-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test swagman-3.3 {get period} {
+    set c [createValidCipher]
+    $c configure -period 5
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {5}
+
+test swagman-3.4 {successful use of cget -ct (empty)} {
+    set c [cipher create swagman]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test swagman-3.5 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {endscmordaniboisictnastgbltewaoareefsaidvpyrmoeaiafuilrldocotjnraaenouncmitsoaphskati}
+
+test swagman-3.6 {set ciphertext with uppercase letters} {
+    set c [cipher create swagman -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test swagman-3.7 {successful use of cget -ctblock} {
+    set c [createValidCipher]
+    $c configure -period 5
+    set result [$c cget -ctblock]
+    rename $c {}
+    
+    set result
+} {{emnsa lofvo fltan ss} {noiis taspe udjec ok} {drbct eraya ionnm aa} {sdotg weiri lcroi pt} {cainb aedma roaut hi}}
+
+test swagman-3.8 {successful use of cget -ptblock (empty)} {
+    set c [createValidCipher]
+    $c configure -period 5
+    set result [$c cget -ptblock]
+    rename $c {}
+    
+    set result
+} {{{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }}}
+
+test swagman-3.9 {successful use of cget -ptblock} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore 3214515324245315341241253
+    set result [$c cget -ptblock]
+    rename $c {}
+    
+    set result
+} {{dontb eafra idtot ak} {eabig leapi fonei si} {ndica tedyo ucann ot} {cross arive rorac ha} {smint wosma lljum ps}}
+
+test swagman-3.10 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {swagman}
+
+test swagman-3.11 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "abcde"]
+    rename $c {}
+    
+    set result
+} {abcde}
+
+test swagman-3.12 {successful use of undo} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 1 1 1
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                         } {                                                                                     }}
+
+test swagman-3.13 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test swagman-3.14 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test swagman-3.15 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test swagman-3.16 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test swagman-3.17 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test swagman-3.18 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test swagman-3.19 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test swagman-3.20 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test swagman-3.21 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test swagman-3.22 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test swagman-3.23 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test swagman-4.1 {single substitution} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 1 1 1
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{1                        } {{{e    } {l    } {f    } {s }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }}}}
+
+test swagman-4.2 {single substitution} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 1 1 2
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{2                        } {{{n    } {t    } {u    } {o }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }}}}
+
+test swagman-4.3 {multiple substitutions} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 1 1 2
+    $c substitute 1 1 1
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{1                        } {{{e    } {l    } {f    } {s }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }}}}
+
+test swagman-4.4 {multiple substitutions} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 1 1 1
+    $c substitute 1 2 1
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{11                       } {{{em   } {lo   } {fl   } ss} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }} {{     } {     } {     } {  }}}}
+
+test swagman-4.5 {multiple substitutions} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c substitute 3 2 4
+    $c substitute 2 1 3
+    $c substitute 4 3 5
+    $c substitute 5 5 1
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{     3     4     5      1} {{{     } {     } {     } {  }} {{d    } {e    } {i    } {a }} {{ d   } { e   } { c   } { t}} {{  i  } {  d  } {  a  } {  }} {{    a} {    o} {    n} {  }}}}
+
+test swagman-5.1 {restore} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore 3214515324245315341241253
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {3214515324245315341241253 {{dontb eafra idtot ak} {eabig leapi fonei si} {ndica tedyo ucann ot} {cross arive rorac ha} {smint wosma lljum ps}}}
+
+test swagman-5.2 {restore with spaces in key} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore {3214 1532 2453 5341 4125 }
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{3214 1532 2453 5341 4125 } {{{dont } {eafr } {idto } ak} {{eabi } {leap } {fone } si} {{ndic } {tedy } {ucan } ot} {{cros } {ariv } {rora } ha} {{smin } {wosm } {llju } ps}}}
+
+test swagman-5.3 {restore with second argument} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore {3214 1532 2453 5341 4125 } foo
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {{3214 1532 2453 5341 4125 } {{{dont } {eafr } {idto } ak} {{eabi } {leap } {fone } si} {{ndic } {tedy } {ucan } ot} {{cros } {ariv } {rora } ha} {{smin } {wosm } {llju } ps}}}
+
+test swagman-6.1 {swap rows} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore 3214515324245315341241253
+    $c swap 1 2
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {1532432145245315341241253 {{eabig leapi fonei si} {dontb eafra idtot ak} {ndica tedyo ucann ot} {cross arive rorac ha} {smint wosma lljum ps}}}
+
+test swagman-6.2 {swap rows} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore 3214515324245315341241253
+    $c swap 1 5
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {4125315324245315341232145 {{smint wosma lljum ps} {eabig leapi fonei si} {ndica tedyo ucann ot} {cross arive rorac ha} {dontb eafra idtot ak}}}

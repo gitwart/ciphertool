@@ -1,0 +1,60 @@
+<HTML>
+<TITLE>Tcl Command - morse</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+morse - Morse code converter.
+
+<H2>SYNOPSIS</H2>
+
+<B>morse</B> <I>string</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><B><CODE>morse string</CODE></B></DT>
+        <DD>Convert to and from morse code.  If the string argument is a morse code
+sequence then it is converted to text.  If the argument is a text string
+then it is converted to morse code.  The <B>.</B>, <B>-</B>, and <B>x</B>
+characters are used to represent morse code sequences.  A single <B>x</B>
+represents a space between letters and a double <B>x</B> represents a space
+between words.
+<P>
+Examples:
+<P>
+<B><CODE>morse ...x---x...</CODE></B>
+<P>
+returns
+<P>
+<B><CODE>sos</CODE></B>
+<P>
+while
+<P>
+<B><CODE>morse sos</CODE></B>
+<P>
+returns
+<P>
+<B><CODE>...x---x...</CODE></B>
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

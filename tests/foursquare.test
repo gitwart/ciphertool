@@ -1,0 +1,498 @@
+# foursquare.test
+# Test of the foursquare cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the foursquare cipher
+# Laid out, the cipher looks like:
+#
+# le wi xa fn ex cu dx uv dp gx hz
+#
+# Solution:
+#
+# comequicklyweneedhelpx
+#
+# Key:  grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz
+#
+# Keysquares:
+#	abcde grdlu
+#	fghik eyfnv
+#	lmnop oahpw
+#	qrstu mbiqx
+#	vwxyz tcksz
+#	
+#	licnv abcde 
+#	otdpw fghik
+#	gheqx lmnop
+#	amfsy qrstu
+#	rbkuz vwxyz
+
+
+proc createValidCipher {} {
+    set c [cipher create foursquare -ct "le wi xa fn ex cu dx uv dp gx hz"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#	7.x	Save/Restore tests
+
+test foursquare-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test foursquare-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test foursquare-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test foursquare-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test foursquare-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test foursquare-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test foursquare-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore square1 square2}}
+
+test foursquare-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No substitute function defined for foursquare ciphers}}
+
+test foursquare-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test foursquare-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test foursquare-1.12 {invalid use foursquare command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute row col pt
+                 ciphervar undo ct
+                 ciphervar restore pt positions
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test foursquare-2.1 {invalid cipher characters} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c configure -ct 1111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test foursquare-2.2 {invalid length of first restore key alphabet} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Key 'aabc' has invalid length 4}}
+
+test foursquare-2.3 {invalid length of second restore key alphabet} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcdefghiklmnopqrstuvwxyz bbcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Key 'bbcd' has invalid length 4}}
+
+test foursquare-2.4 {invalid character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1bcdefghiklmnopqrstuvwxyz [string repeat a 25]} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in key}}
+
+test foursquare-2.5 {duplicate character in restore key} {unimplemented} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcdefghiklmnopqrstuvwxya} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Duplicate letter/position in key}}
+
+test foursquare-2.6 {Attempt to locate tip with no ciphertext} {unimplemented} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test foursquare-2.7 {Attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for foursquare ciphers}}
+
+test foursquare-2.8 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test foursquare-2.9 {Attempt to undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No undo function defined for foursquare ciphers}}
+
+test foursquare-2.10 {Attempt to substitute} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c substitute 3 2 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No substitute function defined for foursquare ciphers}}
+
+test foursquare-2.11 {Get plaintext with no ciphertext} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test foursquare-2.12 {encode with non-listified key} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test foursquare-2.13 {encode with too many key elements} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c encode foobar "a b c"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
+
+test foursquare-2.14 {encode with short key elements} {
+    set c [cipher create foursquare]
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+
+test foursquare-3.1 {use of cget -length} {
+    set c [cipher create foursquare]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test foursquare-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {22}
+
+test foursquare-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test foursquare-3.4 {use of cget -ct} {
+    set c [cipher create foursquare]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test foursquare-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {lewixafnexcudxuvdpgxhz}
+
+test foursquare-3.6 {set ciphertext with uppercase letters} {
+    set c [cipher create foursquare -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghiiklmno}
+
+test foursquare-3.7 {use of cget -pt with even period} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                      }
+
+test foursquare-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [lindex [$c cget -key] 0]] [string length [lindex [$c cget -key] 1]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {25 25 {{                         } {                         }}}
+
+test foursquare-3.9 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {foursquare}
+
+test foursquare-3.10 {use of undo} {unimplemented} {
+    set c [createValidCipher]
+    $c substitute abcdefghij bcdefghijk
+    $c undo abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {}
+
+test foursquare-3.11 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test foursquare-3.12 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test foursquare-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c restore grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz} comequicklyweneedhelpx}
+
+test foursquare-8.1 {encode} {
+    set c [cipher create foursquare]
+
+    set result [list [$c encode "comequicklyweneedhelpx" [list grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {lewixafnexcudxuvdpgxhz lewixafnexcudxuvdpgxhz comequicklyweneedhelpx {grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz}}
+
+test foursquare-8.2 {encode adds necessary nulls} {
+    set c [cipher create foursquare]
+
+    set result [list [$c encode "comequicklyweneedhelp" [list grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {lewixafnexcudxuvdpgxhz lewixafnexcudxuvdpgxhz comequicklyweneedhelpx {grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz}}
+
+test foursquare-8.3 {encode converts 'j' to 'i'} {
+    set c [cipher create foursquare]
+
+    set result [list [$c encode "comequjcklyweneedhelp" [list grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {lewixafnexcudxuvdpgxhz lewixafnexcudxuvdpgxhz comequicklyweneedhelpx {grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz}}
+
+test foursquare-8.4 {encode contains invalid characters} {
+    set c [cipher create foursquare]
+
+    set result [list [$c encode " come-qujc123+klyweneedhelp " [list grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {lewixafnexcudxuvdpgxhz lewixafnexcudxuvdpgxhz comequicklyweneedhelpx {grdlueyfnvoahpwmbiqxtcksz licnvotdpwgheqxamfsyrbkuz}}

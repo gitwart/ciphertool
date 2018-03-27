@@ -1,0 +1,3071 @@
+? .solver.c.swp
+? .vimrc
+? Release.todo
+? UI2.0
+? autom4te.cache
+? bifid_display.tpj
+? build
+? core.3712
+? dictionary.tpj
+? diff.log
+? hillclimb.tpj
+? key_descriptions.txt
+? maxrunkey.tpj
+? patsplit.c
+? patternmatch.tpj
+? runkey.c
+? score.txt
+? status.log
+? testroute
+? tetra.txt
+? wordlist
+? progs/.vimrc
+? progs/doprog
+? progs/dosolver
+? progs/gromarksolve
+? progs/k2msearch
+? progs/k3board
+? progs/k3board.tcl
+? progs/kshunt2
+? progs/patbrute
+? progs/patbrute2
+? progs/patchfile
+? progs/patternmatch.tcl
+? progs/ptval
+? progs/quag1stats
+? progs/quag1topat
+? progs/rechillclimb.tcl
+? progs/testscore
+===================================================================
+File: AUTHORS          	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/AUTHORS,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: COPYING          	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/COPYING,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ChangeLog        	Status: Up-to-date
+
+   Working revision:	1.112
+   Repository revision:	1.112	/cvsroot/ciphertool/ciphertool/ChangeLog,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: GETTING_STARTED  	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/GETTING_STARTED,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: INSTALL          	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/INSTALL,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: Makefile.in      	Status: Up-to-date
+
+   Working revision:	1.55
+   Repository revision:	1.55	/cvsroot/ciphertool/ciphertool/Makefile.in,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: NEWS             	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/NEWS,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: README           	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/README,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: TODO             	Status: Up-to-date
+
+   Working revision:	1.36
+   Repository revision:	1.36	/cvsroot/ciphertool/ciphertool/TODO,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: TYPES            	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/TYPES,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: aclocal.m4       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/aclocal.m4,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: amsco.c          	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/amsco.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: aristocrat.c     	Status: Up-to-date
+
+   Working revision:	1.17
+   Repository revision:	1.17	/cvsroot/ciphertool/ciphertool/aristocrat.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bacon.c          	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/bacon.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bazeries.c       	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/bazeries.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bifid.c          	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/bifid.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bigbifid.c       	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/bigbifid.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cadenus.c        	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/cadenus.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: caesar.c         	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/caesar.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipher.c         	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/cipher.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipher.h         	Status: Up-to-date
+
+   Working revision:	1.11
+   Repository revision:	1.11	/cvsroot/ciphertool/ciphertool/cipher.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipher.spec      	Status: Up-to-date
+
+   Working revision:	1.17
+   Repository revision:	1.17	/cvsroot/ciphertool/ciphertool/cipher.spec,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipherDebug.h    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/cipherDebug.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipherInit.c     	Status: Up-to-date
+
+   Working revision:	1.11
+   Repository revision:	1.11	/cvsroot/ciphertool/ciphertool/cipherInit.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipherUtil.c     	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/cipherUtil.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: columnar.c       	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/columnar.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: configure        	Status: Up-to-date
+
+   Working revision:	1.31
+   Repository revision:	1.31	/cvsroot/ciphertool/ciphertool/configure,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: configure.in     	Status: Up-to-date
+
+   Working revision:	1.26
+   Repository revision:	1.26	/cvsroot/ciphertool/ciphertool/configure.in,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithmCmd.c      	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/crithmCmd.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithmCmd.h      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/crithmCmd.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionary.c     	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/dictionary.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionary.h     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/dictionary.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionaryCmds.c 	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/dictionaryCmds.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionaryCmds.h 	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/dictionaryCmds.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionaryInit.c 	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/dictionaryInit.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digrafid.c       	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/digrafid.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digram.c         	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/digram.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digram.h         	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/digram.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digramScore.c    	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/digramScore.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: englishFrequencies.h	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/englishFrequencies.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: fmorse.c         	Status: Up-to-date
+
+   Working revision:	1.11
+   Repository revision:	1.11	/cvsroot/ciphertool/ciphertool/fmorse.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grandpre.c       	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/grandpre.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grille.c         	Status: Locally Modified
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/grille.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gromark.c        	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/gromark.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homophonic.c     	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/homophonic.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: install.nsi.in   	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/install.nsi.in,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: install_custompage_1.ini	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/install_custompage_1.ini,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keygen.c         	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/keygen.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keygen.h         	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/keygen.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keyphrase.c      	Status: Locally Modified
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/keyphrase.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: lethist.c        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/lethist.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: missing          	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/missing,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morbit.c         	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/morbit.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morse.c          	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/morse.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morse.h          	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/morse.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morseCommand.c   	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/morseCommand.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morseCommand.h   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/morseCommand.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: myszcowski.c     	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/myszcowski.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ngramScore.c     	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/ngramScore.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicodemus.c      	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/nicodemus.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nitrans.c        	Status: Up-to-date
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/nitrans.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: perm.c           	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/perm.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: perm.h           	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/perm.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: phillips.c       	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/phillips.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pkgIndex.tcl.in  	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/pkgIndex.tcl.in,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: playfair.c       	Status: Up-to-date
+
+   Working revision:	1.11
+   Repository revision:	1.11	/cvsroot/ciphertool/ciphertool/playfair.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pollux.c         	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/pollux.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ragbaby.c        	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/ragbaby.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: railfence.c      	Status: Locally Modified
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/railfence.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: route.c          	Status: Up-to-date
+
+   Working revision:	1.14
+   Repository revision:	1.14	/cvsroot/ciphertool/ciphertool/route.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: score.c          	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/score.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: score.h          	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/score.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: scoreInt.h       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/scoreInt.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solvemysz.c      	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/solvemysz.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solver.c         	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/solver.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solver.h         	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/solver.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: stat.c           	Status: Up-to-date
+
+   Working revision:	1.13
+   Repository revision:	1.13	/cvsroot/ciphertool/ciphertool/stat.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: stat.h           	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/stat.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: swagman.c        	Status: Locally Modified
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/swagman.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: tclAppInit.c     	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/tclAppInit.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: testmorse.c      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/testmorse.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: tkAppInit.c      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/tkAppInit.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trifid.c         	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/trifid.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trigramScore.c   	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/trigramScore.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: twosquare.c      	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/twosquare.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vigTypes.c       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/vigTypes.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vigTypes.h       	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/vigTypes.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vvb.c            	Status: Up-to-date
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/vvb.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtree.c       	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/wordtree.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtree.h       	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/wordtree.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtreeCmd.c    	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/wordtreeCmd.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtreeCmd.h    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/wordtreeCmd.h,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtreeScore.c  	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/wordtreeScore.c,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: config.guess     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/config/config.guess,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: config.sub       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/config/config.sub,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: install-sh       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/config/install-sh,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: mkinstalldirs    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/config/mkinstalldirs,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: tcl.m4           	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/config/tcl.m4,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_aristocrat.txt	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/data/sample_aristocrat.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_aristocrat_solution.txt	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/data/sample_aristocrat_solution.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_bifid.txt 	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/data/sample_bifid.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_bifid_solution.txt	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/data/sample_bifid_solution.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_columnar.txt	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/data/sample_columnar.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: sample_columnar_solution.txt	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/data/sample_columnar_solution.txt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.aris       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.aris,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.aris.sol   	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.aris.sol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.auto       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.auto,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.bacon      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.bacon,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.bacon.bruteforce1	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.bacon.bruteforce1,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.bea        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.bea,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.cad        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.cad,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.cad2       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.cad2,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.cad2.sol   	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.cad2.sol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.checker    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.checker,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.col        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.col,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.col2       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.col2,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.fmorse     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.fmorse,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.grand      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.grand,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.grand.sol  	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.grand.sol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.gron       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.gron,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.gron.sol   	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.gron.sol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.homo       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.homo,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.inc        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.inc,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.keyphrase  	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.keyphrase,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.morbit     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.morbit,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.mysz       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.mysz,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.ni         	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.ni,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.phil       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.phil,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.pollux     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.pollux,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.porta      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.porta,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.porta2     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.porta2,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.quag       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.quag,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.rail       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.rail,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.rail2      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.rail2,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.rede       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.rede,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.slide      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.slide,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.swag       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.swag,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.trans      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.trans,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.trid       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.trid,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.var        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.var,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: solve.vig        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/solve.vig,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: test.rail        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/test.rail,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: test.save        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/test.save,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: test.sol         	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/data/test.sol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: csolve.tml       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/doc/csolve.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ctool.tml        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/ctool.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dumproute.tml    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/dumproute.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: genboard.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/genboard.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gendocs.tcl      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/doc/gendocs.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: genscores.tml    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/genscores.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gronsfeld.tml    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/gronsfeld.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: index.tml        	Status: Up-to-date
+
+   Working revision:	1.15
+   Repository revision:	1.15	/cvsroot/ciphertool/ciphertool/doc/index.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: k3search.tml     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/k3search.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: k4search.tml     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/k4search.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: key2col.tml      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/doc/key2col.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keysquaresearch.tml	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/doc/keysquaresearch.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: lethist.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/lethist.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicsolve.tml     	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/nicsolve.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patsearch.tml    	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/doc/patsearch.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: standardopts.tcl 	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/doc/standardopts.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: template.tcl     	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/doc/template.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/CipherUtil/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/Crithm/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/Dictionary/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/Hillclimb/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/Scoredata/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: amsco.tml        	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/amsco.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: aristocrat.tml   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/aristocrat.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: baconian.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/baconian.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bazeries.tml     	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/bazeries.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: beaufort.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/beaufort.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bifid.tml        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/bifid.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bigbifid.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/bigbifid.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bigplayfair.tml  	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/bigplayfair.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cadenus.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/cadenus.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: caesar.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/caesar.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cipher.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/cipher.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: columnar.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/columnar.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digrafid.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/digrafid.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: fmorse.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/fmorse.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: foursquare.tml   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/foursquare.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grandpre.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/grandpre.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grille.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/grille.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gromark.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/gromark.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homophonic.tml   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/homophonic.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: key.tml          	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/key.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morbit.tml       	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/morbit.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morse.tml        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/morse.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: myszcowski.tml   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/myszcowski.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicodemus.tml    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/nicodemus.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nitrans.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/nitrans.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: package.tml      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/doc/cipher/package.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: permute.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/permute.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: phillips.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/phillips.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: playfair.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/playfair.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pollux.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/pollux.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: porta.tml        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/porta.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ragbaby.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/ragbaby.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: railfence.tml    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/railfence.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: route.tml        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/route.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: score.tml        	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/score.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: stat.tml         	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/doc/cipher/stat.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: swagman.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/swagman.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trifid.tml       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/trifid.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: twosquare.tml    	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/twosquare.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: variant.tml      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/variant.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vigenere.tml     	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/doc/cipher/vigenere.tml,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: 4gramlogData.tcl 	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/4gramlogData.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: aristocrat.tcl   	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/aristocrat.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: baconian.tcl     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/baconian.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: beaufort.tcl     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/beaufort.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bifid.tcl        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/bifid.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cadenus.tcl      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/cadenus.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: columnar.tcl     	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/columnar.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithm.tcl       	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/crithm.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithm_gui.tcl   	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/library/crithm_gui.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ctool.tcl        	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/library/ctool.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ctool_inputs.tcl 	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/ctool_inputs.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionary.tcl   	Status: Up-to-date
+
+   Working revision:	1.14
+   Repository revision:	1.14	/cvsroot/ciphertool/ciphertool/library/dictionary.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digramcountData.tcl	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/digramcountData.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digramcountData_gaines.tcl	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/digramcountData_gaines.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digramlogData.tcl	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/digramlogData.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digramlogData_gaines.tcl	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/digramlogData_gaines.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: fmorse.tcl       	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/fmorse.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grandpre.tcl     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/grandpre.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grille.tcl       	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/grille.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gronsfeld.tcl    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/gronsfeld.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: hillclimb.tcl    	Status: Locally Modified
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/library/hillclimb.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: hillclimbCiphers.tcl	Status: Locally Modified
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/library/hillclimbCiphers.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homophonic.tcl   	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/homophonic.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: k3board.tcl      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/k3board.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keyphrase.tcl    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/keyphrase.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morbit.tcl       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/morbit.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: myszcowski.tcl   	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/myszcowski.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nitrans.tcl      	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/library/nitrans.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patword.tcl      	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/library/patword.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patwordui.tcl    	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/library/patwordui.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pollux.tcl       	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/pollux.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: porta.tcl        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/porta.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: railfence.tcl    	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/railfence.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: scoredata.tcl    	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/library/scoredata.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: swagman.tcl      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/library/swagman.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trigramcountData.tcl	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/library/trigramcountData.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trigramlogData.tcl	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/library/trigramlogData.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: utils.tcl        	Status: Up-to-date
+
+   Working revision:	1.21
+   Repository revision:	1.21	/cvsroot/ciphertool/ciphertool/library/utils.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: variant.tcl      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/variant.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vigenere.tcl     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/library/vigenere.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: autokeybrute     	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/autokeybrute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: autokeysol       	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/progs/autokeysol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bazsol           	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/progs/bazsol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cmbifidsolve     	Status: Up-to-date
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/progs/cmbifidsolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: csolve           	Status: Up-to-date
+
+   Working revision:	1.17
+   Repository revision:	1.17	/cvsroot/ciphertool/ciphertool/progs/csolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ctool            	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/progs/ctool,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ctool.bat        	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/progs/ctool.bat,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digrafidsolve    	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/progs/digrafidsolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dumproute        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/progs/dumproute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: fmorsekeysearch  	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/progs/fmorsekeysearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: genboard         	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/progs/genboard,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: genscores        	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/progs/genscores,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grandpresol      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/grandpresol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: hillclimb        	Status: Up-to-date
+
+   Working revision:	1.20
+   Repository revision:	1.20	/cvsroot/ciphertool/ciphertool/progs/hillclimb,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: histogram        	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/progs/histogram,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homochart.pl     	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/progs/homochart.pl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homotopat        	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/progs/homotopat,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ioc              	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/progs/ioc,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: k3search         	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/progs/k3search,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: k4search         	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/progs/k4search,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: kasiski          	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/kasiski,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: key2col          	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/progs/key2col,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keysearch        	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/progs/keysearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keysquaresearch  	Status: Up-to-date
+
+   Working revision:	1.21
+   Repository revision:	1.21	/cvsroot/ciphertool/ciphertool/progs/keysquaresearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: kshunt           	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/progs/kshunt,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: makedictionary   	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/progs/makedictionary,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: massadd.tcl      	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/progs/massadd.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: maxrunkey        	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/progs/maxrunkey,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicodemussolve   	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/progs/nicodemussolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicsolve         	Status: Up-to-date
+
+   Working revision:	1.12
+   Repository revision:	1.12	/cvsroot/ciphertool/ciphertool/progs/nicsolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pathilltipsearch 	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/progs/pathilltipsearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patsearch        	Status: Up-to-date
+
+   Working revision:	1.19
+   Repository revision:	1.19	/cvsroot/ciphertool/ciphertool/progs/patsearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patsplit         	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/progs/patsplit,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: patwordbrute     	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/progs/patwordbrute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: portaxbrute      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/portaxbrute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: portaxsolve      	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/portaxsolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: progkeysol       	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/progs/progkeysol,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ragbabysearch    	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/progs/ragbabysearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: rot              	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/rot,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: runkey           	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/runkey,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: runkeyfixed      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/progs/runkeyfixed,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: runningkey       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/runningkey,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: slidebrute       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/slidebrute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: slidesolve       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/slidesolve,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: tkcrithm         	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/tkcrithm,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: tkpatwordbrute   	Status: Up-to-date
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/progs/tkpatwordbrute,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trifidkeysearch  	Status: Up-to-date
+
+   Working revision:	1.10
+   Repository revision:	1.10	/cvsroot/ciphertool/ciphertool/progs/trifidkeysearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trisquaretipsearch	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/progs/trisquaretipsearch,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: all.tcl          	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/tests/all.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: amsco.test       	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/amsco.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: aristocrat.test  	Status: Up-to-date
+
+   Working revision:	1.12
+   Repository revision:	1.12	/cvsroot/ciphertool/ciphertool/tests/aristocrat.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: baconian.test    	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/baconian.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bazeries.test    	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/bazeries.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bifid.test       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/bifid.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bigbifid.test    	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/bigbifid.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: bigplayfair.test 	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/bigplayfair.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: cadenus.test     	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/cadenus.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: caesar.test      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/caesar.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: columnar.test    	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/tests/columnar.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithm.test      	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/tests/crithm.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: crithmCmd.test   	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/tests/crithmCmd.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: defs.tcl         	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/tests/defs.tcl,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: dictionary.test  	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/dictionary.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: digrafid.test    	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/digrafid.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: fmorse.test      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/fmorse.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: foursquare.test  	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/foursquare.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grandpre.test    	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/grandpre.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: grille.test      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/grille.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: gromark.test     	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/gromark.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: homophonic.test  	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/homophonic.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: keygen.test      	Status: Up-to-date
+
+   Working revision:	1.1.1.1
+   Repository revision:	1.1.1.1	/cvsroot/ciphertool/ciphertool/tests/keygen.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morbit.test      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/morbit.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: morse.test       	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/morse.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: myszcowski.test  	Status: Up-to-date
+
+   Working revision:	1.1
+   Repository revision:	1.1	/cvsroot/ciphertool/ciphertool/tests/myszcowski.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nicodemus.test   	Status: Up-to-date
+
+   Working revision:	1.11
+   Repository revision:	1.11	/cvsroot/ciphertool/ciphertool/tests/nicodemus.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: nitrans.test     	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/nitrans.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: phillips.test    	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/phillips.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: playfair.test    	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/playfair.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: pollux.test      	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/pollux.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: ragbaby.test     	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/ragbaby.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: route.test       	Status: Up-to-date
+
+   Working revision:	1.7
+   Repository revision:	1.7	/cvsroot/ciphertool/ciphertool/tests/route.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: score.test       	Status: Up-to-date
+
+   Working revision:	1.9
+   Repository revision:	1.9	/cvsroot/ciphertool/ciphertool/tests/score.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: scoredata.test   	Status: Up-to-date
+
+   Working revision:	1.8
+   Repository revision:	1.8	/cvsroot/ciphertool/ciphertool/tests/scoredata.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: stat.test        	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/stat.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: swagman.test     	Status: Up-to-date
+
+   Working revision:	1.3
+   Repository revision:	1.3	/cvsroot/ciphertool/ciphertool/tests/swagman.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: trifid.test      	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/trifid.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: twosquare.test   	Status: Up-to-date
+
+   Working revision:	1.6
+   Repository revision:	1.6	/cvsroot/ciphertool/ciphertool/tests/twosquare.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: utils.test       	Status: Up-to-date
+
+   Working revision:	1.2
+   Repository revision:	1.2	/cvsroot/ciphertool/ciphertool/tests/utils.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: vvb.test         	Status: Up-to-date
+
+   Working revision:	1.5
+   Repository revision:	1.5	/cvsroot/ciphertool/ciphertool/tests/vvb.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+
+===================================================================
+File: wordtree.test    	Status: Up-to-date
+
+   Working revision:	1.4
+   Repository revision:	1.4	/cvsroot/ciphertool/ciphertool/tests/wordtree.test,v
+   Sticky Tag:		(none)
+   Sticky Date:		(none)
+   Sticky Options:	(none)
+

@@ -1,0 +1,38 @@
+[docHeader "Cipher Program - keysquaresearch"]
+[Command keysquaresearch "autosolver for ciphers that use a single keysquare"]
+
+[SynopsisHeader]
+[Synopsis keysquaresearch "-file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?"]
+
+[StartDescription]
+
+[Description "keysquaresearch -file filename -type type ?-period period? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?" keysquaresearch \
+"<B>keysquaresearch</B> is an autosolver for cipher types that use a single
+keysquare.  These include
+<P>
+<UL>
+<LI>[Link bifid.html bifid]
+<LI>[Link bigbifid.html {bigbifid (6x6 bifid)}]
+<LI>[Link phillips.html phillips]
+<LI>[Link playfair.html playfair]
+</UL>
+<P>
+This program loads keywords from an external dictionary.
+[DictionaryDescription]
+<P>
+The <B>keysquaresearch</B> program looks through every dictionary file and
+attempts to use each word found as the keyword.  The keywords are used to
+generate keysquares by writing in the keyed alphabet in
+[[cipher create route] cget -numroutes] different routes.  Each resulting
+keysquare is then applied to the cipher and the keysquare with the best
+digram/trigram frequency count is displayed.  If the keyword is already known
+then the <b>-keyword</b> option can be used to decrypt the cipher quickly.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.  This can be changed to any scoring method supported by the [Link cipher/score.html score] command.  The <b>-language</b> option is used to load
+a scoring table for the specified language, if such a scoring table exists.
+<P>The <b>-addspace</b> option will attempt to locate word boundaries after the final solution has been found.  This can be a time and memory intensive process on older computers so it is turned off by default.
+"]
+
+[EndDescription]
+
+[footer]

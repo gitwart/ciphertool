@@ -1,0 +1,50 @@
+Pre-release steps:
+    Run the test suite through valgrind to catch any lingering
+        memory leaks and failing tests.
+
+Release steps:
+
+    Change the version numbers in configure.in (1) and cipher.spec (2).
+    Make sure that the configure script has been regenerated to reflect any
+	changes to configure.in.
+    Double-check that modified files have been checked in.
+    Double-check that the ChangeLog is up to date including a note about
+	the new release.
+    Tag the sources.
+
+	% cvs tag rel-1-5-0
+
+    Create a build subdirectory:
+
+	% cd ~/src/ciphers/ciphertool
+	% mkdir build
+	% cd build
+
+    Run "configure" to generate the Makefile.  Nothing will get installed here,
+    so there's no need to specify --prefix.
+
+	% ../configure
+
+    Run the "rpmall" Makefile target
+
+	% make rpmall
+
+    Copy the generated RPMs and source archives to their proper release
+    directories.
+
+	% cp dist/SOURCES/ciphertool-1.5.3.tar.gz ~/public_html/ciphertool
+	% cp dist/SRPMS/ciphertool-1.5.3-1.src.rpm ~/public_html/ciphertool
+	% cp dist/RPMS/i386/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
+	% cp dist/RPMS/i686/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
+	% cp dist/RPMS/athlon/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
+
+    Create Debian .deb packages (run as root in a Debian distribution):
+
+	% alien -d ciphertool-1.5.3-1.i386.rpm
+
+    Copy the updated documentation to Sourceforge:
+
+	% make ; make doc
+	% tar czf doc.tgz ./doc
+	% scp doc.tgz shell.sourceforge.net:/home/groups/c/ci/ciphertool
+

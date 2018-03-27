@@ -1,0 +1,197 @@
+The general format for keys that I've been using for substitution
+ciphers is a pair of strings delimited by quotation marks:
+
+  cipher1.key="ciphertext" "plaintext"
+
+  As an example:
+
+  cipher1.type=aristocrat
+  cipher1.key="abcdefghijklmnopqrstuvwxyz" "b           c        d    "
+
+Note that this is only a partial key.  It could also have been written
+as:
+
+  cipher1.type=aristocrat
+  cipher1.key="amw" "bcd"
+
+Transposition ciphers use an alphabetic key, where a=1, b=2, etc.:
+
+  cipher1.type=columnar
+  cipher1.key=cba
+
+Since the key structure can vary between cipher types, we will need to
+generate a list of key formats for all cipher types.  The formats must
+allow for partial keys, as in the aristocrat example above.
+
+As an alternative, we could use multiple key properties to describe
+more complicated keys:
+
+  cipher1.type=trisquare
+  cipher1.key.part1=abcdefghiklmnopqrstuvwxyz
+  cipher1.key.part2=abcdefghiklmnopqrstuvwxyz
+  cipher1.key.part3=abcdefghiklmnopqrstuvwxyz
+
+
+Here is a list of the cipher names and key structures currently used by
+ciphertool.  Quotation marks must be used to delimit any part of a
+multi-part key that contains spaces.  The quotation marks are optional
+if the multi-part key part does not contain any spaces.  Quotation marks
+are also optional for single part keys, such as the trifid, even if
+they contain spaces.
+
+
+type=aristocrat
+# key="ct" "pt"
+# length of ct and pt strings in the key must be identical.  Spaces
+# can be used in the plaintext string to indicate that the
+# corresponding ciphertext equivalent is not known.
+key=abcdefghijklmnopqrstuvwxyz bcdefghijklmnopqrstuvwxzya
+key=abcdefghijklmnopqrstuvwxyz "bc efg ijkl   pqrst vwxzya"
+key="abc" "def"
+
+type=amsco
+# key contains letters to indicate the order in which columns are read
+# a=1, b=2, etc.  Spaces are not allowed in the key.
+key="dacb"
+
+type=baconian
+key="abcdefghijklnopqrstuvwxyz" "aabbaabbaabbaabbaabbaabbaa"
+
+type=beaufort
+type=vigenere
+type=variant
+type=porta
+type=gronsfeld
+# key is a set of ct -> pt substitutions, in order.  The
+# length of the pt/ct pairs must match.
+# If the period and key are both specified then the period
+# must match the key length.  If only the key is specified
+# then the period is determined by the length of the key.
+period=6
+# In this example, 'a' stands for 'd' in column 1, 'a'
+# stands for 'e' in column 2, etc.
+key=denser aaaaaa
+
+type=bazeries
+# The key is the polybius square, read off by rows, and
+# followed by the numeric decimation numbers.  ACA standards
+# require that the polybius square be derived from the
+# decimation number.  This key format does not impose
+# such a restriction.
+key=fortyheusandwvibcgklmpqxz 43275
+key="fo tyheus     ibcg lmpq  " 43275
+
+type=bifid
+type=bigbifid
+# The key is a pair of strings containing plaintext letters
+# and their positions in the keysquare.  The positions are
+# given as 2 digits indicating the row and column where the
+# letter appears in the key.  '0' is used to indicate that
+# the row/column is not known.  For example, "03" indicates
+# that the letter is in the 3rd column, but the row is not
+# known.  "00" can be used to indicate that neither the row
+# nor the column is known, or the letter can simply be omitted
+# from the first string.  The position string must be exactly
+# twice as long as the plaintext string.  bigbifid keys use a
+# 6x6 keysquare, so valid row and column values range from 0 to 6.
+# If the position string is omitted then the key is assumed to
+# have been read off by rows.  The plaintext string must be
+# enclosed by quotation marks if it contains a space, regardless
+# if the position string is present or not.
+key=abcdefghiklmnopqrstuvwxyz 24253132113334352241144223134344455121151252535455
+key=abc 012344
+key="abc e   iklmnopqrst   xy "
+
+type=fmorse
+type=morbit
+type=pollux
+# The key is a pair of strings containing the plaintext
+# characters and their fractionated morse substitutes.   The
+# fractionated morse substitution string must be exactly
+# 3 times as long as the plaintext string.  The morbit
+# substitution string must be twice as long.  The pollux
+# substitution string must be the same length as the
+# plaintext string.
+key="abcdefghijklmnopqrstuvwxyz" "..x.xx-..-.-.---.x--.-----x-x.-x-..--xx.-.x.....x.-.x.x.x.-xx-.x--x-xxx..x-xx-"
+key="abc" "..x.xx-.."
+
+type=foursquare
+type=twosquare
+# The key is a pair of polybius keysquares, read off by
+# rows.  Spaces are used to indicate blank cells in
+# the keysquares.  The first keysquare is the first
+# plaintext substitute, the second keysquare is the
+# second plaintext substitute.
+key="pdfsvibgqwcahoxteknyurlmz" "puzlefdcbaghikmsrqontvwxy"
+
+type=grandpre
+# The key is the 8x8 keysquare, read off by rows.  Spaces
+# are used to indicate blank cells in the keysquare.
+key=11121314151617182122232425262728313233343536373841424344454647485152535455565758616263646566676871727374757677788182838485868788 gymkhanaacquaintrewardeddefiniteexposurenovelizeinjuriesambition
+
+type=grille
+# I'm not quite sure what the hell I was thinking with
+# this one...
+key=1342342142313321322441441311411243314143342412423421424324211232311243323313223224413411314234214213
+
+type=gromark
+# The key is the k3mixed ciphertext alphabet
+key=aemuicjqzlfnwrbhpysgoxvdkt
+
+type=homophonic
+# The key is a pair of ciphertext / plaintext strings.  Use
+# spaces in the plaintext string to indicate unknowns.
+key="01 26 51 76" "xmas"
+key="01 26 51 76" "x  s"
+
+type=columnar
+type=myszcowski
+type=nitrans
+# The key is the order in which the columns are read out
+# from the tableau.  These types use letters instead of
+# numbers for the key values in order to support
+# periods > 9.  For the myszcowski, duplicate letters
+# may be used.  If a letter is duplicated then the next
+# letter in the sequence is skipped.
+key=cdab
+key=aacceeeh
+
+type=nicodemus
+# The nicodemus key is a pair of strings representing
+# the vigenere/variant/beaufort encoding key and the
+# order in which the keys are read off.  No spaces
+# are allowed in either of the two key parts.  If
+# the period is not specified then it is deduced from
+# the length of the key.
+key=bumblebee aihbgdcef
+
+type=phillips
+type=playfair
+type=bigplayfair
+# The key is the polybius keysquare, read off by rows.
+# Spaces are used to denote empty cells in the keysquare
+# The key must be exactly 25 letters long, except for
+# the bigplayfair key which must be 36 characters long.
+key=maeksoyflvrbgnwtchpxudiqz
+
+type=ragbaby
+# The key is the 24 letter keyed alphabet
+key=sailorbcdefghkmnpqtuvwyz
+
+type=route
+# The key is a pair of numbers indicating which route was
+# used to read/write the plaintext.  Both routes must
+# be specified.
+# See http://ciphertool.sourceforge.net/cipher/route.html
+# for a list of the 48 defined routes.
+key=4 11
+
+type=swagman
+# Please don't make me try to explain this one...  I
+# get confused every time I look at it.
+key=2415345321312455341212534
+
+type=trifid
+# The key is the 27 character keyed alphabet.
+key=quickstep#abdfghjlmnorvwxyz
+key=qu c   ep#abdfghjlmnorv   z

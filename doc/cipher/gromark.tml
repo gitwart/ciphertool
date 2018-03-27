@@ -1,0 +1,72 @@
+[docHeader "Cipher Type - gromark"]
+[Ciphertype gromark]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "substitute ct pt" substitute]
+[Synopsis <I>cipherProc</I> "chainsubstitute ct position" chainsubstitute]
+[Synopsis <I>cipherProc</I> "restore ct pt" restore]
+[Synopsis <I>cipherProc</I> "undo ct" undo]
+[Synopsis <I>cipherProc</I> "locate pt ct" locate]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureLanguage]
+    [ConfigureOption -primer n \
+""]
+    [ConfigureOption -chain n \
+""]
+    [ConfigureStepinterval]
+    [ConfigureStepcommand]
+    [ConfigureBestfitcommand]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetOption -keyword \
+"Returns the keyword for this cipher based on the current key."]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetOption "-primer" "Undocumented feature."]
+    [CgetOption "-offset" "Undocumented feature."]
+    [CgetOption "-chain" "Undocumented feature."]
+    [CgetStepinterval]
+    [CgetStepcommand]
+    [CgetBestfitcommand]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> substitute ct pt" substitute \
+"Perform substitutions on the cipher."]
+
+[Description "<I>cipherProc</I> chainsubstitute ct position" chainsubstitute \
+"Set the position-th letter in the chain."]
+
+[Description "<I>cipherProc</I> restore ct pt" restore \
+"Restore a gromark from a saved key."]
+
+[Description "<I>cipherProc</I> undo ct" undo \
+"Undo the substitutions of the letters in the ct argument."]
+
+[Description "<I>cipherProc</I> locate pt ?ct?" restore \
+"Drag a tip across the ciphertext until the first valid tip placement is found.
+If the ct parameter is set then the tip dragging will start at the matching
+position in the ciphertext."]
+
+[EndDescription]
+
+[footer]

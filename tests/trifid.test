@@ -1,0 +1,541 @@
+# trifid.test
+# Test of the trifid cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the trifid cipher
+# Laid out, the cipher looks like:
+#
+# eymxvucryy yyeayvyovv xitdpathe
+#
+# Solution:
+#
+# trifids are fractionated ciphers
+#
+# Key:  extraodinybcfghjklmpqsuvwz#
+
+
+proc createValidCipher {} {
+    set c [cipher create trifid -ct "eymxvucryy yyeayvyovv xitdpathe"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#	7.x	Save/Restore tests
+#	8.x	Encode tests
+
+test trifid-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test trifid-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test trifid-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test trifid-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test trifid-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test trifid-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test trifid-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key}}
+
+test trifid-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test trifid-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test trifid-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test trifid-1.11 {invalid use of configure -period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test trifid-1.12 {invalid use trifid command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct pt
+                 ciphervar undo ct
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test trifid-2.1 {invalid cipher characters} {
+    set c [cipher create trifid]
+
+    set result [catch {$c configure -ct 1111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test trifid-2.2 {invalid length of restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length for key:  4.  Should be 27}}
+
+test trifid-2.3 {invalid character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1bcdefghijklmnopqrstuvwxyz#} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key.}}
+
+test trifid-2.4 {duplicate character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aacdefghijklmnopqrstuvwxyz#} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key.}}
+
+test trifid-2.5 {Attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for trifid ciphers.}}
+
+test trifid-2.6 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test trifid-2.7 {Attempt to undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No undo function defined for trifid ciphers.}}
+
+test trifid-2.8 {Attempt to substitute} {
+    set c [cipher create trifid]
+
+    set result [catch {$c substitute a b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Substitution is not yet defined for trifid ciphers}}
+
+test trifid-2.9 {Get plaintext with no ciphertext} {
+    set c [cipher create trifid]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test trifid-2.10 {Get plaintext with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a period has been set}}
+
+test trifid-2.11 {encode with non-listified key} {
+    set c [cipher create trifid]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test trifid-2.12 {Encode with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c encode foobar {abcdefghiklmnopqrstuvwxyz}} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can not encode trifid until a period has been set.}}
+
+test trifid-2.13 {Encode invalid number of key elements} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
+
+test trifid-2.14 {Encode with invalid key length} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "ab"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+test trifid-3.1 {use of cget -length} {
+    set c [cipher create trifid]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test trifid-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {29}
+
+test trifid-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    $c configure -period 10
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {10}
+
+test trifid-3.4 {use of cget -ct} {
+    set c [cipher create trifid]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test trifid-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {eymxvucryyyyeayvyovvxitdpathe}
+
+test trifid-3.6 {set ciphertext with uppercase letters} {
+    set c [cipher create trifid -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test trifid-3.7 {use of cget -pt} {
+    set c [createValidCipher]
+    $c configure -period 10
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                             }
+
+test trifid-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -key]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {27 {                           }}
+
+test trifid-3.9 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {trifid}
+
+test trifid-3.10 {use of undo} {unimplemented} {
+    set c [createValidCipher]
+    $c substitute abcdefghij bcdefghijk
+    $c undo abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {}
+
+test trifid-3.11 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test trifid-3.12 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test trifid-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c configure -period 10
+    $c restore extraodinybcfghjklmpqsuvwz#
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {extraodinybcfghjklmpqsuvwz# trifidsarefractionatedciphers}
+
+test trifid-7.2 {save/restore test, empty key} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 10
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 10
+    $c2 restore $key
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{                           } {                             }}
+
+test trifid-7.3 {save/restore test, full key} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 10
+    $c1 restore extraodinybcfghjklmpqsuvwz#
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 10
+    $c2 restore $key
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {extraodinybcfghjklmpqsuvwz# trifidsarefractionatedciphers}
+
+test trifid-7.4 {save/restore test with unused second argument} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 10
+    $c1 restore extraodinybcfghjklmpqsuvwz# {}
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 10
+    $c2 restore $key
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {extraodinybcfghjklmpqsuvwz# trifidsarefractionatedciphers}
+
+test trifid-7.5 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 10
+    $c1 restore {extr odinybcfghjklmpqsuvwz#}
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 10
+    $c2 restore $key
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{extr odinybcfghjklmpqsuvwz#} {trifids re   ction  edciph   }}
+
+test trifid-7.6 {restore test, last character is empty (so2002:e16)} {} {
+    set c [cipher create trifid -ct "iuurci#swl spxyvtbdlo rmcavfjmap ufuegywxkv jmslwgnlqr dzumefulsm cdyceewjlz yuralwcylw spumvgpiqp jzpmqzuarl ygkese#sga xryuarauwj cjralcvj#g mcvcdqfptr sxhqqn" -period 10]
+
+    $c restore "abcdefghijklmnopqrstuvwxyz "
+
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+
+    set result
+} {{abcdefghijklmnopqrstuvwxyz } {  ssitzh  zahmtguntujtzmjadhxawftikyzczdkhgonczbfofkaxxjvhzjbhsdnaxxieuufshyoxtbvaiotczbxpoadywrrwgl xgascmd  srsluwzzasabvj   y dlqcdcvzncftiewqw}}
+
+test trifid-9.1 {encode} {
+    set c [cipher create trifid -period 10]
+    set result [list [$c encode "trifids are fractionated ciphers" extraodinybcfghjklmpqsuvwz#]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -keyword]
+    rename $c {}
+
+    set result
+} {eymxvucryyyyeayvyovvxitdpathe eymxvucryyyyeayvyovvxitdpathe trifidsarefractionatedciphers extraodinybcfghjklmpqsuvwz#}

@@ -1,0 +1,671 @@
+# fmorse.test
+# Test of the fmorse cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the fmorse cipher
+# Laid out, the cipher looks like:
+#
+# cbiiltmhvvfl
+#
+# Solution:
+#
+#     c   o  m e   a t    o  n    c e 
+# -.-.x---x--x.xx.-x-xx---x-.x-.-.x.xx
+#
+# Key:  roundtablecfghijkmpqsvwxyz
+#       .........---------xxxxxxxx
+#       ...---xxx...---xxx...---xx
+#       .-x.-x.-x.-x.-x.-x.-x.-x.-
+
+proc createValidCipher {} {
+    set c [cipher create fmorse -ct "cbiiltmhvvfl"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#	7.x	Save/Restore tests
+#       8.x     Encoding tests
+
+test fmorse-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test fmorse-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test fmorse-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test fmorse-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test fmorse-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test fmorse-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test fmorse-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct ?mt?}}
+
+test fmorse-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct mt}}
+
+test fmorse-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ?ct?}}
+
+test fmorse-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test fmorse-1.11 {invalid use fmorse command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct mt
+                 ciphervar locate pt
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test fmorse-2.1 {invalid cipher characters} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c configure -ct 1111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test fmorse-2.2 {invalid length of restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of restore key.}}
+
+test fmorse-2.3 {invalid character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore a1cdefghijklmnopqrstuvwxyz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution ciphertext}}
+
+test fmorse-2.4 {duplicate character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aacdefghijklmnopqrstuvwxyz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test fmorse-2.5 {Attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for fmorse ciphers.}}
+
+test fmorse-2.6 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test fmorse-2.7 {Attempt to substitute with bad morsetext character} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c substitute a q--} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution morsetext}}
+
+test fmorse-2.8 {Attempt to substitute with bad ciphertext character} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c substitute 1 ---} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in substitution ciphertext}}
+
+test fmorse-2.9 {Attempt to substitute with bad morsetext length} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c substitute a --} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Plaintext length must be a multiple of three}}
+
+test fmorse-2.10 {Attempt to substitute with mismatched ciphertext/morsetext length} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c substitute aa ---} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Plaintext and ciphertext don't match in length (3 * 2 != 3)}}
+
+test fmorse-2.11 {Get plaintext with no ciphertext} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test fmorse-3.1 {use of cget -length} {
+    set c [cipher create fmorse]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test fmorse-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {12}
+
+test fmorse-3.3 {use of cget -ct} {
+    set c [cipher create fmorse]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test fmorse-3.4 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {cbiiltmhvvfl}
+
+test fmorse-3.5 {set ciphertext with uppercase letters} {
+    set c [cipher create fmorse -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test fmorse-3.6 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {}
+
+test fmorse-3.7 {use of cget -morsetext} {
+    set c [createValidCipher]
+    $c restore roundtablecfghijkmpqsvwxyz
+    set result [$c cget -morsetext]
+    rename $c {}
+    
+    set result
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.xx}
+
+test fmorse-3.8 {use of cget -fullplaintext} {
+    set c [createValidCipher]
+    $c restore roundtablecfghijkmpqsvwxyz
+    set result [$c cget -fullplaintext]
+    rename $c {}
+    
+    set result
+} {    c   o  m e   a t    o  n    c e }
+
+
+test fmorse-3.9 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -key]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {107 {abcdefghijklmnopqrstuvwxyz {                                                                              }}}
+
+test fmorse-3.10 {use of cget -keyword (empty)} {
+    set c [createValidCipher]
+    set result [list [string length [$c cget -keyword]] [$c cget -keyword]]
+    rename $c {}
+    
+    set result
+} {26 {                          }}
+
+test fmorse-3.11 {use of cget -keyword (empty)} {
+    set c [createValidCipher]
+    $c restore roundtablecfghijkmpqsvwxyz
+    set result [$c cget -keyword]
+    rename $c {}
+    
+    set result
+} {roundtablecfghijkmpqsvwxyz}
+
+test fmorse-3.12 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test fmorse-3.13 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test fmorse-3.14 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test fmorse-3.15 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test fmorse-3.16 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test fmorse-3.17 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test fmorse-3.18 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test fmorse-3.19 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test fmorse-3.20 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test fmorse-3.21 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {fmorse}
+
+test fmorse-3.22 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test fmorse-3.23 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test fmorse-4.1 {single substitution} {
+    set c [createValidCipher]
+
+    $c substitute a ---
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {---                                                                           }}
+
+test fmorse-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+
+    $c substitute cba ---...x-.
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {x-....---                                                                     }}
+
+test fmorse-4.3 {multiple substitutions with space for morse text} {
+    set c [createValidCipher]
+
+    $c substitute cbad {---...   x-.}
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {   ...---x-.                                                                  }}
+
+test fmorse-5.1 {undo with no substitutions} {
+    set c [createValidCipher]
+    $c undo a
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                                                                              }}
+
+test fmorse-5.2 {undo single substitution} {
+    set c [createValidCipher]
+    $c substitute a ...
+    $c undo a
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                                                                              }}
+
+test fmorse-5.3 {undo one of multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute abc ...---..-
+    $c undo a
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {   ---..-                                                                     }}
+
+test fmorse-5.4 {undo all} {
+    set c [createValidCipher]
+    $c substitute abc ...---..-
+    $c undo
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                                                                              }}
+
+test fmorse-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c restore roundtablecfghijkmpqsvwxyz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz .x..x--.-.---..-.x--.-----x-x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.xx-} {come at once }}
+
+test fmorse-7.2 {save/restore test, empty key} {} {
+    set c1 [createValidCipher]
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                                                                              }} {}}
+
+test fmorse-7.3 {save/restore test, full key} {} {
+    set c1 [createValidCipher]
+    $c1 restore roundtablecfghijkmpqsvwxyz
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz .x..x--.-.---..-.x--.-----x-x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.xx-} {come at once }}
+
+test fmorse-7.4 {save/restore test, key with spaces} {} {
+    set c1 [createValidCipher]
+    $c1 restore {roundtablecfgh jkmpqsvwxyz}
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {.x..x--.-.---..-.x--.---   -x.-x-.xx-xx.-...-x..x.-...x.x.-x..xx-.x--x-xxx.xx-}} {c  at once }}
+
+test fmorse-8.1 {simple encoding test} {} {
+    set c [cipher create fmorse]
+    set result [$c encode "come at once" "roundtable"]
+    rename $c {}
+    set result
+} {cbiiltmhvvfl}
+
+test fmorse-8.2 {some characters are not allowed in the key} {} {
+    set c [cipher create fmorse]
+    set result [catch {$c encode "come at once" "round table"} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Invalid character found in keyword round table.  All letters must be lowercase from a-z}}
+
+test fmorse-8.3 {empty plaintext is not allowed} {} {
+    set c [cipher create fmorse]
+    set result [catch {$c encode "" "round table"} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Empty plaintext.}}
+
+test fmorse-8.4 {encode "come at once" using key "roundtable"} {} {
+    set c [cipher create fmorse]
+    set result [$c encode "come at once" "roundtable"]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {cbiiltmhvvfl {come at once } roundtablecfghijkmpqsvwxyz cbiiltmhvvfl}
+
+test fmorse-8.5 {make sure the padding works correctly} {} {
+    set c [cipher create fmorse]
+    set result {}
+    lappend result [$c encode "test e" "key"]
+    lappend result [$c cget -pt]
+    lappend result [$c encode "test ee" "key"]
+    lappend result [$c cget -pt]
+    lappend result [$c encode "test eee" "key"]
+    lappend result [$c cget -pt]
+    rename $c {}
+    set result
+} {orfx {test e} orfxt {test ee} orfxtg {test eee }}
+

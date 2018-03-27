@@ -1,0 +1,149 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# autokeysol --
+#
+#	Autokey cipher autosolver
+#
+# RCS: @(#) $Id: autokeysol,v 1.8 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2002,2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require Scoredata
+package require Dictionary
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg vigenere "The encoding type (vigenere, variant, beaufort)"] \
+    [list period.arg 0 "The period for the cipher."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list keyword.arg {} "The single keyword to use for solving."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list stepinterval.arg {2000} "The interval between progress updates.  Use a step interval of 0 to print all attempts."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ciphertext [CipherUtil::readCiphertext $file]
+regsub -all { } $ciphertext {} ciphertext
+
+switch -- $type {
+    vigenere {
+	set ptconv vigpt
+	set keyconv vigkey
+    }
+    variant {
+	set ptconv varpt
+	set keyconv varkey
+    }
+    beaufort {
+	set ptconv beapt
+	set keyconv beakey
+    }
+    default {
+	puts stderr "Unsupported type $type"
+	exit 1
+    }
+}
+
+if {$keyword == ""} {
+    set keywordList [Dictionary::lookupByLength $period]
+} else {
+    set keywordList $keyword
+    set period [string length $keyword]
+}
+
+set clength [string length $ciphertext]
+set pt {}
+set count 0
+set stepInterval 5000
+set maxValue 0
+set maxPrimer {}
+set maxPt {}
+
+proc decodeAutokey {ciphertext type primer period} {
+    global ptconv
+    set keyblock $primer
+    set pt {}
+    set clength [string length $ciphertext]
+    for {set i 0} {$i < $clength} {incr i $period} {
+	set ptblock {}
+	for {set j 0} {$j < $period && $j + $i < $clength} {incr j} {
+	    set keyLetter [string index $keyblock $j]
+	    set ctLetter [string index $ciphertext [expr {$j + $i}]]
+	    append ptblock [key convert $ptconv $keyLetter $ctLetter]
+	}
+	append pt $ptblock
+	set keyblock $ptblock
+    }
+
+    return $pt
+}
+
+foreach primer $keywordList {
+    set keyblock $primer
+    set value 0
+    set pt [decodeAutokey $ciphertext $type $primer $period]
+    set value [score value $pt]
+    if {$value > $maxValue} {
+	set maxValue $value
+	set maxKey $primer
+	set maxPt $pt
+	puts "#$count:  $primer  Fit:  $value"
+	puts "#$pt"
+    }
+    if {$count%$stepInterval == 0} {
+	puts "#$count:  $primer"
+	puts "#$pt"
+    }
+    incr count
+}
+
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords $maxPt]
+} else {
+    set readablePt $maxPt
+}
+
+puts ""
+puts "type=autokey"
+puts "encoding=$type"
+puts "period=$period"
+puts "ciphertext=$ciphertext"
+puts "plaintext=$readablePt"
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts "key=$maxKey"
+puts "keyword=$maxKey"

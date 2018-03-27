@@ -1,0 +1,172 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# digrafidsolve --
+#
+#	Automatic solver for a digrafid cipher.  This program
+#	generates all possible keyed squares for the first square and
+#	then uses a hillclimber to locate good matches for the second
+#	keysquare.
+#
+# RCS: @(#) $Id: digrafidsolve,v 1.10 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2003-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Hillclimb
+package require Dictionary
+package require Scoredata
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg "" "The period setting for the cipher."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list keylen.arg {} "The length of the keywords to try."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$period == ""} {
+    puts stderr "Period must be specified with -period"
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create digrafid -ct $ct -period $period]
+
+set ::Dictionary::cache {}
+
+proc showFit {key value count pt} {
+    puts "# Iteration $count"
+    puts "# Key1 Square: [string range [lindex $key 0] 0 8]"
+    puts "# Key1 Square: [string range [lindex $key 0] 9 17]"
+    puts "# Key1 Square: [string range [lindex $key 0] 18 26]"
+    puts "# Key2 Square: [string range [lindex $key 1] 0 8]"
+    puts "# Key2 Square: [string range [lindex $key 1] 9 17]"
+    puts "# Key2 Square: [string range [lindex $key 1] 18 26]"
+    puts "# Fit: $value"
+    puts "# Pt:  $pt"
+    puts ""
+}
+
+proc showIter {keyword key iter pt} {
+    puts "# Keywords tried: $iter"
+    puts "# Key:  ($keyword) $key"
+    puts "# Pt:  $pt"
+    puts ""
+}
+
+# Initialize the hill climber parameters
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc(digrafid)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType(digrafid)
+set Hillclimb::cipherObject $cipher
+set Hillclimb::stepCommand {}
+set Hillclimb::bestFitCommand {}
+
+set maxValue 0
+set maxBifidKey {}
+set maxHillKey {}
+set count 1
+set keywordCount 0
+set mutationAmount 10
+set numHills 20
+# The step interval is based on the number of keywords used, not the number
+# of hills climbed.
+set stepInterval 1
+
+set square2Key {                           }
+
+if {$keylen == ""} {
+    set wordLengths [Dictionary::availableLengths]
+} else {
+    set wordLengths [Dictionary::availableLengths $keylen $keylen]
+}
+
+foreach wordLength $wordLengths {
+    foreach keyword [Dictionary::lookupByLength $wordLength] {
+	incr keywordCount
+	# Sometimes the first keysquare will use a complex route.  But
+	# usually it's a simple horizontal route.
+	#
+	#set square1Keys [CipherUtil::generateKeysquares $keyword 9 3]
+	set square1Keys [key generate -k1 [string map [list - {} ' {}] $keyword]]#
+	set hillKeys {}
+	# Apply the generated key to each of the digrafid keysquares
+	foreach key $square1Keys { 
+	    #lappend hillKeys [list $key abcdefghijklmnopqrstuvwxyz#] [list tabcdefghijklmnopqrstuvwxyz# $key]
+	    lappend hillKeys [list $key abcdefghijklmnopqrstuvwxyz#] [list [string repeat 1 27] [string repeat 0 27]] [list abcdefghijklmnopqrstuvwxyz# $key] [list [string repeat 0 27] [string repeat 1 27]]
+
+	}
+
+	# Apply each keyset to the cipher
+	foreach {hillKey holes} $hillKeys {
+	    # Climb the hill for a while
+	    set localMaxValue 0
+	    set localMaxKey 0
+	    set localMaxHill 0
+	    set localMaxPt {}
+	    #set hillKey [list $square1Key abcdefghijklmnopqrstuvwxyz#]
+	    set Hillclimb::fixedKeyPositions $holes
+
+	    for {set iter 0} {$iter < $numHills} {incr iter} {
+		#puts "Climbing hill with key $hillKey ($Hillclimb::fixedKeyPositions)"
+		foreach {bestKey val} [Hillclimb::start $hillKey] {}
+
+		if {$val > $localMaxValue} {
+		    set localMaxValue $val
+		    set localMaxHill $iter
+		    set localMaxKey $bestKey
+		    set localMaxPt [$cipher cget -pt]
+		}
+
+		if {$val > $maxValue} {
+		    set maxValue $val
+		    set maxKey $bestKey
+		    showFit $maxKey $val $count [$cipher cget -pt]
+		}
+		incr count
+
+		set hillKey [::Hillclimb::mutate $bestKey $mutationAmount]
+	    }
+
+	}
+	if {$keywordCount % $stepInterval == 0} {
+	    showIter $keyword "$localMaxKey ($localMaxHill)" $keywordCount $localMaxPt
+	}
+    }
+}

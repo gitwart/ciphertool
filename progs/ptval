@@ -1,0 +1,94 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# ptval --
+#
+#	Command line tool for calculating the fit value for a string
+#	of plaintext.
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 2003-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+package require Dictionary
+package require cmdline
+package require Scoredata
+
+set options [list \
+    [list pt.arg {} "The plaintext to measure."] \
+    [list file.arg {} "The plaintext stored in the cipher savefile will be measured."] \
+    [list scoretype.arg digramlog "The statistical method used to calculate the goodness of fit.  Allowed values are any of the valud 'score types' types."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype != ""} {
+    set defaultScore [score create $scoretype]
+    Scoredata::loadData $defaultScore
+
+    score default $defaultScore
+}
+
+if {$pt == "" && $file == ""} {
+    puts stderr "[::cmdline::usage $options {one of '-file' or '-pt' must be specified.}]"
+    exit 1
+} elseif {$pt != "" && $file != ""} {
+    puts stderr "[::cmdline::usage $options {only one of '-file' or '-pt' can be specified.}]"
+    exit 1
+}
+
+if {$file != ""} {
+    array set cipherInfo [CipherUtil::loadCipher $file]
+    if {![info exists cipherInfo(plaintext)]} {
+	puts stderr "Plaintext not found in cipher save file."
+	exit 1
+    }
+    set pt $cipherInfo(plaintext)
+    if {$pt == ""} {
+	puts stderr "empty plaintext found in cipher save file."
+	exit 1
+    }
+}
+
+set pt [string map {{ } {} - {} ' {}} $pt]
+
+set Dictionary::cache {}
+# Don't create the word tree unless required.  It takes up
+# quite a bit of memory for large dictionaries.
+if {[lsearch $scoretype "wordtree"] != -1} {
+    Dictionary::createWordTree
+}
+
+# Get a weighted based on multiple statistical methods.
+set value [score value $pt]
+
+puts $value

@@ -1,0 +1,141 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# csolve --
+#
+#	Automatic solver for a variety of cipher types.
+#
+# RCS: @(#) $Id: csolve,v 1.22 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 1999-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require Dictionary
+package require cmdline
+package require cipher
+package require CipherUtil 1.0
+package require Scoredata
+package require Scoretypes
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg {} "The cipher type"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list stepinterval.arg {0} "The interval between progress updates.  Defaults to 50000 for most ciphers."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+# Command line validation
+
+if {$type == ""} {
+    puts stderr "[::cmdline::usage $options {option '-type' missing}]"
+    exit 1
+}
+
+set ct [CipherUtil::readCiphertext $file]
+
+if {$period != 0} {
+    set c [cipher create $type -ct $ct -period $period]
+} else {
+    set c [cipher create $type -ct $ct]
+}
+
+if {$stepinterval == 0} {
+    switch $type {
+	baconian {
+	    set stepinterval 5000000
+	}
+	amsco -
+	columnar {
+	    set stepinterval 500000
+	}
+	grille {
+	    set stepinterval 1000000
+	}
+	default {
+	    set stepinterval 50000
+	}
+    }
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+catch {[$c configure -bestfitcommand show_best_fit -stepcommand show_fit -stepinterval $stepinterval]}
+
+proc show_best_fit {step key value pt} {
+    puts "#$key\tFit:  $value"
+    puts "#$step: $pt"
+    puts ""
+}
+
+proc show_fit {step key pt} {
+    puts #$key
+    puts "#$step: $pt"
+    puts ""
+}
+
+$c solve
+
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords [$c cget -pt]]
+}
+
+foreach channel [list stdout] {
+    puts $channel "#=========="
+    puts $channel ""
+    CipherUtil::writeCipherToFile $c $channel 
+    if {$addspace} {
+	puts "#plaintext=$readablePt"
+    }
+}

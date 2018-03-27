@@ -1,0 +1,72 @@
+<HTML>
+<TITLE>Cipher Program - k3search</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+k3search - find the keyword for a K3 mixed alphabet
+
+
+<H2>SYNOPSIS</H2>
+
+<B>k3search</B> <I>keystring</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><B><CODE>k3search keystring</CODE></B></DT>
+        <DD><B>k3search</B> attempts to find the keyword for a K3 mixed alphabet.
+<B>keystring</B> is a K3 mixed alphabet.  Any one of the 26 K3 mixed alphabets
+may be used.  Spaces may be used to designate uknown letters:
+<P>
+<B><CODE>k3search &quot;log rithmbcd     qsu wx z&quot;</CODE></B>
+<P>
+The dictionary must be laid out as a set
+of files, with each file containing a list of words (in
+any order) all of the same length, one word per line.
+The filenames must start with the string <B>len</B> and
+end with a 2 digit number describing the length of the
+words inside the file.  For example, the file
+<B>len04</B> could contain:
+<P>
+<CODE>
+very<BR>
+that<BR>
+lean<BR>
+keys<BR>
+used<BR>
+type<BR>
+foot<BR>
+mine<BR>
+eery<BR>
+flee<BR>
+</CODE>
+
+<P>
+<B>k3search</B> takes each word found in the dictionary files and generates
+the 26 possible K3 mixed alphbets from the keyword.  Each alphabet is then
+compared to the <B>keystring</B> to see if it matches.  If a match is found,
+the keyword and full mixed alphabet is printed.  If multiple matches are found,
+all matches are printed.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

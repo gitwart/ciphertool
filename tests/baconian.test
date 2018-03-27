@@ -1,0 +1,760 @@
+# baconian.test
+# Test of the baconian cipher type
+
+package require cipher
+# The dictionary package is required for the encoding tests.
+package require Dictionary
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+set len05 \
+{anana
+argol
+guaco
+study
+adieu
+azine
+muist
+thins
+algal
+fiend
+seems
+barbe
+scrat
+gigue
+blash
+video
+slack
+bells
+tasso
+neese
+liner
+maras
+judas
+raped
+astor
+suras
+skald
+sappy
+targe
+faced
+phare
+motif
+ducks}
+
+::tcltest::makeDirectory dict
+::tcltest::makeFile $len05 dict/len05
+set Dictionary::directory $::tcltest::temporaryDirectory/dict
+
+# Sample cipher for the various tests.  Solution:
+#
+# 
+# plaintext	trustingodbuttieyourcamel
+# key	abcdefghijklmnopqrstuvwxyz {abbabbbaabbbaaba bababa a }
+# BT:	baaba baaaa baabb baaab baaba abaaa abbaa aabba abbab aaabb aaaab
+#	baabb baaba baaba abaaa aabaa babba abbab baabb baaaa aaaba aaaaa
+#	ababb aabaa ababa 
+
+proc createValidCipher {} {
+    set c [cipher create baconian -ct "lists gains knack lying fails drips dream marry aggie shall spade baser guard laugh nomad showy fully devil laser jumps samba spins dowel phony doily"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Restoration and substitution tests
+#       5.x     Tip location tests
+#       6.x     Solve tests
+#       7.x     Encode tests
+
+test baconian-1.1 {creation of cipher with bad length} {
+    list [catch {cipher create baconian -ct "abcd"} msg] $msg
+} {1 {Length of bacon ct (4) must be a multiple of 5.}}
+
+test baconian-1.2 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test baconian-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test baconian-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test baconian-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test baconian-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test baconian-1.7 {invalid use of configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test baconian-1.8 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test baconian-1.9 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test baconian-1.10 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct ?pt?}}
+
+test baconian-1.11 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test baconian-1.12 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test baconian-1.13 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ?ct?}}
+
+test baconian-1.14 {invalid use baconian command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar locate pt ?ct?
+                 ciphervar solve
+                 ciphervar substitute ct pt
+                 ciphervar undo ct
+                 ciphervar restore key
+                 ciphervar encode pt key}}
+
+test baconian-2.1 {invalid cipher length} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -ct foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of bacon ct (3) must be a multiple of 5.}}
+
+test baconian-2.2 {invalid cipher length} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -ct 11111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test baconian-2.3 {bad substitution, invalid pt} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute lists ccccc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-2.4 {bad substitution, double b's at word start} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute lists bbbbb} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-2.5 {bad substitution, double b's at word start} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute listsa bbbbb} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Ciphertext and plaintext lengths don't match up}}
+
+test baconian-2.6 {bad restore (double b's)} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore lists bbbbb} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-2.7 {bad restore (invalid pt)} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcdef caaaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-2.8 {bad restore (invalid pt)} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabcde aaaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Ciphertext and plaintext are not the same length}}
+
+test baconian-2.11 {encode with non-listified key} {
+    set c [cipher create baconian]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test baconian-2.12 {encode with too many key elements} {
+    set c [cipher create baconian]
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
+
+test baconian-2.13 {encode with short key elements} {
+    set c [cipher create baconian]
+
+    set result [catch {$c encode foobar "aab"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key.}}
+
+test baconian-3.1 {get length} {
+    set c [createValidCipher]
+
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {125}
+
+test baconian-3.2 {get ciphertext} {
+    set c [createValidCipher]
+
+    set result [$c cget -ciphertext]
+    rename $c {}
+    
+    set result
+} {listsgainsknacklyingfailsdripsdreammarryaggieshallspadebaserguardlaughnomadshowyfullydevillaserjumpssambaspinsdowelphonydoily}
+
+test baconian-3.3 {set ciphertext with uppercase letters} {
+    set c [cipher create baconian -ct "WhereTheseTimes"]
+
+    set result [$c cget -ciphertext]
+    rename $c {}
+    
+    set result
+} {wherethesetimes}
+
+test baconian-3.4 {get alphabet} {
+    set c [createValidCipher]
+
+    set result [$c cget -alphabet]
+    rename $c {}
+    
+    set result
+} {aaaaa aaaab aaaba aaabb aabaa aabab aabba aabbb abaaa abaaa abaab ababa ababb abbaa abbab abbba abbbb baaaa baaab baaba baabb baabb babaa babab babba babbb}
+
+test baconian-3.5 {get period} {
+    set c [createValidCipher]
+
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test baconian-3.6 {get bacontext (empty)} {
+    set c [createValidCipher]
+
+    set result [$c cget -bacontext]
+    rename $c {}
+    
+    set result
+} {                                                                                                                             }
+
+test baconian-3.7 {get type} {
+    set c [createValidCipher]
+
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {baconian}
+
+test baconian-3.8 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test baconian-3.9 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test baconian-3.10 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test baconian-3.11 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test baconian-3.12 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test baconian-3.13 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test baconian-3.14 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test baconian-3.15 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test baconian-3.16 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test baconian-3.17 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test baconian-3.18 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test baconian-4.1 {valid restore (with blanks)} {
+    set c [createValidCipher]
+
+    $c restore abcdefghijklmnopqrstuvwxyz "abbabbbaabbbaaba bababa a "
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {abbabbbaabbbaaba bababa a }} trustingodbuttieyourcamel}
+
+test baconian-4.2 {valid restore (no blanks)} {
+    set c [createValidCipher]
+
+    $c restore abcdefghijklmnopqrstuvwxyz "abbabbbaabbbaabaabababaaaa"
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz abbabbbaabbbaabaabababaaaa} trustingodbuttieyourcamel}
+
+test baconian-4.3 {valid restore with single argument} {
+    set c [createValidCipher]
+
+    $c restore abbabbbaabbbaabaabababaaaa
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz abbabbbaabbbaabaabababaaaa} trustingodbuttieyourcamel}
+
+test baconian-4.4 {group substitution} {
+    set c [createValidCipher]
+
+    $c substitute gains e
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {a     a b    a    a       }} { e                       }}
+
+test baconian-4.5 {group substitution containing invalid alt sub} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute lists e} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-4.6 {valid group alt substitution} {
+    set c [createValidCipher]
+
+    $c substitute lists f
+    set result [list [$c cget -key] [$c cget -bt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {        a  a      ba      }} {aabab  a b     a a    aab  a b             a b  aab      b       a         b      aa    aaa b      bb    b a b    a       aa }}
+
+test baconian-4.7 {group substitution forcing 2 b's} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute fails g} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad substitution}}
+
+test baconian-4.8 {valid alt substitution} {
+    set c [createValidCipher]
+
+    $c substitute l a
+    $c substitute l b
+    set result [list [$c cget -key] [$c cget -bt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {           b              }} {b              b       b                        bb               b                bb     bb                       b        b }}
+
+test baconian-4.9 {group substitution containing valid alt sub} {
+    set c [createValidCipher]
+
+    $c substitute l a
+    $c substitute lists r
+    set result [list [$c cget -key] [$c cget -bt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {        a  b      aa      }} {baaaa  a a     b a    aba  a a             a a  bba      a       b         a      bb    abb a      aa    a a a    b       ab }}
+
+test baconian-4.10 {substitution containing spaces} {
+    set c [createValidCipher]
+
+    $c substitute gains "aa bb"
+    set result [list [$c cget -key] [$c cget -bt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {a     a      b    b       }} {  b baa bb ba     ba a  b    b   a  a   aaa  b a  b a   ab  a a   a a b  a b               ab      bba  ab  bb        b      }}
+
+test baconian-4.11 {alt substitution containing spaces} {
+    set c [createValidCipher]
+
+    $c substitute i b
+    $c substitute gains "aa bb"
+    set result [list [$c cget -key] [$c cget -bt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {a     a      b    b       }} {  b baa bb ba     ba a  b    b   a  a   aaa  b a  b a   ab  a a   a a b  a b               ab      bba  ab  bb        b      }}
+
+test baconian-5.1 {locate invalid tip} {
+    set c [createValidCipher]
+
+    $c locate foobar
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {                         }}
+
+test baconian-5.2 {locate tip at start} {
+    set c [createValidCipher]
+
+    $c locate trust
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {a b  bb a bb a    ab    a }} {trust                    }}
+
+test baconian-5.3 {locate tip in middle} {
+    set c [createValidCipher]
+
+    $c locate but
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {ab ab b        a ba a     }} {          but            }}
+
+test baconian-5.4 {locate tip at end} {
+    set c [createValidCipher]
+
+    $c locate camel
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {ab ab  aa  baaba  a   a a }} {         db   ie    camel}}
+
+test baconian-6.1 {solve} {timeIntensive} {
+    set c [createValidCipher]
+
+    $c solve
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {}
+
+# aababbbaabbbaababbabababab
+# abcdefghijklmnopqrstuvwxyz
+
+#test baconian-7.1 {*plaintext* doesn't have to be a multiple of 5} {
+#    set c [cipher create baconian]
+#    set result [catch {$c encode "trust in god but tie your camels" [list aababbbaabbbaababbabababab]} msg]
+#    regsub -all $c $msg ciphervar msg
+#    lappend result $msg
+#    rename $c {}
+#    set result
+#} {0 caacacaaaacaacccaaaccaacaacaaaaccaaaaccaaccacaaaccaaaaccaacccaacacaacaacaaaaacaacaccaaccaccaacccaaaaaaacaaaaaaacaccaacaaacacacaaac}
+
+#test baconian-7.2 {encode} {
+#    set c [cipher create baconian]
+#
+#    set result [list [$c encode "trust in god but tie your camel" [list aababbbaabbbaababbabababab]]]
+#    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+#    rename $c {}
+#
+#    set result
+#} {caacacaaaacaacccaaaccaacaacaaaaccaaaaccaaccacaaaccaaaaccaacccaacacaacaacaaaaacaacaccaaccaccaacccaaaaaaacaaaaaaacaccaacaaacaca caacacaaaacaacccaaaccaacaacaaaaccaaaaccaaccacaaaccaaaaccaacccaacacaacaacaaaaacaacaccaaccaccaacccaaaaaaacaaaaaaacaccaacaaacaca trustingodbuttieyourcamel {abcdefghijklmnopqrstuvwxyz aababbbaabbbaababbabababab}}
+
+
+test baconian-7.3 {make sure the plaintext and key are consistent with the encoding function} {
+    set c [cipher create baconian]
+    $c encode "a quick brown fox jumps over the lazy dog" [list aababbbaabbbaababbabababab]
+    set result [list [$c cget -pt] [$c cget -key]]
+    rename $c {}
+    set result
+} {aquickbrownfoxiumpsouerthelazydog {abcdefghijklmnopqrstuvwxyz aababbbaabbbaababbabababab}}
+
+test baconian-7.4 {use 'encode' output as ciphertext input} {
+    set c [cipher create baconian]
+    set result {}
+    set ct [$c encode "a quick brown fox jumps over the lazy dog" [list aababbbaabbbaababbabababab]]
+    set c2 [cipher create baconian -ct $ct]
+    $c2 restore abcdefghijklmnopqrstuvwxyz aababbbaabbbaababbabababab
+    set result [list [$c2 cget -pt] [$c2 cget -key]]
+    rename $c {}
+    rename $c2 {}
+    set result
+} {aquickbrownfoxiumpsouerthelazydog {abcdefghijklmnopqrstuvwxyz aababbbaabbbaababbabababab}}
+
+test baconian-7.5 {make sure a word can be made for every letter} {
+    set c [cipher create baconian]
+    set result [catch {$c encode "trust in god but tie your camels" [list baaaaaaaaaaaaaaaaaaaaaaaaa]} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Not all letters have corresponding words.}}
+
+::tcltest::cleanupTests

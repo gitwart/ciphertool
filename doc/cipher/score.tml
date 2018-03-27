@@ -1,0 +1,209 @@
+[docHeader "Tcl Command - score"]
+[Command score "Manipulate plaintext scoring tables."]
+[SynopsisHeader]
+[Synopsis score "option string"]
+
+[StartDescription]
+
+[Description "score value plaintext ?weight?" value \
+"Generates a score for the plaintext based on the default scoring table.  If
+specified, the result is multiplied by the supplied weight.  The initial
+default scoring table uses a sum-of-logs-of-digram-frequencies scoring method.
+The default scoring table can be changed using the command <code>score default
+command</code>."]
+
+[Description "score elemvalue plaintext ?weight?" elemvalue \
+"Lookup a single element in the default scoring table.  If specified, the
+result is multiplied by the supplied weight.  The initial default scoring table
+uses a sum-of-logs-of-digram-frequencies scoring method.  The default scoring
+table can be changed using the command <code>score default command</code>."]
+
+[Description "score types" types \
+"Returns the list of builtin scoring types.  These are the only valid types
+that can be used with the <code>score create</code> command.  This list of
+types includes:
+<ul>
+<li>digramlog - Sum of the natural logarithms of digram frequencies.</li>
+<li>digramcount - Raw digram frequency counts.</li>
+<li>trigramlog - Sum of the natural logarithms of trigram frequencies.</li>
+<li>trigramcount - Raw trigram frequency counts</li>
+<li>ngramlog - Sum of the natural logarithms of arbitrary n-grams.  The size of
+the ngrams must be set using the scoring table's <code>elemsize</code>
+command.</li>
+<li>ngramcount - Raw n-gram frequency counts.  The size of the ngrams must be
+set using the scoring table's <code>elemsize</code> command.</li>
+<li>wordtree - The square of the lengths of valid words longer than 2
+characters.  This scoring table does not have a fixed element size.</li>
+</ul>
+"]
+
+[Description "score create type" create \
+"Create a new scoring table from one of the builtin types.  The value of the
+<code>type</code> argument must be one of the types returned by <code>score
+types</code>.  This command returns the name of a new scoring object.  This new
+scoring object is also a Tcl command that is used to populate the scoring table
+and retrieve values from the table.  Scoring object commands are described
+below.
+"]
+
+[Description "score default ?command?" default \
+"Get the name of the command that implements the default scoring table, or set
+the command that should be used as the default scoring table.  The value for
+the <code>command</code> argument can be either a scoring object that was
+returned by <code>score create</code>, or a Tcl procedure that implements the
+scoring object command.  See below for details on scoring object commands."]
+
+[Description "score isinternal command" isinternal \
+"Returns a boolean value indicating if this command was created by <code>score create</code>."]
+
+[EndDescription]
+
+[StartDescription "SCORING OBJECTS"]
+
+Each scoring object represents a single scoring table.  By using independent
+scoring objects, many scoring tables can be created and used simultaneously.
+Scoring tables can be created using one of the builtin types {see <code>score
+create</code>}, or using a custom Tcl procedure.  If a custom Tcl procedure is
+used, it must use the following signature:
+
+<pre>
+proc myScoreProc {subcommand args} {
+    ...
+}
+</pre>
+
+The list of possible values for the subcommand is given below.
+
+[Description "scoreObj type" value \
+"Returns the type of the scoring table.  This will be either one of the builtin
+types, or a custom type if a Tcl procedure is used."]
+
+[Description "scoreObj value plaintext ?weight?" value \
+"Generates a score for the plaintext based on the command's scoring table.  If
+specified, the result is multiplied by the supplied weight."]
+
+[Description "scoreObj elemvalue plaintext ?weight?" elemvalue \
+"Lookup a single element in the command's scoring table.  If specified, the
+result is multiplied by the supplied weight."]
+
+[Description "scoreObj elemsize ?value?" elemsize \
+"Set the element size for this scoring table.  It is not possible to change the
+element size once it is set.  It is not possible to change the element size for
+the builtin di/tri-gram and wordtree scoring tables.  Only the builtin ngram
+and custom scoring tables can set an element size.  If no size is specified
+then this command will return the current element size.  An element size of -1
+indicates that the element size has not been set.  0 indicates that the element
+sizes are not fixed, as is the case with the wordtree type."]
+
+[Description "scoreObj add element ?value?" add \
+"Add a single element to the scoring table.  If a value is not specified then
+1.0 is used.  If the element already exists in this scoring table then the
+indicated value is added to the existing table entry."]
+
+[Description "scoreObj normalize" normalize \
+"Normalize the scoring table.  Note that the <i>normalize</i> sub-command is a
+misnomer.  <i>normalize</i> merely applies some calculation to all entries of
+the scoring table once the table has been filled.  For the di/tri/n-gramlog
+tables, the normalize method takes the natural logarithm of all entries in the
+table.  For the di/gri/n-gramcount tables, the normalize method does nothing.
+Be careful not to call <i>normzlize</i> multiple times as it will apply the
+normalization method every time it is called.  Also be careful not to add additional elements to a scoring table that has been normalized."]
+
+[Description "scoreObj dump commandPrefix" dump \
+"Dump all elements of the scoring table.  The <i>commandPrefix</i> is called for every element in the table.  The element and element value are appended as a two-item list to the commandPrefix before it is invoked.  The following example prints the entire scoring table to stdout:
+<pre>
+\$scoreObj dump puts
+</pre>"]
+
+[EndDescription]
+
+[StartDescription EXAMPLES]
+
+[Description {% score value "my dog has fleas"<br>
+    1302.0} example1 \
+"Use the default sum-of-digram-logs on a string of plaintext."]
+
+[Description {% score create digramlog<br>
+     score1<br>
+     % score1 add my 2<br>
+     my<br>
+     % score add do 2<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     1.38629436112} example2 \
+"Create a new sum-of-digram-logs scoring table based on a
+custom frequency table.  Note that the <code>normalize</code>
+sub-command is a misnomer.  In this case, it merely
+computes the log of every value that was added by <code>score
+add</code>.  This allows you to enter the raw frequency counts
+and let the score command calculate the logs for you."]
+
+[Description {% score create digramlog<br>
+     score1<br>
+     % score1 add my 0.693<br>
+     my<br>
+     % score add do 0.693<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     1.386} example3 \
+"Create a new sum-of-digram-logs scoring table based on a
+custom frequency table.  In this example the input digram
+values have already been converted to log values, so the
+normalize sub-command is not used."]
+
+[Description {% score create digramcount<br>
+     score1<br>
+     % score1 add my 2<br>
+     my<br>
+     % score add do 2<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     4.0} example3 \
+"The normalize sub-command for the sum-of-frequency-counts
+scoring table does nothing.  This table stores only the
+raw frequency counts."]
+
+[Description {% score create wordtree<br>
+     score1<br>
+     % score1 add my<br>
+     my<br>
+     % score1 add dog<br>
+     dog<br>
+     % score1 add has<br>
+     has<br>
+     % score1 add fleas<br>
+     fleas<br>
+     % score1 value "my dog has fleas"<br>
+     43.0} example4 \
+"The <i>wordtree</i> scoring table calculates scores based on
+the square of the lengths of valid words in the plaintext.
+1- and 2-letter words are ignored.  Again, normalization
+is not needed here."]
+
+[Description {% score create wordtree<br>
+     score1<br>
+     % score1 add dog<br>
+     dog<br>
+     % score default score1<br>
+     score1<br>
+     % score value "my dog has fleas"<br>
+     9.0} example5 \
+"Change the default scoring method to a custom <i>wordtree</i>
+table.  Note that we use the <code>score</code> command to get the
+value here instead of calling the new </code>score1</code> command.
+The </code>score default score1</code> command associates </code>score1</code>
+as the default scoring method."]
+
+[Description {% score default myScoringMethod<br>
+     myScoringMethod<br>
+     % score value "my dog has fleas"<br>
+     16} example6 \
+"Change the default scoring method to the new custom
+scoring method above."]
+
+[EndDescription]
+
+[footer]

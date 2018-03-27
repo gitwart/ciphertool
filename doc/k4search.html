@@ -1,0 +1,75 @@
+<HTML>
+<TITLE>Cipher Program - k4search</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+k4search - find one keyword for a K4 mixed alphabet
+
+
+<H2>SYNOPSIS</H2>
+
+<B>k4search</B> <I>keystring</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><B><CODE>k4search keystring</CODE></B></DT>
+        <DD><B>k3search</B> attempts to find one keyword for a K4 mixed alphabet.
+<B>keystring</B> is a K4 mixed alphabet.  Any one of the 26 K4 mixed alphabets
+may be used.  Spaces may be used to designate uknown letters:
+<P>
+<B><CODE>k3search &quot;log rithmbcd     qsu wx z&quot;</CODE></B>
+<P>
+The keystring must be entered as a K1 alphabet.
+<P>
+The dictionary must be laid out as a set
+of files, with each file containing a list of words (in
+any order) all of the same length, one word per line.
+The filenames must start with the string <B>len</B> and
+end with a 2 digit number describing the length of the
+words inside the file.  For example, the file
+<B>len04</B> could contain:
+<P>
+<CODE>
+very<BR>
+that<BR>
+lean<BR>
+keys<BR>
+used<BR>
+type<BR>
+foot<BR>
+mine<BR>
+eery<BR>
+flee<BR>
+</CODE>
+
+<P>
+<B>k4search</B> takes each word found in the dictionary files and generates
+a K1 mixed alphabet.  The <B>keystring</B> is then reordered based on the
+new K1 alphabet.  An <I>order value</I> is calculated from the result of
+reordering the <B>keystring</B>.  This <I>order value</I> is a measure of how
+many letters in the string are sequential.  The keyword that generates the
+highest <I>order value</I> is printed.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

@@ -1,0 +1,86 @@
+INTRODUCTION
+============
+I am a member of the American Cryptogram Association (Nom:  WART) and a
+self-proclaimed computer geek.  These two interests naturally came together
+and as a result, I now have a fairly large set of code for displaying,
+manipulating, analyzing, and in some cases solving a variety of
+cipher types.  All of the cipher types present in this package are
+best described in the Handbook for Members of the American Cryptogram
+Association, "The ACA and You".
+
+Many of the cipher types also have programs or scripts that will
+solve them with little user intervention.  I find it a very interesting
+exercise to write autosolvers.  However, using them without having any
+knowledge as to how they work is pointless.  Therefore, the autosolvers
+are provided as a proof of concept only and are poorly documented.
+
+REQUIREMENTS
+============
+The interface uses the Tcl/Tk toolkit provided by Ajuba Solutions (formerly
+Scriptics Corporation).  You will need to install Tcl/Tk before you
+will be able to compile this software.  Development was done using
+Tcl/Tk version 8.3.5, but all of the programs except tkcrithm should work
+with any version 8.0 or later.
+
+Some sample ciphers are also included.  They were taken from various 
+issues of the Crytpogram, a publication of the American Cryptogram 
+Association.
+
+Current cipher types that are supported are:
+
+* Amsco
+*#Aristocrat
+* Autokey
+*#Baconian
+* Bazeries
+*#Beaufort
+* Bifid
+* 6x6 Bifid
+*#Cadenus
+*#Complete/Incomplete columnar transposition*
+*#Cryptarithm
+  Foursquare
+  Fractionated morse
+  Grandpre
+*#Grille
+  Gromark
+*#Gronsfeld
+*#Homophonic
+* Morbit
+*#Myszcowski
+* Nicodemus
+*#Nihilist transposition
+*#Patristocrat (display as aristocrat)
+* Phillips
+* Playfair
+* 6x6 Playfair
+* Seriated playfair
+*#Pollux (gui interface currently broken)
+*#Porta
+* Ragbaby
+*#Railfence
+*#Redefence (solve as myszcowski)
+*#Route Transposition
+*#Swagman
+* Trifid
+  Twosquare
+*#Variant
+*#Vigenere
+
+Types tagged with '*' have an option or supporting script that will attempt
+to solve the cipher (or come pretty darn close to it).
+
+Types tagged with a '#' can be displayed and manipulated using the
+graphical tool.
+
+Documentation is avaliable in the doc directory.  Run "make doc" to generate
+html files from these sources.
+
+I'm always adding new cipher types and improving on the programs' abilities
+to manipulate the existing ones.  If you have any comments/complaints/tips/etc.
+please don't hesitate to mail me at wart@kobold.org.  I'm always looking for
+more ways to improve the program.
+
+--Wart
+wart@kobold.org
+September 23, 2001

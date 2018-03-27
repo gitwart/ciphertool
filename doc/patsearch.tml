@@ -1,0 +1,36 @@
+[docHeader "Cipher Program - patsearch"]
+[Command patsearch "autosolver for K1/K2/K3 keyed patristocrat ciphers"]
+
+[SynopsisHeader]
+[Synopsis patsearch "-file filename ?-type k1|k2|k3? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?"]
+
+[StartDescription]
+
+[Description "patsearch -file filename -type k1|k2|k3 ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?" patsearch \
+"<B>patsearch</B> is an autosolver for patristocrat (and aristocrat)
+ciphers.
+<P>
+<B>filename</B> is the name of the file that contains the ciphertext.
+<BR>
+<B>keytype</B> is one of <B>k1</B>, <B>k2</B>, or <B>k3</B>.
+<P>
+This program loads keywords from an external dictionary.
+[DictionaryDescription]
+<P>
+The <b>patsearch</b> program looks for every dictionary file and attempts to
+use each word found as the keyword.  If you are using a very large dictionary
+this could take quite a long time.  Use the <B>-keyword</B> option to limit the search to a single known keyword.  This can be useful if you have determined the key from some other method and just want to decipher the ciphertext using the keyword.
+<P>
+Currently the location of the dictionary is hardcoded to the directory
+<CODE>\$HOME/share/dict</CODE>.  You can change this by editting the
+<B>patsearch</B> program and modifying the line where <CODE>Dictionary::directory</CODE>
+is set.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.  This can be changed to any scoring method supported by the [Link cipher/score.html score] command.  The <b>-language</b> option is used to load
+a scoring table for the specified language, if such a scoring table exists.
+<P>The <b>-addspace</b> option will attempt to locate word boundaries after the final solution has been found.  This can be a time and memory intensive process on older computers so it is turned off by default.
+"]
+
+[EndDescription]
+
+[footer]

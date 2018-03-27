@@ -1,0 +1,235 @@
+# crithmCmd.test
+# Test of the crithm command
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Test groups:
+#	1.x	Error messages
+
+test crithm-1.1 {Bad number of arguments} {
+    set result [list [catch {crithm} msg] $msg]
+} {1 {Usage:  crithm option ?args?}}
+
+test crithm-1.2 {Bad number of arguments} {
+    set result [list [catch {crithm foo} msg] $msg]
+    set result
+} {1 {Unknown option foo
+Usage:  crithm init string
+        crithm delete
+        crithm iteration
+        crithm value string
+        crithm cvalue char
+        crithm perm cmd}}
+
+test crithm-1.3 {Bad number of arguments} {
+    set result [list [catch {crithm init} msg] $msg]
+    set result
+} {1 {Usage:  crithm init string}}
+
+test crithm-1.4 {Double initialization} {
+    crithm init abqrz
+    set result [list [catch {crithm init abqrz} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {crithm init called before deleting old state}}
+
+test crithm-1.5 {Invalid character in string} {
+    set result [list [catch {crithm init ABCDE} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Invalid character found in init string}}
+
+test crithm-1.6 {Duplicate character in string} {
+    set result [list [catch {crithm init abbbqde} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Duplicate character found in init string}}
+
+test crithm-1.7 {Get uninitialized state} {
+    set result [list [catch {crithm state} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {cryptarithm state not initialized}}
+
+test crithm-1.8 {Bad usage of delete} {
+    set result [list [catch {crithm delete a} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Usage:  crithm delete}}
+
+test crithm-1.9 {Bad usage of state} {
+    set result [list [catch {crithm state a} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Usage:  crithm state}}
+
+test crithm-1.10 {Bad usage of cvalue} {
+    crithm init abcde
+    set result [list [catch {crithm cvalue} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Usage:  crithm cvalue letter}}
+
+test crithm-1.11 {Bad usage of cvalue} {
+    set result [list [catch {crithm cvalue j} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {cryptarithm state not initialized}}
+
+test crithm-1.12 {get value of unused letter} {
+    crithm init abcde
+    set result [list [catch {crithm cvalue k} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Letter is not used in this cipher}}
+
+test crithm-1.13 {Bad usage of value} {
+    set result [list [catch {crithm value a} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {cryptarithm state not initialized}}
+
+test crithm-1.14 {Bad usage of value} {
+    crithm init abcde
+    set result [list [catch {crithm value} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Usage:  crithm value string}}
+
+test crithm-1.14 {Bad characters in value} {
+    crithm init abcde
+    set result [list [catch {crithm value A} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Letter must be between a-z}}
+
+test crithm-1.15 {Bad characters in value} {
+    crithm init abcde
+    set result [list [catch {crithm value f} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Letter is not used in this cipher}}
+
+test crithm-1.16 {word too long} {
+    crithm init abcde
+    set result [list [catch {crithm value aaaaaaaaaaaaaaaaaaaa} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {aaaaaaaaaaaaaaaaaaaa is too long.  Please recompile with a larger value for BASE_STEP_COUNT}}
+
+test crithm-1.17 {uninitilized state for permuting} {
+    set result [list [catch {crithm perm} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {cryptarithm state not initialized}}
+
+test crithm-1.18 {Bad usage of perm option} {
+    crithm init abcde
+    set result [list [catch {crithm perm foo} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {Usage:  crithm perm}}
+
+test crithm-2.1 {initialization} {
+    set result [crithm init abcdefghij]
+
+    crithm delete
+    set result
+} {abcdefghij}
+
+test crithm-2.2 {initialization with an iteration proc} {
+    set result [crithm init abcdefghij puts]
+
+    crithm delete
+    set result
+} {abcdefghij}
+
+test crithm-2.3 {get initial state} {
+    crithm init abqrtvwxyzh
+    set result [crithm state]
+
+    crithm delete
+    set result
+} {a 0 b 1 h 10 q 2 r 3 t 4 v 5 w 6 x 7 y 8 z 9}
+
+test crithm-2.4 {get initial letter value} {
+    crithm init abcdefghijk
+
+    set result {}
+    foreach letter {a b c d e f g h i j k} {
+	lappend result [crithm cvalue $letter]
+    }
+
+    crithm delete
+    set result
+} {0 1 2 3 4 5 6 7 8 9 10}
+
+test crithm-2.5 {get initial string value} {
+    crithm init abcdefghij
+
+    set result [crithm value bbaaj]
+
+    crithm delete
+    set result
+} {11009}
+
+test crithm-2.6 {get initial string value (base 9)} {
+    crithm init abcdefghi
+
+    # 9^4 + 9^3 + 8 = 6561 + 729 + 8 = 7298
+
+    set result [crithm value bbaai]
+
+    crithm delete
+    set result
+} {7298}
+
+test crithm-3.1 {run through some permutations, no iteration proc} {
+    crithm init abcde
+
+    set result [crithm perm]
+
+    crithm delete
+    set result
+} {}
+
+test crithm-3.2 {run through some permutations, simple iteration proc} {
+    proc iterCmd {} {
+	puts "You should see 6 lines ([crithm iteration])"
+    }
+    crithm init abc iterCmd
+
+    set result [crithm perm]
+
+    crithm delete
+    set result
+} {}
+
+test crithm-3.3 {run through some permutations, bad iteration proc} {
+    crithm init adq badcommand
+
+    set result [list [catch {crithm perm} msg] $msg]
+
+    crithm delete
+    set result
+} {1 {invalid command name "badcommand"}}

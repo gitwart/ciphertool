@@ -1,0 +1,121 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# bazsol --
+#
+#	Automatic solver for the bazeries cipher.
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 2000-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+# Load some necessary cipher-related packages.  These are all part of
+# ciphertool.
+package require cipher
+package require CipherUtil
+package require Scoredata
+
+# The only argument to this program is the name of the file containing
+# the bazeries ciphertext.
+set file [lindex $argv 0]
+
+# Read the ciphertext from the input file
+set ciphertext [CipherUtil::readCiphertext $file]
+
+# Create a cipher object for our bazeries cipher.
+set bazeriesCipher [cipher create bazeries -ciphertext $ciphertext]
+
+# Create a route cipher object to manage the key.  There are 48 different
+# keysquares that can be generated from a single keyword.  We use a
+# route cipher to generate these 48 keysquares.
+set keycipher [cipher create route \
+	    -ciphertext abcdefghiklmnopqrstuvwxyz \
+	    -period 5]
+
+# Set up some variables to store the best result found.
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+
+# Loop through all one million keywords for the bazeries cipher.
+for {set i 1} {$i <= 999999} {incr i} {
+    set keywordVal $i
+    # Convert the integer, such as 123, to a word,such as
+    # "one hundred twenty three"
+    set keyword [key numtostring $keywordVal]
+    # Remove the spaces from the words.
+    regsub -all { } $keyword {} keyword
+
+    # The 'key generate -k1' command generates a k1 keyed alphabet from
+    # a keyword.
+    if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	# Remove 'j' from the key since that letter is not allowed in
+	# the polybius keysquare.
+	regsub -all {j} $fixedKey {} fixedKey
+	$keycipher configure -ciphertext $fixedKey
+
+	# Loop through all possible ways to apply the keyword to a polybius
+	# square.
+	for {set route 1} {$route <= [$keycipher cget -numroutes]} {incr route} {
+	    # Apply the current route.
+	    $keycipher configure -in $route
+
+	    # Obtain the new keysquare from the route key cipher, and use
+	    # it as the key for the bazeries cipher.
+	    $bazeriesCipher restore [$keycipher cget -plaintext] $keywordVal
+
+	    # Decode the bazeries cipher and score the plaintext.
+	    set plaintext [$bazeriesCipher cget -plaintext]
+	    set value [score value $plaintext]
+
+	    # Compare the score of this plaintext solution to the
+	    # best one found, and record the keyword and key if this
+	    # new plaintext is the best.
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKeyword $keyword
+		set maxKey [$bazeriesCipher cget -key]
+		set maxKeyBlock [$keycipher cget -ptblock]
+
+		foreach row [$keycipher cget -ptblock] {
+		    puts "#\t[string toupper $row]"
+		}
+		puts "# $keyword ($maxKey)  Fit: $value"
+		puts "# $i-$route: [$bazeriesCipher cget -plaintext]"
+		puts ""
+	    }
+	}
+    }
+}
+
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+# Restore the bazeries cipher to the best solution that we found.
+$bazeriesCipher restore [lindex $maxKey 0] [lindex $maxKey 1]
+
+# Print out the best solution.
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $bazeriesCipher stdout
+foreach row $maxKeyBlock {
+    puts "#keysquare=[string toupper $row]"
+}

@@ -1,0 +1,65 @@
+<HTML>
+<TITLE>Cipher Package - Scoredata</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+Scoredata - Procedures for reading, writing, and generating scoring tables.
+
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>package require Scoredata</I>
+<BR>
+
+
+<H2>VARIABLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="allowedCharacters"><B><CODE>Scoredata::allowedCharacters</CODE></B></A></DT>
+        <DD>
+        </DD>
+
+
+</DL>
+
+
+<H2>COMMANDS</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="loadData"><B><CODE>Scoredata::loadData command ?language? ?filename?</CODE></B></A></DT>
+        <DD>Load a default or previously saved scoring table.
+The <code>command</code> argument is the name of the scoring table into which the data will be loaded.  The <code>language</code> argument indicates which precomputed language table should be loaded.  Use an empty string <code>{}</code> for the default language, English.  The <code>filename</code> argument is the name of the file containing the scoring data.  If <code>filename</code> is specified, then the <code>language</code> argument is ignored.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="saveData"><B><CODE>Scoredata::saveData command filename</CODE></B></A></DT>
+        <DD>Save a scoring table to a file.  The <code>command</code> argument is the name of the scoring table object to save.  The <code>filename</code> argument is the name of the file to which the data will be written.  Use <code>-</code> as a filename to write to stdout.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="generate"><B><CODE>Scoredata::generate command file1 ?file2 ...?</CODE></B></A></DT>
+        <DD>Generate and load data into a scoring table from sample files of plaintext.  The <code>command</code> argument is the name of the scoring table that will receive the new data.  Any number of files may be specified for the source data.  The data will be normalized after it has all been loaded.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:23 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

@@ -1,0 +1,83 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# k2msearch --
+#
+#	Tool for finding matches to a K2 Mixed alphabet.
+#
+# RCS: @(#) $Id: vigenere.tcl,v 1.2 2004/09/08 14:42:09 wart Exp $
+#
+# Copyright (C) 2000-2008  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+
+if {[llength $argv] != 1} {
+    puts stderr "Usage:  $argv0 keypattern"
+    exit 1
+}
+
+set keyPattern [lindex $argv 0]
+
+if {[string length $keyPattern] != 26} {
+    puts stderr "Length of key pattern must be 26"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+
+set cipher [cipher create aristocrat -ct a]
+
+# Iterate over all possible keys
+
+set key [lindex $argv 0]
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set i 0
+set stepInterval 10000
+
+foreach wordLength [Dictionary::availableLengths] {
+    foreach keyword [Dictionary::lookupByLength $wordLength] {
+	regsub -all -- - $keyword {} keyword
+	incr i
+	if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	    set keyList [key generate -k1list $keyword]
+	    foreach key $keyList {
+		$cipher restore $fixedKey $key
+		set k3alphabet [lindex [$cipher cget -key] 1]
+		# puts "comparing $keyPattern $k3alphabet ($keyword)"
+		if {[key match $keyPattern $k3alphabet]} {
+
+		    puts "# $keyword"
+		    puts "# ($key)"
+		    puts "# ($fixedKey)"
+		    puts ""
+		}
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+
+	if {$i%$stepInterval == 0} {
+	    puts "# $i:  $keyword"
+	    puts ""
+	}
+    }
+}

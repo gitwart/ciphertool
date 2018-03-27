@@ -1,0 +1,194 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# patsearch --
+#
+#	Automatic solver for patristocrat ciphers based on keyword
+#	discovery.
+#
+# RCS: @(#) $Id: patsearch,v 1.22 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoretypes
+package require Scoredata
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list type.arg k2 "The key type.  must be one of k1, k2, or k3."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list keyword.arg {} "The single keyword to use when solving."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {[lsearch [list k1 k2 k3] $type] == -1} {
+    puts stderr "Type '$type' not supported."
+    exit 1
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+regsub -all { } $ct {} ct
+set cipher [cipher create aristocrat -ct $ct]
+
+# Iterate over all possible keys
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set i 0
+set stepInterval 5000
+
+proc testKey {cipher keyword keytype maxValue} {
+    set maxKey ""
+
+    if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	set keyList [key generate -k1list $keyword]
+	foreach key $keyList {
+	    switch $keytype {
+		k1 {
+		    $cipher restore abcdefghijklmnopqrstuvwxyz $key
+		}
+		k2 {
+		    $cipher restore $key abcdefghijklmnopqrstuvwxyz 
+		}
+		k3 {
+		    $cipher restore $fixedKey $key
+		}
+		default {
+		    error "Invalid key type $keytype"
+		}
+	    }
+	    set value [score value [$cipher cget -pt]]
+
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKeyword $keyword
+		switch $keytype {
+		    k1 {
+			set maxKey "abcdefghijklmnopqrstuvwxyz $key"
+		    }
+		    k2 {
+			set maxKey "$key abcdefghijklmnopqrstuvwxyz"
+		    }
+		    k3 {
+			set maxKey "$fixedKey $key"
+		    }
+		}
+	    }
+	}
+    }
+
+    return [list $maxValue $maxKey]
+}
+
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	set keywordList [Dictionary::lookupByLength $wordLength]
+
+	foreach keyword $keywordList {
+	    incr i
+	    foreach "value key" [testKey $cipher $keyword $type $maxValue] {}
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKey $key
+		set maxKeyword $keyword
+
+		$cipher restore [lindex $key 0] [lindex $key 1]
+
+		puts "# $keyword ($key)  Fit: $value"
+		puts "# $i: [$cipher cget -pt]"
+		puts ""
+	    }
+
+	    if {$i%$stepInterval == 0} {
+		puts "# $keyword"
+		puts "# $i: [$cipher cget -pt]"
+		puts ""
+	    }
+	}
+    }
+} else {
+    foreach "value key" [testKey $cipher $keyword $type $maxValue] {}
+
+    set maxValue $value
+    set maxKey $key
+    set maxKeyword $keyword
+
+    $cipher restore [lindex $key 0] [lindex $key 1]
+
+    puts "# $keyword ($key)  Fit: $value"
+    puts "# $i: [$cipher cget -pt]"
+    puts ""
+}
+
+$cipher restore [lindex $maxKey 0] [lindex $maxKey 1]
+regsub -all { } [$cipher cget -pt] {} pt
+if {$addspace} {
+    set Dictionary::cache [list word length]
+    set readablePt [Dictionary::findWords $pt]
+}
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts "keyword=$maxKeyword"

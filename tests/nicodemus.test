@@ -1,0 +1,849 @@
+# nicodemus.test
+# Test of the nicodemus cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the nicodemus cipher
+# Laid out, the cipher looks like:
+#
+# A G T
+# -----
+# h k m
+# a x x
+# y h e
+# r j b
+# e z z
+# t n l
+# w u x
+# m   k
+#
+# Solution:
+#
+# t h e
+# e a r
+# l y b
+# i r d
+# g e t
+# s t h
+# e w o
+# r m
+
+
+proc createValidCipher {} {
+    set c [cipher create nicodemus -ct "hayre kxhjz mxebz twmnu lxk" -period 3]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Column set/get tests
+#       5.x     Column swapping tests
+#       6.x     Substitute
+#	7.x	Restore tests
+#	8.x	Fit tests (not written)
+#	10.x	Encode tests
+
+test nicodemus-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test nicodemus-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test nicodemus-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test nicodemus-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test nicodemus-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test nicodemus-1.6 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key order}}
+
+test nicodemus-1.7 {invalid encoding type} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -encoding foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown encoding type 'foo'.  Must be one of vigenere, variant, beaufort, porta}}
+
+test nicodemus-1.8 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar fit column}}
+
+test nicodemus-1.9 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value}}
+
+test nicodemus-1.10 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column setting:  a}}
+
+test nicodemus-1.11 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test nicodemus-1.12 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test nicodemus-1.13 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test nicodemus-1.14 {attempt to use locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for nicodemus ciphers.}}
+
+test nicodemus-1.15 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test nicodemus-1.16 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test nicodemus-1.17 {invalid use nicodemus command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar swap col1 col2
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test nicodemus-2.1 {bad fit columns} {unimplemented} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 0 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value}}
+
+test nicodemus-2.2 {bad fit columns} {unimplemented} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 5 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value}}
+
+test nicodemus-2.3 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 5 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test nicodemus-2.4 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 0 5} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test nicodemus-2.5 {swap with no cipher set} {
+    set c [cipher create nicodemus]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test nicodemus-2.6 {get pt with no cipher set} {
+    set c [cipher create nicodemus]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test nicodemus-2.7 {fit with no cipher set} {unimplemented} {
+    set c [cipher create nicodemus]
+
+    set result [catch {$c fit 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test nicodemus-2.8 {encode with non-listified key} {
+    set c [cipher create nicodemus]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test nicodemus-2.9 {encode with too many key elements} {
+    set c [cipher create nicodemus]
+
+    set result [catch {$c encode foobar "1 2 3"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key '1 2 3'.  Should have found 2.}}
+
+test nicodemus-2.10 {encode with short key elements} {
+    set c [cipher create nicodemus]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "abc 12345"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match the period.}}
+
+test nicodemus-2.11 {encode with short key elements} {
+    set c [cipher create nicodemus]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "abcde 123"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match the period.}}
+
+test nicodemus-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {23}
+
+test nicodemus-3.2 {successful use of cget -period} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {3}
+
+test nicodemus-3.3 {successful use of cget -ct} {
+    set c [cipher create nicodemus]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test nicodemus-3.4 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {hayrekxhjzmxebztwmnulxk}
+
+test nicodemus-3.5 {successful use of cget -key} {
+    set c [createValidCipher]
+    $c restore cde abc
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {cde abc}
+
+test nicodemus-3.6 {successful use of cget -keyword} {
+    set c [createValidCipher]
+    $c restore cde abc
+    set result [$c cget -keyword]
+    rename $c {}
+    
+    set result
+} {cde}
+
+test nicodemus-3.7 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {nicodemus}
+
+test nicodemus-3.8 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "aaaaabbbbbcccccdddddeeeee"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbcccccdddddeeeee}
+
+test nicodemus-3.9 {set ciphertext with uppercase letters} {
+    set c [cipher create nicodemus -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test nicodemus-3.10 {successful use of undo} {
+    set c [createValidCipher]
+    $c swap 1 2
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa abc} hkmaxxyherjbezztnxwukml}
+
+test nicodemus-3.11 {set period} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg]]
+    lappend result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0 5}
+
+test nicodemus-3.12 {set period before ciphertext} {
+    set c [cipher create nicodemus -period 5 -ct foobar]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {fobaro}
+
+test nicodemus-3.13 {cipher spans > 2 blocks} {
+    set c [cipher create nicodemus -period 7 -ct "roigs waern wsvrl lhihw xzzru ricxx efvlo tvaht saead ianrd bhdhu jljwi niegn eyujf gayjs gaaxg iantl iiueb fkrlh ojgfw afpyv geczl hwlfs kphhg owaap"]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {rwwlxreoashzifievizcvgrrhrxlsnlwuxotsibjnevaahliyaendjeuharhwgjtdduinfggiifoaaaaikjfyanurgpjxtelfysglbhwvgzwshoaellkhwpchfpga}
+
+test nicodemus-3.14 {get default encoding} {
+    set c [createValidCipher]
+    set result [$c cget -encoding]
+    rename $c {}
+    
+    set result
+} {vigenere}
+
+test nicodemus-3.15 {set encoding} {
+    set c [createValidCipher]
+
+    $c configure -encoding variant
+    set result [$c cget -encoding]
+    $c configure -encoding beaufort
+    lappend result [$c cget -encoding]
+    $c configure -encoding porta
+    lappend result [$c cget -encoding]
+
+    rename $c {}
+    
+    set result
+} {variant beaufort porta}
+
+test nicodemus-3.16 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test nicodemus-3.17 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test nicodemus-3.18 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nicodemus-3.19 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nicodemus-3.20 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test nicodemus-3.21 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nicodemus-3.22 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nicodemus-3.23 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test nicodemus-4.1 {cipher set and get} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {hkmaxxyherjbezztnxwukml}
+
+test nicodemus-4.2 {cipher get with explicit encoding} {
+    set c [createValidCipher]
+    $c configure -encoding vigenere
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {hkmaxxyherjbezztnxwukml}
+
+test nicodemus-4.3 {cipher get with explicit encoding} {
+    set c [createValidCipher]
+    $c configure -encoding variant
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {hkmaxxyherjbezztnxwukml}
+
+test nicodemus-4.4 {cipher get with explicit encoding} {
+    set c [createValidCipher]
+    $c configure -encoding beaufort
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {tqoaddctwjrzwbbhndegqop}
+
+test nicodemus-4.5 {cipher get that fails on mj2003:e13} {
+    set c [cipher create nicodemus -ct {hfmfa ahsdl yagqg nnnsu vtzwl tbvct pfpwy crngn oiruo djzzi ldeec titch gwpjq ktiqs wnvbi qmoqe dpllp gfnge zfrot rrief lhhim titrs cevpt nmjfj agpoa iepcw pxeyj eqtcg gszbz trzuw etkha ngtbs fxceb upseu ewrwk ve}]
+    $c configure -period 6
+
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {haynvtfhantbmsgnzvfdqswcalgultpcodltfrijdipnrzetwguzecynoichgkwqdgwtnmpfpivolnjqbqlgqsiepezrltcnfrhiemrihtvjoeirpftfmstjaipegtgexqsrppetzzocycbuawjgzwenfuuwtgxpekktcswvhbeereasb}
+
+test nicodemus-5.1 {swap columns} {
+    set c [createValidCipher]
+    $c swap 1 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa bac} khmxaxhyejrbzezntxuwklm}
+
+test nicodemus-5.2 {swap columns} {
+    set c [createValidCipher]
+    $c swap 2 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa bac} khmxaxhyejrbzezntxuwklm}
+
+test nicodemus-5.3 {swap columns} {
+    set c [createValidCipher]
+    $c swap 1 3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa cba} mkhxxaehybjrzzelmtxnwku}
+
+test nicodemus-5.4 {swap columns} {
+    set c [createValidCipher]
+    $c swap 3 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa cba} mkhxxaehybjrzzelmtxnwku}
+
+test nicodemus-5.5 {swap columns} {
+    set c [cipher create nicodemus -period 3 -ct "cfilobehknadgjmruxqtwzpsvy"]
+    $c swap 3 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa cba} abcdefghijklmnopqrstuvwxyz}
+
+test nicodemus-5.6 {multiple swaps} {
+    set c [createValidCipher]
+    $c swap 3 1
+    $c swap 2 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa cab} mhkxaxeyhbrjzezltnxwukm}
+
+test nicodemus-6.1 {substitute} {
+    set c [createValidCipher]
+    $c sub b a 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{baa abc} gkmzxxxheqjbdzzsnxvukll}
+
+test nicodemus-6.2 {substitute multiple columns no swap} {
+    set c [createValidCipher]
+    $c sub h h 1
+    $c sub k e 2
+    $c sub m t 3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{agt abc} hetareyblrdietgthewormf}
+
+test nicodemus-6.3 {substitute multiple columns with swaps} {
+    set c [createValidCipher]
+    $c sub h h 1
+    $c sub k e 2
+    $c sub m t 3
+    $c swap 3 1
+    $c swap 2 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{tag cab} theearlybirdgetstheworm}
+
+test nicodemus-6.4 {substitute with swaps} {
+    set c [createValidCipher]
+    $c swap 3 1
+    $c swap 2 1
+    $c sub h h 1
+    $c sub k e 2
+    $c sub m t 3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{tag cab} theearlybirdgetstheworm}
+
+test nicodemus-7.1 {restore with bad arg lengths} {
+    set c [createValidCipher]
+    set result [catch {$c restore fool barl} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Key and order must be the same length as the cipher period}}
+
+test nicodemus-7.2 {restore with bad arg values} {
+    set c [createValidCipher]
+    set result [catch {$c restore aaa 111} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in order:  '1'}}
+
+test nicodemus-7.3 {restore with bad arg values} {
+    set c [createValidCipher]
+    set result [catch {$c restore 111 aaa} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key:  '1'}}
+
+test nicodemus-7.4 {valid restore} {
+    set c [createValidCipher]
+    $c restore aaa cab
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaa cab} mhkxaxeyhbrjzezltnxwukm}
+
+test nicodemus-7.5 {valid restore} {
+    set c [createValidCipher]
+    $c restore tag cab
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{tag cab} theearlybirdgetstheworm}
+
+test nicodemus-7.6 {restore with longer cipher spans > 2 blocks} {
+    set c [cipher create nicodemus -period 7 -ct "roigs waern wsvrl lhihw xzzru ricxx efvlo tvaht saead ianrd bhdhu jljwi niegn eyujf gayjs gaaxg iantl iiueb fkrlh ojgfw afpyv geczl hwlfs kphhg owaap"]
+    $c restore aaaaaaa abcdefg
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaaaaa abcdefg} rwwlxreoashzifievizcvgrrhrxlsnlwuxotsibjnevaahliyaendjeuharhwgjtdduinfggiifoaaaaikjfyanurgpjxtelfysglbhwvgzwshoaellkhwpchfpga}
+
+test nicodemus-8.1 {Fit all columns} {
+    set c [createValidCipher]
+    $c fit 1
+    $c fit 2
+    $c fit 3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{agt abc} hetareyblrdietgthewormf}
+
+test nicodemus-9.1 {save and restore (so2003:e08)} {
+    set c [cipher create nicodemus -encoding beaufort -period 8 -ct "wyzlr pyynz khlvb wbyvl kyngj nemdr agksp feqig ncnam rnnty kwmub bbmyp axxnj nddpe kegby hfezq xawnr oggty wvkgv nwliv ndgnp yhoyd szfee flzpn nwakn ykjhp yxped vodky pflom o"]
+    $c solve
+    set key [$c cget -key]
+    $c restore [lindex $key 0] [lindex $key 1]
+
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+    
+    set result
+} {{prorerss decfabgh} theeicsnothngtmoredffticultoteakeinansdmoreerailousoceonducoremoreuceyrtainnstuccesthdantotkeltheledilntheitryoductontofaneorhderofhiengswhtethead}
+
+test nicodemus-9.2 {simple restore (so2003:e08)} {
+    set c [cipher create nicodemus -encoding beaufort -period 8 -ct "wyzlr pyynz khlvb wbyvl kyngj nemdr agksp feqig ncnam rnnty kwmub bbmyp axxnj nddpe kegby hfezq xawnr oggty wvkgv nwliv ndgnp yhoyd szfee flzpn nwakn ykjhp yxped vodky pflom o"]
+    $c restore prorress decbfagh
+
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+    
+    set result
+} {{prorress decbfagh} theceisnothtngmoredtfficulteotakeinsandmoreaerilouseoconduceormoreuycertaintnsuccesdthantotlketheleldintheiytroducttonofanehorderofehingswhttehead}
+
+test nicodemus-10.1 {encode} {
+    set c [cipher create nicodemus -period 3]
+
+    set result [$c encode "the early bird gets the worm" [list tag cab]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {hayrekxhjzmxebztwmnulxk hayrekxhjzmxebztwmnulxk theearlybirdgetstheworm {tag cab}}

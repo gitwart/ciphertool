@@ -1,0 +1,8 @@
+# stat.test
+# Tests of the "stat" Tcl command.
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}

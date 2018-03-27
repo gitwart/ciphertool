@@ -1,0 +1,57 @@
+[docHeader "Cipher Package - CipherUtil"]
+[Command CipherUtil "Miscellaneous utilities."]
+
+[SynopsisHeader]
+[Synopsis {} "package require CipherUtil"]
+
+[StartDescription COMMANDS]
+
+[Description "CipherUtil::wordToOrder word ?keepDups?" wordToOrder \
+"Generate a numeric string that indicates the alphabetic order of the letters
+in <code>word</code>.  Example:  &quot;dog&quot; -> 132.  If there are more
+than 9 letters in the word then the ordering is indeterminate; values over 9
+are reduced to a single digit.  If the value of <code>keepDups</code> is 1,
+then all matching letters will be given the same value.  Otherwise they will be
+given values that increase from their position in the word, going from left to
+right.  For example, &quot;that&quot; -> 3214 if <code>keepDups</code> is 0,
+but &quot;that&quot; -> 3213 if <code>keepDups</code> is 1.
+<code>keepDups</code> defaults to 0."]
+
+[Description "CipherUtil::generateKeysquares word ?width? ?height?" generateKeysquares \
+"Generate keysquares from a keyword using all known routes.  A width of 5 is
+used unless otherwise indicated.  If <code>width</code> and <code>height</code>
+are both 5 then this procedure will replace any occurrences of <code>j</code>
+with <code>i</code>."]
+
+[Description "CipherUtil::saveCipherToFile cipherObj chanid" saveCipherToFile \
+"Save a cipher to an open channel so that it can be loaded later using <code>CipherUtil::readSavedCipher</code>.  If <code>stdout</code> is used as the channel id then the cipher will be printed to standard output."]
+
+[Description "CipherUtil::readCiphertext filename" readCiphertext \
+"Read a block of ciphertext from a file.  If <code>filename</code> is <code>-</code> then the ciphertext will be read from standard input.  Newlines in the ciphertext file will be replaced with a single space character.  This procedure returns the ciphertext that was read from the file."]
+
+[Description "CipherUtil::readSavedCipher filename" readSavedCipher \
+"Read in a cipher that was previously saved by
+<code>CipherUtil::saveCipherToFile</code>.  This procedure returns a list of
+key-value pairs suitable for use as an argument to the Tcl command <code>array
+set</code>.  This procedure does not create a new cipher object, rather, it
+returns enough information that the caller can use to create a new cipher
+object."]
+
+[Description "CipherUtil::caesarShift" caesarShift \
+"This has been deprecated by the [Link ../cipher/caesar.html caesar] cipher type."]
+
+[Description "CipherUtil::loadK3Fragments filename" loadK3Fragments \
+"Load a saved aristocrat/patristocrat cipher from a file and construct a list of K3 alphabet fragments from the cipher's key."]
+
+[Description "CipherUtil::lreverse list" lreverse \
+"Reverse the elements in a Tcl list.  I can't believe that the Tcl folks haven't included something like this in the core Tcl distribution.  A new copy of the list is returned with the elements reversed."]
+
+[Description "CipherUtil::phillipsIoc ciphertext" phillipsIoc \
+"Calculate the index of coincidence for each of the 6 unique keysquares of phillips cipher.  This procedure returns a list of 7 values:  The first is the average of the last 6."]
+
+[Description "CipherUtil::periodicIoc ciphertext" periodicIoc \
+"Calculate the index of coincidence for all columns in a periodic cipher.  This procedure returns n+1 values, where the first is the average of all of the rest."]
+
+[EndDescription]
+
+[footer]

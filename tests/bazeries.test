@@ -1,0 +1,727 @@
+# bazeries.test
+# Test of the bazeries cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample bazeries cipher:
+#
+# acyyu xymrq kxkck gcrqi yitnk yxkcy gqgci
+#
+#
+# Key: 3752
+#	threo
+#	usand
+#	vfiyw
+#	bcgkl
+#	mpqxz
+#
+# simplesubstitutionplustransposition
+
+proc createValidCipher {} {
+    set c [cipher create bazeries -ct "acyyu xymrq kxkck gcrqi yitnk yxkcy gqgci"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Restore tests
+#       6.x     Encode tests
+
+test bazeries-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test bazeries-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test bazeries-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test bazeries-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test bazeries-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test bazeries-1.6 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test bazeries-1.7 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test bazeries-1.8 {attempt to set period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test bazeries-1.9 {bad use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap row|col item1 item2}}
+
+test bazeries-1.10 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column value.  Value must be between 1 and 5.}}
+
+test bazeries-1.11 {bad swap arguments} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column value.  Value must be between 1 and 5.}}
+
+test bazeries-1.12 {attempt to locate tip} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for bazeries ciphers.}}
+
+test bazeries-1.13 {attempt to solve} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Solving bazeries ciphers is not yet implemented.}}
+
+test bazeries-1.14 {bad use of substitute command} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute row col val}}
+
+test bazeries-1.15 {bad use of undo command} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo row col}}
+
+test bazeries-1.16 {bad use of restore command} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key sequence}}
+
+test bazeries-1.17 {invalid use bazeries command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar substitute row col val
+                 ciphervar swap row1 row2
+                 ciphervar undo row col
+                 ciphervar encode pt key}}
+
+test bazeries-2.1 {get plaintext with no ciphertext} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test bazeries-2.2 {set bad ciphertext} {
+    set result [catch {cipher create bazeries -ct 1111} msg]
+
+    lappend result $msg
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test bazeries-2.3 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in bazeries swap}}
+
+test bazeries-2.4 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap col 6 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column in bazeries swap}}
+
+test bazeries-2.5 {bad swap type} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap foo 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid parameter.  Must be 'row' or 'col'}}
+
+test bazeries-2.6 {restore with no ciphertext} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c restore abc 123} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test bazeries-2.7 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abc 123} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key length.}}
+
+test bazeries-2.8 {restore with invalid characters in key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1234512345123451234512345 3124} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test bazeries-2.9 {use of bad key sequence} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -keyseq foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid transposition sequence 'foo'}}
+
+test bazeries-2.10 {use of invalid large key sequence} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -keyseq 1000000} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Sequence value is too large.}}
+
+test bazeries-2.11 {use of invalid zero key sequence} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -keyseq 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Sequence value must be greater than zero.}}
+
+test bazeries-2.12 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 0 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row specification}}
+
+test bazeries-2.13 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 0 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column specification}}
+
+test bazeries-2.14 {substitute with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c sub 1 1 #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key value}}
+
+test bazeries-2.11 {encode with non-listified key} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test bazeries-2.12 {encode with too many key elements} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c encode foobar "a b c"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c'.  Should have found 1 or 2.}}
+
+test bazeries-2.13 {encode with non-integer tranposition} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c encode foobar "abcdefghiklmnopqrstuvwxyz bad"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {expected integer but got "bad"}}
+
+test bazeries-2.14 {encode with non-integer tranposition} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c encode foobar "bad"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {expected integer but got "bad"}}
+
+test bazeries-2.15 {encode with short key elements} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c encode foobar "a 10"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+test bazeries-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {35}
+
+test bazeries-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test bazeries-3.3 {successful use of cget -ct (empty)} {
+    set c [cipher create bazeries]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test bazeries-3.4 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {acyyuxymrqkxkckgcrqiyitnkyxkcygqgci}
+
+test bazeries-3.5 {set ciphertext with uppercase letters} {
+    set c [cipher create bazeries -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test bazeries-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {bazeries}
+
+test bazeries-3.7 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "abcdef"]
+    rename $c {}
+    
+    set result
+} {abcdef}
+
+test bazeries-3.8 {successful use of undo} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{                         } 1} {                                   }}
+
+test bazeries-3.9 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test bazeries-3.10 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test bazeries-3.11 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test bazeries-3.12 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test bazeries-3.13 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test bazeries-3.14 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test bazeries-3.15 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test bazeries-3.16 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test bazeries-3.17 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test bazeries-3.18 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test bazeries-3.19 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test bazeries-4.1 {single substitution} {
+    set c [createValidCipher]
+    $c substitute 1 1 a
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {{a                        } 1}
+
+test bazeries-4.2 {multiple substitutions} {
+    set c [createValidCipher]
+    $c substitute 3 5 k
+    $c substitute 1 1 l
+    $c substitute 1 5 r
+    $c substitute 3 1 c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{l   r     c   k          } 1} { c      v x xcx cv      x  xc    c }}
+
+test bazeries-5.1 {restore} {
+    set c [createValidCipher]
+    $c restore threousandvfiywbcgklmpqxz 3752
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{threousandvfiywbcgklmpqxz 3752} simplesubstitutionplustransposition}
+
+
+test bazeries-5.2 {restore with spaces in key} {
+    set c [createValidCipher]
+    $c restore {threousandvfiywbcg lmpqxz} 3752
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{threousandvfiywbcg lmpqxz} 3752} {simplesubs i u ionplus ransposi ion}}
+
+test bazeries-5.3 {Valid solution with all ones} {
+    set c [createValidCipher]
+    $c restore threousandvfiywbcgklmpqxz 111111
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{threousandvfiywbcgklmpqxz 111111} missbuselptutitoilpnsnartsutisopoin}
+
+test bazeries-5.4 {Valid solution with all ones} {
+    set c [createValidCipher]
+    $c restore threousandvfiywbcgklmpqxz 111101
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{threousandvfiywbcgklmpqxz 111101} missbuselptutitoilpnsnartsutisopoin}
+
+test bazeries-5.5 {Valid solution with zeroes in transposition sequence} {
+    set c [createValidCipher]
+    $c restore threousandvfiywbcgklmpqxz 200000
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{threousandvfiywbcgklmpqxz 200000} imssubesplutitotlinpnsrasttusipoion}
+
+test bazeries-6.1 {encode} {
+    set c [cipher create bazeries]
+
+    set result [list [$c encode "simple substitution plus transposition" [list threousandvfiywbcgklmpqxz 3752]]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {acyyuxymrqkxkckgcrqiyitnkyxkcygqgci acyyuxymrqkxkckgcrqiyitnkyxkcygqgci simplesubstitutionplustransposition {threousandvfiywbcgklmpqxz 3752}}
+
+test bazeries-6.2 {encode} {
+    set c [cipher create bazeries]
+
+    set result [list [$c encode "simple substitution plus transposition" 3752]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {acyyuxymrqkxkckgcrqiyitnkyxkcygqgci acyyuxymrqkxkckgcrqiyitnkyxkcygqgci simplesubstitutionplustransposition {threousandvfiywbcgklmpqxz 3752}}

@@ -1,0 +1,228 @@
+Tuning a Hill Climber
+
+by
+
+Michael Thomas
+wart@kobold.org
+
+
+Abstract
+
+The use of computers in classical cryptography is an interesting
+mixture of computer science, mathematics, and cryptography.  Classical
+ciphers require much less computational power to break than the state of the
+art public key crytpography systems in use today.  Nevertheless,
+many computer and cryptography hobbyists continue to look at novel
+ways to break classical ciphers using computers.  One such technique
+called "hillclimbing" is often used to quickly locate possible solutions
+without exhaustively searching the entire keyspace.  In this document
+we examine one particular hillclimbing implementation to find the
+optimal hillclimber settings that will locate the best solution for
+patristocrat ciphers in the shortest amount of time.
+
+Software
+
+The hillclimber used in this experiment is part of a classical
+cryptography package called 'ciphertool'[1].  The primary focus of
+ciphertool is to provide a software library with the ability to
+manipulate many types of classical ciphers.  In addition, ciphertool
+also provides a handful of command line and GUI programs based on the
+ciphertool libraries to perform some useful tasks on ciphertext, such
+as autosolvers, point-and-click manual solving 'chalkboards', and
+the hillclimber which is the focus of this document.
+
+Ciphertool is written in a combination of the Tcl scripting language
+and C extensions to Tcl.  C is used to implement many of the performance
+critical areas and exposed to the user as new Tcl commands.  This
+combination of C and Tcl offers a simple scripting language interface
+for users, while preserving the high performance of the compiled C
+language.
+
+A few terms related to hill climbing need to be defined before discussing
+the specific implementation presented here:
+
+Patristocrat:  A classical cipher similar to the cryptograms found in
+  the daily newspaper, but with spaces between words removed.  Messages
+  are encrypted through a one-to-one mapping of plaintext letters to
+  ciphertext letters.  For example, "good dog" could be enciphered as
+  "qmmw wmq".
+
+Key:  The key describes the mapping used to transform the plaintext to the
+  ciphertext and back.  For example, the key for a patristocrat cipher is
+  represented by a permutation of the 26 letters of the English alphabet.
+
+Unity key:  The key that will generate ciphertext that is the same as
+  the plaintext (and vice versa).  For patristocrat ciphers, this is
+  'abcdefghijklmnopqrstuvwxyz'.
+
+Key mutation:  Patristocrat keys are mutated by swapping pairs of letters
+  in the key.  The amount of mutation indicates the number of pairs of key
+  letters that get swapped.  For example, a single mutation would change
+  'abcde' to 'bacde', while a double mutation would change abcde to 'baced'.
+
+Score:  The key is applied to the ciphertext to produce a potential plaintext
+  solution.  A numeric value is computed from the plaintext to determine
+  how close the plaintext resembles actual English.  There are many possible
+  scoring functions that can be used to calculate this numeric value, one
+  of the more popular being the sum of logs of digram frequencies.
+
+Hilltop:  A key that has a scoring value such that no other keys can be
+  generated using a single mutation to produce a larger score value.
+  
+
+hillclimbstats is a program to help measure and tune the hill climbing
+functionality in ciphertool.  It provides the capability to tune many
+of the hillclimbing parameters.
+
+The hillclimber starts with an initial unity key for every run.  The unity
+key is mutated 100 times to establish a random starting point.  The score of
+the starting key is computed.  The hillclimbing begins by generating a list of
+all possible keys that can be achieved from a single mutation of the initial
+key.  The score of the resulting plaintext from each key is computed and the
+key generating the largest score is selected as the 'best neighbor key'.
+The process is then repeated using the best neighbor key as a starting point,
+so that the 'best neighbor key' of the best neighbor key is found.  This
+process is called 'climbing the hill'.  Climbing the hill continues until no
+neighbor key is found with a larger score value, in other words, a hilltop is
+found.
+
+At this point a new starting key is selected and the hill is climbed again.
+This process continues until some end condition is met, such as a maximum
+number of hills have been climbed, a particular score value is found or
+exceeded, or some time limit has expired.
+
+There are a couple of ways to select starting keys for climbing the hill.
+The simplest is to generate a completely random key by performing some
+arbitrarily large mutation (such as 100).  It is often the case that the
+globally best hilltop shares some elements of a locally best hilltop.  As
+such, a more intelligent way to select a starting key is to choose a smaller
+mutation from either the current local hilltop or from the globally best
+hilltop.
+
+For these tests, the following parameters were used:
+
+Scoring function:  The scoring function uses a combination of the sum of
+  logs of digram frequencies and sum of squares of valid word lengths.
+  The scoring function was not change during the course of this experiment.
+
+Input ciphertext:  The input ciphertext used was Patristocrat p04 from
+  the Sep/Oct. 2005 issue of The Cryptogram, published by the American
+  Cryptogram Association[2].
+
+Mutation amount:  The amount of mutation used to select a new starting
+  point for hillclimbing was varied from 8 to 76.  For the first experiment,
+  the amount of mutation was fixed.  For the second experiment the amount of
+  mutation was varied as a random value from 0 to the mutation amount.
+
+Mutation source:  The base key for each mutation was a random choice of
+  either the current hilltop or the globally best hilltop.  The chance of
+  using the local hilltop vs. the globally best hilltop was varied from 0.0
+  (0%) to 1.0 (100%).
+
+Solution determination:  The maximum score value that was found during
+  the initial runs for this particular ciphertext was 750.506.  For each
+  iteration in a run, hills were climbed until a hilltop was found whose
+  score value exceeded 750.5.
+
+Time to solution:  The number of hills that were climbed before a
+  solution was found.
+
+Two parameters were varied during the first experiment were the mutation source
+(chance that the next starting key would be based on the local hilltop vs. the
+globally best hilltop), and the mutation amount.  The ciphertext and scoring
+function remained fixed.  100 runs were performed for each mutation source
+and mutation amount combination.  For each run, 100 mutations were performed
+on the unity key to generate the initial starting key.  The hillclimber
+continued to locate hilltops until the desired score value was located.
+The number of hills climbed until the solution was found was recorded.  After
+100 runs the average number of hills was calculated for the specific mutation
+settings.  The optimal mutation settings will be the ones that result in
+the lowest number of hills.
+
+The second experiment was identical to the first, except that the amount of
+mutation was a random value between 0 and the mutation amount, whereas in the
+first experiment the mutation amount fixed.
+
+Experimental Results
+
+http://www.kobold.org/~wart/p04-fixed-nozoom.png
+[Fig 1]
+Each plot shows the number of hills climbed before the solution was
+found for a range of mutation amounts for ciphertext p04.  The chance of
+mutating from the last hill climbed was 0% in the first plot, that is,
+all hills climbed mutated from the globally best hill.  In the last
+plot, the starting point for all hills climbed were mutated from the
+last hilltop found.
+
+http://www.kobold.org/~wart/p04-fixed-zoom.png
+[Fig 2]
+This shows the same data in Fig. 1, but zooms in on the minima of the
+plots.
+
+http://www.kobold.org/~wart/p04-random.png
+[Fig 3]
+This plot shows the results from the second experiment using a random
+mutation amount.
+
+http://www.kobold.org/~wart/p01-fixed-nozoom.png
+[Fig 4]
+This plot shows the results from running the first experiment on a
+different set of ciphertext, p01.
+
+http://www.kobold.org/~wart/p01-fixed-zoom.png
+[Fig 5]
+This shows the same data in Fig. 4, but zooms in on the minima of the
+plots.
+
+Conclusions
+
+The worst results were obtained when the mutation source was always the
+last hill climbed.  At this setting, only a small range of mutation
+amounts (5-7) were able to find a solution to p04 in a reasonable amount of
+time.  No settings were able to find a solution in a reasonable amount
+of time for p01.  Clearly it is important to take into account the
+global maximum when choosing new hills to climb.
+
+When a random mutation is used, the optimum amount of mutation changes.
+This is not surprising since a random mutation of n averages out to a
+fixed mutation of n/2.  When comparing random vs. fixed mutations, it
+becomes clear that the effect of a random mutation is to lessen the
+negative effect from the larger mutation amounts at a cost of a slightly
+increased time to solution.  When the mutation amount is 26, the mean is
+roughly 210 for a fixed mutation.  But when the random mutation is 76
+(equivalent to fixed mutation of 38), the mean remains around 200.  It
+appears that random mutation amounts allow the use of larger mutation
+amounts, while simultaenously increasing the standard deviation.
+
+A closer look at Fig. 2 reveals that the optimum mutation amount
+occurs in the range from 10-15.  It also seems that using a mutation
+chance > 0 does not improve the chance of finding a solution faster or
+more reliably.  In other words, it is not necessary to take into account
+the last hill climbed when searching for a starting position for a new
+hill to climb.  The currently known global best solution should always
+be used as a starting point when searching for new hills to climb.  The
+experimental runs on a new set of ciphertext [Fig. 4, 5] confirm this
+result.
+
+Questions for Future work
+
+These two experiments were performed on a single set of ciphertext.  Do the
+results hold true for other sets of ciphertext?  Do 'ACA specials' require
+a different set of optimal parameters?
+
+Can new scoring functions be used that affect the speed of finding the optimal
+solution?
+
+Can other definitions of a mutation be used that affect the outcome, such
+as the rearrangement of 3 letters in the key instead of swapping 2 letters?
+
+Do the optimal parameters hold true for other cipher types than patristocrats?
+
+How many steps are required to reach a hilltop from its starting location?
+That is, how long does it take to climb a single hill?
+
+How many unique hilltops are visited during each run?  How often does the
+hillclimber get "stuck" at a local maximum?
+
+[1]  http://ciphertool.sourceforge.net
+[2]  http://www.cryptogram.org

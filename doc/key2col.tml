@@ -1,0 +1,23 @@
+[docHeader "Cipher Program - key2col"]
+[Command key2col "generate a columnar cipher from an aristocraty key"]
+
+[SynopsisHeader]
+[Synopsis key2col "filename"]
+
+[StartDescription]
+
+[Description "key2col filename" {} \
+"<B>key2col</B> generates a columnar cipher from an aristocrat key.  The
+input <B>filename</B> must be an aristocrat saved file from the
+<B>[Link ctool.html ctool]</B> program.  The output of this program is
+another <B>[Link ctool.html ctool]</B> save file that can be loaded
+into <B>[Link ctool.html ctool]</B>.  This new save file is a
+[Link columnar.html {complete columnar}] cipher with period 26.
+<P>
+By converting the aristocrat key to a columnar cipher, one may then
+change the key ordering in order to recover the K3/K4 mixed alphabets.
+"]
+
+[EndDescription]
+
+[footer]

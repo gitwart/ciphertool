@@ -1,0 +1,185 @@
+#!/bin/sh
+# \
+exec tcipher "$0" ${1+"$@"}
+
+# cmbifidsolve --
+#
+#	Automatic solver for a conjugated bifid cipher.  This program
+#	generates bifid keys and applies it to the bifid cipher.
+#	It then gets the resulting plaintext and runs it through
+#	a patristocrat hill climb.
+#
+# Copyright (C) 2001-2003  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require Hillclimb
+package require Dictionary
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list tip.arg {} "The optional plaintext tip for this cipher."] \
+    [list tipstart.arg {} "The string of ct where this tip begins."] \
+    [list hills.arg 100 "The maximum number of hills to climb for each possible pat equivalent.  Defaults to 100."] \
+    [list stepinterval.arg 100 "The interval between progress updates.  Defaults to 100."] \
+]
+
+foreach {var val} [::cmdline::getoptions argv $options] {
+    set $var $val
+}
+
+if {$period <= 0} {
+    puts stderr "[::cmdline::usage $options {option '-period' must be specified with a positive value.}]"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set bifidCipher [cipher create bifid -ct $ct -period $period]
+set patCipher [cipher create aristocrat]
+
+# Locate the tip position in the ciphertext.
+
+set tipStartIndex ""
+set tipEndIndex ""
+if {$tipstart != ""} {
+    set tipStartIndex [string first $tipstart [$bifidCipher cget -ciphertext]]
+    if {$tipStartIndex != -1} {
+	set tipEndIndex [expr {$tipStartIndex + [string length $tip] - 1}]
+    } else {
+	set tipEndIndex -1
+    }
+    puts "#Applying tip to:  [string range [$bifidCipher cget -ct] $tipStartIndex $tipEndIndex]"
+} elseif {$tip != ""} {
+    # These values should give us a good starting point.
+    set tipStartIndex 0
+    set tipEndIndex 10
+} else {
+    set tipStartIndex -1
+    set tipEndIndex -1
+}
+
+if {[info exists ::env(CIPHER_LANGUAGE)]} {
+    $bifidCipher configure -language $::env(CIPHER_LANGUAGE)
+    $patCipher configure -language $::env(CIPHER_LANGUAGE)
+    puts "#Using language=[$c cget -language]"
+}
+
+set ::Dictionary::directory $env(HOME)/share/dict
+
+proc showFit {hillKey value count pt} {
+    puts "# Iteration $count"
+    #puts "# Bifid Square: [string range $bifidKey 0  4]"
+    #puts "# Bifid Square: [string range $bifidKey 5  9]"
+    #puts "# Bifid Square: [string range $bifidKey 10 14]"
+    #puts "# Bifid Square: [string range $bifidKey 15 19]"
+    #puts "# Bifid Square: [string range $bifidKey 20 24]"
+    puts "# Pat key:  $hillKey"
+    puts "# Fit: $value"
+    puts "# Pt:  $pt"
+    puts ""
+}
+
+proc showIter {keyword hillKey iter pt} {
+    puts "# Iteration: $iter"
+    puts "# Bifid key:  ($keyword) \$bifidKey"
+    puts "# Pat key:  $hillKey"
+    puts "# Pt:  $pt"
+    puts ""
+}
+
+# Initialize the hill climber parameters
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc(aristocrat)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType(aristocrat)
+set Hillclimb::cipherObject $patCipher
+set Hillclimb::stepCommand showIter
+set Hillclimb::bestFitCommand showFit
+
+set maxValue 0
+set maxBifidKey {}
+set maxHillKey {}
+set count 1
+set bifidMutationAmount 4
+set patMutationAmount 10
+
+set bifidKey {abcdefghiklmnopqrstuvwxyz}
+set hillKey {abcdefghijklmnopqrstuvwxyz}
+
+foreach wordLength [Dictionary::availableLengths 5 14] {
+    foreach keyword [Dictionary::lookupByLength $wordLength] {
+	# Apply each key to the cipher
+	foreach bifidKey [CipherUtil::generateKeysquares $keyword] {
+	    $bifidCipher restore $bifidKey
+
+	    $patCipher configure -ct [$bifidCipher cget -pt]
+	    $patCipher undo abcdefghijklmnopqrstuvwxyz
+
+	    # Apply the tip to the first possible location.
+	    set validTip 1
+	    # TODO:  Loop through every possible tip location
+	    if {$tip != "" && $tipStartIndex != ""} {
+		if {$tipStartIndex == -1} {
+		    set tipStartIndex 0
+		    set tipEndIndex 10
+		}
+		set tipCt [string range [$patCipher cget -ct] \
+			$tipStartIndex $tipEndIndex]
+		#puts "$patCipher restore:\n\t$tip\n\t$tipCt"
+		#puts "$patCipher locate $tip $tipCt"
+		if {[catch {set tipLocation [$patCipher locate $tip $tipCt]}] || $tipLocation == ""} {
+		    #puts "tip location not found"
+		    set validTip 0
+		} else {
+		    #puts "Tip found at $tipLocation ([string length $tipLocation]).  Produces key [$patCipher cget -key]"
+
+		    foreach {newkey holes} \
+			    [Hillclimb::plugKeyHoles [lindex [$patCipher cget -key] 1]] {}
+		    set Hillclimb::fixedKeyPositions $holes
+		    set hillKey [list [lindex [$patCipher cget -key] 0] $newkey]
+		}
+	    }
+
+	    # Climb the hill for a while
+	    for {set iter 0} {$iter < $hills && $validTip} {incr iter} {
+
+		foreach {bestKey val} [Hillclimb::start $hillKey] {}
+
+		if {$val > $maxValue} {
+		    set maxValue $val
+		    set maxHillKey $bestKey
+		    set maxBifidKey $bifidKey
+		    showFit $bifidKey $maxHillKey $val $count [$patCipher cget -pt] 
+		}
+		incr count
+
+		if {$count % $stepinterval == 0} {
+		    showIter $bifidKey $keyword $hillKey $count [$patCipher cget -pt]
+		}
+
+		set hillKey [::Hillclimb::mutate $bestKey $patMutationAmount]
+	    }
+
+	    # Randomize the key
+	    #set bifidKey [Hillclimb::mutate $bifidKey $bifidMutationAmount bifid]
+	}
+    }
+}

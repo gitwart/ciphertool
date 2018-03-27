@@ -1,0 +1,81 @@
+<HTML>
+<TITLE>Cipher Program - patsearch</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+patsearch - autosolver for K1/K2/K3 keyed patristocrat ciphers
+
+
+<H2>SYNOPSIS</H2>
+
+<B>patsearch</B> <I>-file filename ?-type k1|k2|k3? ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="patsearch"><B><CODE>patsearch -file filename -type k1|k2|k3 ?-scoretype type? ?-language language? ?-keyword word? ?-addspace?</CODE></B></A></DT>
+        <DD><B>patsearch</B> is an autosolver for patristocrat (and aristocrat)
+ciphers.
+<P>
+<B>filename</B> is the name of the file that contains the ciphertext.
+<BR>
+<B>keytype</B> is one of <B>k1</B>, <B>k2</B>, or <B>k3</B>.
+<P>
+This program loads keywords from an external dictionary.
+The dictionary must be laid out as a set
+of files, with each file containing a list of words (in
+any order) all of the same length, one word per line.
+The filenames must start with the string <B>len</B> and
+end with a 2 digit number describing the length of the
+words inside the file.  For example, the file
+<B>len04</B> could contain:
+<P>
+<CODE>
+very<BR>
+that<BR>
+lean<BR>
+keys<BR>
+used<BR>
+type<BR>
+foot<BR>
+mine<BR>
+eery<BR>
+flee<BR>
+</CODE>
+
+<P>
+The <b>patsearch</b> program looks for every dictionary file and attempts to
+use each word found as the keyword.  If you are using a very large dictionary
+this could take quite a long time.  Use the <B>-keyword</B> option to limit the search to a single known keyword.  This can be useful if you have determined the key from some other method and just want to decipher the ciphertext using the keyword.
+<P>
+Currently the location of the dictionary is hardcoded to the directory
+<CODE>$HOME/share/dict</CODE>.  You can change this by editting the
+<B>patsearch</B> program and modifying the line where <CODE>Dictionary::directory</CODE>
+is set.
+<P>
+The default scoring method is to use a sum-of-logs-of-digram-frequencies table.  This can be changed to any scoring method supported by the <A HREF="cipher/score.html">score</A> command.  The <b>-language</b> option is used to load
+a scoring table for the specified language, if such a scoring table exists.
+<P>The <b>-addspace</b> option will attempt to locate word boundaries after the final solution has been found.  This can be a time and memory intensive process on older computers so it is turned off by default.
+
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

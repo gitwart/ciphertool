@@ -1,0 +1,109 @@
+<HTML>
+<TITLE>Cipher Package - CipherUtil</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+CipherUtil - Miscellaneous utilities.
+
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>package require CipherUtil</I>
+<BR>
+
+
+<H2>COMMANDS</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="wordToOrder"><B><CODE>CipherUtil::wordToOrder word ?keepDups?</CODE></B></A></DT>
+        <DD>Generate a numeric string that indicates the alphabetic order of the letters
+in <code>word</code>.  Example:  &quot;dog&quot; -> 132.  If there are more
+than 9 letters in the word then the ordering is indeterminate; values over 9
+are reduced to a single digit.  If the value of <code>keepDups</code> is 1,
+then all matching letters will be given the same value.  Otherwise they will be
+given values that increase from their position in the word, going from left to
+right.  For example, &quot;that&quot; -> 3214 if <code>keepDups</code> is 0,
+but &quot;that&quot; -> 3213 if <code>keepDups</code> is 1.
+<code>keepDups</code> defaults to 0.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="generateKeysquares"><B><CODE>CipherUtil::generateKeysquares word ?width? ?height?</CODE></B></A></DT>
+        <DD>Generate keysquares from a keyword using all known routes.  A width of 5 is
+used unless otherwise indicated.  If <code>width</code> and <code>height</code>
+are both 5 then this procedure will replace any occurrences of <code>j</code>
+with <code>i</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="saveCipherToFile"><B><CODE>CipherUtil::saveCipherToFile cipherObj chanid</CODE></B></A></DT>
+        <DD>Save a cipher to an open channel so that it can be loaded later using <code>CipherUtil::readSavedCipher</code>.  If <code>stdout</code> is used as the channel id then the cipher will be printed to standard output.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="readCiphertext"><B><CODE>CipherUtil::readCiphertext filename</CODE></B></A></DT>
+        <DD>Read a block of ciphertext from a file.  If <code>filename</code> is <code>-</code> then the ciphertext will be read from standard input.  Newlines in the ciphertext file will be replaced with a single space character.  This procedure returns the ciphertext that was read from the file.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="readSavedCipher"><B><CODE>CipherUtil::readSavedCipher filename</CODE></B></A></DT>
+        <DD>Read in a cipher that was previously saved by
+<code>CipherUtil::saveCipherToFile</code>.  This procedure returns a list of
+key-value pairs suitable for use as an argument to the Tcl command <code>array
+set</code>.  This procedure does not create a new cipher object, rather, it
+returns enough information that the caller can use to create a new cipher
+object.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="caesarShift"><B><CODE>CipherUtil::caesarShift</CODE></B></A></DT>
+        <DD>This has been deprecated by the <A HREF="../cipher/caesar.html">caesar</A> cipher type.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="loadK3Fragments"><B><CODE>CipherUtil::loadK3Fragments filename</CODE></B></A></DT>
+        <DD>Load a saved aristocrat/patristocrat cipher from a file and construct a list of K3 alphabet fragments from the cipher's key.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="lreverse"><B><CODE>CipherUtil::lreverse list</CODE></B></A></DT>
+        <DD>Reverse the elements in a Tcl list.  I can't believe that the Tcl folks haven't included something like this in the core Tcl distribution.  A new copy of the list is returned with the elements reversed.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="phillipsIoc"><B><CODE>CipherUtil::phillipsIoc ciphertext</CODE></B></A></DT>
+        <DD>Calculate the index of coincidence for each of the 6 unique keysquares of phillips cipher.  This procedure returns a list of 7 values:  The first is the average of the last 6.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="periodicIoc"><B><CODE>CipherUtil::periodicIoc ciphertext</CODE></B></A></DT>
+        <DD>Calculate the index of coincidence for all columns in a periodic cipher.  This procedure returns n+1 values, where the first is the average of all of the rest.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:23 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

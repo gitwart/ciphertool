@@ -1,0 +1,176 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# portaxsolve --
+#
+#	Automatic solver for portax ciphers
+#
+# RCS: @(#) $Id: portaxsolve,v 1.6 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2002,2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg 0 "The period for the cipher."] \
+    [list offset.arg 0 "The offset?"] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list keyword.arg {} "The single keyword to use when decoding."] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+set stepInterval  10000
+
+set startIndex 0
+set endIndex [expr {$period - 1}]
+
+if {$offset != ""} {
+    set startIndex $offset
+    set endIndex [expr {$offset + 2}]
+}
+
+if {$endIndex > $period} {
+    set endIndex [expr {$period - 1}]
+}
+
+if {$startIndex > $period} {
+    puts stderr "Invalid offset $offset.  Must be less than the period $period"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ciphertext [CipherUtil::readCiphertext $file]
+
+# Convert the ciphertext to pairs of letters
+
+regsub -all { } $ciphertext {} ciphertext
+set ciphertext [string trimright $ciphertext]
+
+proc decodePortax {ciphertext key period} {
+    set pt {}
+    set lastRow [expr {[string length $ciphertext] / $period}]
+    if {$lastRow % 2 == 1} {
+        incr lastRow -1
+    }
+    set lastRowLength [expr {([string length $ciphertext] % ($period*2) / 2)}]
+    for {set i 0} {$i < [string length $ciphertext]} {incr i} {
+	set row [expr {$i / $period}]
+        set rowLength $period
+        if {$row == $lastRow} {
+            set rowLength $lastRowLength
+        }
+	set col [expr {($i-($row * $period)) % $rowLength}]
+	set keyLetter [string index $key $col]
+	set ct1 [string index $ciphertext $i]
+	set ct2 [string index $ciphertext [expr {$i + $rowLength}]]
+
+	set ptpair [key convert portaxpt $keyLetter $ct1$ct2]
+	set pt1 [string index $ptpair 0]
+	set pt2 [string index $ptpair 1]
+
+	if {$pt1 == ""} {
+	    set pt1 " "
+	}
+	if {$pt2 == ""} {
+	    set pt2 " "
+	}
+
+	append ptrow1 $pt1
+	append ptrow2 $pt2
+
+	if {$col == [expr {$rowLength - 1}]} {
+	    append pt $ptrow1$ptrow2
+	    set ptrow1 {}
+	    set ptrow2 {}
+	    incr i $rowLength
+	}
+    }
+
+    return $pt
+}
+
+set maxValue 0
+set maxPt {}
+set maxKey {}
+set count 0
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+        foreach key [Dictionary::lookupByLength $wordLength] {
+            set pt [decodePortax $ciphertext $key $period]
+            set value [score value $pt]
+            #puts "$value ($key): $pt"
+            if {$value > $maxValue} {
+                set maxValue $value
+                set maxKey $key
+                set maxPt $pt
+                puts "$count:  $key  Fit:  $value"
+                puts "$pt"
+            }
+            if {$count%$stepInterval == 0} {
+                puts "$count:  $key"
+                puts "$pt"
+            }
+            incr count
+        }
+    }
+} else {
+    set maxKey $keyword
+    set maxPt [decodePortax $ciphertext $keyword $period]
+    set maxValue [score value $maxPt]
+}
+
+if {$addspace} {
+    set Dictionary::cache [list length word]
+    set readablePt [Dictionary::findWords $maxPt]
+}
+
+
+foreach channel [list stdout] {
+    puts $channel "#=========="
+    puts $channel ""
+    puts $channel "type=portax"
+    puts $channel "period=$period"
+    puts $channel "ciphertext=$ciphertext"
+    puts $channel "plaintext=$maxPt"
+    puts $channel "keyword=$maxKey"
+    puts $channel "key=$maxKey"
+    puts $channel "# Score Value = $maxValue"
+    if {$addspace} {
+	puts "#plaintext=$readablePt"
+    }
+}

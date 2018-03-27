@@ -1,0 +1,167 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# fmorsekeysearch --
+#
+#	Automatic solver for fmorse ciphers.
+#
+# RCS: @(#) $Id: fmorsekeysearch,v 1.9 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2000-2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list keyword.arg "" "The single key to try."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list stepinterval.arg 2000 "The interval between progress updates."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+set ciphertype fmorse
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $ciphertype -ct $ct]
+
+# Iterate over all possible keys
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+set stepInterval 20000
+
+proc bestkey {cipherProc keywordList countVar {maxValue 0}} {
+    global stepInterval
+    upvar $countVar count
+
+    set maxKeyword {}
+    set maxKey {}
+
+    foreach keyword $keywordList {
+	incr count
+
+	if {! [catch {set fixedKey [key generate -k1 $keyword]} err] } {
+	    $cipherProc restore $fixedKey
+
+	    set value [score value [$cipherProc cget -pt]]
+	    #puts "value for $keyword is $value"
+
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKeyword $keyword
+		set maxKey [$cipherProc cget -key]
+
+		puts "# $keyword ($maxKey)  Fit: $value"
+		puts "# $count: [$cipherProc cget -pt]"
+		puts ""
+	    }
+	} else {
+	    #puts "Got error while creating keylist:  $err"
+	    # Keyword contained invalid characters
+	}
+	if {$count%$stepInterval == 0} {
+	    puts "# $keyword"
+	    puts "# $count: [$cipherProc cget -pt]"
+	    puts ""
+	}
+    }
+
+    return [list $maxValue $maxKeyword $maxKey]
+}
+
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	set keywordList [Dictionary::lookupByLength $wordLength]
+	#puts "Checking keys in $dictFile"
+
+	foreach {val keyword key} \
+		[bestkey $cipher $keywordList count $maxValue] {
+	    if {$val > $maxValue} {
+		set maxValue $val
+		set maxKeyword $keyword
+		set maxKey $key
+	    }
+	}
+    }
+} else {
+    foreach {val keyword key} [bestkey $cipher $keyword count] {
+	if {$val > $maxValue} {
+	    set maxValue $val
+	    set maxKeyword $keyword
+	    set maxKey $key
+	}
+    }
+}
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+$cipher restore [lindex $maxKey 0] [lindex $maxKey 1]
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
+puts "keyword=$maxKeyword"

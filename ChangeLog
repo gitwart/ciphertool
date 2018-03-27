@@ -1,0 +1,4301 @@
+Sun Apr  4 22:28:46 PDT 2010 wart@kobold.org
+    * hillclimb.c: Add missing argument to Tcl_AppendResult()
+    * Fix memory corruption due to premature freeing of memory.
+
+Mon Mar 31 13:07:11 PDT 2008 wart@kobold.org
+    * Makefile.in:  Add lethist and solvemysz utilities.  Added quagmire
+      cipher type.
+    * tests/quagmire.test:
+    * quagmire.c:  Add initial support for decoding quagmire I and II ciphers.
+    * configure:
+    * configure.in:  Re-enable check for getenv() so that we can use
+      the CIPHERTOOL_DICTIONARY environment variable to specify the
+      dictionary location.
+    * hillclimbCiphers.tcl:  Add getK1FullKeyList for single-word key
+      restores.
+    * progs/hillclimb:  Use the cipher-specific restore procedure
+    * progs/slidesolve:  Add -scoretype command line argument
+    * library/utils.tcl:  remove function that saves in the old format
+    * library/dictionary.tcl:  Fix bug that would throw an error if
+      lookupByPattern found no matches.
+    * hillclimb.c:
+    * cipherInit.c: Add method for swapping letters in the same keysquare
+      row/column
+    * tests/dictionary.test:
+    * dictionaryCmds.c:  Throw an error if a word with the wrong length is found
+      in a dictionary file.
+
+Sun Mar 16 17:59:09 PDT 2008 wart@kobold.org
+    * progs/keysearch:
+    * progs/keysearch:
+    * progs/k4search:
+    * progs/k3search:  Better handling of the dictionary
+    * tests/*.test:  Add tests for setting ciphertext with uppercase letters.
+    * tests/homophonic.test:
+    * homophonic.c:  Add -solvemethod configuration to allow both a quick
+      (frequency fitting) solve algorithm as well as a thorough (brute force
+      through all possible keys) solve algorithm.
+    * tests/wordtree.test:
+    * wordtreeCmd.c:  Add a 'splitbest' function that gives better results
+      when trying to split plaintext into valid words.
+    * library/dictionary.tcl:
+    * progs/patsplit:  use new 'wordtree splitbest' function to split
+      plaintext into real words.
+    * wordtree.h:
+    * wordtree.c:
+    * ngramScore.c:
+    * wordtreeScore.c: Change method signature to make it more flexible
+    * aristocrat.c:
+    * caesar.c:
+    * cipherUtil.c:  Convert ciphertext from upper to lower case
+    * tests/trifid.test:
+    * tests/bifid.test:
+    * trifid.c:
+    * bifid.c:  Allow empty second argument to restore
+    * tests/score.test:
+    * score.c:  Assume the initial default scoring object has been initialized
+    * tests/gromark.test:
+    * gromark.c:  Add extra checks for validity of the restore key
+    * progs/ctool:
+    * library/ctool.tcl:  Add 'save as' menu item
+    * Makefile.in:
+    * cipherInit.c:
+    * library/hillclimb.tcl:
+    * library/hillclimbCiphers.tcl:
+    * hillclimb.h:
+    * hillclimb.c: Reimplement some of the hillclimber functions in C
+      for performance.
+    * progs/hillclimb:  Fix bug when score type was not set.
+
+Mon Mar 10 20:55:13 PDT 2008 wart@kobold.org
+    * Released 1.6.2
+    * columnar.c:
+    * tests/columnar.test:
+    * vvb.c:
+    * tests/vvb.test: When encoding, set the period based on the length
+      of the key
+    * tests/twosquare.test:
+    * tests/foursquare.test:
+    * tests/playfair.test:
+    * twosquare.c:
+    * playfair.c: Add cryptographic nulls to plaintext where necessary
+      when encoding.
+    * tests/cadenus.test:
+    * cadenus.c: Generate key order automatically from key when encoding
+    * tests/score.test:
+    * score.h:
+    * score.c:  Throw an error if the scoring table has not been initialized
+      with at least one value.  This will make it more clear to users who
+      keep getting a value of '0.0'.
+    * cipherUtil.c: Add convenience function for converting 'j' to 'i' in
+      keysquare-based ciphers
+    * dictionaryInit.c: Change default dictionary location
+    * progs/tkcrithm:  Give a decent error message if 'solve' is pressed when
+      there is nothing to solve for.
+    * progs/grandpresol:  Use cmdline package for command line argument
+      processing.
+    * library/hillclimb.tcl:
+    * library/hillclimbCiphers.tcl:
+    * progs/hillclimb: Added -churn command line flag for looping the
+      hillclimber through all possible substititions of the most common
+      letter of a simple substitution cipher.
+
+Wed Mar  5 05:11:19 PST 2008 wart@kobold.org
+    * bacon.c:  Fix core dump at the end of autosolving
+    * progs/*: Use vanilla tclsh interpreter instead of custom tcipher shell
+
+Sat Mar  1 21:10:25 PST 2008 wart@kobold.org
+    * progs/hillclimb:  Improve usefullness of secondary scoring functionality
+
+Sat Mar  1 09:10:47 PST 2008 wart@kobold.org
+    * ciphertool.desktop:
+    * tkcrithm.desktop:  Fix desktop file version
+    * Makefile.in:  Add some profiling files to the clean target
+    * nitrans.c: Minor code cleanup.  Add ability to read both vertically
+      and horizontally.
+    * tests/nitrans.test:
+    * tests/score.test:
+    * score.c: Add 'type' subcommand for introspecting a score object's type
+    * library/hillclimb.tcl:  Add preliminary support for multiple scoring
+      functions to be used.
+    * progs/hillclimb:  Add '-seedmutate', '-deadhills', '-finescoretype'
+      command line options.  Keep some simple statistics on the uniqueness
+      of the hilltops found.
+    * library/scoretypes.tcl:  Split the comboscore type into 3 different
+      scoring functions so that it can be easily used with di-, tri-, and
+      tetra-grams.
+
+Sun Jan 22 23:57:43 PST 2006 wart@kobold.org
+    * amsco.c:  Terminate a string with a null character.
+    * bacon.c:  Remove meaningless strncpy.
+    * bazeries.c:
+    * bifid.c:
+    * bigbifid.c:
+    * cadenus.c:
+    * digrafid.c:
+    * gromark.c:
+    * trifid.c:
+    * homophonic.c:
+    * vvb.c:  Clear up minor memory leak.
+    * morbit.c:  Cleaned up a handful of memory bugs.
+    * tests/amsco.test:  Fix misnumbered test case.
+
+Tue Jan 17 22:28:06 PST 2006 wart@kobold.org
+    * Released 1.6.1
+    * INSTALL:  Added instructions for installing and building an installer
+      on Windows.
+    * cipher.spec.in: parameterize the version in the source url.
+    * install.nsi.in:
+    * configure.in:
+    * configure:  Fix the windows install script based on the latest TEA
+      updates.
+
+Mon Jan 16 22:28:02 PST 2006 wart@kobold.org
+    * tclAppInit.c:  Merge changes from the Tcl core.
+    * cipherInit.c:  Use macro for the package name.  Fix mismatch
+      of command deletion functions.
+    * wordtreeCmd.c:  Fix pointer type mismatch in the wordtree command delete
+      function.
+    * score.c:  Prevent double-free of the initial score command.
+    * pkgIndex.tcl.in:
+    * config/tcl.m4:
+    * Makefile.in:
+    * configure.in:  New TEA 3.4-compatible build files.
+    * progs/tkcrithm:  Added a missing "package require Crithm_gui"
+    * cipher.spec.in:  Added desktop integration files.
+
+Sat Jan 14 22:33:51 PST 2006 wart@kobold.org
+    * config/tcl.m4: Fix quoting bug.  Added logic for configuring
+      on Mac OS-X.
+    * aclocal.m4:  Regenerated.
+    * progs/keysquaresearch:  Change default step interval.
+
+Tue Jan  3 08:39:43 PST 2006 wart@kobold.org
+    * ciphertool.desktop:
+    * tkcrithm.desktop:  Added desktop integration files.
+
+Sun Nov 20 12:31:34 PST 2005 wart@kobold.org
+    * tests/scoredata.test:
+    * tests/keygen.test:  Update tests to reflect new scoring values.
+    * tests/nitrans.test:  Update tests to reflect new valid characters.
+    * tests/grille.test:
+    * grille.c:  Add support for odd-width grille ciphers.
+    * progs/autokeysol:  Set period to length of keyword, if one is provided.
+      Print out plaintext with spaces if -addspace was used.
+    * progs/dumproute:  Use better command line processing.
+    * route.test:
+    * route.c:  Add support for -stepinterval, -stepcommand, and -bestfitcommand
+      options.
+    * tests/ragbaby.test:
+    * ragbaby.c: Fix bug when decoding ciphertext that contains a 'j' or 'x'.
+    * lethist.c: Added support for alphanumeric ciphertext [a-z0-9]
+
+Wed Nov  9 10:47:08 PST 2005 wart@kobold.org
+    * progs/portaxsolve:  Better command line processing.  Fix processing
+      of the last row of ciphertext.
+    * progs/Makefile.in:
+    * progs/checkerboard2pat:  Utility for converting a checkerboard cipher to
+      a patristocrat.
+    * progs/genboard:  Added support for checkerboard ciphers.
+    * config/tcl.m4:
+    * configure:  Prelimimary support for building on Mac OS X.
+
+Tue Nov  8 14:19:13 PST 2005 wart@kobold.org
+    * progs/hillclimb:  Change default command line values.
+    * keygen.c:  Changed algorithm for calculating the 'ordervalue' of
+      a key.
+    * progs/key2col:
+    * progs/k4search:  Refactored code to make use of new library functions.
+    * tests/util.test:  Update to reflect new error message.  Added tests for
+      aristocrat key to columnar cipher conversion.
+    * library/utils.tcl:  Added procedure for converting an aristocrat cipher
+      key to a columnar cipher object.
+    * Makefile.in:
+    * progs/txt2crithm:  Added command line tool for converting text
+      descriptions of equations to crithm autosolver scripts.
+    * library/crithm.tcl:  Added procedure for generating nonzero constraints.
+      Applied various optimizations to the generated code so that it will
+      execute faster.  Allow the use of ^ as an exponentiation operator.
+    * library/crithm_gui.tcl:  Allow the use of ^ as an exponentiation
+      operator.  Move to a gui package.
+    * pkgIndex.tcl.in:  Split crithm package into a gui and non-gui package.
+    * aristocrat.c:  Add '=' as a valid character.  Remove compiler warning.
+    * crithmCmd.c:  Reset value after freeing memory.
+    * swagman.c:
+    * score.c:
+    * pollux.c:
+    * nitrans.c:
+    * nicodemus.c:
+    * ngramScore.c:
+    * myszcowski.c:
+    * morbit.c:
+    * digram.c:
+    * columnar.c:
+    * cadenus.c:
+    * bacon.c:
+    * amsco.c:  Remove compiler warning.
+
+Wed Nov  2 21:25:22 PST 2005 wart@kobold.org
+    * library/crithm.tcl:  Add support for more complex expressions
+      in the left and right hand sides of equations, including
+      support for exponentiation.
+    * tests/route.test:
+    * route.c:  Fix compiler warning.  Fix core dump when trying to solve
+      route ciphers before setting the width.
+    * vvb.c:  Fix compiler warning.
+
+Sat Oct 29 19:09:18 PDT 2005 wart@kobold.org
+    * progs/hillclimb:  Added additional command line arguments for fine
+      tuning the hill climbing algorithm.
+    * progs/csolve:  Change default step interval for grille ciphers.
+
+Mon Oct 17 18:29:04 PDT 2005 wart@kobold.org
+    * config/tcl.m4:  Add /usr/lib64 to the list of search paths
+      for tclConfig.sh.
+    * tests/phillips.test:
+    * phillips.c:  Allow varying number of phillips blocks, from 1 to 20.
+    * nitrans.c:  Allow the characters 0-9 in nitrans ciphers for
+      assistence with 6x6 keysquares.
+    * doc/Hillclimb/package.tml:  Document the -neighborproc setting.
+    * library/hillclimbCiphers.tcl:  Fix invalid ragbaby seed key.
+    * progs/bazsol:
+    * progs/cmbifidsolve:
+    * progs/csolve:
+    * progs/patsearch:
+    * progs/fmorsekeysearch:
+    * progs/ragbabysearch:  Support the use of custom score commands
+      on the command line.
+    * progs/keysquaresearch:  Support the use of custom score commands
+      on the command line.  Fix route setting for bigbifid ciphers.
+    * progs/hillclimb:  Allow the user to override the default phillips
+      setting of 8 blocks.  Allow the user to set the chance of mutation
+      from the best key instead of the local maximum.
+
+Wed Apr 20 14:22:51 PDT 2005 wart@kobold.org
+    * progs/geneticsearch:  Added a first draft of a genetic search
+      for solving aristocrats.
+    * progs/hillclimb:  Added a comboweight argument for customizing
+      a comboscore scoring function.  Use a random mutation amount when
+      jumping around the keyspace.
+    * library/scoreTypes.tcl:  Move score initialization code to the
+      specific score method so that the individual score functions in
+      a combination scoring function don't get initalized too early (and end
+      up using the wrong dictionary directory).  Added a comboweight
+      parameter to weight the value of the wordtree in a combo scoring
+      function.
+    * library/hillclimbCiphers.tcl:  Added procedures for mating keys
+      using one or two crossover points.
+    * library/hillclimb.tcl:  Added 'scoreKey' method so that keys
+      can be scored without the caller needing to access the specific
+      decipher procedure and cipher objects.
+    * library/ctool.tcl:  Attempt to locate spaces in words when saving
+      a cipher.
+    * library/geneticPerm.tcl:
+    * pkgIndex.tcl.in:
+    * Makefile.in:  Added first draft of a genetic agorithm library.
+
+Thu Apr 14 13:06:27 PDT 2005 wart@kobold.org
+    * progs/hillclimb:  Updated copyright date.
+    * progs/pathilltipsearch:  Allow custom scoring functions.
+    * library/scoretypes.tcl:  Weight the wordtree score heavily in the
+      comboscore scoring function.
+    * library/scoredata.tcl:  Add package require for the Dictionary package
+      so that we can initialize the wordtree scoring objects.
+    * library/hillclimb.tcl:  Better initialization of starting values
+      for hill climbing.
+    * wordtreeScore.c:  Include 2-letter words in the score.
+
+Wed Apr 13 21:58:08 PDT 2005 wart@kobold.org
+    * progs/hillclimb:  Allow the use of custom scoring functions.
+    * Makefile.in:
+    * pkgIndex.tcl.in:
+    * library/scoretypes.tcl:  Added a custom scoring command that combines
+      a digramlog score with a wordtree score.
+
+Wed Apr 13 15:31:29 PDT 2005 wart@kobold.org
+    * library/dictionary.tcl: Add an argument to createWordTree to
+      load words into an existing tree.
+    * library/scoredata.tcl:  Load wordtrees from the current dictionary.
+    * library/utils.tcl:  Clarify the error message if a save file contains
+      duplicate entries.
+
+Sun Mar  6 18:22:34 PST 2005 wart@kobold.org
+    * progs/ctool:  Change interpreter from 'wish8.3' to 'wish'.
+    * library/crithm.tcl:
+    * progs/key2col:  Change interpreter from 'tclsh8.3' to 'tcipher'
+    * configure:
+    * configure.in:  Bumped release from '4' to '5'.
+    * cipher.spec.in:  Use Fedora-style spec file.
+
+Thu Nov 25 18:26:10 PST 2004 wart@kobold.org
+    * library/utils.tcl:  Don't listify the keyword when writing out
+      a cipher save file.
+    * library/crithm_gui.tcl:  Change '-col' to '-column' to avoid
+      ambiguity.
+    * library/baconian.tcl:  Don't choke on extra characters in the ciphertext
+      file.
+    * library/*.tcl:
+    * progs/*:  Added RCS keyword macros to the files so that we can
+      track version numbers of the installed files.
+    * progs/pathilltipsearch:  Add missing 'package require dictionary'
+    * progs/genboard:  Added 6x6 foursquare to board generator.
+    * progs/autokeysol:  Better command line processing.
+
+Tue Sep  7 19:01:01 PDT 2004 wart@kobold.org
+    * Makefile.in:  Fix dependency to prevent problems when running
+      a parallel make.  Remove extra mkinstalldirs step that wasn't obeying
+      an alternate DESTDIR setting.  Separate out the dist: and rpm: targets
+      so that a tar archive can be built separately from the RPMs.  Don't
+      install the header files since they really aren't useful after
+      the software has been built.  Add '/share/' to the doc path.
+
+Sun Sep  5 22:33:53 PDT 2004 wart@kobold.org
+    * library/hillclimb.tcl:  Make sure a known tip location is used if
+      specified.
+    * progs/slidesolve:  Better command line processing.
+    * progs/keysquaresearch:  Minor progress output formatting fix.
+    * cipher.spec.in:  Templatized the rpm spec file so that the version
+      number is only set in the configure script.
+    * cipher.spec: Removed after templatization.
+    * Makefile.in:  Use spec file from the build directory.
+
+Mon Aug 30 17:01:55 PDT 2004 wart@kobold.org
+    * config/tcl.m4:  Look for libraries in additional locations for
+      64-bit platforms.
+    * configure:  Regnerated after change to tcl.m4.
+    * solvemysz.c:  Fix compiler warnings on 64-bit platforms.
+    * Makefile.in:  Don't bother rebuilding the source rpms when
+      building the platform-optimized packages.
+
+Mon Aug 30 14:03:28 PDT 2004 wart@kobold.org
+    * cipher.spec:  Remove hardcoded path to the tcl installation.  Fedora
+      Core 2 now provides a usable tclConfig.sh in the tcl-devel package.
+    * Makefile.in:  Set the LD_LIBRARY_PATH before generating the
+      documentation so that the cipher shell can find the correct tcl
+      shared library.
+    * aristocrat.c:  Add '*' to the list of allowed characters.
+    * library/utils.tcl: Use new cipher loading routine.
+    * progs/fmorsekeysearch:  Better command line processing.  Remove
+      duplicate output lines.
+    * progs/keysquaresearch:  Allow the step interval to be set on the
+      command line.  Use a step interval of 0 to print all attempted
+      keys (very verbose!).  Change write-in route of key, not the read-out
+      route.
+    * progs/trifidkeysearch:  Remove duplicate command line option.  Add
+      a few comments.
+    * route.c:  Fix minor caching bug.
+    * progs/nicsolve:  Added missing "package require Dictionary".
+    * nicodemus.c:  Add '-keyword' option for getting the keyword.
+    * tests/nicodemus.test:  Added test for -key and -keyword.
+    * library/utils.tcl:  Fix typo when saving the keyword.
+    * library/crithm.tcl:  Updated the save file format.
+    * library/dictionary.tcl:  Removed unused code.
+    * library/hillclimb.tcl:  Updated comments.
+    * library/hillclimbCiphers.tcl:  Add sample code showing how to
+      restrict aristocrat keys to not allow a letter to stand for itself.
+    * progs/bazsol:  Don't default the start value to '0'.  Obey the
+      -dictionary command line option.
+    * progs/csolve:  Better handling of default step interval so that
+      it can be overridden with all cipher types.
+    * progs/tkcrithm:  Minor ui improvements.
+
+Sat May 29 16:58:01 PDT 2004 wart@kobold.org
+    * dictionaryInit.c:  Store the default dictionary in a global location
+      where it can be accessed by the cipher objects.
+    * dictionaryCmds.h:
+    * dictionaryCmds.c:  Export the lookupByLength() function.
+    * bacon.c:  Refactored the dictionary management to use the internal
+      dictionary management functions.
+    * tests/baconian.test:  Use a private dictionary for the baconian
+      encoding tests.
+
+Mon May  10 00:35:00 PDT 2004 zander@zanderland.org
+    * bacon.c: Encoding function now uses random 5 letter words.
+    * grandpre.c: Added encoding function.
+    * tests/baconian.test: Modified encoding tests.
+    * tests/grandpre.test: Added encoding tests.
+
+Fri May  7 09:55:00 PDT 2004 zander@zanderland.org
+    * homophonic.c: Added encoding function.
+    * tests/homophonic.test: Added encoding tests.
+    * tests/pollux.test: Improved encoding tests.
+
+Thu May  6 16:06:37 PDT 2004 wart@kobold.org
+    * progs/<many scripts>:  Better detection of the dictionary directory.
+
+Wed May  5 20:21:00 PDT 2004 zander@zanderland.org
+    * pollux.c: Added encoding function.
+    * ragbaby.c: Added encoding function.
+    * tests\pollux.test: Added encoding tests.
+    * tests\ragbaby.test: Added encoding tests.
+
+Wed May  5 10:20:38 PDT 2004 wart@kobold.org
+    * configure.in:
+    * configure:  Check for the existence of getenv() or its Windows
+      equivalent.
+    * dictionaryInit.c:  Set the default dictionary location to the value
+      stored in the CIPHERTOOL_DICTIONARY environment variable.  Fallback to
+      $HOME/share/dict if CIPHERTOOL_DICTIONARY is not defined.  Fallback to
+      /usr/share/dict if HOME is not defined.
+    * progs/patsearch:  Use a command line option to override the default
+      dictionary directory.
+
+Tue May  4 21:49:00 PDT 2004 zander@zanderland.org
+    * fmorse.c:  Small changes to comments.
+    * morbit.c:  Added the encoding function.
+    * tests/fmorse.test: Added empty plaintext test and a return value test.
+    * tests/morbit.test: Added many encoding tests.
+
+Tue May  4 16:42:00 PDT 2004 wart@kobold.org
+    * progs/<many scripts>:  Tweak the behaviour when -h, -help, or -? are used
+      as command line options.  We no longer print the Tcl stack trace, just
+      the usage string.
+    * library/utils.tcl:  Fix readCiphertext so that it properly handles
+      files with no final line terminator.
+    * tests/utils.test:  Added test for the abovementioned readCiphertext
+      behaviour.
+
+Tue May  4 14:33:00 PDT 2004 zander@zanderland.org
+    * fmorse.c:  Fixed a bug I accidently introduced earlier and
+      made EncodeFmorse set the internal key correctly.
+    * morse.c:  Fixed the null termination bug more generally.
+    * morseCommand.c:  Fixed a malloc/ckfree conflict.
+    * tests/fmorse.test:  Added some encoding tests.
+
+Sun May  2 19:30:19 PDT 2004 wart@kobold.org
+    * progs/csolve:  Fix incorrect usage string.
+    * morse.c:  Initialize the first character of the resulting morse
+      text to the NULL character so that a zero-length input string will
+      translate into a zero length morse code string.
+    * morseCommand.c:  New logic for determining the direction of the morse
+      code translation/encoding.  Use the new StringToMorse function for
+      the plaintext -> morse code translation.
+    * tests/morse.test:  Added additional morse code translation tests.
+    * nicodemus.c:
+    * tests/nicodemus.test:  Added encoding function.
+    * bazeries.c:  Fixed an off-by-one error that was causing a seg fault.
+    * solver.c:
+    * solvemysz.c:  Use the new save file format when printing the final
+      solution.
+    * library/utils.tcl:  Remove extra period from some save file keys.
+
+Thu Apr 29 15:18:00 PDT 2004 zander@zanderland.org
+    * morse.c:
+    * morse.h: Added text->morse conversion function.
+    * fmorse.c: Simplified the code.
+    
+Mon Apr 19 18:59:38 PDT 2004 wart@kobold.org
+    * cadenus.c:
+    * tests/cadenus.test:
+    * nitrans.c:
+    * tests/nitrans.test:  Added encoding function.
+    * myszcowski.c:  Better error checking all over the place.  Added "shift"
+      subcommand for moving a column.  Added encoding function.
+    * tests/myszcowski.test:  Added test suite for the myszcowski cipher type.
+    * amsco.c:
+    * tests/amsco.test:
+    * columnar.c:
+    * tests/columnar.test:  Added encoding function.  Allow the period to be
+      set before the ciphertext.
+    * bacon.c:
+    * tests/bacon.test:  Allow restoring from a single argument.  Preliminary support for encoding.
+    * route.c:
+    * tests/route.test:  Added encoding function.  Modified key semantics so
+      that the read/write routes apply to the plaintext, not the ciphertext.
+
+Sat Apr 17 08:32:08 PDT 2004 wart@kobold.org
+    * keygen.c:
+    * keygen.h:  Move a useful shared definition to the header file.
+    * bazeries.c:
+    * tests/bazeries.test:
+    * digrafid.c:
+    * tests/digrafid.test:
+    * trifid.c:
+    * tests/trifid.test:  Added encoding function.
+
+Mon Apr 12 10:10:05 PDT 2004 wart@kobold.org
+    * gromark.c:
+    * gromark.test:
+    * phillips.c:
+    * phillips.test:  Added encoding function.
+    * vvb.c:
+    * tests/vvb.test:  Don't special case the porta encoding anymore since
+      it can be done using the same general methods as vigenere etc.
+
+Sat Apr 10 18:45:21 PDT 2004 wart@kobold.org
+    * cipher.h:  Added #defines that can be used to signal encoding or
+      decoding modes for a cipher function.
+    * playfair.c:
+    * tests/playfair.test:
+    * tests/bigplayfair.test:  Added encoding function.
+
+Fri Apr  9 18:31:05 PDT 2004 wart@kobold.org
+    * tests/aristocrat.test:  Updated encoding test to test the behaviour
+      when there are spaces in the plaintext.
+    * aristocrat.c:  Added additional error checking during encoding.
+    * twosquare.c:
+    * tests/twosquare.test:
+    * tests/foursquare.test:
+    * bigbifid.c:
+    * tests/bigbifid.test:
+    * bifid.c:
+    * tests/bifid.test:  Added encoding function.
+    * vvb.c:  Minor memory cleanup.
+    * tests/vvb.test:  Additional encoding error tests.
+
+Fri Apr  9 10:56:46 PDT 2004 wart@kobold.org
+    * tests/caesar.test:
+    * caesar.c:  Minor updates to the caesar encode function.
+
+Fri Apr  6 10:49:59 PDT 2004 wart@kobold.org
+    * cipher.h:  Added hook for encoding functions.
+    * tests/vvb.test:
+    * vvb.c:  Added encoding function.
+    * tests/aristocrat.test:
+    * aristocrat.c:  Added encoding function.
+    * Makefile.in:  Added "rpmopt" and "rpmall" targets for automating
+      the building of cpu-optimized rpm packages.
+
+Sun Apr  4 18:58:41 PDT 2004 wart@kobold.org
+    * progs/keysquaresearch:
+    * progs/patsearch:
+    * progs/fmorsekeysearch:
+    * progs/nicsolve:
+    * progs/hillclimb:
+    * progs/bazsol:
+    * progs/trifidkeysearch:
+    * progs/nicodemussolve:
+    * progs/pathilltipsearch:
+    * progs/patwordbrute:
+    * progs/quag1topat:
+    * progs/ragbabysearch:
+    * progs/tkpatwordbrute:
+    * progs/csolve:  Save solutions using the new cipher file format.
+    * progs/key2col:  Use the new cipher reading/writing routines during
+      the type conversion.
+    * library/utils.tcl:  Added procedure for writing a cipher to a file
+      using the new file format.
+    * library/ctool.tcl:  Load saved ciphers using new cipher file format.
+      Save ciphers using new cipher file format.
+
+Sun Apr  4 11:44:31 PDT 2004 wart@kobold.org
+    * utils.tcl:
+    * tests/utils.test:  Add procedures for reading new save file format,
+      along with unit tests.
+    * myszcowski.c:  Clean up restore command arguments.
+    * route.c:
+    * tests/route.test:  Implemented the missing 'restore' command.
+    * homophonic.c:
+    * tests/homophonic.test:
+    * twosquare.c:
+    * tests/twosquare.test:
+    * pollux.c:
+    * tests/pollux.test:
+    * morbit.c:
+    * tests/morbit.test:
+    * ragbaby.c:
+    * tests/ragbaby.test:  Allow spaces in the restoration key.
+    * grandpre.c:
+    * tests/grandpre.test:
+    * gromark.c:
+    * tests/gromark.test:  Refactored save format.
+
+Tue Mar 30 16:07:20 PST 2004 wart@kobold.org
+    * Released 1.6.0
+    * Makefile.in:  Add "wininstall" target for generating the windows
+      installer.
+    * install_custompage_1.ini:
+    * install.nsi.in:  New windows installation script.
+
+Mon Mar 29 17:40:52 PST 2004 wart@kobold.org
+    * dictionaryInit.c:
+    * dictionaryCmds.c:  Remove compile warning when building against Tcl 8.4.
+    * ngramScore.c:
+    * wordtreeScore.c:
+    * wordtree.c:
+    * wordtreeCmds.c:
+    * dictionaryCmds.c:
+    * cipherInit.c:  Cleaned up wordtree creating/deletion code.
+    * doc/index.tml:
+    * doc/lethist.tml:  Added documentation for the new lethist program.
+    * configure.in:
+    * configure:
+    * install.nsi.in:  Use correct path separator for the installation prefix
+      on Windows.
+    * doc/gendocs.tcl:  Added package require of the cipher extension
+      so that this script can be run in a vanilla Tcl shell.
+    * bifid.c:
+    * trigramScore.c:
+    * amsco.c:  Fix compiler warnings.
+
+Sun Mar 28 16:41:26 PST 2004 wart@kobold.org
+    * tests/score.test:
+    * tests/scoredata.test:  More thorough test cleanup.
+    * ngramScore.c:
+    * wordtreeScore.c:  Fix minor memory leak when creating/deleting score
+      items.
+
+Sat Mar 27 18:14:36 PST 2004 wart@kobold.org
+    * cipher.spec:
+    * configure.in:
+    * configure:  Bumped version to 1.6.0 in preparation for next release.
+    * Makefile.in:
+    * lethist.c:  Added utility histogramming program.
+    * homophonic.c:  Added "-keyword" option.
+    * data/sample_aristocrat.txt:
+    * data/sample_aristocrat_solution.txt:
+    * data/sample_bifid.txt:
+    * data/sample_bifid_solution.txt:
+    * data/sample_columnar.txt:
+    * data/sample_columnar_solution.txt:  Sample ciphers so that new users
+      have a place to start playing with ctool.
+
+Mon Mar 22 09:52:59 PST 2004 wart@kobold.org
+    * Makefile.in:
+    * library/4gramcountData.tcl:
+    * library/5gramlogData.tcl:
+    * library/5gramcountData.tcl:  Removed some of the new scoring tables
+      to make a smaller installation package.
+    * progs/trifidkeysearch:
+    * progs/patsearch:
+    * progs/nicsolve:  Better handling of the space-separated solution.
+    * progs/digrafidsolve:
+    * progs/pathilltipsearch:
+    * progs/bazsol:
+    * progs/ragbabysearch:  Better command line processing.
+    * progs/hillclimb:
+    * progs/csolve:  Don't print to that silly *.csol file anymore.
+    * tests/nicodemus.test:  Fix syntax error.
+    * doc/cipher/package.tml:
+    * doc/cipher/twosquare.tml:
+    * doc/cipher/foursquare.tml:
+    * doc/cipher/bigplayfair.tml:  Added new cipher type documentation.
+    * doc/cipher/bazeries.tml:  Cleaned up documentation.
+
+Wed Mar 17 18:13:09 PST 2004 wart@kobold.org
+    * progs/csolve:
+    * progs/nicsolve:
+    * progs/patsearch:
+    * progs/hillclimb:
+    * progs/keysquaresearch:  Support the use of ngram scoring tables.
+    * Makefile.in:
+    * library/4gramlogData.tcl:
+    * library/4gramcountData.tcl:
+    * library/5gramlogData.tcl:
+    * library/5gramcountData.tcl:  Added new 4,5-gram scoring data tables.
+    * ngramScore.c:  Fix some unnecessary typecasting.
+    * wordtree.c:  Set the return measure to the measure of the current
+      node *always*.
+    * tests/score.test:  Added test for ngram value bug.
+    * tests/scoredata.test:
+    * library/scoredata.tcl:  Load an appropriate ngram table based on the
+      element size of the input scoring table.
+
+Wed Mar 17 16:17:23 PST 2004 wart@kobold.org
+    * languages.h:
+    * germanFrequencies.h:  Removed unnecessary language file.
+    * digram.h:  Removed unused digram scoring tables.
+    * Makefile.in:  Remove dependencies on language files.
+    * cipher.h:  Remove include of language headers.
+    * cipher.c:
+    * cipherUtil.c:  Fix the cipher language to "english" until we determine
+      that we need to support multiple languages for each cipher instance.
+    * digram.c:  Move statistics tables out of the header file.
+    * stat.c:  Removed dependency on language headers.  Removed deprecated code.
+    * tests/*.test:  Removed the language tests.  Languages are no longer
+      associated with the cipher instances, they are only used to select
+      the appropriate scoring table.
+    * tests/route.test:  Added test for route write cache bug.
+    * route.c:  Fixed route write caching bug.
+    * progs/keysquaresearch:  Key routes should be written in using each
+      route, not read out.
+    * progs/hillclimb:  Added -langauge option.
+    * progs/progkeysol:  Fix bug where the progression index was always
+      reported as '1', even if it was using the correct value.
+
+Tue Mar 16 23:40:44 PST 2004 wart@kobold.org
+    * config/tcl.m4:
+    * configure:  Added additional paths for locating tcl libraries/headers
+      in their default locations in Debian Linux.
+
+Tue Mar 16 16:41:40 PST 2004 wart@kobold.org
+    * config/tcl.m4:  Remove the special windows build flag as the offending
+      file (tetragram.c) has been removed.
+    * configure:  Regenerated due to change in source macro file.
+    * tests/grille.test:
+    * grille.c:  Clarified error message when grille length is invalid.
+    * digram.c:  Fixed bug when calling "get_digram_value()" when the
+      default score type was for trigrams.
+    * cipher.spec:  Bumped release version for private testing release.
+    * progs/nicsolve:  Better command line processing.
+    * tests/scoredata.test:
+    * library/scoredata.tcl:  Added "language" argument to the loadData
+      procedure to enable loading scoring tables in alternate languages.
+    * doc/Scoredata/package.tml:  Updated documentation for the new language
+      argument to loadData.
+    * progs/patsearch:
+    * progs/keysquaresearch:
+    * progs/csolve:  Added -language option for foreign language ciphers.
+    * doc/nicsolve.tml:
+    * doc/patsearch.tml:
+    * doc/keysquaresearch.tml:
+    * doc/csolve.tml:  Added description for new -language option.
+    * doc/cipher/package.tml:  Added entries for foursquare and twosquare
+      ciphers.
+    * library/digramlogData_gaines.tcl:
+    * library/digramcountData_gaines.tcl:
+    * Makefile.in:  Added new scoring tables based on the digram frequencies
+      in Helen Gaine's book "Cryptanalysis".
+
+Mon Mar 15 15:55:47 PST 2004 wart@kobold.org
+    * library/hillclimb.tcl:
+    * progs/hillclimb:  Added the ability to set the scoring method on the
+      command line.
+    * progs/csolve:
+    * progs/keysquaresearch:
+    * progs/patsearch:  Minor usage string fixes.
+    * tests/stat.test:
+    * Makefile.in:
+    * nitrans.c:
+    * stat.c:
+    * trigram.c:
+    * trigram.h:
+    * tetragram.c:
+    * tetragram.h: Removed obsolete tri/tetra-gram files.
+    * doc/cipher/package.tml:
+    * doc/cipher/stat.tml:  Removed referneces to nonexistent "stat *gram"
+      commands.
+    * doc/cipher/key.tml:  Added the "generate: subcommand.
+    * doc/keysquaresearch.tml:
+    * doc/patsearch.tml:
+    * doc/csolve.tml: Updated documentation to reflect new usage instructions.
+    * doc/index.tml:  Minor updates.
+    * doc/standardopts.tcl:  Added note about unused "-language" option.
+    * digram.c:  Removed obsolete scoring function.
+
+Mon Mar 15 14:37:57 PST 2004 wart@kobold.org
+    * doc/Crithm/package.tml:  Added documentation for the Crithm package
+      commands.
+    * doc/genscores.tml:  Added documentation for the new genscores program.
+    * scoreInt.h:
+    * score.h:
+    * score.c:  Added functions for performing scoring using the default
+      score method, even if the default method was changed in a Tcl script.
+      Moved default score data to a new header file.
+    * wordtreeScore.c:
+    * wordtreeCmd.c:
+    * wordtree.c:
+    * wordtree.h:
+    * tetragram.c:
+    * trigram.c:
+    * stat.c:
+    * ragbaby.c:
+    * playfair.c:
+    * phillips.c:
+    * ngramScore.c:
+    * morse.c:
+    * keygen.c:
+    * gromark.c:
+    * grandpre.c:
+    * fmorse.c:
+    * digramScore.c:
+    * digram.h:
+    * digrafid.c:
+    * dictionaryInit.c:
+    * dictionaryCmds.c:
+    * dictionary.c:
+    * cipherInit.c:
+    * cipher.h:
+    * caesar.c:
+    * bifid.c:
+    * bazeries.c: Clean up compiler warnings.
+    * vvb.c:
+    * swagman.c:
+    * route.c:
+    * railfence.c:
+    * pollux.c:
+    * nitrans.c:
+    * nicodemus.c:
+    * myszcowski.c:
+    * morbit.c:
+    * grille.c:
+    * digram.c:
+    * columnar.c:
+    * cadenus.c:
+    * bacon.c:
+    * aristocrat.c:
+    * amsco.c:  Switch to use the new default score command instead of
+      the old digram/trigram functions.  Clean up compiler warnings.
+    * Makefile.in:  Added header files to list of sources.  Added new
+      scoring data files to list of sources.  Updated header dependencies.
+    * progs/slidesolve:
+    * progs/slidebrute:
+    * progs/runningkey:
+    * progs/runkey:
+    * progs/ragbabysearch:
+    * progs/progkeysol:
+    * progs/portaxsolve:
+    * progs/portaxbrute:
+    * progs/nicsolve:
+    * progs/nicodemussolve:
+    * progs/maxrunkey:
+    * progs/kshunt:
+    * progs/hillclimb:
+    * progs/grandpresol:
+    * progs/fmorsekeysearch:
+    * progs/bazsol:
+    * progs/autokeysol:
+    * progs/autokeybrute:  Replace old plaintext scoring call "stat *gram"
+      with new scoring methods.
+    * progs/trifidkeysearch:
+    * progs/patsearch:
+    * progs/keysquaresearch:
+    * progs/csolve:  Added the ability to set the scoring method on the
+      command line.
+    * trigramScore.c:  Fix bad logic when detecting valid trigram characters.
+    * tests/score.test:  Added test for scoring with illegal trigram
+      characters.
+    * library/digramlogData.tcl:
+    * library/trigramlogData.tcl:  Regenerate tables without
+      double-normalization.
+    * library/scoredata.tcl:  Fix path to score data files.
+    * library/patword.tcl:
+    * library/utils.tcl:  Use the 'score' command to get the plaintext score
+      value instead of the 'stat' command.
+    * tests/nicodemus.test:
+    * tests/score.test:
+    * tests/stat.test:  Updated with changes from the new scoring tables.
+
+Thu Mar 11 13:41:59 PST 2004 wart@kobold.org
+    * Makefile.in:  Use the new cipher shell to build the documentation
+      so that the version number isn't hard coded into the documentation
+      source files.
+    * cipher.h:  Minor documentation fixes.
+    * caesar.c:  Better deallocation of return value.
+    * progs/genboard:  Minor code reformatting.
+    * progs/genscores:  Removed the -nonormalize option.
+    * progs/patsearch:  Use the default scoring table.
+    * library/hillclimbCiphers.tcl:  Minor comment fix.
+
+Wed Mar 10 22:48:10 PST 2004 wart@kobold.org
+    * doc/*:  Lots and lots of reorganizing and updating of documentation.
+
+Tue Mar  9 11:55:15 PST 2004 wart@kobold.org
+    * configure:
+    * configure.in:  No longer patch ctool when running configure.
+    * Makefile.in:  ctool is now installed just as any other program.
+    * progs/ctool.in:  Renamed to ctool.
+    * progs/ctool:  Renamed from ctool.in.  It's no longer necessary to
+      patch this file when running configure.
+    * progs/genscores:  Set the element size for ngrams.
+    * score.c:  Don't dump ngrams with a value of 0.
+
+Mon Mar  8 17:50:09 PST 2004 wart@kobold.org
+    * data/sample_cipher.txt:
+    * data/sample_cipher_solution.txt:  Added sample ciphertext for future
+      tutorials.
+
+Sun Mar  7 17:00:06 PST 2004 wart@kobold.org
+    * library/scoredata.tcl:  Allow the use of "-" as an output file.
+    * progs/genscores:  Added program for generating scoring tables from
+      text files.
+    * Makefile.in:  Added genscores to list of installed programs.
+    * library/digramlogData.tcl:
+    * library/digramcountData.tcl:
+    * library/trigramlogData.tcl:
+    * library/trigramcountData.tcl:  New scoring tables based on the standard
+      Frankenstein text.
+
+Sun Mar  7 13:41:31 PST 2004 wart@kobold.org
+    * Makefile.in:  Added script files for reading/writing scoring data.
+    * digramScore.c:  Reuse the same score item for both digram logs and
+      digram counts.  Added function for dumping the digram scores.
+    * trigramScore.c:  Reuse the same score item for both trigram logs and
+      trigram counts.  Added function for dumping the trigram scores.
+    * ngramScore.c:  Reuse the same score item for both ngram logs and
+      ngram counts.  Added function for dumping the ngram scores.
+    * wordtreeScore.c:  Added function for dumping the ngram scores.  Added
+      normalizer that takes the square of the word length, ignoring any
+      previous value set.
+    * score.h:
+    * score.c:  Added a no-op score dump function.  Added a utility function
+      for dumping a scoring table from a wordtree.  Added the "dump" subcommand.
+    * wordtree.c:  Fixed bug relating to the addition of duplicate words into
+      the word tree.  Fixed bug when returning the value of an attempt to
+      match words to the start of a string.
+    * library/scoredata.tcl:  Added "saveData" procedure for saving a scoring
+      table to a file.
+    * tests/score.test:  Added tests for the "dump" subcommand.
+    * tests/scoredata.test:  Added tests for the "saveData" procedure.
+    * tests/wordtree.test:  Added test for duplicate words in the word tree.
+
+Thu Mar  4 16:08:20 PST 2004 wart@kobold.org
+    * dictionaryCmds.c:
+    * stat.c:
+    * wordtreeScore.c:
+    * wordtreeCmd.c:
+    * wordtree.h:
+    * wordtree.c:  Add support for a "measure" of each word in the wordtree.
+      This makes the wordtree more useful for frequency counts.
+    * Makefile.in:
+    * score.c:
+    * ngramScore.c:  Added ngramlog and ngramcount scoring methods.
+    * score.test:
+    * scoredata.test:  Tests for new ngram scoring method.
+    * digramScore.c:
+    * trigramScore.c:
+    * score.h:  Added null normalizer.
+    * library/scoredata.tcl:  Allow the user to customize the allowed set
+      of characters that can be used in the scoring tables.
+
+Wed Mar  3 22:59:07 PST 2004 wart@kobold.org
+    * digramScore.c: Remove typecast since function call is actually a macro.
+    * score.c:
+    * tests/score.test:  Added "isinternal" subcommand for testing if a
+      command is a C-based scoring method or not.
+    * pkgIndex.tcl.in:
+    * library/scoredata.tcl:
+    * tests/scoredata.test:
+    * library/trigramlogData.tcl:  Added utility procedures for loading
+      frequency data from a text and data files.
+
+Wed Mar  3 17:18:21 PST 2004 wart@kobold.org
+    * score.c:
+    * score.h:
+    * trigramScore.c:
+    * Makefile.in:
+    * tests/score.test:  Added new trigramlog and trigramcount scoring methods.
+
+Wed Mar  3 09:02:32 PST 2004 wart@kobold.org
+    * progs/massadd.tcl:  Utility for creating word lists suitable for use
+      as a ciphertool dictionary from a single large word list.
+
+Tue Mar  2 13:17:18 PST 2004 wart@kobold.org
+    * score.h:
+    * score.c:
+    * cipherInit.c:
+    * digramScore.c:
+    * wordtreeScore.c:  Added new 'score' command for custom scoring methods.
+    * tests/score.test:  Tests for the new 'score' command and the various
+      builtin scoring methods.
+    * Makefile.in:  Added new source files used for the new 'score' command.
+    * tests/aristocrat.test:  Minor test renumbering.
+    * aristocrat.c:  Minor code reformatting.
+    * doc/index.tml:  Added link to the Windows installer.
+
+Thu Feb 26 11:01:40 PST 2004 wart@kobold.org
+    * Released 1.5.10
+    * Makefile.in:
+    * configure.in:  Changed relative path from pkgIndex.tcl to the cipher dll
+      on Windows so that they live in the same directory.  Add a few extra
+      substitutions for the Windows installer.
+    * configure: Regenerated from the modified sources.
+    * install.nsi.in:  Added Windows installer template from Alexander
+      Griffing <uponlowdown@yahoo.com>
+
+Wed Feb 25 15:52:12 PST 2004 wart@kobold.org
+    * configure:
+    * config/tcl.m4:  Fix build breakage on Windows using the VC compiler.
+    * playfair.c:  Fix minor compiler warning.
+    * columnar.c:
+    * railfence.c:
+    * myszcowski.c:  Use NULL instead of an uninitialized variable for
+      an ignored function argument.  This should remove a build warning
+      on Windows.
+
+Wed Feb 25 10:33:50 PST 2004 wart@kobold.org
+    * configure:
+    * config/tcl.m4:  Add "*.exe" pattern to tcl executable name so that
+      we don't match the tcl debug files (tclsh84g.pdb).
+    * Makefile.in:  Allow the cvs tag for building a distribution to be
+      set on the command line.  This is useful when we want to make
+      temporary rpms for testing:  RELEASETAG="-D today" make rpm.
+      More minor portability fixes.
+    * ctool.bat:  Better error reporting if any dependent files could not
+      be found.
+
+Tue Feb 24 15:20:54 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:
+    * cipher.spec:  Bumped version to 1.5.10 in preparation for next release.
+    * Makefile.in:
+    * progs/ctool.bat:  Added batch file for launching ctool on Windows.
+
+Mon Feb 23 12:53:58 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * Makefile.in:  Install dll files as executable.
+    * cipherInit.c:  Initialize the stub table.  This fixes a crash on Windows.
+    * tests/crithm.test:  Updated test result to match the different error
+      strings provided by Tcl 8.3 and 8.4.
+
+Sat Feb 21 11:02:55 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * bacon.c:
+    * cipher.h:
+    * crithmCmd.c:
+    * crithmCmd.h:  Use Tcl_WideInt for variables that need to use a 64
+      bit integer.
+    * cipherUtil.c:
+    * vvb.c:
+    * cadenus.c:  Replace calls to strcasecmp() with a simple strcmp().
+    * Makefile.in:
+    * config/tcl.m4:  Add WIN_BIGHEAP_FLAG=/Zm200 so that the VC compiler
+      won't choke when compiling the large tetragram.c file.
+    * configure.in:  Define USE_COMPAT_CONST so that we can build against
+      both tcl 8.3 and 8.4 without too many compiler warnings.
+    * configure: Regenerated from recent changes.
+    * cipherInit.c:  Export the Cipher_Init function when building a dll.
+
+Fri Feb 20 22:39:03 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * Makefile.in:  Use OBJEXT to indicate the object file extensions
+      when setting cipher_OBJECTS.  This fixes a problem when building
+      on Windows with cygwin and the VC compiler.
+    * configure.in:
+    * configure:  Fix typo in check for the use of dmalloc.  I'm not sure
+      why this only showed up as a problem on Windows...
+
+Mon Feb 16 18:15:30 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:
+    * Makefile.in:
+    * config/tcl.m4:  Various fixes in an attempt to get a valid build
+      under mingw on Windows.
+    * tclAppInit.c:  Removed unnecessary references to matherr()
+
+Sun Feb 15 21:14:07 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:  Better check for the mingw environment.
+
+Thu Feb 12 20:15:35 PST 2004 wart@kobold.org
+    * Released 1.5.9
+    * doc/index.tml:
+    * cipher.spec:
+    * configure.in:
+    * configure: Bumped version to 1.5.9 in preparation for next release.
+
+Tue Jan 27 17:32:47 PST 2004 wart@kobold.org
+    * Here's a lot of updates that I haven't checked in for the past couple of
+      months...
+    * Makefile.in:
+    * cipherInit.c:
+    * dictionaryInit.c:
+    * dictionary.c:
+    * dictionary.h:
+    * dictionaryCmds.c:
+    * dictionaryCmds.h: C implementation of the dictionary procedures.
+    * library/dictionary.tcl:  Removed most procedures in lieu of C
+      implementation.
+    * tests/dictionary.test:  Added tests for the allWordsMatching procedure.
+    * progs/fmorsekeysearch:  Use Dictionary package to manage dictionary
+      files.  How did this go so long without being fixed??
+    * progs/patwordbrute:
+    * progs/tkpatwordbrute:  Added better command line processing.
+    * progs/patsplit:  Use a word tree to find the word boundaries.  Fixed
+      bug in loading from a saved file.
+    * progs/cmbifidsolve:
+    * progs/csolve:
+    * progs/digrafidsolve:
+    * progs/hillclimb:
+    * progs/keysquaresearch:
+    * progs/patsearch:  Set a reasonable default dictionary cache level.
+    * progs/kshunt:  Minor output changes.
+    * library/dictionary.tcl:  Fixed bug in dictionary word length caching.
+    * library/patword.tcl:  Call the best fit command if we've found a
+      complete solution.  Use a word tree to find words in a string of
+      completed plaintext.  This saves much time over a dictionary search.
+    * library/patwordui.tcl:  Minor Ui tweaks.  Added a "solutions" button to
+      show all complete solutions found so far.
+    * library/hillclimb.tcl:
+    * tests/stat.test:
+    * stat.c:  Added optional 'weight' argument to
+      digram/trigram/tetragram/wordtree subcommands.
+    * wordtreeCmd.c:  Added "wordtree split" command.
+    * wordtree.c:  Fixed bug in word matcher that was returning an 'invalid'
+      result for a string that started with a word that partially matched
+      other dictionary words, as well as one valid word.
+    * wordtree.h:  Added a (as yet unused) "measure" field to the word tree nodes.
+
+Sat Nov 22 17:50:09 PST 2003 wart@kobold.org
+    * library/hillclimb.tcl:
+    * progs/hillclimb:  Allow the mutation amount to be changed on the command
+      line.  Allow multiple weighted plaintext fit methods to be used.  For
+      example, you can now use 50% digram and 50% trigram scores to score
+      the plaintext.
+    * library/dictionary.tcl:  Minor debugging output change.
+
+Fri Nov 21 20:24:35 PST 2003 wart@kobold.org
+    * stat.c:  Added "wordtree" subcommand for evaluating the goodness of fit
+      for a string based on number and size of complete words.
+    * tests/stat.test:  Added tests for the wordtree subcommand.
+    * Makefile.in:
+    * cipherInit.c:
+    * tests/wordtree.test:
+    * wordtreeCmd.h:
+    * wordtreeCmd.c:
+    * wordtree.h:
+    * wordtree.c:  Added a wordtree command for manipulating a dictionary
+      as a tree of letters.
+    * library/patwordui.tcl:  Minor bug fixes.
+    * library/patword.tcl:  Check for illegal trigrams at every interval to
+      help prune the search space.  Add the ability to set the starting word
+      position (enables a primitive "resume" feature).
+    * progs/tkpatwordbrute:  Added command line arguments for setting the
+      starting words.
+    * library/dictionary.tcl:  Use a better glob pattern to locate dictionary
+      files, so that it doesn't accidentally pick up (and choke on)
+      editor backup files.  Added "createWordTree" utility for populating
+      the wordtree from the dictionary.
+    * library/hillclimb.tcl:  Allow configuration of the statistical method for
+      determining the best fit.  Currently "digram", "trigram", and "tetragram"
+      are supported.
+    * progs/hillclimb:  Added "-statmethod" command line argument for setting
+      the goodness of fit method at runtime.
+    * Makefile.in:
+    * stat.c:
+    * doc/stat.tml:
+    * tetragram.h:
+    * tetragram.c: Added tetragram frequency counts.
+
+Mon Nov 17 14:22:20 PST 2003 wart@kobold.org
+    * library/patword.tcl:  Allow custom best fit procedures.
+    * library/patwordui.tcl:
+    * progs/tkpatwordbrute:  Use a custom best fit procedures.
+
+Sat Nov 15 23:23:21 PST 2003 wart@kobold.org
+    * Makefile.in:  Removed unnecessary "-lm" from link line of solver
+      program.
+    * progs/tkpatwordbrute:  Added gui for patristocrat brute force solver.
+    * library/patwordui.tcl:  Added procedures used in the patristocrat brute
+      force solver ui.
+    * progs/patwordbrute:
+    * library/patword.tcl:  Moved patristocrat brute force solver procedures
+      to a separate file so they can be used in both the gui and text
+      versions.
+    * library/dictionary.tcl:  Added caching of small pattern word searches.
+    * pkgIndex.tcl.in:  Added entries for the patristocrat brute force
+      solving libraries.
+
+Fri Nov 14 11:42:31 PST 2003 wart@kobold.org
+    * Released 1.5.8
+    * doc/index.tml:
+    * configure:
+    * configure.in:
+    * cipher.spec:  Bumped version to 1.5.8
+    * route.c:  Fix unbounded string error when using a cached route.
+    * tests/route.test:
+    * tests/aristocrat.test:  Minor test cleanup.
+    * library/dictionary.tcl:  Added 'pattern' argument to lookupByLength
+      that will only return words matching a given pattern.  The pattern
+      must be of a form acceptible to Tcl's [string match].
+    * tests/dictionary.test:  Added tests for the new pattern argument
+      to looupByLength.
+    * progs/patwordbrute:  An autosolver for patristocrats that attempts
+      to match words from a dictionary to the ciphertext.
+
+Wed Nov 12 18:23:30 PST 2003 wart@kobold.org
+    * doc/aristocrat.tml:  Added description of the '-strict' option.
+    * doc/stat.tml:  Added more documentation.
+    * progs/homotopat:  Attempts to convert a homophonic cipher to a
+      patristocrat by aligning the histograms of the 4 shifted homophonic
+      alphabets.
+    * route.c:  Cache the calculated route for routes that have been
+      attempted.  It turns out that this doesn't give as much as
+      a performance boost as I had hoped.
+    * aristocrat.c:  Fixed bugs in reporting of alternate substitution
+      ciphertext characters.  Added a "-strict" option to indicate of
+      an alternate substitution should be treated as an error (strict=true) or
+      not (strict=false).  Added "aristocrat undo" with no argumenets to
+      undo entire cipher.
+    * homophonic.c:  Implemented the -histogram command.
+    * tests/aristocrat.test: Added tests for alternate substitution return
+      values, in strict and non-strict mode.
+    * tests/homophonic.test:  Fixed test for the -histogram option.
+    * tests/route.test:  Added additional tests to test the route caching.
+    * progs/genboard:  Added extra rows to quag3 and quag4 layouts for
+      reconstructing the mixed ct/pt alphabets.  Added group separators
+      to most of the *ifid cipher boards.  Added board generator for homophonic
+      ciphers.
+    * library/hillclimbCiphers.tcl:
+    * progs/hillclimb:  Added "-random" command line argument for indicating
+      that a random seed key should be used instead of dictionary-based
+      keyed alphabets.
+    * progs/csolve:  Added "-addspace" flag for locating spaces between words
+      in the resulting plaintext.
+    * progs/keysquaresearch:  Improved command line argument handling.  Added
+      "-addspace" flag for locating spaces between words in the resulting
+      plaintext.
+    * solver.h:
+    * solver.c:  Dump the invalid words to the output to make it easier to
+      discover typos and necessary updates to the dictionary.
+
+Tue Oct 14 14:55:53 PDT 2003 wart@kobold.org
+    * solver.c:  Default output to stdout.  Minor code cleanup.
+    * progs/genboard:  Added vigenere, variant, beaufort, gronsfeld, and porta
+      types to board generator.
+    * Makefile.in:
+    * progs/makedictionary:  Added tool for building the dictionary files out
+      of a large wordlist.
+    * progs/patsearch:  Added the ability to test a single keyword on a cipher.
+    * progs/nicsolve:  Use the utility routine to print out the solved cipher.
+
+Fri Sep 26 16:48:25 PDT 2003 wart@kobold.org
+    * twosquare.c:  Removed memory leak when deleting a twosquare cipher.
+    * amsco.c:  Fixed core dump when the ciphertext remainder only spans
+      a single row.
+    * tests/amsco.test:  Added test for core dump in nd2002:e11 when using
+      period 11.
+    * progs/csolve:  Changed default step interval for amsco ciphers.
+    * Makefile.in:  Added hook for building cpu-optimized
+      releases (athlon, i686).  Fixed test target so that it no longer
+      clobbers the pkgIndex.tcl file.  Fixed test target so that it won't
+      dump core when using the dmalloc library.
+
+Fri Sep 26 10:52:31 PDT 2003 wart@kobold.org
+    * Released 1.5.7
+    * cipher.spec:
+    * configure.in:
+    * configure:  Bumped version to 1.5.7
+    * doc/amsco.tml:
+    * doc/index.tml:  Added docs for the amsco cipher type.
+
+Thu Sep 25 21:26:14 PDT 2003 wart@kobold.org
+    * tests/columnar.test:
+    * columnar.c:  Changed some volatile interpreter results to static.
+      Removed unnecessary "order" attributes.  Don't allow shifting a column
+      past the end.
+    * configure:
+    * configure.in:  Add -ldmalloc to shared library build if dmalloc is being
+      used.  This fixes problems when running the test: Makefile target when
+      using dmalloc.
+    * tests/amsco.test:
+    * amsco.c:
+    * Makefile.in:
+    * cipher.c:  Added amsco cipher type
+
+Wed Sep 24 09:03:03 PDT 2003 wart@kobold.org
+    * progs/autokeysol:  Changed default step interval to make the program
+      run a little more quietly.
+    * progs/genboard:  Added board generator for nicodemus ciphers.
+    * progs/keysquaresearch:  Turn on word searching.
+    * library/dictionary.tcl:  Added procedure for testing if a string contains
+      only digits.  Modified pat word search to treat groups of digits as
+      valid words.
+    * tests/dictionary.test:  Added tests for digits.
+    * tests/playfair.test:
+    * tests/bigplayfair.test:  Minor updates to test result messages.
+    * nicodemus.c:  Fixed memory corruption in nicodemus solve method.  Removed
+      trivial memory leak in nicodemus solve method.  Fixed key corruption
+      in nicodemus solve method.
+    * tests/nicodemus.test:  Added test for autosolving so2003:e08
+
+Sun Sep  7 15:43:46 PDT 2003 wart@kobold.org
+    * playfair.c:  Merged bigplayfair and playfair cipher types since most
+      of the processing routines were identical.
+    * Makefile.in:  Removed bigplayfair.c source file.
+    * bigplayfair.c:  Removed (merged with the standard playfair cipher type)
+    * library/hillclimbCiphers.tcl:
+    * progs/keysquaresearch:
+    * progs/genboard:  Added support for the bigplayfair cipher type.
+
+Sun Sep  7 10:52:20 PDT 2003 wart@kobold.org
+    * Makefile.in:
+    * cipher.c:
+    * bigplayfair.c:  Added 6x6 playfair cipher type.
+    * tests/bigplayfair.test:  Added tests for 6x6 playfair.
+    * playfair.c:  Use generic method for setting the cipher step/best fit
+      commands.
+    * cipher.h:  Added macro for the character set a-z0-9
+    * bigbifid.c:  Use new macro for specifying the valid character set.
+
+Wed Sep  3 10:41:52 PDT 2003 wart@kobold.org
+    * library/hillclimb.tcl:  Fixed bug when plugging holes for a key that
+      contained non-alphabetic characters.
+
+Wed Sep  3 09:41:42 PDT 2003 wart@kobold.org
+    * library/hillclimbCiphers.tcl:  Added support for hillclimbing a 6x6
+      bifid cipher.
+    * caesar.c:  Add { and } to list of valid caesar cipher characters (they
+      just get ignored during the shift).
+
+Mon Aug 18 08:18:54 PDT 2003 wart@kobold.org
+    * playfair.c:  Improved memory management of interpreter results.
+    * cmbifidsolve:
+    * digrafidsolve:  Don't exclude keys of length < 4 or > 15 since they make
+      up only a very small number of the total keys.  Don't use a dictionary
+      cache to reduce the memory footprint.
+    * utils.tcl:  Add language as the list of parameters that are saved
+      and restored in a cipher save file.
+    * progs/patsplit:  Better command line argument processing.
+
+Tue Aug 12 13:50:40 PDT 2003 wart@kobold.org
+    * cipher.spec:  Bumped release to 2.  Preparing for an interim release.
+    * utils.tcl:  Fixed minor typo.
+
+Mon Aug 11 22:56:57 PDT 2003 wart@kobold.org
+    * twosquare.c:  Use a static buffer for storing the twosquare plaintext.
+      This reduces the number of calls to malloc() when repeatedly trying
+      new keys for the twosquare cipher.
+    * trisquaretipearch:  Added simple program for locating good matches for
+      a trisquare tip based on the number of naturals in each possible tip
+      location.
+    * library/hillclimb.tcl:  Added new routine for performing a hillclimb
+      on every possible pat tip location.  This turns out to be very useful
+      for hillclimbing on a conjugated matrix bifid cipher, or for just
+      hillclimbing a pat cipher where the tip location is not known.
+    * progs/pathilltipsearch:
+    * progs/cmbifidsolve:  Use the new library routine for performing a
+      hillclimb on every possible pat tip location.
+    * library/utils.tcl:
+    * progs/kshunt:
+    * progs/keysquaresearch:
+    * progs/bazsol:  Don't hardcode the total number of possible key
+      routes.
+
+Sat Aug  9 11:53:50 PDT 2003 wart@kobold.org
+    * tests/route.test:  Added tests for more routes.
+    * progs/ioc:  Fixed stack trace when using the -period option.
+    * progs/nicsolve:  Changed default stepinterval.
+    * progs/hillclimb:  Allow ciphertext to be read from standard input.
+    * library/hillclimb.tcl:  First pass at a subroutine for performing
+      a hillclimb with patristocrat tip location. (unfinished)
+    * library/utils.tcl:  Updated some procedure headers.  Fixed bug in
+      the result for a periodic ioc calculation.
+    * cipher.h:  Added more routes.
+    * aristocrat.c:  Moved allocation of one piece of memory until after
+      some extra input validation.
+    * route.c:  Added "-numroutes" option so that new routes can be
+      added without necessatating the need to modify the route-based
+      scripts.  Added 12 new routes for row x row (normal and alternating)
+      and col x col (normal and alternating) starting in the other 3 corners.
+    * solvemysz.c:  Changed type of the iteration counter to an unsigned
+      long.
+
+Thu Aug  7 12:33:45 CEST 2003 wart@kobold.org
+    * bacon.c:  Highly optimized the solve routine.  Sped up solving by
+      two orders of magnitude.  It's now possible to go through all 2^26
+      possible baconian keys and filter out the invalid bacon text (anything
+      that causes a group to start with 2 b's) in under 10 seconds on a 2.4GHz
+      computer.
+    * route.c:  Fixed bug in route autosolver that was causing it not to
+      restore the cipher to the best known route when finished.
+    * progs/csolve:  Use better command line processing to make command line
+      arguments easier to use.
+    * progs/cmbifidsolve:  Improved the command line usage.  Made it possible
+      to specify a tip without a tip starting location.
+    * tests/route.test:  Start of a test suite for route ciphers.
+
+Wed Aug  6 11:26:38 CEST 2003 wart@kobold.org
+    * Released 1.5.6
+    * nicodemus.c:  Fixed bug when building with gcc < 3.2
+    * Makefile.in:  Added rpm optimization flags to the standalone apps
+      solvemysz and solver.  Move RPM optimization flags after the normal
+      C flags for the tcipher objects so that the RPM -O optimization takes
+      precedence.
+    * configure.in:
+    * configure:
+    * cipher.spec:  Bumped version to 1.5.6
+
+Tue Aug  5 14:47:58 CEST 2003 wart@kobold.org
+    * Many memory leak cleanups.
+    * cipherInit.c:  Removed false comment.
+    * cipherUtil.c:  Removed some unnecessary debugging lines.
+    * aristocrat.c:  Removed a small memory leak in the tip location
+      procedure.  Made the calls to Tcl_SetResult() more efficient by
+      indicating when the result does not have to be duplicated by the
+      interpreter.
+    * bacon.c:
+    * bifid.c:
+    * bigbifid.c:
+    * cadenus.c:
+    * fmorse.c:
+    * grandpre.c:
+    * grille.c:
+    * gromark.c:
+    * homophonic.c:
+    * playfair.c:
+    * swagman.c:
+    * trifid.c:
+    * twosquare.c:  Memory leak cleanups.  Some major, some minor.
+    * stat.c:
+    * route.c:
+    * phillips.c:  Attempts to make more small optimizations.  Looks like
+      they had very little effect.
+    * all cipher types:  Made decipher procedure semantics identical across
+      all ciphers.  Get* procs do not set interpreter result, that is the
+      prerogative of the caller.   Use more efficient method when freeing
+      the memory for the deciphered plaintext; instead of creating a duplicate,
+      just pass control of the memory to the Tcl interpreter.
+    * All C files:  Added debug header file that gets used only if dmalloc
+      support is turned on.
+    * cipher.c:  Don't double-delete the cipher object if there was an
+      error creating the cipher object command.
+    * cipherDebug.h:  Added a header file that enables the dmalloc memory
+      management/debugging library, only if dmalloc has been selected
+      through the configure script.
+    * tests/vvb.test:
+    * tests/cadenus.test:  Minor test cleanup.
+    * tests/aristocrat.test:  Added test case showing the behaviour when
+      the cipher command could not be created.
+    * library/utils.tcl:  Moved periodic index of coincidence code to the
+      utils library.
+    * progs/ioc: Use the periodic index of coincidence code from the
+      utils library.
+    * configure.in:  Added support for linking in the dmalloc debugging memory
+      management library.
+    * Makefile.in:  Add "dmalloc.log" to list of cleanup files.  Add
+      RPM_OPT_FLAGS from the rpm spec file when building a RPM.
+    * progs/keysquaresearch:  Replaced expensive regsub with a call to
+      'string map'
+    * progs/hillclimb:  Removed unnecessary comment.
+
+Mon Aug  4 11:31:47 CEST 2003 wart@kobold.org
+    * Massive optimizations.
+    * vigTypes.h:  Rewrite the vigenere/variant/beaufort pt/ct/key
+      routines as compiler macros to optimize their performance.
+    * vigTypes.c:  Removed expensive pt/ct/key conversion routines for
+      vigenere types as they have been replaced with lightweight macros.
+    * vvb.c:  Use the new macros to simplify the code.  It's much more
+      readable now.
+    * nicodemus.c:  Use a (semi)static buffer for storing the nicodemus
+      plaintext so that we don't have to reallocate memory for every call
+      to GetNicodemus().  Removed some unused code.  Added a faster
+      solving routine that fits the alphabet before permuting the ordering.
+      This improved solving speed by over 2 orders of magnitude.  Added
+      stepcommand, bestfitcommand, and related attributes.
+    * all cipher types:  Moved stepcommand, bestfitcommand, and related
+      attributes to the cipher header struct.  Cleaned up delete procedures
+      to prevent accidental memory leaks.
+    * columnar.c:  Moved stepcommand, bestfitcommand, and related attributes
+      to the cipher header struct.  Use a semi-static buffer for storing
+      the plaintext.
+    * progs/nicodemussolve:  Use a larger step interval when the keyword
+      is specified.
+    * progs/histogram:  Remove spaces from the ciphertext before periodizing
+      the ciphertext.
+    * progs/ioc:  Added "-type" argument for performing ioc calculations on
+      non-simple periodic ciphers.  Currenly only phillips is supported.
+    * progs/nicsolve:  Use built-in nicodemus solve method for solving.
+    * progs/csolve:  Use a more realistic step interval for showing the
+      progress of a columnar solve session.
+    * progs/genboard:  Print out the phillips board in groups of 8 per row
+      so that all blocks for the same row line up vertically.
+    * progs/keysquaresearch:  Don't cache the dictionary until we try to
+      split the pt up into real words.
+    * tests/nicodemus.test:  Added tests for step/best fit commands.
+    * cipher.h:  Added function declarations for setting the step and best
+      fit commands.  Added step/best fit command and related attributes to
+      cipher header struct.
+    * cipher.c:  Added utility methods for setting the step/best fit commands.
+      Added a delete procedure that must be called by all cipher types when
+      deleting the cipher command.  This delete procedure can be used in lieu
+      of defining a cipher-specific delete procedure if the cipher has no
+      cipher-specific cleanup to perform.
+    * digram.c:  Optimized the digram value routines.  Sped up autosolving of
+      columnar ciphers by an order of magnitude.
+    * solvemysz.c:  Optimized by replacing expensive digram calculation
+      with trivial table lookup.  Reduced completion times by almost an
+      order of magnitude.
+    * englishFrequencies.h:  Added language-specific frequency file.
+    * germanFrequencies.h:  Added language-specific frequency file.
+    * digram.h:  Moved language frequencies to separate files for clarity.
+    * Makefile.in:  Added various compile dependencies on header files.
+
+Fri Aug  1 16:30:47 CEST 2003 wart@kobold.org
+    * Massive nicodemus improvements.
+    * nicodemus.c:  Removed restriction on nicodemus period that was
+      preventing the use of a period > 9.  Letters are now used to
+      represent the column order instead of digits.
+    * tests/nicodemus.test:  Revised tests to use letters intead of digits
+      for nicodemus column orders.
+    * progs/nicsolve:
+    * progs/nicodemussolve:  Revised to use letters instead of digits for
+      nicodemus column orders.
+
+Fri Aug  1 10:16:25 CEST 2003 wart@kobold.org
+    * nicodemus.c:  Fixed corner case indexing bug that occurred only when
+      some of the final nicodemus blocks had length 5 and some had length 4.
+    * nicodemus.test:  Added another test case that is easier to understand.
+    * library/utils.tcl:  Fixed syntax error.
+
+Thu Jul 31 12:43:24 CEST 2003 wart@kobold.org
+    * stat.c:  Added a third field to the kasiski output for weighting
+      the kasiski values against the period.
+    * progs/kasiski: Display the new weighted value.
+    * progs/rot:  Better command line processing.
+    * progs/ioc:  Only display the mean IOC if a period was given.
+
+Wed Jul 30 22:04:12 CEST 2003 wart@kobold.org
+    * progs/ioc:  Added command line tool for calculating Index of Coincidence.
+    * progs/kasiski:  Added command line tool for performing a kasiski analysis.
+    * progs/rot:  Added command line tool for performing a caesar shifts.
+    * Makefile.in:  Added caesar cipher type and new command line tools.
+    * caesar.c:
+    * cipher.c:  Added caesar cipher type.
+    * tests/caesar.test:  Added tests for caesar cipher type.
+    * aristocrat.c:
+    * aristocrat.c:
+    * tests/aristocrat.test:  Adjusted cipher usage string.
+    * tests/nicodemus.test:  Added test for core dump on mj2003:e13 with
+      period 6.
+    * library/utils.tcl:  If - is used as a filename to readCiphertext then
+      read the cipher from stdin instead of a file named '-'.
+    * library/dictionary.tcl:  Fixed bug that was causing the dictionary
+      cache to become corrupted when adding new words.
+    * tests/dictionary.test:  Make two passes through testsuite, once with
+      caching turned on and once with it turned off.  Clear the cache after
+      each test.
+    * cipher.spec:  Added tcllib to the list of dependencies.
+    * progs/hillclimb:  Removed some commented-out code that is no longer
+      useful.
+    * progs/trifidkeysearch:  Simplified usage since the program is only
+      ever used with trifid ciphers.
+
+Mon Jul 28 06:28:05 PDT 2003 wart@kobold.org
+    * progs/digrafidsolve:  Search the dictionary in reverse order to test the
+      most common words first.
+    * library/utils.tcl:  Added lreverse procedure for reversing a list.
+
+Fri Jul 25 10:55:39 PDT 2003 wart@kobold.org
+    * Released 1.5.5
+    * configure:
+    * configure.in:
+    * cipher.spec:  Bumped version to 1.5.5
+    * doc/index.tml:  Added more links to the SourceForge project page.
+
+Thu Jul 24 12:02:32 PDT 2003 wart@kobold.org
+    * doc/index.tml:
+    * doc/playfair.tml:  Updated docs for seriated playfair.
+    * doc/template.tcl:  Added SourceForge logo to standard footer.
+    * digrafid.c:  Finished implementing digrafid cipher.  Only the restore,
+      configure, and cget methods are supported.
+    * tests/digrafid.test:  Tests for digrafid cipher.
+    * library/hillclimbCiphers.tcl:
+    * cipher.c:
+    * Makefile.in:  Added entries for digrafid cipher.
+    * progs/digrafidsolve:  Keyword hillclimber for digrafid ciphers that
+      might work a little better than the hillclimb program.
+    * tests/dictionary.test:  Added tests for dictionary routines.
+    * cipher.h:  Added macro for setting the valid characters for a 5x5
+      keysquare.
+    * route.c:  Allow # as a valid character for manipulating digrafid 3x9
+      keysquares
+    * digrafid.c:  Fixed bug where a final incomplete digrafid block was not
+      being deciphered.
+    * tests/digrafid.test:  Added a test for deciphering final incomplete
+      digrafid blocks.
+    * library/utils.tcl:  Add optional height and width arguments to the
+      keysquare generator so that it can be used with digrafid 3x9 keysquares.
+    * progs/hillclimb:  Properly initialize the initial keyword list when 
+      a keyword is and is not used.
+
+Wed Jul 23 09:32:28 PDT 2003 wart@kobold.org
+    * digrafid.c:  Checkpint checking of new cipher type before moving sources
+      to SourceForge.
+
+Mon Jul 21 12:13:24 PDT 2003 wart@kobold.org
+    * Released version 1.5.4
+    * Note:  Various improvements to command line arguments and output
+      streams to better support batch-oriented processing.  Lots of minor
+      updates were checked in all at once.
+    * cipher.spec:  Bumped version to 1.5.4.  Add locally built tcl to
+      build path because Redhat ships a broken tclConfig.sh.
+    * configure.in:  Bumped version to 1.5.4
+    * configure:  Rebuilt autogenerated file.
+    * Makefile.in:  Removed dist: target that was a duplicate of the rpm:
+      target.  Added "solver" to list of binaries.  Added "hillclimb" to list
+      of script programs.
+    * pkgIndex.tcl.in:  Added K3Board package for manipulating k3 keys
+      -- incomplete.
+    * solver.c:  Set the output filename on the command line instead of using
+      the file "output" all of the time.  Output to stdout if the output file
+      is set to "-".  Only output the cipher results.  Don't print out the
+      progress meter or progress messages anymore.
+    * solver.h:  Added missing header file.
+    * sovlemysz.c:  Fixed msising newline in output.  Added "-file" command
+      line argument for reading the ciphertext from a file instead of reading
+      from stdin.
+    * progs/hillclimb:  Simplified code for writing output.  Try to find
+      word separators in the best plaintext.  Use command line switches for
+      setting command line values instead of using positional parameters.
+    * progs/progkeysol:  Add the second-level encoding and progression index
+      to the solution output.
+    * progs/trifidkeysearch:  Perform word location on the best plaintext.
+    * progs/patsearch:  Use library routines for reading from the dictionary.
+      Cleaned up code that outputs the final solution.
+    * progs/genboard:  Added board generator for conjugated matrix
+      bifid (cmbifid)
+    * progs/bazsol:  Minor cipher output tweaks.
+    * progs/tkcrithm:  Changed procedure name.
+    * progs/keysquaresearch:  Added playfair to list of periodic ciphers to
+      support the seriated playfair.
+    * progs/cmbifidsolve:  Use library routines to read ciphertext from a file.
+    * progs/pathilltipsearch:  Use integer indices when searching for
+      tip locations to prevent an endless loop in some rare circumstances.
+    * progs/kshunt:  Use library routines for reading the dictionary files.
+    * aristocrat.c:  Allow numeric indices to be used for tip starting
+      locations.
+    * tests/aristocrat.test:  Added test for integer values for tip starting
+      locations.
+    * library/crithm.tcl:  Print results to a filename matching the intput
+      filename with a ".sol" extension, as well as stdout.
+    * library/crithm_gui.tcl:  Renamed library call to "addConstraints"
+    * library/hillclimbCiphers.tcl:  Fix typo in comment.
+    * library/utils.tcl:  Added procedure for generating k3 key fragments from
+      an aristocrat/patristocrat save file.
+
+Wed Jul  9 15:00:03 PDT 2003 wart@kobold.org
+    * progs/pathilltipsearch:  New tool for hill climbinb patristocrat ciphers
+      with a known tip but unknown tip location.
+
+Sun Jul  6 12:12:32 PDT 2003 wart@kobold.org
+    * playfair.c:  Added support for seriated playfair ciphers by enabling
+      the -period option.
+    * tests/playfair.test:  Added tests for deseriated playfair ciphers.
+
+Wed Jul  2 09:43:14 PDT 2003 wart@kobold.org
+    * progs/fmorsekeysearch:  Added key search script for fractionated morse
+      ciphers.
+
+Tue Jul  1 22:53:02 PDT 2003 wart@kobold.org
+    * progs/genboard:  Better error reporting when a bad cipher type is used.
+
+Thu Jun 19 16:03:48 PDT 2003 wart@kobold.org
+    * config/config.guess:
+    * config/config.sub:  Added files needed when using newer versions of
+      autoconf (> 2.17)
+    * Makefile.in:
+    * configure.in:
+    * configure:
+    * cipher.spec:  Simplified the process of creating rpm releases.  Just run
+      "configure" and "make rpm" to build binary and source rpm releases.
+
+Wed Nov 13 09:38:12 PST 2002 wart@kobold.org
+    * twosquare.c:  More verbose error reporting when a key has an invalid
+      length.
+    * tests/twosquare.test:
+    * tests/foursquare.test:  Added more tests for more verbose error
+      reporting for invalid key lengths.
+
+Sat Nov  9 17:14:30 PST 2002 wart@kobold.org
+    * gromark.c:  Added -keyword option.
+    * tests/gromark.test:  Added test for -keyword option.
+    * progs/nicodemussolve:  Use the dicitonary library routines for
+      managing dictionary words.
+    * progs/gengromarkboard:  Code has been merged into genboard.
+    * Makefile.in:  Removed gengromarkboard from list of scripts.
+    * progs/genboard:  Added board generator for gromark ciphers.
+
+Sun Oct 20 15:58:01 PDT 2002 wart@kobold.org
+    * library/dictionary.tcl:  Don't arbitrarily restrict the max length of a
+      word when using findWords.  Use the full range of word lengths available
+      in the dictionary.
+    * progs/patsearch:  Add keyword to the list of parameters dumped to
+      savefile.
+
+Thu Oct 17 22:58:34 PDT 2002 wart@kobold.org
+    * library/dictionary.tcl:  Added optional caching of word lists to speed up
+      word lookups.  Default is to have caching turned on.
+
+Thu Oct 17 22:56:21 PDT 2002 wart@kobold.org
+    * progs/keysquaresearch:  Use findWords procedure to make plaintext more
+      readable.
+    * progs/bazsol:
+    * progs/patsearch:  Use findWords procedure to make plaintext more readable.
+      Use the saveCipherToFile library routine to print out the solution
+      instead of doing it manually.
+    * progs/patsplit:  A command line interface to the new findWords procedure.
+    * library/utils.tcl:  Insert more comment information in the cipher save
+      output.  Added readSavedCipher proc for reading a cipher savefile.
+    * library/dictionary.tcl:  Added isWord proc for checking if a word is
+      in the dictionary.  Added addWord proc for adding a new word to the
+      dictionary.  Words with hyphens and apostrophes are added twice, once
+      with the punctuation and once without.  Added recursive findWords proc
+      for inserting spaces into plaintext that has had the spaces removed.
+    * configure:  Regenerated from previously modified configure.in file.
+    * solvemysz.c:  Allow numbers in the myszcowski cipher as per so2002:e08
+
+Sat Oct  5 11:54:51 PDT 2002 wart@kobold.org
+    * library/swagman.tcl:  Added some initial bindings for drag-n-drop to
+      make substitutions.
+    * progs/key2col:
+    * progs/dumproute:
+    * progs/dumproute.in:
+    * progs/key2col.in:  Renamed files.
+    * progs/formatsols.in:  File no longer needed in this package.
+    * tests/morse.test:  Added another conversion test.
+    * swagman.c:
+    * tests/swagman.test:  More verbose reporting when a key has an invalid
+      length.
+    * tests/trifid.test:  Added a test for restoring a key that doesn't contain
+      the # character.  This was causing a segfault.  More verbose reporting
+      when a key has an invalid length.
+    * digram.c:  Added another histogram matching function.
+    * morseCommand.c:  Assume we are converting to morse code unless otherwise
+      told.
+    * stat.c:  Plugged a small memory leak.  Added "stat histvals" subcommand
+      for measuring the fit of two histograms.
+    * doc/index.tml:  Added link to morse command documentation.
+
+Sat Oct  5 11:02:48 PDT 2002 wart@kobold.org
+    * progs/*:  Use new readCiphertext proc for reading ciphertext from files.
+    * progs/hillclimb:  Treat fixed keyword list as a list and not a string.
+    * progs/slidesolve:  Allow searching against a single keyword.
+    * progs/tkcrithm:  Renamed function for future expansion.
+
+Sat Oct  5 10:31:45 PDT 2002 wart@kobold.org
+    * trifid.c:  If a restored key has an invalid length, report what the
+      actual and expected lengths are.  Check for an empty key value for
+      the # character before returning a value.
+    * progs/ragbabysearch:  Added support for generating solution from a
+      single keyword.
+    * configure.in:  Removed dumproute and formatsols from list of generated
+      scripts.
+    * Makefile.in:  Changed dumproute from generated to static file.
+    * library/hillclimb.tcl:  Properly generate trifid keys when they have
+      holes in them.  Make sure to add the extra # to the key when filling
+      it up.
+    * library/utils.tcl:  Added function for reading ciphertext from a file.
+    * progs/genboard:  Added program for generating cipher layouts that can
+      be used for hand-solving.
+
+Tue Apr 30 10:19:08 PDT 2002 wart@kobold.org
+    * progs/keysquaresearch:  Added missing "package require CipherUtil".
+    * library/crithm_gui.tcl:  Display the current cipher file in the title bar.
+
+Wed Apr 17 18:32:15 PDT 2002 wart@kobold.org
+    * stat.c:  Updated usage string for stat command.  Modified the "histogram"
+      subcommand to return a flat list that can be used as input to the
+      Tcl command "array set"
+    * library/utils.tcl:  Added save procedure that will save any cipher type
+      to an open channel.
+    * library/ctool.tcl:  Use the save utility in the CipherUtils package to
+      save ciphers.
+    * progs/csolve:
+    * progs/keysquaresearch:  Use the new save routine to standardize saving
+      of ciphers.
+
+Sun Mar 24 20:19:08 PST 2002 wart@kobold.org
+    * grandpre.c:
+    * cipherUtil.c: Plugged up a couple of memory leaks.
+    * tests/columnar.test:
+    * tests/nitrans.test:
+    * nitrans.c:
+    * columnar.c: Added '-' as a valid ciphertext character to make
+      manipulations on partial keys more readable.
+
+Sun Mar 17 17:04:14 PST 2002 wart@kobold.org
+    * nitrans.c:
+    * columnar.c:  Added a "shift" command for moving a single column forward
+      or backwards through the key.   Ex:  abcd -> shift a+2 -> bcad
+    * tests/nitrans.test:
+    * tests/columnar.test:  Added tests for the "shift" subcommand.
+    * library/nitrans.tcl:
+    * library/columnar.tcl:  Added bindings for dragging a column around
+      to reposition it.  This is much nicer than having to enter column
+      headers with the keyboard to swap them.
+    * progs/cmbifidsolve:  Allow the use to specify the tip position with
+      a string of ciphertext.
+    * doc/nitrans.tml:
+    * doc/columnar.tml:  Added documentation for the "shift" subcommand.
+
+Mon Mar 11 22:02:18 PST 2002 wart@kobold.org
+    * library/grille.tcl:  Added mouse bindings for manipulating the
+      grille cipher without having to use the keyboard.  It was kind of
+      silly when you had to type in the row and column to punch a hole.
+    * library/ctool.tcl:  Load any bindings that may exist for a cipher
+      type when a cipher is loaded.
+    * progs/ctool.in:  Two optional command line arguments: file and type.
+      Example:  ctool solve.e13 grille
+    * tests/grille.test:  Added more substitution tests.
+    * grille.c:  Added third argument to the grille command:  orientation.
+      This should be an integer from 1-4 that indicates which orientation
+      of the grille cover should be used for the substitution.
+
+Mon Mar  4 21:55:54 PST 2002 wart@kobold.org
+    * doc/morse.tml:  Added documentation for the morse command.
+    * fmorse.c:  Added -period option for completeness.  Always returns 0.
+    * progs/tkcrithm:  Made the progress meter update in a more sane manner.
+    * library/crithm_gui.tcl:  More minor binding improvements.
+    * tests/crithmCmd.test:
+    * crithmCmd.h:
+    * crithmCmd.c:  Added "crithm iteration" subcommand for determining how
+      many iterations have been processed.  Added a "crithm stop" subcommand
+      for stopping a running instance.
+    * Released version 1.5.3
+
+Sat Mar  2 13:03:44 PST 2002 wart@kobold.org
+    * Makefile.in:
+    * pkgIndex.tcl.in:
+    * library/fmorse.tcl: Added display routines for fractionated morse ciphers.
+    * library/crithm_gui.tcl:  Pressing a math operator in the first entry
+      now updates the optionmenu and sends the focus to the second entry.
+
+Sat Feb 23 20:21:14 PST 2002 wart@kobold.org
+    * INSTALL:  Started adding notes for building on Windows using mingw
+      and cygwin.
+
+Wed Feb 20 22:58:17 PST 2002 wart@kobold.org
+    * morse.h:  Added function header for CharToMorse
+    * Makefile.in:
+    * cipherInit.c:
+    * morseCommand.h:
+    * morseCommand.c:  Added "morse" command for performing morse code
+      translations.
+    * tests/morse.test: Test suite for "morse" command.
+
+Sun Feb  3 16:19:45 PST 2002 wart@kobold.org
+    * library/ctool.tcl:  Removed extraneous space at the start of the first
+      line of new ciphers.  Made special case for loading saved swagman ciphers.
+    * librayr/swagman.tcl:  Grey out letters in the ciphertext that are
+      currently part of the plaintext.  This helps show which ciphertext
+      letters are unused.
+
+Sat Feb  2 23:14:33 PST 2002 wart@kobold.org
+    * library/tkcrithm_gui.tcl:  Added smarter key bindings for the equation
+      input widgets.  Hitting an operator {+ - / *} while in an entry widget
+      now sets the value for the menu immediately to the right.
+
+Tue Jan 29 23:39:58 PST 2002 wart@kobold.org
+    * library/aristocrat.tcl:  Fixed bug that generated an error when loading
+      a saved aristocrat cipher that contained quotes in the ciphertext.
+    * aristocrat.c:  Allow the character "/" in aristocrat ciphers.
+
+Mon Jan 28 23:28:15 PST 2002 wart@kobold.org
+    * library/ctool.tcl:  Fixed bug when loading partial swagman solutions.
+
+Sun Jan 27 00:04:29 PST 2002 wart@kobold.org
+    * Lots of files:  Lots of code cleanup.  Removed most compiler warnings
+      when compiled with -Wall.
+
+Fri Jan 18 18:06:48 PST 2002 wart@kobold.org
+    * aristocrat.c:  Rewrote a small section of code to get around a bug in gcc.
+      Removed some debugging lines.
+
+Sun Nov 11 18:52:11 PST 2001 wart@kobold.org
+    * progs/trifidkeysearch:  Changed default step interval from 2000 to 5000
+    * Makefile.in:  added 'dist' target for generating source and binary RPMS.
+    * configure.in:  substitute a couple more version values into the Makefile
+      for building RPMs.
+    * ciphertool.spec:
+    * cipher.spec:  Renamed spec file for building RPMs.
+
+Sun Sep 23 21:31:23 PDT 2001 wart@kobold.org
+    * Released version 1.5.2
+
+Sun Sep 23 21:07:33 PDT 2001 wart@kobold.org
+    * progs/hillclimb:  Prepent a space before each line in the ciphertext
+      file as it is read in so that ragbaby word separations are preserved.
+    * library/hillclimb.tcl:  Use trigram frequencies in all places instead
+      of digram frequencies.
+
+Sun Sep 23 15:12:18 PDT 2001 wart@kobold.org
+    * tests/fmorse.test:
+    * tests/pollux.test:
+    * tests/morbit.test:  Added tests for -morsetext and -fullplaintext options.
+    * morse.c: Don't append a space the the end of the string when getting
+      spacey morse translations.
+    * fmorse.c:
+    * morbit.c:
+    * pollux.c:  Removed unused -histogram option.
+
+Sat Sep 22 19:41:33 PDT 2001 wart@kobold.org
+    * pollux.c:  Added checks for null ciphertext when getting plaintext
+      or attempting to solve.
+    * tests/pollux.test:  Added test suite for pollux ciphers.
+
+Thu Sep 20 09:13:51 PDT 2001 wart@kobold.org
+    * morbit.c:  Added checks for null ciphertext when getting plaintext
+      or attempting to solve.
+    * tests/morbit.test:  Added test suite for morbit ciphers.
+
+Sun Sep 16 13:28:18 PDT 2001 wart@kobold.org
+    * progs/keysearch:
+    * progs/keysquaresearch:
+    * progs/trifidkeysearch:  Use Dictionary package to retrieve keywords
+      from the dictionary.
+
+Sat Sep 15 21:29:15 PDT 2001 wart@kobold.org
+    * gromark.c:  Added check for invalid characters in the periodic chain.
+    * fmorse.c:  Removed unused function.  Added "cget -stepinterval" and
+      the like.  They could already be configured, just not retrieved.
+    * tests/fmorse.test:  Added tests for -stepinterval and the like.
+    * tests/gromark.test:  Added tests for gromark cipher.
+    * doc/fmorse.tml:
+    * doc/ragbaby.tml:
+    * doc/index.tml:  Added docs for fmorse and ragbaby cipher types.
+    * doc/morbit.tml:  Documented a couple of undocumented features.
+    * doc/standardopts.tcl:  Added optional argument to descriptions for
+      -stepinterval and the like that print an "option not used" message
+      for ciphers that have the option but don't actually use them.
+
+Fri Sep 14 12:48:29 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * ragbaby.c:
+    * tests/ragbaby.test: Added ragbaby cipher type.
+    * progs/ragbabysearch: Autosolver for ragbaby ciphers.
+    * library/hillclimbCiphers.tcl: Helper routines for using the hill climber
+      with a ragbaby cipher.
+    * library/hillclimb.tcl: Added optional argument for overriding the
+      default swap routine used when mutating keys.  This allows the mutate
+      proc to be used outside the context of the hill climber.
+    * progs/hillclimb:  Use the dictionary package for keyword lookups.  Use
+      "append" instead of "lappend" to build up the ciphertext from the file.
+    * progs/keysquaresearch:  Display both trigram and digram values for the
+      final solution.
+
+Sun Sep  9 22:23:43 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * library/hillclimb.tcl:  Backed out some accidental changes.
+
+Sun Sep  9 22:06:30 PDT 2001 wart@kobold.org
+    * progs/cmbifidsolve:  Added autosolver for conjugated bifid ciphers.
+    * progs/hillclimb:  Append the key to the fixed key list even if there
+      are no spaces in the key.
+    * progs/gengromarkboard:  Use a real gromark cipher for generating the
+      board instead of calculating the offsets manually.
+    * tests/keygen.test:  Added test for modified error message.
+    * tests/nicodemus.test:  Added spurious newline.
+    * tests/bifid.test:  Updated tests for locate tip.
+    * library/utils.tcl:  Added routine for generating key squares from a
+      keyword.
+    * library/dictionary.tcl:  Added routine for retrieving a list of valid
+      dictionary word lengths.
+
+Sun Sep  9 20:06:01 PDT 2001 wart@kobold.org
+    * aristocrat.c:  Fixed a small memory leak.
+
+Sun Sep  9 14:15:31 PDT 2001 wart@kobold.org
+    * keygen.c:  Display the invalid keyword when "key generate -k1" detects
+      that the keyword is invalid.
+
+Tue Sep  4 00:07:05 PDT 2001 wart@kobold.org
+    * progs/hillclimb:  Fixed bug where list command was being used to
+      search a string argument.
+
+Mon Sep  3 16:57:59 PDT 2001 wart@kobold.org
+    * gromark.c:  Added -chain option for periodic gromark ciphers.
+
+Mon Sep  3 15:20:31 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * cipher.c:
+    * fmorse.test:
+    * fmorse.c:  Added fmorse cipher type.
+    * library/dictionary.tcl:  Fixed bad variable references.
+    * library/ctool.tcl:  Store the keyword when saving a cipher.
+    * tests/keygen.test:  Updated command usage string.
+    * keygen.c:  Updated command usage string.
+    * library/hillclimb.tcl:  Added support for fixing positions in a key
+      so that the hill climber won't try to move certain key entries.  This
+      is useful when working with a partially known key.
+    * library/hillclimbCiphers.tcl:  Added support for using partial keys.
+    * progs/csolve:  Fixed comment.
+    * progs/progkeysol:  Added support for porta ciphers.
+
+Fri Jul 27 14:57:03 PDT 2001 wart@kobold.org
+    * morbit.c:  Plugged a few memory leaks.  Cleaned up some code formatting.
+    * morse.c:  Reverse the order of the search for morse sequences so that
+      lowercase letters are matched before uppercase letters.  Don't append
+      an extra space at the end of every string.  Minor code cleanup.
+    * library/hillclimbCiphers.tcl: Added namespace variable
+      "fixedKeyPositions" for keeping track of which key entries must not
+      change when swapping key cells.  This is useful when we know only part
+      of a key.  Use the fixedKeyPositions variable when swapping generic
+      keys and twosquare keys.
+    * progs/hillclimb:  Minor variable name change.  If a partial key is
+      entered, assume that it represents the fixed portion of a partially
+      known key.  Only iterate through the unknown key positions.
+
+Sun Mar 25 20:44:43 PST 2001 wart@kobold.org
+    * cipher.c:
+    * gromark.c:  Added gromark cipher type.
+    * Makefile.in:  Added gromark cipher type.  Added library of dictionary
+      routines.
+    * library/dictionary.tcl:  Added library of dictionary routines.
+    * pkgIndex.tcl.in:  Added Dictionary package.
+    * grandpre.c:  Fixed buggy locate tip function.
+    * tests/grandpre.test:  Added tests for locate tip.
+    * library/utils.tcl:  Fixed bad procedure header comment.
+    * library/hillclimbCiphers.tcl:  Fixed minor bugs preventing the use of
+      twosquare and foursquare ciphers.  Added support for gromark ciphers.
+    * progs/hillclimb:  Added support for gromark ciphers.
+
+Fri Mar 23 00:19:36 PST 2001 wart@kobold.org
+    * cadenus.c:  Added "-keyword" option to cadenus ciphers
+    * tests/cadenus.test:  Added test for "-keyword" option.
+    * pkgIndex.tcl.in:  Added hillclimbCiphers.tcl to list of files in the
+      Hillclimb package.
+    * bifid.c:  Removed extra check for -type option.  Fixed bad error message.
+    * tests/bifid.test:  Minor error message change.
+    * hillclimb.tcl:  Updated recursive search start method to use new
+      decipher proc API.
+    * cipher.c:  Finished adding twosquare and foursquare cipher types.
+    * Makefile.in:  Added hillclimbCiphers.tcl to list of installed files.
+      Added compilation lines for twosquare cipher type.
+
+Mon Mar 19 09:57:07 PST 2001 wart@kobold.org
+    * library/hillclimbCiphers.tcl:  Added phillips and playfair support.
+
+Sun Mar 18 14:19:23 PST 2001 wart@kobold.org
+    * twosquare.c:  Added support for foursquare ciphers.  Changed a couple of
+      error strings.
+    * tests/foursquare.test:  Added test suite for foursquare ciphers.
+    * tests/twosquare.test:  Modified test results to reflect slightly changed
+      error strings.
+    * library/hillclimbCiphers.tcl:  Added library of cipher type-specific
+      hill climbing functions.
+    * library/hillclimb.tcl:  Modified hill climber to use more
+      ciphertype-specific functions.
+    * progs/hillclimb:  Front end to the hill climbing code.
+
+Sat Mar 17 16:05:19 PST 2001 wart@kobold.org
+    * tests/grandpre.test:  Added test file for grandpre ciphers.
+    * library/grandpre.tcl:  Fixed key display.
+    * library/ctool.tcl:  Store the result from the locate command so that
+      we may later display it to the user.
+    * crithm.tcl:  Store all successful solutions to an internal variable so we
+      do something useful with them, like save them to a file.
+    * crithm_gui.tcl:  Added a "save solution" menu entry for saving the
+      solutions to a file in the standard cipher save file format.
+    * library/bifid.tcl:  Fixed mangled display routines.  Added "locate tip"
+      support.
+    * tests/bifid.test:  Added tests for merge substitute, save/restore, and
+      locate tip.
+    * bifid.c:  Added mergesubstitute subcommand.  Added locate tip routine.
+    * trifid.c:  Added separate routine for getting trifid text.
+    * library/hillclimb.tcl:  Support routines for hill climbing solver.
+    * library/utils.tcl:  Miscellaneous useful cipher routines that don't
+      fit anywhere else.
+    * progs/trifidkeysearch:  Added another possible key type.  Best solution
+      now contains the keyword as an uncommented field.
+    * progs/patsearch:  Best solution now contains the keyword as an
+      uncommented field.
+    * progs/tkcrithm:  Store the found solutions so we can dump them to a file.
+    * progs/csolve:  Best solution is now actually printed to the temp file.
+    * progs/keysquaresearch:  Best solution now contains the keyword as an
+      uncommented field.  Added a dummy field to the restore routine to fix
+      problems with bifid restore.
+    * twosquare.c:  Added basic support (restore/get pt) for twosquare ciphers.
+    * tests/twosquare.test:  Added test suite for twosquare ciphers.
+
+Tue Feb 20 21:48:55 PST 2001 wart@kobold.org
+    * bifid.c:  BifidSubstitute() now returns ALT_SUB appropriately and sets
+      the interpreter result to the letter that was displaced.
+      Added support for single-argument restore.
+    * tests/bifid.test:  Added tests for BifidSubstitute() returning ALT_SUB.
+      Added tests for RestoreBifid failing due to an ALT_SUB.
+
+Mon Feb 19 20:39:41 PST 2001 wart@kobold.org
+    * bifid.c:  Added support for incomplete key entries.  Example:  e = 1,?
+    * library/bifid.tcl:  Added display support for incomplete key entries.
+      Removed some unecessary update calls to speed up the display.
+    * tests/bifid.test:  Added tests for incomplete key entries.
+
+Sun Feb 18 11:25:06 PST 2001 wart@kobold.org
+    * bigbifid.c:  Added substitute/undo to bigbifid type.
+    * tests/bigbifid.test:  Tests for bigbifid substitute/undo.
+    * doc/bigbifid.tml:  Documented substitute/undo methods.
+    * bifid.c:  Added utility routine for converting a letter to a ctkey index.
+    * library/bifid.tcl:  Added routines for displaying bifid ciphers.
+
+Sat Feb 17 17:35:19 PST 2001 wart@kobold.org
+    * bifid.c:  Added substitute/undo to bifid type.
+    * tests/bifid.test:  Tests for bifid substitute/undo.
+    * doc/bifid.tml:  Documented substitute/undo methods.
+    * doc/aristocrat.tml:  Documented substitute method.
+
+Fri Jan 26 10:49:00 PST 2001 wart@kobold.org
+    * progs/autokeybrute:  Added command line args for setting the start/end
+      index for brute force looping as well as setting the initial key.
+
+Thu Jan 25 10:23:21 PST 2001 wart@kobold.org
+    * progs/autokeybrute:  Added support for incomplete primers
+
+Wed Jan 24 23:19:09 PST 2001 wart@kobold.org
+    * Added brute force solver for autokey ciphers "autokeybrute"
+    * Reorganized code in autokeysol
+
+Thu Jan 11 22:01:30 PST 2001 wart@kobold.org
+    * Increased possible keyspace in progs/trifidkeysearch by generating
+      keys with the # character immidiately following the keyword.
+      Released version 1.5.1
+
+Thu Jan  4 22:26:41 PST 2001 wart@kobold.org
+    * Added explicit "package require cipher" to command line tools.
+
+Mon Jan  1 00:23:43 PST 2001 wart@kobold.org
+    * ctool.tcl:  removed argument to save_cipher.  We now use tk_getSaveFile
+      to get a save filename if one isn't known.
+    * ctool.in:  removed argument in call to save_cipher.
+
+Fri Nov  3 12:32:01 PST 2000 wart@kobold.org
+    
+    * grille.c:  Added support for grille ciphers larger than 9 x 9.
+
+Wed Nov  1 23:18:41 PST 2000 wart@kobold.org
+
+    * solvemysz.c:  Added "-maxcolcount" option for speeding up the autosolve
+    process for redefence ciphers.
+
+Tue Oct 31 16:03:49 PST 2000 wart@kobold.org
+
+    * progs/portaxbrute:
+    * progs/portaxsolve:  Added autosolvers for portax ciphers.
+
+Mon Oct 30 19:19:54 PST 2000 wart@kobold.org
+
+    * progs/gengrokmakrboard:  Modified to work with primers that are not
+    5 digits long.
+    * progs/k3search:
+    * progs/k4search:  Comment updates.
+
+Wed Oct 18 12:43:09 PDT 2000 wart@kobold.org
+    
+    * digram.c:
+    * trigram.c:  Return sum of logs of n-gram frequencies instead of raw
+    frequency counts.
+    * various:  Minor coding style changes.
+
+Sat Sep 30 16:44:14 PDT 2000 wart@kobold.org
+
+    * tests/nitrans.test:  Initial set of tests for nihilist transposition
+    * nitrans.c:  finished implementing nitrans cipher.
+    * myszcowski.c:
+    * morbit.c:  Allow -stepinterval to have a value of 0.
+    * all ciphers:  Added -language option for specifying which language
+    to use when looking up digram/trigram frequencies.
+    * csolve:  Added support for alternate languages by using the
+    CIPHER_LANGUAGE enviroment variable.
+    * configure.in:  Removed csolve from list of output files.  We no
+    longer need to patch it during the build.
+    Released version 1.5.0
+
+Sun Sep 24 19:39:41 PDT 2000 wart@kobold.org
+    * library/columnar.tcl:  Added routine for solving columnar ciphers.
+    * library/vigenere.tcl:  Added button for fitting vigenere columns.
+    * nitrans.c:  Added "cget -ptblock" option.
+    * Makefile.in:
+    * cipher.c:  Added nicodemus type.
+    * nicodemus.c:  First working version of nicodemus cipher.
+    * progs/nicodemussolve:  Added brute force solver for nicodemus ciphers.
+
+Mon Sep 18 12:33:49 PDT 2000 wart@kobold.org
+    * myszcowski.c:  Coding style changes.
+    * cadenus.c:  Plugged a memory leak in DeleteCadenus()
+
+Sun Sep 17 21:27:01 PDT 2000 wart@kobold.org
+    * vvb.c:  Fixed bug in vigenere type tip location where only the first
+    block was attempted.
+    * library/porta.tcl:  keywords are now saved to file.
+
+Thu Sep  7 22:32:03 PDT 2000 wart@kobold.org
+    * Wrote VigenereFitColumn with tests.
+
+Sun Jul  2 11:17:06 PDT 2000 wart@kobold.org
+    * Fixed segmentation fault when doing a restore on a morbit cipher.
+
+Sat Jul  1 21:51:11 PDT 2000 wart@kobold.org
+    * Added more morese code characters:  ,?.-=/
+    * Extended length of valid morse sequences from 4 to 7 to accept
+    punctuation characters.
+    * Changed from digram to trigram frequencies when evaluating
+    pollux solutions.
+
+Fri Jun 30 16:56:21 PDT 2000 wart@kobold.org
+    * Changed package require to version 8.3 from 8.3.1 in tkcrithm.
+    "package require" seems to ignore patchlevels.
+    * Generate pkgIndex.tcl from a .in file during the configure step
+    so that it gets the correct package version and library name.
+
+Thu Jun 29 23:55:12 PDT 2000 wart@kobold.org
+    * Optimized route ciphers so that they don't malloc and free
+    memory for every call to GetRoute()
+
+Thu Jun 29 11:33:01 PDT 2000 wart@kobold.org
+    * Added more links to docs.
+    * Added empty dist: target to Makefile
+    * Added more bazeries tests.
+    Released version 1.4.2
+
+Wed Jun 28 14:47:37 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Tue Jun 27 12:14:05 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Sat Jun 24 11:46:29 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Fri Jun 23 15:54:49 PDT 2000 wart@kobold.org
+    * Added more docs.
+    * Removed mkIndex.tcl.in from build.  This was the only piece that
+    required Tcl version 8.2 or later.  The rest of the package only needed
+    8.0 or later.  This was confusing some people during the install.
+    * Fixed error string when you give bad arguments to "cadenus rotate"
+    * Fixed tests to reflect modified error messages in cadenus and bifid
+    ciphers.
+
+Thu Jun 22 13:24:38 PDT 2000 wart@kobold.org
+    * Added more documentation.
+    * Report bad key used during bifid restore operation.
+
+Wed Jun 21 17:35:08 PDT 2000 wart@kobold.org
+    * Updated documentation.
+
+Tue Jun 20 16:47:03 PDT 2000 wart@kobold.org
+    * Added documentation target to Makefile.  Started writing doc index page.
+
+Mon Jun 19 18:20:53 PDT 2000 wart@kobold.org
+    * Added portax ct conversion routines
+    * Added tests for portax ct/pt conversions
+    * Moved script programs to the "progs" subdirectory to clean the source
+    area up a little.
+    * Added "autokeysol", autosolver for autokey ciphers.
+    * Added "slidebrute" for brute forcing slidefair ciphers.  Very slow.
+
+Fri Jun 16 13:56:15 PDT 2000 wart@kobold.org
+    * Added a new 'key convert' subcommand for converting to/from ct/pt/key
+    letters for vigenere, variant, beaufort ciphers.  Also addes test cases.
+    Support for porta conversions is also available but has not been tested.
+    * Added new program "slidesolve" for autosolving slidefair ciphers.
+
+Tue Jun 13 16:57:46 PDT 2000 wart@kobold.org
+    * Rewrote k4search so that it looks for keywords in a k4 keyed alphabet
+    instead of trying to autosolve k4 patristocrat ciphers.
+    * Added 'key ordervalue' subcommand for evaluating the likelihood
+    of a given string being a keyed alphabet.
+    * Changed invocation of key2col to work on Linux systems.
+
+Mon Jun 12 16:28:59 PDT 2000 wart@kobold.org
+    * Added bazeries cipher type with test suite
+    * Added bazeries autosolver 'bazsol'
+
+Fri Jun  9 10:16:54 PDT 2000 wart@kobold.org
+    * configure.in:  Added $(TCL_LIBS) to the MAKE_SHELL definition.
+    * Removed memory leak in route cipher.
+
+Thu Jun  8 18:02:51 PDT 2000 wart@kobold.org
+    * tcl.m4:  Added a little more intelligence to the configure script.
+    It should now work on vanilla RedHat 6.x systems with having to specify
+    extra configure switches.
+    * Removed version numbers from #! shell invocations.
+    * Added spec file for generating source/binary rpm releases.
+    * Released version 1.4.1
+
+Wed May 31 22:19:05 PDT 2000 wart@kobold.org
+    * Added 6xx bifid cipher (bigbifid) with test suite.
+    * Added support for solving 6x6 bifids to keysquaresearch.
+    * route ciphers now allow digits as valid characters.
+
+Tue May 30 22:55:00 PDT 2000 wart@kobold.org
+    * Added very limited support for trifid ciphers.  Only "restore" is
+      implemented, no "undo" or "substitute".
+    * Added support for solving bifids with the keysquaresearch program.
+
+Mon May 29 23:03:23 PDT 2000 wart@kobold.org
+    * Added very limited support for trifid ciphers.  Only "restore" is
+      implemented, no "undo" or "substitute".
+    * Added autosolver for the trifid cipher.
+    * Fixed bug in myszcowski substitute command that was writing to parts
+      of memory where it shouldn't have been.
+
+Sun May 28 01:09:39 PDT 2000 wart@kobold.org
+    * Added new argument to solvemysz:  -tip string
+
+Mon May 15 22:41:25 PDT 2000 wart@kobold.org
+    * Minor font tweaks to ctool to make it look good on RedHat 6.x systems.
+    * swagman cipher now uses trigram frequencies when looking for a solution.
+
+Sun May 14 19:13:27 PDT 2000 wart@kobold.org
+    * Fixed various return value problems when restoring a grandpre cipher.
+    * Added a (slow) grandpre solving script.
+
+Sat May 13 23:05:32 PDT 2000 wart@kobold.org
+    * Added new "stat trigram" command.  This command calculates fits based
+      on trigram frequencies.  Many thanks to Mary Shelley for the source
+      for the trigram frequencies.  ;)
+
+Thu May 11 18:26:16 PDT 2000 wart@kobold.org
+    * configure.in:  Add ${TCL_BIN_DIR} to list of locations to look
+      for tcl library.
+    * keysquaresearch:  Added optional 3rd argument:  keyword.  This allows
+      one to search for a solution using a specific keyword.  If a keyword
+      is not specified, the entire dictionary is searched.
+
+Wed May 10 23:02:50 PDT 2000 wart@kobold.org
+    * Added playfair cipher support, with a test suite.
+
+Sun May  7 16:56:24 PDT 2000 wart@kobold.org
+    * Added phillips cipher support, along with a test suite.
+    * Added 'keysquaresearch' script for solving ciphers that use
+      a single 5x5 keysquare key.  The phillips is the only currently
+      supported cipher of this type.
+
+Sat May  6 19:08:19 PDT 2000 wart@kobold.org
+    * Fixed out-of-bounds errors in AristocratUndo(). 
+
+Sat Mar 18 14:15:17 PST 2000 wart@kobold.org
+    * Added Time Remaining label below the solution text widget in tkcrithm.
+
+Fri Mar 17 18:29:36 PST 2000 wart@kobold.org
+    * Reworked command line parameters for solvemysz.  Usage is now:
+      solvemysz -period n ?-keyprefix x,y,z,...?
+      This will allow the user to limit the key search space.
+
+Mon Mar 13 19:23:53 PST 2000 wart@kobold.org
+    * Fixed bugs in the Makefile that were preventing a build outside of
+      the source directory.
+    * Added tkcrithm, a graphical interface to the crithm routines.
+
+Wed Mar  1 22:59:34 PST 2000 wart@kobold.org
+    * Updated all.tcl so that it doesn't choke when running in a non-tk
+      enabled shell.
+    * patsearch now reads in an entire library file before testing the
+      keywords.
+    * Added solvemysz to list of compiled programs.
+    * Fixed a few failing tests with the cadenus cipher
+
+Fri Sep 11 19:34:03 PDT 1998 wart@kobold.org
+    * Fixed bug that was producing errors when an empty cipher was created
+    * Fixed loading of previously saved aristocrat ciphers
+    * Fixed anomalies in return values for AristocratSubstitute()
+    * ALT_SUB substitutions now clear the previous substitution correctly.
+
+Sat Sep 12 15:26:32 PDT 1998 wart@kobold.org
+    * Fixed indexing of columnar keys
+    * Vigenere types were cutting off the final block if the length
+      of the cipher was not a multiple of the period
+    * Locate Tip for vigenere type ciphers was not working properly.
+      return values for VigenereSubstitute() were modified to make more
+      sense.  VigenereUndo was also fixed so that it properly cleared
+      the first column.
+    * Added "best tip location" method for vigenere types.  Tip is dragged
+      along the cipher until the best set of digrams is produced.
+
+Thu Sep 17 12:18:49 PDT 1998 wart@kobold.org
+    * Finished writing and testing route.c.
+
+Sun Sep 20 23:06:45 PDT 1998 wart@kobold.org
+    * Cadenus cipher now fixed.  New commmands:
+      cipher rotate key n	Rotates the key n characters
+      cipher rotate all n	Rotates all columns by amount n
+      cipher fit all		Fits cols 1-n with first column fixed
+      
+      Changes not relfected in ctool interface (yet)
+    * Added gronsfeld cipher.  Added gronsfeld display.
+    * cget -key for vigenere types now replaces NULLs with spaces.  This
+      probably broke the restore procedure.
+    * Cleaned up some memory leaks in vvb.c
+
+Wed Sep 23 11:15:59 PDT 1998 wart@kobold.org
+    * Added porta and gronsfeld ciphers to vvb.c.  Portax is next.
+    * Wrote myszcowski solve method.  It takes a prohibitively long
+      time for periods > ~8
+    * Small modifications so that the package will compile with Sun's
+      C compiler.
+    * tcl.h and tk.h are looked for in /usr/local/include automatically.
+    * Some cipher types were leaving the interp result undefined
+      after solving.
+
+Thu Sep 24 22:57:20 PDT 1998 wart@kobold.org
+    * Optimized the myszcowski solve method.  It's now roughly 10 times
+      faster than before.
+
+Sat Sep 26 13:30:57 PDT 1998 wart@kobold.org
+    * Loading a long grandpre cipher will resize the cipher window to fit
+      the entire cipher.
+    * Fixed bug in MyszcowskiAdjustKey(), RailfenceAdjustKey
+    * Modified csolve output to match that of ctool save files.
+
+Thu Oct  1 21:38:48 PDT 1998 wart@kobold.org
+    * Added -stepinterval, -stepcommand, and  -bestfitcommand options
+      to myszcowski.
+    * Fixed bug in all cipher types that was causing some config specs
+      to be ignored if multiple ones were specified.  For example:
+
+	    cipher1 configure -ct foo -stepinterval 4
+
+      would cause -stepinterval to be ignored.
+    * Cleaned up some potential memory leaks in myszcowski.c and
+      columnar.c
+
+Sun Oct  4 17:18:28 PDT 1998 wart@kobold.org
+    * Fixed bug in Railfence key generation.
+    * Fixed innapropriate references to fields in a Tcl_DString struct.
+    * Fixed bug in MyszcowskiSetBestFitCmd() et al.
+    * csolve now adds comments for the various solutions when printing
+      steps or best fits.
+
+Tue Oct  6 10:27:19 PDT 1998 wart@kobold.org
+    * Added bestfitcommand et al. options to pollux, morbit, and columnar
+      ciphers.
+    * MyszcowskiRestoreOrder() was complaining about invalid characters.
+      It wasn't converting from key -> keyval before checking.
+      (key - 'a' = keyval)
+    * SetMyszcowski() was returning confusing messages when no valid characters
+      were found in the ciphertext.
+    * Added nihilist transposition type "nitrans" to tcipher
+
+Fri Nov 13 15:58:32 PST 1998 wart@kobold.org
+    * Fixed core dump from the following script:
+      % [cipher create baconian]
+    * Saving a baconian cipher now saves the first level of substitution
+    * Baconian tips are now found if they fall at the end of the ciphertext
+
+Tue Nov 17 22:19:06 PST 1998 wart@kobold.org
+    * Added Swagman cipher (swagman.c and swagman.tcl)
+    * Added (slow) solve method to swagman.
+
+Tue Dec 29 23:34:50 PST 1998 wart@kobold.org
+    * Fixed bug in MorbitSolveValue().  It wasn't returning a valid value.
+    * static global variable morbit_key_elems had an embarassing error in it.
+      One key was used twice.
+    * RestoreMorbit() is now returning a valid value.
+
+Thu Dec 31 09:46:46 PST 1998 wart@kobold.org
+    * Changed output of solvemysz a little
+    * Fixed return value of RestorePollux() to return a valid value.
+    * Fixed restore proc for vigenere/beaufort/variant
+    * Added swagman "swap" command for swapping plaintext rows (key values)
+
+Tue Jan  5 11:23:23 PST 1999 wart@kobold.org
+    * Fixed porta sub/solve/restore routines.  I think all of the vigenere
+      types work now.
+    * tests/score.test:
+    * tests/scoredata.test:  More thorough test cleanup.
+    * ngramScore.c:
+    * wordtreeScore.c:  Fix minor memory leak when creating/deleting score
+      items.
+
+Sat Mar 27 18:14:36 PST 2004 wart@kobold.org
+    * cipher.spec:
+    * configure.in:
+    * configure:  Bumped version to 1.6.0 in preparation for next release.
+    * Makefile.in:
+    * lethist.c:  Added utility histogramming program.
+    * homophonic.c:  Added "-keyword" option.
+    * data/sample_aristocrat.txt:
+    * data/sample_aristocrat_solution.txt:
+    * data/sample_bifid.txt:
+    * data/sample_bifid_solution.txt:
+    * data/sample_columnar.txt:
+    * data/sample_columnar_solution.txt:  Sample ciphers so that new users
+      have a place to start playing with ctool.
+
+Mon Mar 22 09:52:59 PST 2004 wart@kobold.org
+    * Makefile.in:
+    * library/4gramcountData.tcl:
+    * library/5gramlogData.tcl:
+    * library/5gramcountData.tcl:  Removed some of the new scoring tables
+      to make a smaller installation package.
+    * progs/trifidkeysearch:
+    * progs/patsearch:
+    * progs/nicsolve:  Better handling of the space-separated solution.
+    * progs/digrafidsolve:
+    * progs/pathilltipsearch:
+    * progs/bazsol:
+    * progs/ragbabysearch:  Better command line processing.
+    * progs/hillclimb:
+    * progs/csolve:  Don't print to that silly *.csol file anymore.
+    * tests/nicodemus.test:  Fix syntax error.
+    * doc/cipher/package.tml:
+    * doc/cipher/twosquare.tml:
+    * doc/cipher/foursquare.tml:
+    * doc/cipher/bigplayfair.tml:  Added new cipher type documentation.
+    * doc/cipher/bazeries.tml:  Cleaned up documentation.
+
+Wed Mar 17 18:13:09 PST 2004 wart@kobold.org
+    * progs/csolve:
+    * progs/nicsolve:
+    * progs/patsearch:
+    * progs/hillclimb:
+    * progs/keysquaresearch:  Support the use of ngram scoring tables.
+    * Makefile.in:
+    * library/4gramlogData.tcl:
+    * library/4gramcountData.tcl:
+    * library/5gramlogData.tcl:
+    * library/5gramcountData.tcl:  Added new 4,5-gram scoring data tables.
+    * ngramScore.c:  Fix some unnecessary typecasting.
+    * wordtree.c:  Set the return measure to the measure of the current
+      node *always*.
+    * tests/score.test:  Added test for ngram value bug.
+    * tests/scoredata.test:
+    * library/scoredata.tcl:  Load an appropriate ngram table based on the
+      element size of the input scoring table.
+
+Wed Mar 17 16:17:23 PST 2004 wart@kobold.org
+    * languages.h:
+    * germanFrequencies.h:  Removed unnecessary language file.
+    * digram.h:  Removed unused digram scoring tables.
+    * Makefile.in:  Remove dependencies on language files.
+    * cipher.h:  Remove include of language headers.
+    * cipher.c:
+    * cipherUtil.c:  Fix the cipher language to "english" until we determine
+      that we need to support multiple languages for each cipher instance.
+    * digram.c:  Move statistics tables out of the header file.
+    * stat.c:  Removed dependency on language headers.  Removed deprecated code.
+    * tests/*.test:  Removed the language tests.  Languages are no longer
+      associated with the cipher instances, they are only used to select
+      the appropriate scoring table.
+    * tests/route.test:  Added test for route write cache bug.
+    * route.c:  Fixed route write caching bug.
+    * progs/keysquaresearch:  Key routes should be written in using each
+      route, not read out.
+    * progs/hillclimb:  Added -langauge option.
+    * progs/progkeysol:  Fix bug where the progression index was always
+      reported as '1', even if it was using the correct value.
+
+Tue Mar 16 23:40:44 PST 2004 wart@kobold.org
+    * config/tcl.m4:
+    * configure:  Added additional paths for locating tcl libraries/headers
+      in their default locations in Debian Linux.
+
+Tue Mar 16 16:41:40 PST 2004 wart@kobold.org
+    * config/tcl.m4:  Remove the special windows build flag as the offending
+      file (tetragram.c) has been removed.
+    * configure:  Regenerated due to change in source macro file.
+    * tests/grille.test:
+    * grille.c:  Clarified error message when grille length is invalid.
+    * digram.c:  Fixed bug when calling "get_digram_value()" when the
+      default score type was for trigrams.
+    * cipher.spec:  Bumped release version for private testing release.
+    * progs/nicsolve:  Better command line processing.
+    * tests/scoredata.test:
+    * library/scoredata.tcl:  Added "language" argument to the loadData
+      procedure to enable loading scoring tables in alternate languages.
+    * doc/Scoredata/package.tml:  Updated documentation for the new language
+      argument to loadData.
+    * progs/patsearch:
+    * progs/keysquaresearch:
+    * progs/csolve:  Added -language option for foreign language ciphers.
+    * doc/nicsolve.tml:
+    * doc/patsearch.tml:
+    * doc/keysquaresearch.tml:
+    * doc/csolve.tml:  Added description for new -language option.
+    * doc/cipher/package.tml:  Added entries for foursquare and twosquare
+      ciphers.
+    * library/digramlogData_gaines.tcl:
+    * library/digramcountData_gaines.tcl:
+    * Makefile.in:  Added new scoring tables based on the digram frequencies
+      in Helen Gaine's book "Cryptanalysis".
+
+Mon Mar 15 15:55:47 PST 2004 wart@kobold.org
+    * library/hillclimb.tcl:
+    * progs/hillclimb:  Added the ability to set the scoring method on the
+      command line.
+    * progs/csolve:
+    * progs/keysquaresearch:
+    * progs/patsearch:  Minor usage string fixes.
+    * tests/stat.test:
+    * Makefile.in:
+    * nitrans.c:
+    * stat.c:
+    * trigram.c:
+    * trigram.h:
+    * tetragram.c:
+    * tetragram.h: Removed obsolete tri/tetra-gram files.
+    * doc/cipher/package.tml:
+    * doc/cipher/stat.tml:  Removed referneces to nonexistent "stat *gram"
+      commands.
+    * doc/cipher/key.tml:  Added the "generate: subcommand.
+    * doc/keysquaresearch.tml:
+    * doc/patsearch.tml:
+    * doc/csolve.tml: Updated documentation to reflect new usage instructions.
+    * doc/index.tml:  Minor updates.
+    * doc/standardopts.tcl:  Added note about unused "-language" option.
+    * digram.c:  Removed obsolete scoring function.
+
+Mon Mar 15 14:37:57 PST 2004 wart@kobold.org
+    * doc/Crithm/package.tml:  Added documentation for the Crithm package
+      commands.
+    * doc/genscores.tml:  Added documentation for the new genscores program.
+    * scoreInt.h:
+    * score.h:
+    * score.c:  Added functions for performing scoring using the default
+      score method, even if the default method was changed in a Tcl script.
+      Moved default score data to a new header file.
+    * wordtreeScore.c:
+    * wordtreeCmd.c:
+    * wordtree.c:
+    * wordtree.h:
+    * tetragram.c:
+    * trigram.c:
+    * stat.c:
+    * ragbaby.c:
+    * playfair.c:
+    * phillips.c:
+    * ngramScore.c:
+    * morse.c:
+    * keygen.c:
+    * gromark.c:
+    * grandpre.c:
+    * fmorse.c:
+    * digramScore.c:
+    * digram.h:
+    * digrafid.c:
+    * dictionaryInit.c:
+    * dictionaryCmds.c:
+    * dictionary.c:
+    * cipherInit.c:
+    * cipher.h:
+    * caesar.c:
+    * bifid.c:
+    * bazeries.c: Clean up compiler warnings.
+    * vvb.c:
+    * swagman.c:
+    * route.c:
+    * railfence.c:
+    * pollux.c:
+    * nitrans.c:
+    * nicodemus.c:
+    * myszcowski.c:
+    * morbit.c:
+    * grille.c:
+    * digram.c:
+    * columnar.c:
+    * cadenus.c:
+    * bacon.c:
+    * aristocrat.c:
+    * amsco.c:  Switch to use the new default score command instead of
+      the old digram/trigram functions.  Clean up compiler warnings.
+    * Makefile.in:  Added header files to list of sources.  Added new
+      scoring data files to list of sources.  Updated header dependencies.
+    * progs/slidesolve:
+    * progs/slidebrute:
+    * progs/runningkey:
+    * progs/runkey:
+    * progs/ragbabysearch:
+    * progs/progkeysol:
+    * progs/portaxsolve:
+    * progs/portaxbrute:
+    * progs/nicsolve:
+    * progs/nicodemussolve:
+    * progs/maxrunkey:
+    * progs/kshunt:
+    * progs/hillclimb:
+    * progs/grandpresol:
+    * progs/fmorsekeysearch:
+    * progs/bazsol:
+    * progs/autokeysol:
+    * progs/autokeybrute:  Replace old plaintext scoring call "stat *gram"
+      with new scoring methods.
+    * progs/trifidkeysearch:
+    * progs/patsearch:
+    * progs/keysquaresearch:
+    * progs/csolve:  Added the ability to set the scoring method on the
+      command line.
+    * trigramScore.c:  Fix bad logic when detecting valid trigram characters.
+    * tests/score.test:  Added test for scoring with illegal trigram
+      characters.
+    * library/digramlogData.tcl:
+    * library/trigramlogData.tcl:  Regenerate tables without
+      double-normalization.
+    * library/scoredata.tcl:  Fix path to score data files.
+    * library/patword.tcl:
+    * library/utils.tcl:  Use the 'score' command to get the plaintext score
+      value instead of the 'stat' command.
+    * tests/nicodemus.test:
+    * tests/score.test:
+    * tests/stat.test:  Updated with changes from the new scoring tables.
+
+Thu Mar 11 13:41:59 PST 2004 wart@kobold.org
+    * Makefile.in:  Use the new cipher shell to build the documentation
+      so that the version number isn't hard coded into the documentation
+      source files.
+    * cipher.h:  Minor documentation fixes.
+    * caesar.c:  Better deallocation of return value.
+    * progs/genboard:  Minor code reformatting.
+    * progs/genscores:  Removed the -nonormalize option.
+    * progs/patsearch:  Use the default scoring table.
+    * library/hillclimbCiphers.tcl:  Minor comment fix.
+
+Wed Mar 10 22:48:10 PST 2004 wart@kobold.org
+    * doc/*:  Lots and lots of reorganizing and updating of documentation.
+
+Tue Mar  9 11:55:15 PST 2004 wart@kobold.org
+    * configure:
+    * configure.in:  No longer patch ctool when running configure.
+    * Makefile.in:  ctool is now installed just as any other program.
+    * progs/ctool.in:  Renamed to ctool.
+    * progs/ctool:  Renamed from ctool.in.  It's no longer necessary to
+      patch this file when running configure.
+    * progs/genscores:  Set the element size for ngrams.
+    * score.c:  Don't dump ngrams with a value of 0.
+
+Mon Mar  8 17:50:09 PST 2004 wart@kobold.org
+    * data/sample_cipher.txt:
+    * data/sample_cipher_solution.txt:  Added sample ciphertext for future
+      tutorials.
+
+Sun Mar  7 17:00:06 PST 2004 wart@kobold.org
+    * library/scoredata.tcl:  Allow the use of "-" as an output file.
+    * progs/genscores:  Added program for generating scoring tables from
+      text files.
+    * Makefile.in:  Added genscores to list of installed programs.
+    * library/digramlogData.tcl:
+    * library/digramcountData.tcl:
+    * library/trigramlogData.tcl:
+    * library/trigramcountData.tcl:  New scoring tables based on the standard
+      Frankenstein text.
+
+Sun Mar  7 13:41:31 PST 2004 wart@kobold.org
+    * Makefile.in:  Added script files for reading/writing scoring data.
+    * digramScore.c:  Reuse the same score item for both digram logs and
+      digram counts.  Added function for dumping the digram scores.
+    * trigramScore.c:  Reuse the same score item for both trigram logs and
+      trigram counts.  Added function for dumping the trigram scores.
+    * ngramScore.c:  Reuse the same score item for both ngram logs and
+      ngram counts.  Added function for dumping the ngram scores.
+    * wordtreeScore.c:  Added function for dumping the ngram scores.  Added
+      normalizer that takes the square of the word length, ignoring any
+      previous value set.
+    * score.h:
+    * score.c:  Added a no-op score dump function.  Added a utility function
+      for dumping a scoring table from a wordtree.  Added the "dump" subcommand.
+    * wordtree.c:  Fixed bug relating to the addition of duplicate words into
+      the word tree.  Fixed bug when returning the value of an attempt to
+      match words to the start of a string.
+    * library/scoredata.tcl:  Added "saveData" procedure for saving a scoring
+      table to a file.
+    * tests/score.test:  Added tests for the "dump" subcommand.
+    * tests/scoredata.test:  Added tests for the "saveData" procedure.
+    * tests/wordtree.test:  Added test for duplicate words in the word tree.
+
+Thu Mar  4 16:08:20 PST 2004 wart@kobold.org
+    * dictionaryCmds.c:
+    * stat.c:
+    * wordtreeScore.c:
+    * wordtreeCmd.c:
+    * wordtree.h:
+    * wordtree.c:  Add support for a "measure" of each word in the wordtree.
+      This makes the wordtree more useful for frequency counts.
+    * Makefile.in:
+    * score.c:
+    * ngramScore.c:  Added ngramlog and ngramcount scoring methods.
+    * score.test:
+    * scoredata.test:  Tests for new ngram scoring method.
+    * digramScore.c:
+    * trigramScore.c:
+    * score.h:  Added null normalizer.
+    * library/scoredata.tcl:  Allow the user to customize the allowed set
+      of characters that can be used in the scoring tables.
+
+Wed Mar  3 22:59:07 PST 2004 wart@kobold.org
+    * digramScore.c: Remove typecast since function call is actually a macro.
+    * score.c:
+    * tests/score.test:  Added "isinternal" subcommand for testing if a
+      command is a C-based scoring method or not.
+    * pkgIndex.tcl.in:
+    * library/scoredata.tcl:
+    * tests/scoredata.test:
+    * library/trigramlogData.tcl:  Added utility procedures for loading
+      frequency data from a text and data files.
+
+Wed Mar  3 17:18:21 PST 2004 wart@kobold.org
+    * score.c:
+    * score.h:
+    * trigramScore.c:
+    * Makefile.in:
+    * tests/score.test:  Added new trigramlog and trigramcount scoring methods.
+
+Wed Mar  3 09:02:32 PST 2004 wart@kobold.org
+    * progs/massadd.tcl:  Utility for creating word lists suitable for use
+      as a ciphertool dictionary from a single large word list.
+
+Tue Mar  2 13:17:18 PST 2004 wart@kobold.org
+    * score.h:
+    * score.c:
+    * cipherInit.c:
+    * digramScore.c:
+    * wordtreeScore.c:  Added new 'score' command for custom scoring methods.
+    * tests/score.test:  Tests for the new 'score' command and the various
+      builtin scoring methods.
+    * Makefile.in:  Added new source files used for the new 'score' command.
+    * tests/aristocrat.test:  Minor test renumbering.
+    * aristocrat.c:  Minor code reformatting.
+    * doc/index.tml:  Added link to the Windows installer.
+
+Thu Feb 26 11:01:40 PST 2004 wart@kobold.org
+    * Released 1.5.10
+    * Makefile.in:
+    * configure.in:  Changed relative path from pkgIndex.tcl to the cipher dll
+      on Windows so that they live in the same directory.  Add a few extra
+      substitutions for the Windows installer.
+    * configure: Regenerated from the modified sources.
+    * install.nsi.in:  Added Windows installer template from Alexander
+      Griffing <uponlowdown@yahoo.com>
+
+Wed Feb 25 15:52:12 PST 2004 wart@kobold.org
+    * configure:
+    * config/tcl.m4:  Fix build breakage on Windows using the VC compiler.
+    * playfair.c:  Fix minor compiler warning.
+    * columnar.c:
+    * railfence.c:
+    * myszcowski.c:  Use NULL instead of an uninitialized variable for
+      an ignored function argument.  This should remove a build warning
+      on Windows.
+
+Wed Feb 25 10:33:50 PST 2004 wart@kobold.org
+    * configure:
+    * config/tcl.m4:  Add "*.exe" pattern to tcl executable name so that
+      we don't match the tcl debug files (tclsh84g.pdb).
+    * Makefile.in:  Allow the cvs tag for building a distribution to be
+      set on the command line.  This is useful when we want to make
+      temporary rpms for testing:  RELEASETAG="-D today" make rpm.
+      More minor portability fixes.
+    * ctool.bat:  Better error reporting if any dependent files could not
+      be found.
+
+Tue Feb 24 15:20:54 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:
+    * cipher.spec:  Bumped version to 1.5.10 in preparation for next release.
+    * Makefile.in:
+    * progs/ctool.bat:  Added batch file for launching ctool on Windows.
+
+Mon Feb 23 12:53:58 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * Makefile.in:  Install dll files as executable.
+    * cipherInit.c:  Initialize the stub table.  This fixes a crash on Windows.
+    * tests/crithm.test:  Updated test result to match the different error
+      strings provided by Tcl 8.3 and 8.4.
+
+Sat Feb 21 11:02:55 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * bacon.c:
+    * cipher.h:
+    * crithmCmd.c:
+    * crithmCmd.h:  Use Tcl_WideInt for variables that need to use a 64
+      bit integer.
+    * cipherUtil.c:
+    * vvb.c:
+    * cadenus.c:  Replace calls to strcasecmp() with a simple strcmp().
+    * Makefile.in:
+    * config/tcl.m4:  Add WIN_BIGHEAP_FLAG=/Zm200 so that the VC compiler
+      won't choke when compiling the large tetragram.c file.
+    * configure.in:  Define USE_COMPAT_CONST so that we can build against
+      both tcl 8.3 and 8.4 without too many compiler warnings.
+    * configure: Regenerated from recent changes.
+    * cipherInit.c:  Export the Cipher_Init function when building a dll.
+
+Fri Feb 20 22:39:03 PST 2004 wart@kobold.org
+    * Thanks to Alexander Griffing <uponlowdown@yahoo.com> for
+      discovering these problems and helping to fix them.
+    * Makefile.in:  Use OBJEXT to indicate the object file extensions
+      when setting cipher_OBJECTS.  This fixes a problem when building
+      on Windows with cygwin and the VC compiler.
+    * configure.in:
+    * configure:  Fix typo in check for the use of dmalloc.  I'm not sure
+      why this only showed up as a problem on Windows...
+
+Mon Feb 16 18:15:30 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:
+    * Makefile.in:
+    * config/tcl.m4:  Various fixes in an attempt to get a valid build
+      under mingw on Windows.
+    * tclAppInit.c:  Removed unnecessary references to matherr()
+
+Sun Feb 15 21:14:07 PST 2004 wart@kobold.org
+    * configure.in:
+    * configure:  Better check for the mingw environment.
+
+Thu Feb 12 20:15:35 PST 2004 wart@kobold.org
+    * Released 1.5.9
+    * doc/index.tml:
+    * cipher.spec:
+    * configure.in:
+    * configure: Bumped version to 1.5.9 in preparation for next release.
+
+Tue Jan 27 17:32:47 PST 2004 wart@kobold.org
+    * Here's a lot of updates that I haven't checked in for the past couple of
+      months...
+    * Makefile.in:
+    * cipherInit.c:
+    * dictionaryInit.c:
+    * dictionary.c:
+    * dictionary.h:
+    * dictionaryCmds.c:
+    * dictionaryCmds.h: C implementation of the dictionary procedures.
+    * library/dictionary.tcl:  Removed most procedures in lieu of C
+      implementation.
+    * tests/dictionary.test:  Added tests for the allWordsMatching procedure.
+    * progs/fmorsekeysearch:  Use Dictionary package to manage dictionary
+      files.  How did this go so long without being fixed??
+    * progs/patwordbrute:
+    * progs/tkpatwordbrute:  Added better command line processing.
+    * progs/patsplit:  Use a word tree to find the word boundaries.  Fixed
+      bug in loading from a saved file.
+    * progs/cmbifidsolve:
+    * progs/csolve:
+    * progs/digrafidsolve:
+    * progs/hillclimb:
+    * progs/keysquaresearch:
+    * progs/patsearch:  Set a reasonable default dictionary cache level.
+    * progs/kshunt:  Minor output changes.
+    * library/dictionary.tcl:  Fixed bug in dictionary word length caching.
+    * library/patword.tcl:  Call the best fit command if we've found a
+      complete solution.  Use a word tree to find words in a string of
+      completed plaintext.  This saves much time over a dictionary search.
+    * library/patwordui.tcl:  Minor Ui tweaks.  Added a "solutions" button to
+      show all complete solutions found so far.
+    * library/hillclimb.tcl:
+    * tests/stat.test:
+    * stat.c:  Added optional 'weight' argument to
+      digram/trigram/tetragram/wordtree subcommands.
+    * wordtreeCmd.c:  Added "wordtree split" command.
+    * wordtree.c:  Fixed bug in word matcher that was returning an 'invalid'
+      result for a string that started with a word that partially matched
+      other dictionary words, as well as one valid word.
+    * wordtree.h:  Added a (as yet unused) "measure" field to the word tree nodes.
+
+Sat Nov 22 17:50:09 PST 2003 wart@kobold.org
+    * library/hillclimb.tcl:
+    * progs/hillclimb:  Allow the mutation amount to be changed on the command
+      line.  Allow multiple weighted plaintext fit methods to be used.  For
+      example, you can now use 50% digram and 50% trigram scores to score
+      the plaintext.
+    * library/dictionary.tcl:  Minor debugging output change.
+
+Fri Nov 21 20:24:35 PST 2003 wart@kobold.org
+    * stat.c:  Added "wordtree" subcommand for evaluating the goodness of fit
+      for a string based on number and size of complete words.
+    * tests/stat.test:  Added tests for the wordtree subcommand.
+    * Makefile.in:
+    * cipherInit.c:
+    * tests/wordtree.test:
+    * wordtreeCmd.h:
+    * wordtreeCmd.c:
+    * wordtree.h:
+    * wordtree.c:  Added a wordtree command for manipulating a dictionary
+      as a tree of letters.
+    * library/patwordui.tcl:  Minor bug fixes.
+    * library/patword.tcl:  Check for illegal trigrams at every interval to
+      help prune the search space.  Add the ability to set the starting word
+      position (enables a primitive "resume" feature).
+    * progs/tkpatwordbrute:  Added command line arguments for setting the
+      starting words.
+    * library/dictionary.tcl:  Use a better glob pattern to locate dictionary
+      files, so that it doesn't accidentally pick up (and choke on)
+      editor backup files.  Added "createWordTree" utility for populating
+      the wordtree from the dictionary.
+    * library/hillclimb.tcl:  Allow configuration of the statistical method for
+      determining the best fit.  Currently "digram", "trigram", and "tetragram"
+      are supported.
+    * progs/hillclimb:  Added "-statmethod" command line argument for setting
+      the goodness of fit method at runtime.
+    * Makefile.in:
+    * stat.c:
+    * doc/stat.tml:
+    * tetragram.h:
+    * tetragram.c: Added tetragram frequency counts.
+
+Mon Nov 17 14:22:20 PST 2003 wart@kobold.org
+    * library/patword.tcl:  Allow custom best fit procedures.
+    * library/patwordui.tcl:
+    * progs/tkpatwordbrute:  Use a custom best fit procedures.
+
+Sat Nov 15 23:23:21 PST 2003 wart@kobold.org
+    * Makefile.in:  Removed unnecessary "-lm" from link line of solver
+      program.
+    * progs/tkpatwordbrute:  Added gui for patristocrat brute force solver.
+    * library/patwordui.tcl:  Added procedures used in the patristocrat brute
+      force solver ui.
+    * progs/patwordbrute:
+    * library/patword.tcl:  Moved patristocrat brute force solver procedures
+      to a separate file so they can be used in both the gui and text
+      versions.
+    * library/dictionary.tcl:  Added caching of small pattern word searches.
+    * pkgIndex.tcl.in:  Added entries for the patristocrat brute force
+      solving libraries.
+
+Fri Nov 14 11:42:31 PST 2003 wart@kobold.org
+    * Released 1.5.8
+    * doc/index.tml:
+    * configure:
+    * configure.in:
+    * cipher.spec:  Bumped version to 1.5.8
+    * route.c:  Fix unbounded string error when using a cached route.
+    * tests/route.test:
+    * tests/aristocrat.test:  Minor test cleanup.
+    * library/dictionary.tcl:  Added 'pattern' argument to lookupByLength
+      that will only return words matching a given pattern.  The pattern
+      must be of a form acceptible to Tcl's [string match].
+    * tests/dictionary.test:  Added tests for the new pattern argument
+      to looupByLength.
+    * progs/patwordbrute:  An autosolver for patristocrats that attempts
+      to match words from a dictionary to the ciphertext.
+
+Wed Nov 12 18:23:30 PST 2003 wart@kobold.org
+    * doc/aristocrat.tml:  Added description of the '-strict' option.
+    * doc/stat.tml:  Added more documentation.
+    * progs/homotopat:  Attempts to convert a homophonic cipher to a
+      patristocrat by aligning the histograms of the 4 shifted homophonic
+      alphabets.
+    * route.c:  Cache the calculated route for routes that have been
+      attempted.  It turns out that this doesn't give as much as
+      a performance boost as I had hoped.
+    * aristocrat.c:  Fixed bugs in reporting of alternate substitution
+      ciphertext characters.  Added a "-strict" option to indicate of
+      an alternate substitution should be treated as an error (strict=true) or
+      not (strict=false).  Added "aristocrat undo" with no argumenets to
+      undo entire cipher.
+    * homophonic.c:  Implemented the -histogram command.
+    * tests/aristocrat.test: Added tests for alternate substitution return
+      values, in strict and non-strict mode.
+    * tests/homophonic.test:  Fixed test for the -histogram option.
+    * tests/route.test:  Added additional tests to test the route caching.
+    * progs/genboard:  Added extra rows to quag3 and quag4 layouts for
+      reconstructing the mixed ct/pt alphabets.  Added group separators
+      to most of the *ifid cipher boards.  Added board generator for homophonic
+      ciphers.
+    * library/hillclimbCiphers.tcl:
+    * progs/hillclimb:  Added "-random" command line argument for indicating
+      that a random seed key should be used instead of dictionary-based
+      keyed alphabets.
+    * progs/csolve:  Added "-addspace" flag for locating spaces between words
+      in the resulting plaintext.
+    * progs/keysquaresearch:  Improved command line argument handling.  Added
+      "-addspace" flag for locating spaces between words in the resulting
+      plaintext.
+    * solver.h:
+    * solver.c:  Dump the invalid words to the output to make it easier to
+      discover typos and necessary updates to the dictionary.
+
+Tue Oct 14 14:55:53 PDT 2003 wart@kobold.org
+    * solver.c:  Default output to stdout.  Minor code cleanup.
+    * progs/genboard:  Added vigenere, variant, beaufort, gronsfeld, and porta
+      types to board generator.
+    * Makefile.in:
+    * progs/makedictionary:  Added tool for building the dictionary files out
+      of a large wordlist.
+    * progs/patsearch:  Added the ability to test a single keyword on a cipher.
+    * progs/nicsolve:  Use the utility routine to print out the solved cipher.
+
+Fri Sep 26 16:48:25 PDT 2003 wart@kobold.org
+    * twosquare.c:  Removed memory leak when deleting a twosquare cipher.
+    * amsco.c:  Fixed core dump when the ciphertext remainder only spans
+      a single row.
+    * tests/amsco.test:  Added test for core dump in nd2002:e11 when using
+      period 11.
+    * progs/csolve:  Changed default step interval for amsco ciphers.
+    * Makefile.in:  Added hook for building cpu-optimized
+      releases (athlon, i686).  Fixed test target so that it no longer
+      clobbers the pkgIndex.tcl file.  Fixed test target so that it won't
+      dump core when using the dmalloc library.
+
+Fri Sep 26 10:52:31 PDT 2003 wart@kobold.org
+    * Released 1.5.7
+    * cipher.spec:
+    * configure.in:
+    * configure:  Bumped version to 1.5.7
+    * doc/amsco.tml:
+    * doc/index.tml:  Added docs for the amsco cipher type.
+
+Thu Sep 25 21:26:14 PDT 2003 wart@kobold.org
+    * tests/columnar.test:
+    * columnar.c:  Changed some volatile interpreter results to static.
+      Removed unnecessary "order" attributes.  Don't allow shifting a column
+      past the end.
+    * configure:
+    * configure.in:  Add -ldmalloc to shared library build if dmalloc is being
+      used.  This fixes problems when running the test: Makefile target when
+      using dmalloc.
+    * tests/amsco.test:
+    * amsco.c:
+    * Makefile.in:
+    * cipher.c:  Added amsco cipher type
+
+Wed Sep 24 09:03:03 PDT 2003 wart@kobold.org
+    * progs/autokeysol:  Changed default step interval to make the program
+      run a little more quietly.
+    * progs/genboard:  Added board generator for nicodemus ciphers.
+    * progs/keysquaresearch:  Turn on word searching.
+    * library/dictionary.tcl:  Added procedure for testing if a string contains
+      only digits.  Modified pat word search to treat groups of digits as
+      valid words.
+    * tests/dictionary.test:  Added tests for digits.
+    * tests/playfair.test:
+    * tests/bigplayfair.test:  Minor updates to test result messages.
+    * nicodemus.c:  Fixed memory corruption in nicodemus solve method.  Removed
+      trivial memory leak in nicodemus solve method.  Fixed key corruption
+      in nicodemus solve method.
+    * tests/nicodemus.test:  Added test for autosolving so2003:e08
+
+Sun Sep  7 15:43:46 PDT 2003 wart@kobold.org
+    * playfair.c:  Merged bigplayfair and playfair cipher types since most
+      of the processing routines were identical.
+    * Makefile.in:  Removed bigplayfair.c source file.
+    * bigplayfair.c:  Removed (merged with the standard playfair cipher type)
+    * library/hillclimbCiphers.tcl:
+    * progs/keysquaresearch:
+    * progs/genboard:  Added support for the bigplayfair cipher type.
+
+Sun Sep  7 10:52:20 PDT 2003 wart@kobold.org
+    * Makefile.in:
+    * cipher.c:
+    * bigplayfair.c:  Added 6x6 playfair cipher type.
+    * tests/bigplayfair.test:  Added tests for 6x6 playfair.
+    * playfair.c:  Use generic method for setting the cipher step/best fit
+      commands.
+    * cipher.h:  Added macro for the character set a-z0-9
+    * bigbifid.c:  Use new macro for specifying the valid character set.
+
+Wed Sep  3 10:41:52 PDT 2003 wart@kobold.org
+    * library/hillclimb.tcl:  Fixed bug when plugging holes for a key that
+      contained non-alphabetic characters.
+
+Wed Sep  3 09:41:42 PDT 2003 wart@kobold.org
+    * library/hillclimbCiphers.tcl:  Added support for hillclimbing a 6x6
+      bifid cipher.
+    * caesar.c:  Add { and } to list of valid caesar cipher characters (they
+      just get ignored during the shift).
+
+Mon Aug 18 08:18:54 PDT 2003 wart@kobold.org
+    * playfair.c:  Improved memory management of interpreter results.
+    * cmbifidsolve:
+    * digrafidsolve:  Don't exclude keys of length < 4 or > 15 since they make
+      up only a very small number of the total keys.  Don't use a dictionary
+      cache to reduce the memory footprint.
+    * utils.tcl:  Add language as the list of parameters that are saved
+      and restored in a cipher save file.
+    * progs/patsplit:  Better command line argument processing.
+
+Tue Aug 12 13:50:40 PDT 2003 wart@kobold.org
+    * cipher.spec:  Bumped release to 2.  Preparing for an interim release.
+    * utils.tcl:  Fixed minor typo.
+
+Mon Aug 11 22:56:57 PDT 2003 wart@kobold.org
+    * twosquare.c:  Use a static buffer for storing the twosquare plaintext.
+      This reduces the number of calls to malloc() when repeatedly trying
+      new keys for the twosquare cipher.
+    * trisquaretipearch:  Added simple program for locating good matches for
+      a trisquare tip based on the number of naturals in each possible tip
+      location.
+    * library/hillclimb.tcl:  Added new routine for performing a hillclimb
+      on every possible pat tip location.  This turns out to be very useful
+      for hillclimbing on a conjugated matrix bifid cipher, or for just
+      hillclimbing a pat cipher where the tip location is not known.
+    * progs/pathilltipsearch:
+    * progs/cmbifidsolve:  Use the new library routine for performing a
+      hillclimb on every possible pat tip location.
+    * library/utils.tcl:
+    * progs/kshunt:
+    * progs/keysquaresearch:
+    * progs/bazsol:  Don't hardcode the total number of possible key
+      routes.
+
+Sat Aug  9 11:53:50 PDT 2003 wart@kobold.org
+    * tests/route.test:  Added tests for more routes.
+    * progs/ioc:  Fixed stack trace when using the -period option.
+    * progs/nicsolve:  Changed default stepinterval.
+    * progs/hillclimb:  Allow ciphertext to be read from standard input.
+    * library/hillclimb.tcl:  First pass at a subroutine for performing
+      a hillclimb with patristocrat tip location. (unfinished)
+    * library/utils.tcl:  Updated some procedure headers.  Fixed bug in
+      the result for a periodic ioc calculation.
+    * cipher.h:  Added more routes.
+    * aristocrat.c:  Moved allocation of one piece of memory until after
+      some extra input validation.
+    * route.c:  Added "-numroutes" option so that new routes can be
+      added without necessatating the need to modify the route-based
+      scripts.  Added 12 new routes for row x row (normal and alternating)
+      and col x col (normal and alternating) starting in the other 3 corners.
+    * solvemysz.c:  Changed type of the iteration counter to an unsigned
+      long.
+
+Thu Aug  7 12:33:45 CEST 2003 wart@kobold.org
+    * bacon.c:  Highly optimized the solve routine.  Sped up solving by
+      two orders of magnitude.  It's now possible to go through all 2^26
+      possible baconian keys and filter out the invalid bacon text (anything
+      that causes a group to start with 2 b's) in under 10 seconds on a 2.4GHz
+      computer.
+    * route.c:  Fixed bug in route autosolver that was causing it not to
+      restore the cipher to the best known route when finished.
+    * progs/csolve:  Use better command line processing to make command line
+      arguments easier to use.
+    * progs/cmbifidsolve:  Improved the command line usage.  Made it possible
+      to specify a tip without a tip starting location.
+    * tests/route.test:  Start of a test suite for route ciphers.
+
+Wed Aug  6 11:26:38 CEST 2003 wart@kobold.org
+    * Released 1.5.6
+    * nicodemus.c:  Fixed bug when building with gcc < 3.2
+    * Makefile.in:  Added rpm optimization flags to the standalone apps
+      solvemysz and solver.  Move RPM optimization flags after the normal
+      C flags for the tcipher objects so that the RPM -O optimization takes
+      precedence.
+    * configure.in:
+    * configure:
+    * cipher.spec:  Bumped version to 1.5.6
+
+Tue Aug  5 14:47:58 CEST 2003 wart@kobold.org
+    * Many memory leak cleanups.
+    * cipherInit.c:  Removed false comment.
+    * cipherUtil.c:  Removed some unnecessary debugging lines.
+    * aristocrat.c:  Removed a small memory leak in the tip location
+      procedure.  Made the calls to Tcl_SetResult() more efficient by
+      indicating when the result does not have to be duplicated by the
+      interpreter.
+    * bacon.c:
+    * bifid.c:
+    * bigbifid.c:
+    * cadenus.c:
+    * fmorse.c:
+    * grandpre.c:
+    * grille.c:
+    * gromark.c:
+    * homophonic.c:
+    * playfair.c:
+    * swagman.c:
+    * trifid.c:
+    * twosquare.c:  Memory leak cleanups.  Some major, some minor.
+    * stat.c:
+    * route.c:
+    * phillips.c:  Attempts to make more small optimizations.  Looks like
+      they had very little effect.
+    * all cipher types:  Made decipher procedure semantics identical across
+      all ciphers.  Get* procs do not set interpreter result, that is the
+      prerogative of the caller.   Use more efficient method when freeing
+      the memory for the deciphered plaintext; instead of creating a duplicate,
+      just pass control of the memory to the Tcl interpreter.
+    * All C files:  Added debug header file that gets used only if dmalloc
+      support is turned on.
+    * cipher.c:  Don't double-delete the cipher object if there was an
+      error creating the cipher object command.
+    * cipherDebug.h:  Added a header file that enables the dmalloc memory
+      management/debugging library, only if dmalloc has been selected
+      through the configure script.
+    * tests/vvb.test:
+    * tests/cadenus.test:  Minor test cleanup.
+    * tests/aristocrat.test:  Added test case showing the behaviour when
+      the cipher command could not be created.
+    * library/utils.tcl:  Moved periodic index of coincidence code to the
+      utils library.
+    * progs/ioc: Use the periodic index of coincidence code from the
+      utils library.
+    * configure.in:  Added support for linking in the dmalloc debugging memory
+      management library.
+    * Makefile.in:  Add "dmalloc.log" to list of cleanup files.  Add
+      RPM_OPT_FLAGS from the rpm spec file when building a RPM.
+    * progs/keysquaresearch:  Replaced expensive regsub with a call to
+      'string map'
+    * progs/hillclimb:  Removed unnecessary comment.
+
+Mon Aug  4 11:31:47 CEST 2003 wart@kobold.org
+    * Massive optimizations.
+    * vigTypes.h:  Rewrite the vigenere/variant/beaufort pt/ct/key
+      routines as compiler macros to optimize their performance.
+    * vigTypes.c:  Removed expensive pt/ct/key conversion routines for
+      vigenere types as they have been replaced with lightweight macros.
+    * vvb.c:  Use the new macros to simplify the code.  It's much more
+      readable now.
+    * nicodemus.c:  Use a (semi)static buffer for storing the nicodemus
+      plaintext so that we don't have to reallocate memory for every call
+      to GetNicodemus().  Removed some unused code.  Added a faster
+      solving routine that fits the alphabet before permuting the ordering.
+      This improved solving speed by over 2 orders of magnitude.  Added
+      stepcommand, bestfitcommand, and related attributes.
+    * all cipher types:  Moved stepcommand, bestfitcommand, and related
+      attributes to the cipher header struct.  Cleaned up delete procedures
+      to prevent accidental memory leaks.
+    * columnar.c:  Moved stepcommand, bestfitcommand, and related attributes
+      to the cipher header struct.  Use a semi-static buffer for storing
+      the plaintext.
+    * progs/nicodemussolve:  Use a larger step interval when the keyword
+      is specified.
+    * progs/histogram:  Remove spaces from the ciphertext before periodizing
+      the ciphertext.
+    * progs/ioc:  Added "-type" argument for performing ioc calculations on
+      non-simple periodic ciphers.  Currenly only phillips is supported.
+    * progs/nicsolve:  Use built-in nicodemus solve method for solving.
+    * progs/csolve:  Use a more realistic step interval for showing the
+      progress of a columnar solve session.
+    * progs/genboard:  Print out the phillips board in groups of 8 per row
+      so that all blocks for the same row line up vertically.
+    * progs/keysquaresearch:  Don't cache the dictionary until we try to
+      split the pt up into real words.
+    * tests/nicodemus.test:  Added tests for step/best fit commands.
+    * cipher.h:  Added function declarations for setting the step and best
+      fit commands.  Added step/best fit command and related attributes to
+      cipher header struct.
+    * cipher.c:  Added utility methods for setting the step/best fit commands.
+      Added a delete procedure that must be called by all cipher types when
+      deleting the cipher command.  This delete procedure can be used in lieu
+      of defining a cipher-specific delete procedure if the cipher has no
+      cipher-specific cleanup to perform.
+    * digram.c:  Optimized the digram value routines.  Sped up autosolving of
+      columnar ciphers by an order of magnitude.
+    * solvemysz.c:  Optimized by replacing expensive digram calculation
+      with trivial table lookup.  Reduced completion times by almost an
+      order of magnitude.
+    * englishFrequencies.h:  Added language-specific frequency file.
+    * germanFrequencies.h:  Added language-specific frequency file.
+    * digram.h:  Moved language frequencies to separate files for clarity.
+    * Makefile.in:  Added various compile dependencies on header files.
+
+Fri Aug  1 16:30:47 CEST 2003 wart@kobold.org
+    * Massive nicodemus improvements.
+    * nicodemus.c:  Removed restriction on nicodemus period that was
+      preventing the use of a period > 9.  Letters are now used to
+      represent the column order instead of digits.
+    * tests/nicodemus.test:  Revised tests to use letters intead of digits
+      for nicodemus column orders.
+    * progs/nicsolve:
+    * progs/nicodemussolve:  Revised to use letters instead of digits for
+      nicodemus column orders.
+
+Fri Aug  1 10:16:25 CEST 2003 wart@kobold.org
+    * nicodemus.c:  Fixed corner case indexing bug that occurred only when
+      some of the final nicodemus blocks had length 5 and some had length 4.
+    * nicodemus.test:  Added another test case that is easier to understand.
+    * library/utils.tcl:  Fixed syntax error.
+
+Thu Jul 31 12:43:24 CEST 2003 wart@kobold.org
+    * stat.c:  Added a third field to the kasiski output for weighting
+      the kasiski values against the period.
+    * progs/kasiski: Display the new weighted value.
+    * progs/rot:  Better command line processing.
+    * progs/ioc:  Only display the mean IOC if a period was given.
+
+Wed Jul 30 22:04:12 CEST 2003 wart@kobold.org
+    * progs/ioc:  Added command line tool for calculating Index of Coincidence.
+    * progs/kasiski:  Added command line tool for performing a kasiski analysis.
+    * progs/rot:  Added command line tool for performing a caesar shifts.
+    * Makefile.in:  Added caesar cipher type and new command line tools.
+    * caesar.c:
+    * cipher.c:  Added caesar cipher type.
+    * tests/caesar.test:  Added tests for caesar cipher type.
+    * aristocrat.c:
+    * aristocrat.c:
+    * tests/aristocrat.test:  Adjusted cipher usage string.
+    * tests/nicodemus.test:  Added test for core dump on mj2003:e13 with
+      period 6.
+    * library/utils.tcl:  If - is used as a filename to readCiphertext then
+      read the cipher from stdin instead of a file named '-'.
+    * library/dictionary.tcl:  Fixed bug that was causing the dictionary
+      cache to become corrupted when adding new words.
+    * tests/dictionary.test:  Make two passes through testsuite, once with
+      caching turned on and once with it turned off.  Clear the cache after
+      each test.
+    * cipher.spec:  Added tcllib to the list of dependencies.
+    * progs/hillclimb:  Removed some commented-out code that is no longer
+      useful.
+    * progs/trifidkeysearch:  Simplified usage since the program is only
+      ever used with trifid ciphers.
+
+Mon Jul 28 06:28:05 PDT 2003 wart@kobold.org
+    * progs/digrafidsolve:  Search the dictionary in reverse order to test the
+      most common words first.
+    * library/utils.tcl:  Added lreverse procedure for reversing a list.
+
+Fri Jul 25 10:55:39 PDT 2003 wart@kobold.org
+    * Released 1.5.5
+    * configure:
+    * configure.in:
+    * cipher.spec:  Bumped version to 1.5.5
+    * doc/index.tml:  Added more links to the SourceForge project page.
+
+Thu Jul 24 12:02:32 PDT 2003 wart@kobold.org
+    * doc/index.tml:
+    * doc/playfair.tml:  Updated docs for seriated playfair.
+    * doc/template.tcl:  Added SourceForge logo to standard footer.
+    * digrafid.c:  Finished implementing digrafid cipher.  Only the restore,
+      configure, and cget methods are supported.
+    * tests/digrafid.test:  Tests for digrafid cipher.
+    * library/hillclimbCiphers.tcl:
+    * cipher.c:
+    * Makefile.in:  Added entries for digrafid cipher.
+    * progs/digrafidsolve:  Keyword hillclimber for digrafid ciphers that
+      might work a little better than the hillclimb program.
+    * tests/dictionary.test:  Added tests for dictionary routines.
+    * cipher.h:  Added macro for setting the valid characters for a 5x5
+      keysquare.
+    * route.c:  Allow # as a valid character for manipulating digrafid 3x9
+      keysquares
+    * digrafid.c:  Fixed bug where a final incomplete digrafid block was not
+      being deciphered.
+    * tests/digrafid.test:  Added a test for deciphering final incomplete
+      digrafid blocks.
+    * library/utils.tcl:  Add optional height and width arguments to the
+      keysquare generator so that it can be used with digrafid 3x9 keysquares.
+    * progs/hillclimb:  Properly initialize the initial keyword list when 
+      a keyword is and is not used.
+
+Wed Jul 23 09:32:28 PDT 2003 wart@kobold.org
+    * digrafid.c:  Checkpint checking of new cipher type before moving sources
+      to SourceForge.
+
+Mon Jul 21 12:13:24 PDT 2003 wart@kobold.org
+    * Released version 1.5.4
+    * Note:  Various improvements to command line arguments and output
+      streams to better support batch-oriented processing.  Lots of minor
+      updates were checked in all at once.
+    * cipher.spec:  Bumped version to 1.5.4.  Add locally built tcl to
+      build path because Redhat ships a broken tclConfig.sh.
+    * configure.in:  Bumped version to 1.5.4
+    * configure:  Rebuilt autogenerated file.
+    * Makefile.in:  Removed dist: target that was a duplicate of the rpm:
+      target.  Added "solver" to list of binaries.  Added "hillclimb" to list
+      of script programs.
+    * pkgIndex.tcl.in:  Added K3Board package for manipulating k3 keys
+      -- incomplete.
+    * solver.c:  Set the output filename on the command line instead of using
+      the file "output" all of the time.  Output to stdout if the output file
+      is set to "-".  Only output the cipher results.  Don't print out the
+      progress meter or progress messages anymore.
+    * solver.h:  Added missing header file.
+    * sovlemysz.c:  Fixed msising newline in output.  Added "-file" command
+      line argument for reading the ciphertext from a file instead of reading
+      from stdin.
+    * progs/hillclimb:  Simplified code for writing output.  Try to find
+      word separators in the best plaintext.  Use command line switches for
+      setting command line values instead of using positional parameters.
+    * progs/progkeysol:  Add the second-level encoding and progression index
+      to the solution output.
+    * progs/trifidkeysearch:  Perform word location on the best plaintext.
+    * progs/patsearch:  Use library routines for reading from the dictionary.
+      Cleaned up code that outputs the final solution.
+    * progs/genboard:  Added board generator for conjugated matrix
+      bifid (cmbifid)
+    * progs/bazsol:  Minor cipher output tweaks.
+    * progs/tkcrithm:  Changed procedure name.
+    * progs/keysquaresearch:  Added playfair to list of periodic ciphers to
+      support the seriated playfair.
+    * progs/cmbifidsolve:  Use library routines to read ciphertext from a file.
+    * progs/pathilltipsearch:  Use integer indices when searching for
+      tip locations to prevent an endless loop in some rare circumstances.
+    * progs/kshunt:  Use library routines for reading the dictionary files.
+    * aristocrat.c:  Allow numeric indices to be used for tip starting
+      locations.
+    * tests/aristocrat.test:  Added test for integer values for tip starting
+      locations.
+    * library/crithm.tcl:  Print results to a filename matching the intput
+      filename with a ".sol" extension, as well as stdout.
+    * library/crithm_gui.tcl:  Renamed library call to "addConstraints"
+    * library/hillclimbCiphers.tcl:  Fix typo in comment.
+    * library/utils.tcl:  Added procedure for generating k3 key fragments from
+      an aristocrat/patristocrat save file.
+
+Wed Jul  9 15:00:03 PDT 2003 wart@kobold.org
+    * progs/pathilltipsearch:  New tool for hill climbinb patristocrat ciphers
+      with a known tip but unknown tip location.
+
+Sun Jul  6 12:12:32 PDT 2003 wart@kobold.org
+    * playfair.c:  Added support for seriated playfair ciphers by enabling
+      the -period option.
+    * tests/playfair.test:  Added tests for deseriated playfair ciphers.
+
+Wed Jul  2 09:43:14 PDT 2003 wart@kobold.org
+    * progs/fmorsekeysearch:  Added key search script for fractionated morse
+      ciphers.
+
+Tue Jul  1 22:53:02 PDT 2003 wart@kobold.org
+    * progs/genboard:  Better error reporting when a bad cipher type is used.
+
+Thu Jun 19 16:03:48 PDT 2003 wart@kobold.org
+    * config/config.guess:
+    * config/config.sub:  Added files needed when using newer versions of
+      autoconf (> 2.17)
+    * Makefile.in:
+    * configure.in:
+    * configure:
+    * cipher.spec:  Simplified the process of creating rpm releases.  Just run
+      "configure" and "make rpm" to build binary and source rpm releases.
+
+Wed Nov 13 09:38:12 PST 2002 wart@kobold.org
+    * twosquare.c:  More verbose error reporting when a key has an invalid
+      length.
+    * tests/twosquare.test:
+    * tests/foursquare.test:  Added more tests for more verbose error
+      reporting for invalid key lengths.
+
+Sat Nov  9 17:14:30 PST 2002 wart@kobold.org
+    * gromark.c:  Added -keyword option.
+    * tests/gromark.test:  Added test for -keyword option.
+    * progs/nicodemussolve:  Use the dicitonary library routines for
+      managing dictionary words.
+    * progs/gengromarkboard:  Code has been merged into genboard.
+    * Makefile.in:  Removed gengromarkboard from list of scripts.
+    * progs/genboard:  Added board generator for gromark ciphers.
+
+Sun Oct 20 15:58:01 PDT 2002 wart@kobold.org
+    * library/dictionary.tcl:  Don't arbitrarily restrict the max length of a
+      word when using findWords.  Use the full range of word lengths available
+      in the dictionary.
+    * progs/patsearch:  Add keyword to the list of parameters dumped to
+      savefile.
+
+Thu Oct 17 22:58:34 PDT 2002 wart@kobold.org
+    * library/dictionary.tcl:  Added optional caching of word lists to speed up
+      word lookups.  Default is to have caching turned on.
+
+Thu Oct 17 22:56:21 PDT 2002 wart@kobold.org
+    * progs/keysquaresearch:  Use findWords procedure to make plaintext more
+      readable.
+    * progs/bazsol:
+    * progs/patsearch:  Use findWords procedure to make plaintext more readable.
+      Use the saveCipherToFile library routine to print out the solution
+      instead of doing it manually.
+    * progs/patsplit:  A command line interface to the new findWords procedure.
+    * library/utils.tcl:  Insert more comment information in the cipher save
+      output.  Added readSavedCipher proc for reading a cipher savefile.
+    * library/dictionary.tcl:  Added isWord proc for checking if a word is
+      in the dictionary.  Added addWord proc for adding a new word to the
+      dictionary.  Words with hyphens and apostrophes are added twice, once
+      with the punctuation and once without.  Added recursive findWords proc
+      for inserting spaces into plaintext that has had the spaces removed.
+    * configure:  Regenerated from previously modified configure.in file.
+    * solvemysz.c:  Allow numbers in the myszcowski cipher as per so2002:e08
+
+Sat Oct  5 11:54:51 PDT 2002 wart@kobold.org
+    * library/swagman.tcl:  Added some initial bindings for drag-n-drop to
+      make substitutions.
+    * progs/key2col:
+    * progs/dumproute:
+    * progs/dumproute.in:
+    * progs/key2col.in:  Renamed files.
+    * progs/formatsols.in:  File no longer needed in this package.
+    * tests/morse.test:  Added another conversion test.
+    * swagman.c:
+    * tests/swagman.test:  More verbose reporting when a key has an invalid
+      length.
+    * tests/trifid.test:  Added a test for restoring a key that doesn't contain
+      the # character.  This was causing a segfault.  More verbose reporting
+      when a key has an invalid length.
+    * digram.c:  Added another histogram matching function.
+    * morseCommand.c:  Assume we are converting to morse code unless otherwise
+      told.
+    * stat.c:  Plugged a small memory leak.  Added "stat histvals" subcommand
+      for measuring the fit of two histograms.
+    * doc/index.tml:  Added link to morse command documentation.
+
+Sat Oct  5 11:02:48 PDT 2002 wart@kobold.org
+    * progs/*:  Use new readCiphertext proc for reading ciphertext from files.
+    * progs/hillclimb:  Treat fixed keyword list as a list and not a string.
+    * progs/slidesolve:  Allow searching against a single keyword.
+    * progs/tkcrithm:  Renamed function for future expansion.
+
+Sat Oct  5 10:31:45 PDT 2002 wart@kobold.org
+    * trifid.c:  If a restored key has an invalid length, report what the
+      actual and expected lengths are.  Check for an empty key value for
+      the # character before returning a value.
+    * progs/ragbabysearch:  Added support for generating solution from a
+      single keyword.
+    * configure.in:  Removed dumproute and formatsols from list of generated
+      scripts.
+    * Makefile.in:  Changed dumproute from generated to static file.
+    * library/hillclimb.tcl:  Properly generate trifid keys when they have
+      holes in them.  Make sure to add the extra # to the key when filling
+      it up.
+    * library/utils.tcl:  Added function for reading ciphertext from a file.
+    * progs/genboard:  Added program for generating cipher layouts that can
+      be used for hand-solving.
+
+Tue Apr 30 10:19:08 PDT 2002 wart@kobold.org
+    * progs/keysquaresearch:  Added missing "package require CipherUtil".
+    * library/crithm_gui.tcl:  Display the current cipher file in the title bar.
+
+Wed Apr 17 18:32:15 PDT 2002 wart@kobold.org
+    * stat.c:  Updated usage string for stat command.  Modified the "histogram"
+      subcommand to return a flat list that can be used as input to the
+      Tcl command "array set"
+    * library/utils.tcl:  Added save procedure that will save any cipher type
+      to an open channel.
+    * library/ctool.tcl:  Use the save utility in the CipherUtils package to
+      save ciphers.
+    * progs/csolve:
+    * progs/keysquaresearch:  Use the new save routine to standardize saving
+      of ciphers.
+
+Sun Mar 24 20:19:08 PST 2002 wart@kobold.org
+    * grandpre.c:
+    * cipherUtil.c: Plugged up a couple of memory leaks.
+    * tests/columnar.test:
+    * tests/nitrans.test:
+    * nitrans.c:
+    * columnar.c: Added '-' as a valid ciphertext character to make
+      manipulations on partial keys more readable.
+
+Sun Mar 17 17:04:14 PST 2002 wart@kobold.org
+    * nitrans.c:
+    * columnar.c:  Added a "shift" command for moving a single column forward
+      or backwards through the key.   Ex:  abcd -> shift a+2 -> bcad
+    * tests/nitrans.test:
+    * tests/columnar.test:  Added tests for the "shift" subcommand.
+    * library/nitrans.tcl:
+    * library/columnar.tcl:  Added bindings for dragging a column around
+      to reposition it.  This is much nicer than having to enter column
+      headers with the keyboard to swap them.
+    * progs/cmbifidsolve:  Allow the use to specify the tip position with
+      a string of ciphertext.
+    * doc/nitrans.tml:
+    * doc/columnar.tml:  Added documentation for the "shift" subcommand.
+
+Mon Mar 11 22:02:18 PST 2002 wart@kobold.org
+    * library/grille.tcl:  Added mouse bindings for manipulating the
+      grille cipher without having to use the keyboard.  It was kind of
+      silly when you had to type in the row and column to punch a hole.
+    * library/ctool.tcl:  Load any bindings that may exist for a cipher
+      type when a cipher is loaded.
+    * progs/ctool.in:  Two optional command line arguments: file and type.
+      Example:  ctool solve.e13 grille
+    * tests/grille.test:  Added more substitution tests.
+    * grille.c:  Added third argument to the grille command:  orientation.
+      This should be an integer from 1-4 that indicates which orientation
+      of the grille cover should be used for the substitution.
+
+Mon Mar  4 21:55:54 PST 2002 wart@kobold.org
+    * doc/morse.tml:  Added documentation for the morse command.
+    * fmorse.c:  Added -period option for completeness.  Always returns 0.
+    * progs/tkcrithm:  Made the progress meter update in a more sane manner.
+    * library/crithm_gui.tcl:  More minor binding improvements.
+    * tests/crithmCmd.test:
+    * crithmCmd.h:
+    * crithmCmd.c:  Added "crithm iteration" subcommand for determining how
+      many iterations have been processed.  Added a "crithm stop" subcommand
+      for stopping a running instance.
+    * Released version 1.5.3
+
+Sat Mar  2 13:03:44 PST 2002 wart@kobold.org
+    * Makefile.in:
+    * pkgIndex.tcl.in:
+    * library/fmorse.tcl: Added display routines for fractionated morse ciphers.
+    * library/crithm_gui.tcl:  Pressing a math operator in the first entry
+      now updates the optionmenu and sends the focus to the second entry.
+
+Sat Feb 23 20:21:14 PST 2002 wart@kobold.org
+    * INSTALL:  Started adding notes for building on Windows using mingw
+      and cygwin.
+
+Wed Feb 20 22:58:17 PST 2002 wart@kobold.org
+    * morse.h:  Added function header for CharToMorse
+    * Makefile.in:
+    * cipherInit.c:
+    * morseCommand.h:
+    * morseCommand.c:  Added "morse" command for performing morse code
+      translations.
+    * tests/morse.test: Test suite for "morse" command.
+
+Sun Feb  3 16:19:45 PST 2002 wart@kobold.org
+    * library/ctool.tcl:  Removed extraneous space at the start of the first
+      line of new ciphers.  Made special case for loading saved swagman ciphers.
+    * librayr/swagman.tcl:  Grey out letters in the ciphertext that are
+      currently part of the plaintext.  This helps show which ciphertext
+      letters are unused.
+
+Sat Feb  2 23:14:33 PST 2002 wart@kobold.org
+    * library/tkcrithm_gui.tcl:  Added smarter key bindings for the equation
+      input widgets.  Hitting an operator {+ - / *} while in an entry widget
+      now sets the value for the menu immediately to the right.
+
+Tue Jan 29 23:39:58 PST 2002 wart@kobold.org
+    * library/aristocrat.tcl:  Fixed bug that generated an error when loading
+      a saved aristocrat cipher that contained quotes in the ciphertext.
+    * aristocrat.c:  Allow the character "/" in aristocrat ciphers.
+
+Mon Jan 28 23:28:15 PST 2002 wart@kobold.org
+    * library/ctool.tcl:  Fixed bug when loading partial swagman solutions.
+
+Sun Jan 27 00:04:29 PST 2002 wart@kobold.org
+    * Lots of files:  Lots of code cleanup.  Removed most compiler warnings
+      when compiled with -Wall.
+
+Fri Jan 18 18:06:48 PST 2002 wart@kobold.org
+    * aristocrat.c:  Rewrote a small section of code to get around a bug in gcc.
+      Removed some debugging lines.
+
+Sun Nov 11 18:52:11 PST 2001 wart@kobold.org
+    * progs/trifidkeysearch:  Changed default step interval from 2000 to 5000
+    * Makefile.in:  added 'dist' target for generating source and binary RPMS.
+    * configure.in:  substitute a couple more version values into the Makefile
+      for building RPMs.
+    * ciphertool.spec:
+    * cipher.spec:  Renamed spec file for building RPMs.
+
+Sun Sep 23 21:31:23 PDT 2001 wart@kobold.org
+    * Released version 1.5.2
+
+Sun Sep 23 21:07:33 PDT 2001 wart@kobold.org
+    * progs/hillclimb:  Prepent a space before each line in the ciphertext
+      file as it is read in so that ragbaby word separations are preserved.
+    * library/hillclimb.tcl:  Use trigram frequencies in all places instead
+      of digram frequencies.
+
+Sun Sep 23 15:12:18 PDT 2001 wart@kobold.org
+    * tests/fmorse.test:
+    * tests/pollux.test:
+    * tests/morbit.test:  Added tests for -morsetext and -fullplaintext options.
+    * morse.c: Don't append a space the the end of the string when getting
+      spacey morse translations.
+    * fmorse.c:
+    * morbit.c:
+    * pollux.c:  Removed unused -histogram option.
+
+Sat Sep 22 19:41:33 PDT 2001 wart@kobold.org
+    * pollux.c:  Added checks for null ciphertext when getting plaintext
+      or attempting to solve.
+    * tests/pollux.test:  Added test suite for pollux ciphers.
+
+Thu Sep 20 09:13:51 PDT 2001 wart@kobold.org
+    * morbit.c:  Added checks for null ciphertext when getting plaintext
+      or attempting to solve.
+    * tests/morbit.test:  Added test suite for morbit ciphers.
+
+Sun Sep 16 13:28:18 PDT 2001 wart@kobold.org
+    * progs/keysearch:
+    * progs/keysquaresearch:
+    * progs/trifidkeysearch:  Use Dictionary package to retrieve keywords
+      from the dictionary.
+
+Sat Sep 15 21:29:15 PDT 2001 wart@kobold.org
+    * gromark.c:  Added check for invalid characters in the periodic chain.
+    * fmorse.c:  Removed unused function.  Added "cget -stepinterval" and
+      the like.  They could already be configured, just not retrieved.
+    * tests/fmorse.test:  Added tests for -stepinterval and the like.
+    * tests/gromark.test:  Added tests for gromark cipher.
+    * doc/fmorse.tml:
+    * doc/ragbaby.tml:
+    * doc/index.tml:  Added docs for fmorse and ragbaby cipher types.
+    * doc/morbit.tml:  Documented a couple of undocumented features.
+    * doc/standardopts.tcl:  Added optional argument to descriptions for
+      -stepinterval and the like that print an "option not used" message
+      for ciphers that have the option but don't actually use them.
+
+Fri Sep 14 12:48:29 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * ragbaby.c:
+    * tests/ragbaby.test: Added ragbaby cipher type.
+    * progs/ragbabysearch: Autosolver for ragbaby ciphers.
+    * library/hillclimbCiphers.tcl: Helper routines for using the hill climber
+      with a ragbaby cipher.
+    * library/hillclimb.tcl: Added optional argument for overriding the
+      default swap routine used when mutating keys.  This allows the mutate
+      proc to be used outside the context of the hill climber.
+    * progs/hillclimb:  Use the dictionary package for keyword lookups.  Use
+      "append" instead of "lappend" to build up the ciphertext from the file.
+    * progs/keysquaresearch:  Display both trigram and digram values for the
+      final solution.
+
+Sun Sep  9 22:23:43 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * library/hillclimb.tcl:  Backed out some accidental changes.
+
+Sun Sep  9 22:06:30 PDT 2001 wart@kobold.org
+    * progs/cmbifidsolve:  Added autosolver for conjugated bifid ciphers.
+    * progs/hillclimb:  Append the key to the fixed key list even if there
+      are no spaces in the key.
+    * progs/gengromarkboard:  Use a real gromark cipher for generating the
+      board instead of calculating the offsets manually.
+    * tests/keygen.test:  Added test for modified error message.
+    * tests/nicodemus.test:  Added spurious newline.
+    * tests/bifid.test:  Updated tests for locate tip.
+    * library/utils.tcl:  Added routine for generating key squares from a
+      keyword.
+    * library/dictionary.tcl:  Added routine for retrieving a list of valid
+      dictionary word lengths.
+
+Sun Sep  9 20:06:01 PDT 2001 wart@kobold.org
+    * aristocrat.c:  Fixed a small memory leak.
+
+Sun Sep  9 14:15:31 PDT 2001 wart@kobold.org
+    * keygen.c:  Display the invalid keyword when "key generate -k1" detects
+      that the keyword is invalid.
+
+Tue Sep  4 00:07:05 PDT 2001 wart@kobold.org
+    * progs/hillclimb:  Fixed bug where list command was being used to
+      search a string argument.
+
+Mon Sep  3 16:57:59 PDT 2001 wart@kobold.org
+    * gromark.c:  Added -chain option for periodic gromark ciphers.
+
+Mon Sep  3 15:20:31 PDT 2001 wart@kobold.org
+    * Makefile.in:
+    * cipher.c:
+    * fmorse.test:
+    * fmorse.c:  Added fmorse cipher type.
+    * library/dictionary.tcl:  Fixed bad variable references.
+    * library/ctool.tcl:  Store the keyword when saving a cipher.
+    * tests/keygen.test:  Updated command usage string.
+    * keygen.c:  Updated command usage string.
+    * library/hillclimb.tcl:  Added support for fixing positions in a key
+      so that the hill climber won't try to move certain key entries.  This
+      is useful when working with a partially known key.
+    * library/hillclimbCiphers.tcl:  Added support for using partial keys.
+    * progs/csolve:  Fixed comment.
+    * progs/progkeysol:  Added support for porta ciphers.
+
+Fri Jul 27 14:57:03 PDT 2001 wart@kobold.org
+    * morbit.c:  Plugged a few memory leaks.  Cleaned up some code formatting.
+    * morse.c:  Reverse the order of the search for morse sequences so that
+      lowercase letters are matched before uppercase letters.  Don't append
+      an extra space at the end of every string.  Minor code cleanup.
+    * library/hillclimbCiphers.tcl: Added namespace variable
+      "fixedKeyPositions" for keeping track of which key entries must not
+      change when swapping key cells.  This is useful when we know only part
+      of a key.  Use the fixedKeyPositions variable when swapping generic
+      keys and twosquare keys.
+    * progs/hillclimb:  Minor variable name change.  If a partial key is
+      entered, assume that it represents the fixed portion of a partially
+      known key.  Only iterate through the unknown key positions.
+
+Sun Mar 25 20:44:43 PST 2001 wart@kobold.org
+    * cipher.c:
+    * gromark.c:  Added gromark cipher type.
+    * Makefile.in:  Added gromark cipher type.  Added library of dictionary
+      routines.
+    * library/dictionary.tcl:  Added library of dictionary routines.
+    * pkgIndex.tcl.in:  Added Dictionary package.
+    * grandpre.c:  Fixed buggy locate tip function.
+    * tests/grandpre.test:  Added tests for locate tip.
+    * library/utils.tcl:  Fixed bad procedure header comment.
+    * library/hillclimbCiphers.tcl:  Fixed minor bugs preventing the use of
+      twosquare and foursquare ciphers.  Added support for gromark ciphers.
+    * progs/hillclimb:  Added support for gromark ciphers.
+
+Fri Mar 23 00:19:36 PST 2001 wart@kobold.org
+    * cadenus.c:  Added "-keyword" option to cadenus ciphers
+    * tests/cadenus.test:  Added test for "-keyword" option.
+    * pkgIndex.tcl.in:  Added hillclimbCiphers.tcl to list of files in the
+      Hillclimb package.
+    * bifid.c:  Removed extra check for -type option.  Fixed bad error message.
+    * tests/bifid.test:  Minor error message change.
+    * hillclimb.tcl:  Updated recursive search start method to use new
+      decipher proc API.
+    * cipher.c:  Finished adding twosquare and foursquare cipher types.
+    * Makefile.in:  Added hillclimbCiphers.tcl to list of installed files.
+      Added compilation lines for twosquare cipher type.
+
+Mon Mar 19 09:57:07 PST 2001 wart@kobold.org
+    * library/hillclimbCiphers.tcl:  Added phillips and playfair support.
+
+Sun Mar 18 14:19:23 PST 2001 wart@kobold.org
+    * twosquare.c:  Added support for foursquare ciphers.  Changed a couple of
+      error strings.
+    * tests/foursquare.test:  Added test suite for foursquare ciphers.
+    * tests/twosquare.test:  Modified test results to reflect slightly changed
+      error strings.
+    * library/hillclimbCiphers.tcl:  Added library of cipher type-specific
+      hill climbing functions.
+    * library/hillclimb.tcl:  Modified hill climber to use more
+      ciphertype-specific functions.
+    * progs/hillclimb:  Front end to the hill climbing code.
+
+Sat Mar 17 16:05:19 PST 2001 wart@kobold.org
+    * tests/grandpre.test:  Added test file for grandpre ciphers.
+    * library/grandpre.tcl:  Fixed key display.
+    * library/ctool.tcl:  Store the result from the locate command so that
+      we may later display it to the user.
+    * crithm.tcl:  Store all successful solutions to an internal variable so we
+      do something useful with them, like save them to a file.
+    * crithm_gui.tcl:  Added a "save solution" menu entry for saving the
+      solutions to a file in the standard cipher save file format.
+    * library/bifid.tcl:  Fixed mangled display routines.  Added "locate tip"
+      support.
+    * tests/bifid.test:  Added tests for merge substitute, save/restore, and
+      locate tip.
+    * bifid.c:  Added mergesubstitute subcommand.  Added locate tip routine.
+    * trifid.c:  Added separate routine for getting trifid text.
+    * library/hillclimb.tcl:  Support routines for hill climbing solver.
+    * library/utils.tcl:  Miscellaneous useful cipher routines that don't
+      fit anywhere else.
+    * progs/trifidkeysearch:  Added another possible key type.  Best solution
+      now contains the keyword as an uncommented field.
+    * progs/patsearch:  Best solution now contains the keyword as an
+      uncommented field.
+    * progs/tkcrithm:  Store the found solutions so we can dump them to a file.
+    * progs/csolve:  Best solution is now actually printed to the temp file.
+    * progs/keysquaresearch:  Best solution now contains the keyword as an
+      uncommented field.  Added a dummy field to the restore routine to fix
+      problems with bifid restore.
+    * twosquare.c:  Added basic support (restore/get pt) for twosquare ciphers.
+    * tests/twosquare.test:  Added test suite for twosquare ciphers.
+
+Tue Feb 20 21:48:55 PST 2001 wart@kobold.org
+    * bifid.c:  BifidSubstitute() now returns ALT_SUB appropriately and sets
+      the interpreter result to the letter that was displaced.
+      Added support for single-argument restore.
+    * tests/bifid.test:  Added tests for BifidSubstitute() returning ALT_SUB.
+      Added tests for RestoreBifid failing due to an ALT_SUB.
+
+Mon Feb 19 20:39:41 PST 2001 wart@kobold.org
+    * bifid.c:  Added support for incomplete key entries.  Example:  e = 1,?
+    * library/bifid.tcl:  Added display support for incomplete key entries.
+      Removed some unecessary update calls to speed up the display.
+    * tests/bifid.test:  Added tests for incomplete key entries.
+
+Sun Feb 18 11:25:06 PST 2001 wart@kobold.org
+    * bigbifid.c:  Added substitute/undo to bigbifid type.
+    * tests/bigbifid.test:  Tests for bigbifid substitute/undo.
+    * doc/bigbifid.tml:  Documented substitute/undo methods.
+    * bifid.c:  Added utility routine for converting a letter to a ctkey index.
+    * library/bifid.tcl:  Added routines for displaying bifid ciphers.
+
+Sat Feb 17 17:35:19 PST 2001 wart@kobold.org
+    * bifid.c:  Added substitute/undo to bifid type.
+    * tests/bifid.test:  Tests for bifid substitute/undo.
+    * doc/bifid.tml:  Documented substitute/undo methods.
+    * doc/aristocrat.tml:  Documented substitute method.
+
+Fri Jan 26 10:49:00 PST 2001 wart@kobold.org
+    * progs/autokeybrute:  Added command line args for setting the start/end
+      index for brute force looping as well as setting the initial key.
+
+Thu Jan 25 10:23:21 PST 2001 wart@kobold.org
+    * progs/autokeybrute:  Added support for incomplete primers
+
+Wed Jan 24 23:19:09 PST 2001 wart@kobold.org
+    * Added brute force solver for autokey ciphers "autokeybrute"
+    * Reorganized code in autokeysol
+
+Thu Jan 11 22:01:30 PST 2001 wart@kobold.org
+    * Increased possible keyspace in progs/trifidkeysearch by generating
+      keys with the # character immidiately following the keyword.
+      Released version 1.5.1
+
+Thu Jan  4 22:26:41 PST 2001 wart@kobold.org
+    * Added explicit "package require cipher" to command line tools.
+
+Mon Jan  1 00:23:43 PST 2001 wart@kobold.org
+    * ctool.tcl:  removed argument to save_cipher.  We now use tk_getSaveFile
+      to get a save filename if one isn't known.
+    * ctool.in:  removed argument in call to save_cipher.
+
+Fri Nov  3 12:32:01 PST 2000 wart@kobold.org
+    
+    * grille.c:  Added support for grille ciphers larger than 9 x 9.
+
+Wed Nov  1 23:18:41 PST 2000 wart@kobold.org
+
+    * solvemysz.c:  Added "-maxcolcount" option for speeding up the autosolve
+    process for redefence ciphers.
+
+Tue Oct 31 16:03:49 PST 2000 wart@kobold.org
+
+    * progs/portaxbrute:
+    * progs/portaxsolve:  Added autosolvers for portax ciphers.
+
+Mon Oct 30 19:19:54 PST 2000 wart@kobold.org
+
+    * progs/gengrokmakrboard:  Modified to work with primers that are not
+    5 digits long.
+    * progs/k3search:
+    * progs/k4search:  Comment updates.
+
+Wed Oct 18 12:43:09 PDT 2000 wart@kobold.org
+    
+    * digram.c:
+    * trigram.c:  Return sum of logs of n-gram frequencies instead of raw
+    frequency counts.
+    * various:  Minor coding style changes.
+
+Sat Sep 30 16:44:14 PDT 2000 wart@kobold.org
+
+    * tests/nitrans.test:  Initial set of tests for nihilist transposition
+    * nitrans.c:  finished implementing nitrans cipher.
+    * myszcowski.c:
+    * morbit.c:  Allow -stepinterval to have a value of 0.
+    * all ciphers:  Added -language option for specifying which language
+    to use when looking up digram/trigram frequencies.
+    * csolve:  Added support for alternate languages by using the
+    CIPHER_LANGUAGE enviroment variable.
+    * configure.in:  Removed csolve from list of output files.  We no
+    longer need to patch it during the build.
+    Released version 1.5.0
+
+Sun Sep 24 19:39:41 PDT 2000 wart@kobold.org
+    * library/columnar.tcl:  Added routine for solving columnar ciphers.
+    * library/vigenere.tcl:  Added button for fitting vigenere columns.
+    * nitrans.c:  Added "cget -ptblock" option.
+    * Makefile.in:
+    * cipher.c:  Added nicodemus type.
+    * nicodemus.c:  First working version of nicodemus cipher.
+    * progs/nicodemussolve:  Added brute force solver for nicodemus ciphers.
+
+Mon Sep 18 12:33:49 PDT 2000 wart@kobold.org
+    * myszcowski.c:  Coding style changes.
+    * cadenus.c:  Plugged a memory leak in DeleteCadenus()
+
+Sun Sep 17 21:27:01 PDT 2000 wart@kobold.org
+    * vvb.c:  Fixed bug in vigenere type tip location where only the first
+    block was attempted.
+    * library/porta.tcl:  keywords are now saved to file.
+
+Thu Sep  7 22:32:03 PDT 2000 wart@kobold.org
+    * Wrote VigenereFitColumn with tests.
+
+Sun Jul  2 11:17:06 PDT 2000 wart@kobold.org
+    * Fixed segmentation fault when doing a restore on a morbit cipher.
+
+Sat Jul  1 21:51:11 PDT 2000 wart@kobold.org
+    * Added more morese code characters:  ,?.-=/
+    * Extended length of valid morse sequences from 4 to 7 to accept
+    punctuation characters.
+    * Changed from digram to trigram frequencies when evaluating
+    pollux solutions.
+
+Fri Jun 30 16:56:21 PDT 2000 wart@kobold.org
+    * Changed package require to version 8.3 from 8.3.1 in tkcrithm.
+    "package require" seems to ignore patchlevels.
+    * Generate pkgIndex.tcl from a .in file during the configure step
+    so that it gets the correct package version and library name.
+
+Thu Jun 29 23:55:12 PDT 2000 wart@kobold.org
+    * Optimized route ciphers so that they don't malloc and free
+    memory for every call to GetRoute()
+
+Thu Jun 29 11:33:01 PDT 2000 wart@kobold.org
+    * Added more links to docs.
+    * Added empty dist: target to Makefile
+    * Added more bazeries tests.
+    Released version 1.4.2
+
+Wed Jun 28 14:47:37 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Tue Jun 27 12:14:05 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Sat Jun 24 11:46:29 PDT 2000 wart@kobold.org
+    * Added more docs.
+
+Fri Jun 23 15:54:49 PDT 2000 wart@kobold.org
+    * Added more docs.
+    * Removed mkIndex.tcl.in from build.  This was the only piece that
+    required Tcl version 8.2 or later.  The rest of the package only needed
+    8.0 or later.  This was confusing some people during the install.
+    * Fixed error string when you give bad arguments to "cadenus rotate"
+    * Fixed tests to reflect modified error messages in cadenus and bifid
+    ciphers.
+
+Thu Jun 22 13:24:38 PDT 2000 wart@kobold.org
+    * Added more documentation.
+    * Report bad key used during bifid restore operation.
+
+Wed Jun 21 17:35:08 PDT 2000 wart@kobold.org
+    * Updated documentation.
+
+Tue Jun 20 16:47:03 PDT 2000 wart@kobold.org
+    * Added documentation target to Makefile.  Started writing doc index page.
+
+Mon Jun 19 18:20:53 PDT 2000 wart@kobold.org
+    * Added portax ct conversion routines
+    * Added tests for portax ct/pt conversions
+    * Moved script programs to the "progs" subdirectory to clean the source
+    area up a little.
+    * Added "autokeysol", autosolver for autokey ciphers.
+    * Added "slidebrute" for brute forcing slidefair ciphers.  Very slow.
+
+Fri Jun 16 13:56:15 PDT 2000 wart@kobold.org
+    * Added a new 'key convert' subcommand for converting to/from ct/pt/key
+    letters for vigenere, variant, beaufort ciphers.  Also addes test cases.
+    Support for porta conversions is also available but has not been tested.
+    * Added new program "slidesolve" for autosolving slidefair ciphers.
+
+Tue Jun 13 16:57:46 PDT 2000 wart@kobold.org
+    * Rewrote k4search so that it looks for keywords in a k4 keyed alphabet
+    instead of trying to autosolve k4 patristocrat ciphers.
+    * Added 'key ordervalue' subcommand for evaluating the likelihood
+    of a given string being a keyed alphabet.
+    * Changed invocation of key2col to work on Linux systems.
+
+Mon Jun 12 16:28:59 PDT 2000 wart@kobold.org
+    * Added bazeries cipher type with test suite
+    * Added bazeries autosolver 'bazsol'
+
+Fri Jun  9 10:16:54 PDT 2000 wart@kobold.org
+    * configure.in:  Added $(TCL_LIBS) to the MAKE_SHELL definition.
+    * Removed memory leak in route cipher.
+
+Thu Jun  8 18:02:51 PDT 2000 wart@kobold.org
+    * tcl.m4:  Added a little more intelligence to the configure script.
+    It should now work on vanilla RedHat 6.x systems with having to specify
+    extra configure switches.
+    * Removed version numbers from #! shell invocations.
+    * Added spec file for generating source/binary rpm releases.
+    * Released version 1.4.1
+
+Wed May 31 22:19:05 PDT 2000 wart@kobold.org
+    * Added 6xx bifid cipher (bigbifid) with test suite.
+    * Added support for solving 6x6 bifids to keysquaresearch.
+    * route ciphers now allow digits as valid characters.
+
+Tue May 30 22:55:00 PDT 2000 wart@kobold.org
+    * Added very limited support for trifid ciphers.  Only "restore" is
+      implemented, no "undo" or "substitute".
+    * Added support for solving bifids with the keysquaresearch program.
+
+Mon May 29 23:03:23 PDT 2000 wart@kobold.org
+    * Added very limited support for trifid ciphers.  Only "restore" is
+      implemented, no "undo" or "substitute".
+    * Added autosolver for the trifid cipher.
+    * Fixed bug in myszcowski substitute command that was writing to parts
+      of memory where it shouldn't have been.
+
+Sun May 28 01:09:39 PDT 2000 wart@kobold.org
+    * Added new argument to solvemysz:  -tip string
+
+Mon May 15 22:41:25 PDT 2000 wart@kobold.org
+    * Minor font tweaks to ctool to make it look good on RedHat 6.x systems.
+    * swagman cipher now uses trigram frequencies when looking for a solution.
+
+Sun May 14 19:13:27 PDT 2000 wart@kobold.org
+    * Fixed various return value problems when restoring a grandpre cipher.
+    * Added a (slow) grandpre solving script.
+
+Sat May 13 23:05:32 PDT 2000 wart@kobold.org
+    * Added new "stat trigram" command.  This command calculates fits based
+      on trigram frequencies.  Many thanks to Mary Shelley for the source
+      for the trigram frequencies.  ;)
+
+Thu May 11 18:26:16 PDT 2000 wart@kobold.org
+    * configure.in:  Add ${TCL_BIN_DIR} to list of locations to look
+      for tcl library.
+    * keysquaresearch:  Added optional 3rd argument:  keyword.  This allows
+      one to search for a solution using a specific keyword.  If a keyword
+      is not specified, the entire dictionary is searched.
+
+Wed May 10 23:02:50 PDT 2000 wart@kobold.org
+    * Added playfair cipher support, with a test suite.
+
+Sun May  7 16:56:24 PDT 2000 wart@kobold.org
+    * Added phillips cipher support, along with a test suite.
+    * Added 'keysquaresearch' script for solving ciphers that use
+      a single 5x5 keysquare key.  The phillips is the only currently
+      supported cipher of this type.
+
+Sat May  6 19:08:19 PDT 2000 wart@kobold.org
+    * Fixed out-of-bounds errors in AristocratUndo(). 
+
+Sat Mar 18 14:15:17 PST 2000 wart@kobold.org
+    * Added Time Remaining label below the solution text widget in tkcrithm.
+
+Fri Mar 17 18:29:36 PST 2000 wart@kobold.org
+    * Reworked command line parameters for solvemysz.  Usage is now:
+      solvemysz -period n ?-keyprefix x,y,z,...?
+      This will allow the user to limit the key search space.
+
+Mon Mar 13 19:23:53 PST 2000 wart@kobold.org
+    * Fixed bugs in the Makefile that were preventing a build outside of
+      the source directory.
+    * Added tkcrithm, a graphical interface to the crithm routines.
+
+Wed Mar  1 22:59:34 PST 2000 wart@kobold.org
+    * Updated all.tcl so that it doesn't choke when running in a non-tk
+      enabled shell.
+    * patsearch now reads in an entire library file before testing the
+      keywords.
+    * Added solvemysz to list of compiled programs.
+    * Fixed a few failing tests with the cadenus cipher
+
+Fri Sep 11 19:34:03 PDT 1998 wart@kobold.org
+    * Fixed bug that was producing errors when an empty cipher was created
+    * Fixed loading of previously saved aristocrat ciphers
+    * Fixed anomalies in return values for AristocratSubstitute()
+    * ALT_SUB substitutions now clear the previous substitution correctly.
+
+Sat Sep 12 15:26:32 PDT 1998 wart@kobold.org
+    * Fixed indexing of columnar keys
+    * Vigenere types were cutting off the final block if the length
+      of the cipher was not a multiple of the period
+    * Locate Tip for vigenere type ciphers was not working properly.
+      return values for VigenereSubstitute() were modified to make more
+      sense.  VigenereUndo was also fixed so that it properly cleared
+      the first column.
+    * Added "best tip location" method for vigenere types.  Tip is dragged
+      along the cipher until the best set of digrams is produced.
+
+Thu Sep 17 12:18:49 PDT 1998 wart@kobold.org
+    * Finished writing and testing route.c.
+
+Sun Sep 20 23:06:45 PDT 1998 wart@kobold.org
+    * Cadenus cipher now fixed.  New commmands:
+      cipher rotate key n	Rotates the key n characters
+      cipher rotate all n	Rotates all columns by amount n
+      cipher fit all		Fits cols 1-n with first column fixed
+      
+      Changes not relfected in ctool interface (yet)
+    * Added gronsfeld cipher.  Added gronsfeld display.
+    * cget -key for vigenere types now replaces NULLs with spaces.  This
+      probably broke the restore procedure.
+    * Cleaned up some memory leaks in vvb.c
+
+Wed Sep 23 11:15:59 PDT 1998 wart@kobold.org
+    * Added porta and gronsfeld ciphers to vvb.c.  Portax is next.
+    * Wrote myszcowski solve method.  It takes a prohibitively long
+      time for periods > ~8
+    * Small modifications so that the package will compile with Sun's
+      C compiler.
+    * tcl.h and tk.h are looked for in /usr/local/include automatically.
+    * Some cipher types were leaving the interp result undefined
+      after solving.
+
+Thu Sep 24 22:57:20 PDT 1998 wart@kobold.org
+    * Optimized the myszcowski solve method.  It's now roughly 10 times
+      faster than before.
+
+Sat Sep 26 13:30:57 PDT 1998 wart@kobold.org
+    * Loading a long grandpre cipher will resize the cipher window to fit
+      the entire cipher.
+    * Fixed bug in MyszcowskiAdjustKey(), RailfenceAdjustKey
+    * Modified csolve output to match that of ctool save files.
+
+Thu Oct  1 21:38:48 PDT 1998 wart@kobold.org
+    * Added -stepinterval, -stepcommand, and  -bestfitcommand options
+      to myszcowski.
+    * Fixed bug in all cipher types that was causing some config specs
+      to be ignored if multiple ones were specified.  For example:
+
+	    cipher1 configure -ct foo -stepinterval 4
+
+      would cause -stepinterval to be ignored.
+    * Cleaned up some potential memory leaks in myszcowski.c and
+      columnar.c
+
+Sun Oct  4 17:18:28 PDT 1998 wart@kobold.org
+    * Fixed bug in Railfence key generation.
+    * Fixed innapropriate references to fields in a Tcl_DString struct.
+    * Fixed bug in MyszcowskiSetBestFitCmd() et al.
+    * csolve now adds comments for the various solutions when printing
+      steps or best fits.
+
+Tue Oct  6 10:27:19 PDT 1998 wart@kobold.org
+    * Added bestfitcommand et al. options to pollux, morbit, and columnar
+      ciphers.
+    * MyszcowskiRestoreOrder() was complaining about invalid characters.
+      It wasn't converting from key -> keyval before checking.
+      (key - 'a' = keyval)
+    * SetMyszcowski() was returning confusing messages when no valid characters
+      were found in the ciphertext.
+    * Added nihilist transposition type "nitrans" to tcipher
+
+Fri Nov 13 15:58:32 PST 1998 wart@kobold.org
+    * Fixed core dump from the following script:
+      % [cipher create baconian]
+    * Saving a baconian cipher now saves the first level of substitution
+    * Baconian tips are now found if they fall at the end of the ciphertext
+
+Tue Nov 17 22:19:06 PST 1998 wart@kobold.org
+    * Added Swagman cipher (swagman.c and swagman.tcl)
+    * Added (slow) solve method to swagman.
+
+Tue Dec 29 23:34:50 PST 1998 wart@kobold.org
+    * Fixed bug in MorbitSolveValue().  It wasn't returning a valid value.
+    * static global variable morbit_key_elems had an embarassing error in it.
+      One key was used twice.
+    * RestoreMorbit() is now returning a valid value.
+
+Thu Dec 31 09:46:46 PST 1998 wart@kobold.org
+    * Changed output of solvemysz a little
+    * Fixed return value of RestorePollux() to return a valid value.
+    * Fixed restore proc for vigenere/beaufort/variant
+    * Added swagman "swap" command for swapping plaintext rows (key values)
+
+Tue Jan  5 11:23:23 PST 1999 wart@kobold.org
+    * Fixed porta sub/solve/restore routines.  I think all of the vigenere
+      types work now.

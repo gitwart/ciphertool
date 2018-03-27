@@ -1,0 +1,702 @@
+# keygen.test
+# Test of the keygen command
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Test groups:
+#	1.x	Error messages
+#	2.x	Valid k1 key generation
+#	3.x	Valid k1 keylist generation
+#	4.x	Valid k2 key generation
+#	5.x	Valid k2 keylist generation
+#	6.x	Valid k3 key generation
+#	7.x	Valid k3 keylist generation
+#	8.x	Valid k4 key generation
+#	9.x	Valid k4 keylist generation
+#	10.x	Key comparison
+#	11.x	key numtostring conversions
+#	12.x	Key ordering valuations
+#	13.x	Vigenere key conversions
+#	14.x	Variant key conversions
+#	15.x	Beaufort key conversions
+#	16.x	Portax ct/pt conversions
+
+test keygen-1.1 {Bad number of arguments} {
+    set result [list [catch {key} msg] $msg]
+
+} {1 {Usage:  key option ?args?}}
+
+test keygen-1.2 {Bad number of arguments} {
+    set result [list [catch {key foo} msg] $msg]
+} {1 {Unknown option foo
+Must be one of:  key generate string
+                 key match key1 key2
+                 key ordervalue string
+                 key numtostring int
+                 key convert type char1 char2}}
+
+test keygen-1.3 {Bad number of arguments} {
+    set result [list [catch {key generate} msg] $msg]
+} {1 {Usage:  key generate option ?args?}}
+
+test keygen-1.4 {Bad arguments} {
+    set result [list [catch {key generate -foo bar} msg] $msg]
+} {1 {Unknown option -foo.  Must be one of '-k1', '-k1list', '-k2', '-k2list', '-k3', '-k3list', '-k4', '-k4list'}}
+
+test keygen-1.5 {Bad arguments} {
+    set result [list [catch {key generate -k1 foo foo} msg] $msg]
+} {1 {Usage:  key generate -k1 string}}
+
+test keygen-1.6 {Bad arguments} {
+    set result [list [catch {key generate -k1list foo foo} msg] $msg]
+} {1 {Usage:  key generate -k1list string}}
+
+test keygen-1.7 {Bad number of arguments} {
+    set result [list [catch {key match} msg] $msg]
+} {1 {Usage:  key match key1 key2}}
+
+test keygen-1.8 {Unwritten function} {
+    set result [list [catch {key generate -k2 foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.9 {Unwritten function} {
+    set result [list [catch {key generate -k2list foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.10 {Unwritten function} {
+    set result [list [catch {key generate -k3 foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.11 {Unwritten function} {
+    set result [list [catch {key generate -k3list foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.12 {Unwritten function} {
+    set result [list [catch {key generate -k4 foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.13 {Unwritten function} {
+    set result [list [catch {key generate -k4list foo} msg] $msg]
+} {1 {This function is not yet written}}
+
+test keygen-1.14 {number to convert not given} {
+    set result [list [catch {key numtostring} msg] $msg]
+} {1 {Usage:  key numtostring number}}
+
+test keygen-1.15 {"number" to convert not a number} {
+    set result [list [catch {key numtostring foo} msg] $msg]
+} {1 {Argument must be a number}}
+
+test keygen-1.16 {number to convert is too large} {
+    set result [list [catch {key numtostring 1000000000} msg] $msg]
+} {1 {Value too large.  Must be less than one billion}}
+
+test keygen-2.1 {k1 simple key} {
+    set result [key generate -k1 abcdef]
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz}
+
+test keygen-2.2 {k1 simple key} {
+    set result [key generate -k1 fedcba]
+    
+    set result
+} {fedcbaghijklmnopqrstuvwxyz}
+
+test keygen-2.3 {k1 key with repeated letters} {
+    set result [key generate -k1 wherefore]
+    
+    set result
+} {wherfoabcdgijklmnpqstuvxyz}
+
+test keygen-2.4 {k1 key with repeated a's and z's} {
+    set result [key generate -k1 baazzq]
+    
+    set result
+} {bazqcdefghijklmnoprstuvwxy}
+
+test keygen-2.5 {k1 key with invalid character} {
+    set result [list [catch {key generate -k1 foo-bar} msg] $msg]
+    
+    set result
+} {1 {Invalid character found in keyword foo-bar.  All letters must be lowercase from a-z}}
+
+test keygen-3.1 {k1 keylist} {
+    set result [key generate -k1list baazzq]
+    
+    set result
+} {bazqcdefghijklmnoprstuvwxy ybazqcdefghijklmnoprstuvwx xybazqcdefghijklmnoprstuvw wxybazqcdefghijklmnoprstuv vwxybazqcdefghijklmnoprstu uvwxybazqcdefghijklmnoprst tuvwxybazqcdefghijklmnoprs stuvwxybazqcdefghijklmnopr rstuvwxybazqcdefghijklmnop prstuvwxybazqcdefghijklmno oprstuvwxybazqcdefghijklmn noprstuvwxybazqcdefghijklm mnoprstuvwxybazqcdefghijkl lmnoprstuvwxybazqcdefghijk klmnoprstuvwxybazqcdefghij jklmnoprstuvwxybazqcdefghi ijklmnoprstuvwxybazqcdefgh hijklmnoprstuvwxybazqcdefg ghijklmnoprstuvwxybazqcdef fghijklmnoprstuvwxybazqcde efghijklmnoprstuvwxybazqcd defghijklmnoprstuvwxybazqc cdefghijklmnoprstuvwxybazq qcdefghijklmnoprstuvwxybaz zqcdefghijklmnoprstuvwxyba azqcdefghijklmnoprstuvwxyb}
+
+test keygen-10.1 {keys don't match} {
+    set result [key match foo bar]
+    
+    set result
+} {0}
+
+test keygen-10.2 {keys don't match, spaces in key} {
+    set result [key match foo "b r"]
+    
+    set result
+} {0}
+
+test keygen-10.3 {keys don't match, different lengths} {
+    set result [key match foo b]
+    
+    set result
+} {0}
+
+test keygen-10.4 {keys match, no spaces} {
+    set result [key match foo foo]
+    
+    set result
+} {1}
+
+test keygen-10.5 {keys match, spaces in first key} {
+    set result [key match "foo ar" foobar]
+    
+    set result
+} {1}
+
+test keygen-10.6 {keys match, spaces at end} {
+    set result [key match "foo   " foobar]
+    
+    set result
+} {1}
+
+test keygen-10.7 {keys match, spaces at start of first key} {
+    set result [key match "  o ar" foobar]
+    
+    set result
+} {1}
+
+test keygen-10.8 {keys match, spaces in second key} {
+    set result [key match foobar "foo ar"]
+    
+    set result
+} {1}
+
+test keygen-10.9 {keys match, spaces at end of second key} {
+    set result [key match foobar "foo   "]
+    
+    set result
+} {1}
+
+test keygen-10.10 {keys match, spaces at start of second key} {
+    set result [key match foobar "  o ar"]
+    
+    set result
+} {1}
+
+test keygen-10.11 {keys don't match, no spaces} {
+    set result [key match boacdefghijklmnpqrstuvwxyz wherfoabcdgijklmnpqstuvxyz]
+    
+    set result
+} {0}
+
+test keygen-11.1 {Convert 1 through 9 to strings} {
+    set result {}
+
+    for {set i 0} {$i <= 19} {incr i} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen}
+
+test keygen-11.2 {Convert 10 through 90 to strings} {
+    set result {}
+
+    for {set i 10} {$i <= 90} {incr i 10} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {ten twenty thirty forty fifty sixty seventy eighty ninety}
+
+test keygen-11.3 {Convert 100 to 900 to strings} {
+    set result {}
+
+    for {set i 100} {$i <= 900} {incr i 100} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {{one hundred} {two hundred} {three hundred} {four hundred} {five hundred} {six hundred} {seven hundred} {eight hundred} {nine hundred}}
+
+test keygen-11.4 {Convert 1000 to 9000 to strings} {
+    set result {}
+
+    for {set i 1000} {$i < 10000} {incr i 1000} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {{one thousand} {two thousand} {three thousand} {four thousand} {five thousand} {six thousand} {seven thousand} {eight thousand} {nine thousand}}
+
+test keygen-11.5 {Convert 1000000 to 9000000 to strings} {
+    set result {}
+
+    for {set i 1000000} {$i < 10000000} {incr i 1000000} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {{one million} {two million} {three million} {four million} {five million} {six million} {seven million} {eight million} {nine million}}
+
+test keygen-11.6 {Convert numbers with both tens and ones} {
+    set result {}
+
+    for {set i 21} {$i < 100} {incr i 11} {
+	lappend result [key numtostring $i]
+    }
+
+    set result
+} {{twenty one} {thirty two} {forty three} {fifty four} {sixty five} {seventy six} {eighty seven} {ninety eight}}
+
+test keygen-11.7 {Convert a number with all possible positions filled} {
+    set result {}
+
+    lappend result [key numtostring 123456789]
+
+    set result
+} {{one hundred twenty three million four hundred fifty six thousand seven hundred eighty nine}}
+
+test keygen-12.1 {Order value for empty string} {
+    set result [key ordervalue {}]
+
+    set result
+} {0}
+
+test keygen-12.2 {Order value for string in descending order} {
+    set result [key ordervalue cba]
+
+    set result
+} {0}
+
+test keygen-12.3 {Order value for string in increasing order} {
+    set result [key ordervalue abc]
+
+    set result
+} {6}
+
+test keygen-12.4 {Order value for string in mixed increasing/decreasing order} {
+    set result [key ordervalue abcba]
+
+    set result
+} {6}
+
+test keygen-13.1 {Vigenere get key from ct, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach ct $alphabet {
+	append result "[string toupper $ct]"
+	foreach pt $alphabet {
+	    append result " [key convert vigkey $ct $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a z y x w v u t s r q p o n m l k j i h g f e d c b
+B b a z y x w v u t s r q p o n m l k j i h g f e d c
+C c b a z y x w v u t s r q p o n m l k j i h g f e d
+D d c b a z y x w v u t s r q p o n m l k j i h g f e
+E e d c b a z y x w v u t s r q p o n m l k j i h g f
+F f e d c b a z y x w v u t s r q p o n m l k j i h g
+G g f e d c b a z y x w v u t s r q p o n m l k j i h
+H h g f e d c b a z y x w v u t s r q p o n m l k j i
+I i h g f e d c b a z y x w v u t s r q p o n m l k j
+J j i h g f e d c b a z y x w v u t s r q p o n m l k
+K k j i h g f e d c b a z y x w v u t s r q p o n m l
+L l k j i h g f e d c b a z y x w v u t s r q p o n m
+M m l k j i h g f e d c b a z y x w v u t s r q p o n
+N n m l k j i h g f e d c b a z y x w v u t s r q p o
+O o n m l k j i h g f e d c b a z y x w v u t s r q p
+P p o n m l k j i h g f e d c b a z y x w v u t s r q
+Q q p o n m l k j i h g f e d c b a z y x w v u t s r
+R r q p o n m l k j i h g f e d c b a z y x w v u t s
+S s r q p o n m l k j i h g f e d c b a z y x w v u t
+T t s r q p o n m l k j i h g f e d c b a z y x w v u
+U u t s r q p o n m l k j i h g f e d c b a z y x w v
+V v u t s r q p o n m l k j i h g f e d c b a z y x w
+W w v u t s r q p o n m l k j i h g f e d c b a z y x
+X x w v u t s r q p o n m l k j i h g f e d c b a z y
+Y y x w v u t s r q p o n m l k j i h g f e d c b a z
+Z z y x w v u t s r q p o n m l k j i h g f e d c b a
+}
+
+test keygen-13.2 {Vigenere get pt from key, ct} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach ct $alphabet {
+	    append result " [key convert vigpt $key $ct]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B z a b c d e f g h i j k l m n o p q r s t u v w x y
+C y z a b c d e f g h i j k l m n o p q r s t u v w x
+D x y z a b c d e f g h i j k l m n o p q r s t u v w
+E w x y z a b c d e f g h i j k l m n o p q r s t u v
+F v w x y z a b c d e f g h i j k l m n o p q r s t u
+G u v w x y z a b c d e f g h i j k l m n o p q r s t
+H t u v w x y z a b c d e f g h i j k l m n o p q r s
+I s t u v w x y z a b c d e f g h i j k l m n o p q r
+J r s t u v w x y z a b c d e f g h i j k l m n o p q
+K q r s t u v w x y z a b c d e f g h i j k l m n o p
+L p q r s t u v w x y z a b c d e f g h i j k l m n o
+M o p q r s t u v w x y z a b c d e f g h i j k l m n
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O m n o p q r s t u v w x y z a b c d e f g h i j k l
+P l m n o p q r s t u v w x y z a b c d e f g h i j k
+Q k l m n o p q r s t u v w x y z a b c d e f g h i j
+R j k l m n o p q r s t u v w x y z a b c d e f g h i
+S i j k l m n o p q r s t u v w x y z a b c d e f g h
+T h i j k l m n o p q r s t u v w x y z a b c d e f g
+U g h i j k l m n o p q r s t u v w x y z a b c d e f
+V f g h i j k l m n o p q r s t u v w x y z a b c d e
+W e f g h i j k l m n o p q r s t u v w x y z a b c d
+X d e f g h i j k l m n o p q r s t u v w x y z a b c
+Y c d e f g h i j k l m n o p q r s t u v w x y z a b
+Z b c d e f g h i j k l m n o p q r s t u v w x y z a
+}
+
+test keygen-13.3 {Vigenere get ct from key, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach pt $alphabet {
+	    append result " [key convert vigct $key $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B b c d e f g h i j k l m n o p q r s t u v w x y z a
+C c d e f g h i j k l m n o p q r s t u v w x y z a b
+D d e f g h i j k l m n o p q r s t u v w x y z a b c
+E e f g h i j k l m n o p q r s t u v w x y z a b c d
+F f g h i j k l m n o p q r s t u v w x y z a b c d e
+G g h i j k l m n o p q r s t u v w x y z a b c d e f
+H h i j k l m n o p q r s t u v w x y z a b c d e f g
+I i j k l m n o p q r s t u v w x y z a b c d e f g h
+J j k l m n o p q r s t u v w x y z a b c d e f g h i
+K k l m n o p q r s t u v w x y z a b c d e f g h i j
+L l m n o p q r s t u v w x y z a b c d e f g h i j k
+M m n o p q r s t u v w x y z a b c d e f g h i j k l
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O o p q r s t u v w x y z a b c d e f g h i j k l m n
+P p q r s t u v w x y z a b c d e f g h i j k l m n o
+Q q r s t u v w x y z a b c d e f g h i j k l m n o p
+R r s t u v w x y z a b c d e f g h i j k l m n o p q
+S s t u v w x y z a b c d e f g h i j k l m n o p q r
+T t u v w x y z a b c d e f g h i j k l m n o p q r s
+U u v w x y z a b c d e f g h i j k l m n o p q r s t
+V v w x y z a b c d e f g h i j k l m n o p q r s t u
+W w x y z a b c d e f g h i j k l m n o p q r s t u v
+X x y z a b c d e f g h i j k l m n o p q r s t u v w
+Y y z a b c d e f g h i j k l m n o p q r s t u v w x
+Z z a b c d e f g h i j k l m n o p q r s t u v w x y
+}
+
+test keygen-14.1 {Variant get key from ct, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach ct $alphabet {
+	append result "[string toupper $ct]"
+	foreach pt $alphabet {
+	    append result " [key convert varkey $ct $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B z a b c d e f g h i j k l m n o p q r s t u v w x y
+C y z a b c d e f g h i j k l m n o p q r s t u v w x
+D x y z a b c d e f g h i j k l m n o p q r s t u v w
+E w x y z a b c d e f g h i j k l m n o p q r s t u v
+F v w x y z a b c d e f g h i j k l m n o p q r s t u
+G u v w x y z a b c d e f g h i j k l m n o p q r s t
+H t u v w x y z a b c d e f g h i j k l m n o p q r s
+I s t u v w x y z a b c d e f g h i j k l m n o p q r
+J r s t u v w x y z a b c d e f g h i j k l m n o p q
+K q r s t u v w x y z a b c d e f g h i j k l m n o p
+L p q r s t u v w x y z a b c d e f g h i j k l m n o
+M o p q r s t u v w x y z a b c d e f g h i j k l m n
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O m n o p q r s t u v w x y z a b c d e f g h i j k l
+P l m n o p q r s t u v w x y z a b c d e f g h i j k
+Q k l m n o p q r s t u v w x y z a b c d e f g h i j
+R j k l m n o p q r s t u v w x y z a b c d e f g h i
+S i j k l m n o p q r s t u v w x y z a b c d e f g h
+T h i j k l m n o p q r s t u v w x y z a b c d e f g
+U g h i j k l m n o p q r s t u v w x y z a b c d e f
+V f g h i j k l m n o p q r s t u v w x y z a b c d e
+W e f g h i j k l m n o p q r s t u v w x y z a b c d
+X d e f g h i j k l m n o p q r s t u v w x y z a b c
+Y c d e f g h i j k l m n o p q r s t u v w x y z a b
+Z b c d e f g h i j k l m n o p q r s t u v w x y z a
+}
+
+test keygen-14.2 {Variant get pt from key, ct} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach ct $alphabet {
+	    append result " [key convert varpt $key $ct]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B b c d e f g h i j k l m n o p q r s t u v w x y z a
+C c d e f g h i j k l m n o p q r s t u v w x y z a b
+D d e f g h i j k l m n o p q r s t u v w x y z a b c
+E e f g h i j k l m n o p q r s t u v w x y z a b c d
+F f g h i j k l m n o p q r s t u v w x y z a b c d e
+G g h i j k l m n o p q r s t u v w x y z a b c d e f
+H h i j k l m n o p q r s t u v w x y z a b c d e f g
+I i j k l m n o p q r s t u v w x y z a b c d e f g h
+J j k l m n o p q r s t u v w x y z a b c d e f g h i
+K k l m n o p q r s t u v w x y z a b c d e f g h i j
+L l m n o p q r s t u v w x y z a b c d e f g h i j k
+M m n o p q r s t u v w x y z a b c d e f g h i j k l
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O o p q r s t u v w x y z a b c d e f g h i j k l m n
+P p q r s t u v w x y z a b c d e f g h i j k l m n o
+Q q r s t u v w x y z a b c d e f g h i j k l m n o p
+R r s t u v w x y z a b c d e f g h i j k l m n o p q
+S s t u v w x y z a b c d e f g h i j k l m n o p q r
+T t u v w x y z a b c d e f g h i j k l m n o p q r s
+U u v w x y z a b c d e f g h i j k l m n o p q r s t
+V v w x y z a b c d e f g h i j k l m n o p q r s t u
+W w x y z a b c d e f g h i j k l m n o p q r s t u v
+X x y z a b c d e f g h i j k l m n o p q r s t u v w
+Y y z a b c d e f g h i j k l m n o p q r s t u v w x
+Z z a b c d e f g h i j k l m n o p q r s t u v w x y
+}
+
+test keygen-14.3 {Variant get ct from key, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach pt $alphabet {
+	    append result " [key convert varct $key $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B z a b c d e f g h i j k l m n o p q r s t u v w x y
+C y z a b c d e f g h i j k l m n o p q r s t u v w x
+D x y z a b c d e f g h i j k l m n o p q r s t u v w
+E w x y z a b c d e f g h i j k l m n o p q r s t u v
+F v w x y z a b c d e f g h i j k l m n o p q r s t u
+G u v w x y z a b c d e f g h i j k l m n o p q r s t
+H t u v w x y z a b c d e f g h i j k l m n o p q r s
+I s t u v w x y z a b c d e f g h i j k l m n o p q r
+J r s t u v w x y z a b c d e f g h i j k l m n o p q
+K q r s t u v w x y z a b c d e f g h i j k l m n o p
+L p q r s t u v w x y z a b c d e f g h i j k l m n o
+M o p q r s t u v w x y z a b c d e f g h i j k l m n
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O m n o p q r s t u v w x y z a b c d e f g h i j k l
+P l m n o p q r s t u v w x y z a b c d e f g h i j k
+Q k l m n o p q r s t u v w x y z a b c d e f g h i j
+R j k l m n o p q r s t u v w x y z a b c d e f g h i
+S i j k l m n o p q r s t u v w x y z a b c d e f g h
+T h i j k l m n o p q r s t u v w x y z a b c d e f g
+U g h i j k l m n o p q r s t u v w x y z a b c d e f
+V f g h i j k l m n o p q r s t u v w x y z a b c d e
+W e f g h i j k l m n o p q r s t u v w x y z a b c d
+X d e f g h i j k l m n o p q r s t u v w x y z a b c
+Y c d e f g h i j k l m n o p q r s t u v w x y z a b
+Z b c d e f g h i j k l m n o p q r s t u v w x y z a
+}
+
+test keygen-15.1 {Beaufort get key from ct, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach ct $alphabet {
+	append result "[string toupper $ct]"
+	foreach pt $alphabet {
+	    append result " [key convert beakey $ct $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a b c d e f g h i j k l m n o p q r s t u v w x y z
+B b c d e f g h i j k l m n o p q r s t u v w x y z a
+C c d e f g h i j k l m n o p q r s t u v w x y z a b
+D d e f g h i j k l m n o p q r s t u v w x y z a b c
+E e f g h i j k l m n o p q r s t u v w x y z a b c d
+F f g h i j k l m n o p q r s t u v w x y z a b c d e
+G g h i j k l m n o p q r s t u v w x y z a b c d e f
+H h i j k l m n o p q r s t u v w x y z a b c d e f g
+I i j k l m n o p q r s t u v w x y z a b c d e f g h
+J j k l m n o p q r s t u v w x y z a b c d e f g h i
+K k l m n o p q r s t u v w x y z a b c d e f g h i j
+L l m n o p q r s t u v w x y z a b c d e f g h i j k
+M m n o p q r s t u v w x y z a b c d e f g h i j k l
+N n o p q r s t u v w x y z a b c d e f g h i j k l m
+O o p q r s t u v w x y z a b c d e f g h i j k l m n
+P p q r s t u v w x y z a b c d e f g h i j k l m n o
+Q q r s t u v w x y z a b c d e f g h i j k l m n o p
+R r s t u v w x y z a b c d e f g h i j k l m n o p q
+S s t u v w x y z a b c d e f g h i j k l m n o p q r
+T t u v w x y z a b c d e f g h i j k l m n o p q r s
+U u v w x y z a b c d e f g h i j k l m n o p q r s t
+V v w x y z a b c d e f g h i j k l m n o p q r s t u
+W w x y z a b c d e f g h i j k l m n o p q r s t u v
+X x y z a b c d e f g h i j k l m n o p q r s t u v w
+Y y z a b c d e f g h i j k l m n o p q r s t u v w x
+Z z a b c d e f g h i j k l m n o p q r s t u v w x y
+}
+
+test keygen-15.2 {Beaufort get pt from key, ct} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach ct $alphabet {
+	    append result " [key convert beapt $key $ct]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a z y x w v u t s r q p o n m l k j i h g f e d c b
+B b a z y x w v u t s r q p o n m l k j i h g f e d c
+C c b a z y x w v u t s r q p o n m l k j i h g f e d
+D d c b a z y x w v u t s r q p o n m l k j i h g f e
+E e d c b a z y x w v u t s r q p o n m l k j i h g f
+F f e d c b a z y x w v u t s r q p o n m l k j i h g
+G g f e d c b a z y x w v u t s r q p o n m l k j i h
+H h g f e d c b a z y x w v u t s r q p o n m l k j i
+I i h g f e d c b a z y x w v u t s r q p o n m l k j
+J j i h g f e d c b a z y x w v u t s r q p o n m l k
+K k j i h g f e d c b a z y x w v u t s r q p o n m l
+L l k j i h g f e d c b a z y x w v u t s r q p o n m
+M m l k j i h g f e d c b a z y x w v u t s r q p o n
+N n m l k j i h g f e d c b a z y x w v u t s r q p o
+O o n m l k j i h g f e d c b a z y x w v u t s r q p
+P p o n m l k j i h g f e d c b a z y x w v u t s r q
+Q q p o n m l k j i h g f e d c b a z y x w v u t s r
+R r q p o n m l k j i h g f e d c b a z y x w v u t s
+S s r q p o n m l k j i h g f e d c b a z y x w v u t
+T t s r q p o n m l k j i h g f e d c b a z y x w v u
+U u t s r q p o n m l k j i h g f e d c b a z y x w v
+V v u t s r q p o n m l k j i h g f e d c b a z y x w
+W w v u t s r q p o n m l k j i h g f e d c b a z y x
+X x w v u t s r q p o n m l k j i h g f e d c b a z y
+Y y x w v u t s r q p o n m l k j i h g f e d c b a z
+Z z y x w v u t s r q p o n m l k j i h g f e d c b a
+}
+
+test keygen-15.3 {Beaufort get ct from key, pt} {
+    set result {}
+    set alphabet "a b c d e f g h i j k l m n o p q r s t u v w x y z"
+
+    set result "  [string toupper $alphabet]\n"
+    foreach key $alphabet {
+	append result "[string toupper $key]"
+	foreach pt $alphabet {
+	    append result " [key convert beact $key $pt]"
+	}
+	append result "\n"
+    }
+
+    set result
+} {  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+A a z y x w v u t s r q p o n m l k j i h g f e d c b
+B b a z y x w v u t s r q p o n m l k j i h g f e d c
+C c b a z y x w v u t s r q p o n m l k j i h g f e d
+D d c b a z y x w v u t s r q p o n m l k j i h g f e
+E e d c b a z y x w v u t s r q p o n m l k j i h g f
+F f e d c b a z y x w v u t s r q p o n m l k j i h g
+G g f e d c b a z y x w v u t s r q p o n m l k j i h
+H h g f e d c b a z y x w v u t s r q p o n m l k j i
+I i h g f e d c b a z y x w v u t s r q p o n m l k j
+J j i h g f e d c b a z y x w v u t s r q p o n m l k
+K k j i h g f e d c b a z y x w v u t s r q p o n m l
+L l k j i h g f e d c b a z y x w v u t s r q p o n m
+M m l k j i h g f e d c b a z y x w v u t s r q p o n
+N n m l k j i h g f e d c b a z y x w v u t s r q p o
+O o n m l k j i h g f e d c b a z y x w v u t s r q p
+P p o n m l k j i h g f e d c b a z y x w v u t s r q
+Q q p o n m l k j i h g f e d c b a z y x w v u t s r
+R r q p o n m l k j i h g f e d c b a z y x w v u t s
+S s r q p o n m l k j i h g f e d c b a z y x w v u t
+T t s r q p o n m l k j i h g f e d c b a z y x w v u
+U u t s r q p o n m l k j i h g f e d c b a z y x w v
+V v u t s r q p o n m l k j i h g f e d c b a z y x w
+W w v u t s r q p o n m l k j i h g f e d c b a z y x
+X x w v u t s r q p o n m l k j i h g f e d c b a z y
+Y y x w v u t s r q p o n m l k j i h g f e d c b a z
+Z z y x w v u t s r q p o n m l k j i h g f e d c b a
+}
+
+test keygen-16.1 {Portax ct generation} {
+    set result [key convert portaxct a ie]
+
+    set result
+} {cq}
+
+test keygen-16.2 {Portax ct generation} {
+    set result [key convert portaxct e ta]
+    lappend result [key convert portaxct e bg]
+    lappend result [key convert portaxct e to]
+    lappend result [key convert portaxct a hr]
+    lappend result [key convert portaxct a ie]
+    lappend result [key convert portaxct s el]
+    lappend result [key convert portaxct s rt]
+    lappend result [key convert portaxct s em]
+    lappend result [key convert portaxct y ey]
+    lappend result [key convert portaxct y ds]
+    lappend result [key convert portaxct y wx]
+    lappend result [key convert portaxct u in]
+    lappend result [key convert portaxct u no]
+    lappend result [key convert portaxct u na]
+
+    set result
+} {nm qh um ip cq jb wj ka ag ke yt jl ua db}

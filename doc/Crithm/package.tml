@@ -1,0 +1,66 @@
+[docHeader "Cipher Package - Crithm"]
+[Command Crithm "Cryptarithm utilities."]
+
+[SynopsisHeader]
+[Synopsis {} "package require Crithm"]
+
+[StartDescription VARIABLES]
+
+[Description "Crithm::stepInterval" stepInterval \
+""]
+
+[Description "Crithm::iterCount" iterCount \
+""]
+
+[Description "Crithm::solutionList" solutionList \
+""]
+
+[Description "Crithm::nonzeroLetters" nonzeroLetters \
+""]
+
+[EndDescription]
+
+[StartDescription COMMANDS]
+
+[Description "Crithm::start" start \
+""]
+
+[Description "Crithm::checkKey" checkKey \
+""]
+
+[Description "Crithm::sortKey" sortKey \
+""]
+
+[Description "Crithm::permProc" permProc \
+""]
+
+[Description "Crithm::createConstraint" createConstraint \
+""]
+
+[Description "Crithm::createNonzeroConstraint" createNonzeroConstraint \
+""]
+
+[Description "Crithm::wordToCode" wordToCode \
+""]
+
+[Description "Crithm::getWordType" getWordType \
+""]
+
+[Description "Crithm::isValidOperator" isValidOperator \
+""]
+
+[Description "Crithm::getUniqueLetters" getUniqueLetters \
+""]
+
+[Description "Crithm::createCheckKeyProc" createCheckKeyProc \
+""]
+
+[Description "Crithm::saveCipherFile" saveCipherFile \
+""]
+
+[Description "Crithm::saveSolution" saveSolution \
+""]
+
+[EndDescription]
+
+[footer]

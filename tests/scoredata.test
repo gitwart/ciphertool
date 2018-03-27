@@ -1,0 +1,195 @@
+# score.test
+# Tests of the "score" Tcl command.
+
+package require cipher
+package require Scoredata
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+test scoredata-1.1 {Load precalculated data from a file} {
+    ::tcltest::makeFile "\$s add aa 1\n\$s add ab 2\n\$s add er 3" \
+	    testScores
+
+    set scoreObj [score create digramlog]
+    Scoredata::loadData $scoreObj {} \
+	    $::tcltest::temporaryDirectory/testScores
+
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value aa] [$scoreObj value ab] [$scoreObj value er]]
+    rename $scoreObj {}
+
+    set result
+} {1.0 2.0 3.0}
+
+test scoredata-1.2 {Load a language-specific table from a text file.} {
+    set oldDataDir $Scoredata::dataDir
+    ::tcltest::makeFile "\$s add ab 2.0
+\$s add er 5.0" \
+	   digramlogData_german.tcl
+    set Scoredata::dataDir $::tcltest::temporaryDirectory
+
+    set scoreObj [score create digramlog]
+    Scoredata::loadData $scoreObj german
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value ab] [$scoreObj value cd] [$scoreObj value er]]
+    rename $scoreObj {}
+    set Scoredata::dataDir $oldDataDir
+
+    set result
+} {2.0 0.0 5.0}
+
+test scoredata-1.3 {Load a language-specific ngram table from a text file.} {
+    set oldDataDir $Scoredata::dataDir
+    ::tcltest::makeFile "\$s add abcd 2.0
+\$s add erth 5.0" \
+	   4gramlogData_german.tcl
+    set Scoredata::dataDir $::tcltest::temporaryDirectory
+
+    set scoreObj [score create ngramlog]
+    $scoreObj elemsize 4
+    Scoredata::loadData $scoreObj german
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value abcd] [$scoreObj value cdef] [$scoreObj value erth]]
+    rename $scoreObj {}
+    set Scoredata::dataDir $oldDataDir
+
+    set result
+} {2.0 0.0 5.0}
+
+test scoredata-2.1 {Load digram frequency counts from a text file} {
+    ::tcltest::makeFile "foobarmydogfoobar" \
+	    testScores
+
+    set scoreObj [score create digramcount]
+    Scoredata::generate $scoreObj \
+	    $::tcltest::temporaryDirectory/testScores
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value fo] [$scoreObj value ab] [$scoreObj value my]]
+    rename $scoreObj {}
+
+    set result
+} {2.0 0.0 1.0}
+
+test scoredata-2.2 {Load trigram frequency counts from a text file} {
+    ::tcltest::makeFile "foobarmydogfoobar" \
+	    testScores
+
+    set scoreObj [score create trigramcount]
+    Scoredata::generate $scoreObj \
+	    $::tcltest::temporaryDirectory/testScores
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value foo] [$scoreObj value abc] [$scoreObj value bar]]
+    rename $scoreObj {}
+
+    set result
+} {2.0 0.0 2.0}
+
+test scoredata-2.3 {Load 4-grams from a text file} {
+    ::tcltest::makeFile "foobarmydogfoobar" \
+	    testScores
+
+    if {[catch {
+    set scoreObj [score create ngramcount]
+    $scoreObj elemsize 4
+    Scoredata::generate $scoreObj \
+	    $::tcltest::temporaryDirectory/testScores
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value mydo] [$scoreObj value foob] [$scoreObj value obar] [$scoreObj value abcd]]
+    rename $scoreObj {}
+    } msg]} {
+	puts $msg\n$::errorInfo
+    }
+
+    set result
+} {1.0 2.0 2.0 0.0}
+
+test scoredata-2.4 {Load wordtree words from a text file} {
+    ::tcltest::makeFile "my d'og has fleas my dog" \
+	    testScores
+
+    set scoreObj [score create wordtree]
+    Scoredata::generate $scoreObj \
+	    $::tcltest::temporaryDirectory/testScores
+    ::tcltest::removeFile testScores
+
+    set result [list [$scoreObj value my] [$scoreObj value the] [$scoreObj value has] [$scoreObj value dog]]
+    rename $scoreObj {}
+
+    set result
+} {4.0 0.0 9.0 9.0}
+
+test scoredata-3.1 {Dump digrams to a text file} {
+    set scoreObj [score create digramlog]
+    $scoreObj add ab 1
+    $scoreObj add bc 2
+
+    Scoredata::saveData $scoreObj $::tcltest::temporaryDirectory/testScores
+
+    set result [::tcltest::viewFile $::tcltest::temporaryDirectory/testScores]
+
+    ::tcltest::removeFile testScores
+    rename $scoreObj {}
+
+    set result
+} {$s add ab 1.0
+$s add bc 2.0}
+
+test scoredata-3.2 {Dump trigrams to a text file} {
+    set scoreObj [score create trigramlog]
+    $scoreObj add abc 1
+    $scoreObj add bcd 2
+
+    Scoredata::saveData $scoreObj $::tcltest::temporaryDirectory/testScores
+
+    set result [::tcltest::viewFile $::tcltest::temporaryDirectory/testScores]
+
+    ::tcltest::removeFile testScores
+    rename $scoreObj {}
+
+    set result
+} {$s add abc 1.0
+$s add bcd 2.0}
+
+test scoredata-3.3 {Dump a wordtree to a text file} {
+    set scoreObj [score create wordtree]
+    $scoreObj add abc 1
+    $scoreObj add bcd 2
+
+    Scoredata::saveData $scoreObj $::tcltest::temporaryDirectory/testScores
+
+    set result [::tcltest::viewFile $::tcltest::temporaryDirectory/testScores]
+
+    ::tcltest::removeFile testScores
+    rename $scoreObj {}
+
+    set result
+} {$s add abc 1.0
+$s add bcd 2.0}
+
+test scoredata-3.4 {Dump n-grams to a text file} {
+    set scoreObj [score create ngramlog]
+    $scoreObj elemsize 4
+    $scoreObj add abcd 1
+    $scoreObj add bcde 2
+
+    Scoredata::saveData $scoreObj $::tcltest::temporaryDirectory/testScores
+
+    set result [::tcltest::viewFile $::tcltest::temporaryDirectory/testScores]
+
+    ::tcltest::removeFile testScores
+    rename $scoreObj {}
+
+    set result
+} {$s add abcd 1.0
+$s add bcde 2.0}
+
+
+::tcltest::cleanupTests

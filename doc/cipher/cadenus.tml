@@ -1,0 +1,226 @@
+[docHeader "Cipher Type - cadenus"]
+[Ciphertype cadenus]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore key order" restore]
+[Synopsis <I>cipherProc</I> "rotate col|all|key offset" rotate]
+[Synopsis <I>cipherProc</I> "fit ?column1 column2?" fit]
+[Synopsis <I>cipherProc</I> "swap col1 col2" swap]
+[Synopsis <I>cipherProc</I> "undo" undo]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureOption -period n \
+"Since the period of a $cipherType cipher is based on the ciphertext length,
+this option has no effect."]
+    [ConfigureLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \[lindex \$key 0\] \[lindex \$key 1\]</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> rotate col|all|key offset" rotate \
+"This command allows you to adjust the key value for one or more columns.
+In the first case, a single column can be rotated up or down by the specified
+<B>offset</B>.  Positive values shift all letters in the column up, negative
+values shift the letters down.
+<P>
+The <B>all</B> argument specifies that all columns are to be rotated by the
+same <B>offset</B>.
+<P>
+The <B>key</B> argument adjusts the position of each column, so that each
+is moved to the right by the given <B>offset</B>.  Columns shifted off the
+right end are wrapped to the left side.  Diagramatically this appears as:
+<P>
+<B><CODE><I>cipherProc</I> rotate key 1</CODE></B>
+<P>
+has the following effect on the ciphertext:
+<BR>
+
+<TABLE>
+    <TR>
+	<TD><U>Before</U></TD>
+	<TD></TD>
+	<TD><U>After</U></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+    <TR>
+	<TD><CODE>abcd</CODE></TD>
+	<TD WIDTH=25%></TD>
+	<TD><CODE>dabc</CODE></TD>
+    </TR>
+</TABLE>
+<P>"]
+
+
+[Description "<I>cipherProc</I> fit ?column1 column2?" fit \
+"The <B>fit</B> command attempts to slide the second column against the first
+until it finds the best digram frequency count  for those two columns.  The
+letters in the first column are used for the first letter in each digram,
+and the second column provides the final letter of each digram.  The two
+columns do not need to be adjacent in order to perform this operation.  This
+routine adjusts the current key to the best match when it returns."]
+
+[Description "<I>cipherProc</I> swap column1 column2" swap \
+"Swap the two specified columns."]
+
+[Description "<I>cipherProc</I> undo" undo \
+"Clears all changes that have been made to the ciphertext."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Iterate through all (period !) combinations of possible keys.  The key
+that produces plaintext with the highest digram frequency count is used
+as the solution."]
+
+[EndDescription]
+
+[footer]

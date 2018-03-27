@@ -1,0 +1,510 @@
+# homophonic.test
+# Test of the homophonic cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the homophonic cipher
+# Laid out, the cipher looks like:
+#
+# 66 45 42 57 16 05 88 33 26 55 32 95 88 58 89 88 10 86 00
+# 82 98 31 88 73 09 02 76 62 84 04 02 63 00 84 43 43 92 86
+# 46 76 31 14 64 55 36 06 49 95 42 10 62 74 97 57 48 46 96
+# 88 42 50 40 06 27 52 42 14 49 88 57 16 53 76 16 52 42 98
+# 61 88 03 42 00 00 42 73 95 42 77 52 26 87 97 75 98 00 11
+# 79 46 87 53 50 44 86 14 82 98 31 97 51 29 23 27 91 53 40
+# 62 42 25 64 61 53 63 82
+#
+# Solution:
+#
+#  w  h  e  n  t  h  e  v  o  l  u  m  e  o  f  e  n  c  r
+#  y  p  t  e  d  m  e  s  s  a  g  e  t  r  a  f  f  i  c
+#  i  s  t  r  u  l  y  i  m  m  e  n  s  e  o  n  l  i  n
+#  e  e  n  c  i  p  h  e  r  m  e  n  t  i  s  t  h  e  p
+#  r  e  f  e  r  r  e  d  m  e  t  h  o  d  o  f  p  r  o
+#  v  i  d  i  n  g  c  r  y  p  t  o  g  r  a  p  h  i  c
+#  s  e  c  u  r  i  t  y 
+#
+# Key:  {01 26 51 76} dogs
+
+
+proc createValidCipher {} {
+    set c [cipher create homophonic -ct "66 45 42 57 16 05 88 33 26 55 32 95 88 58 89 88 10 86 00 82 98 31 88 73 09 02 76 62 84 04 02 63 00 84 43 43 92 86 46 76 31 14 64 55 36 06 49 95 42 10 62 74 97 57 48 46 96 88 42 50 40 06 27 52 42 14 49 88 57 16 53 76 16 52 42 98 61 88 03 42 00 00 42 73 95 42 77 52 26 87 97 75 98 00 11 79 46 87 53 50 44 86 14 82 98 31 97 51 29 23 27 91 53 40 62 42 25 64 61 53 63 82"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Solve tests
+#       8.x     Encoding tests
+
+test homophonic-1.1 {creation of cipher with bad length} {
+    list [catch {cipher create homophonic -ct "0"} msg] $msg
+} {1 {Odd number of valid characters found in ciphertext.}}
+
+test homophonic-1.2 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test homophonic-1.3 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test homophonic-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test homophonic-1.5 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test homophonic-1.6 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test homophonic-1.7 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test homophonic-1.8 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct pt}}
+
+test homophonic-1.9 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test homophonic-1.10 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test homophonic-1.11 {attempt to use locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test homophonic-1.12 {invalid use homophonic command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute ct pt
+                 ciphervar locate pt
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test homophonic-2.1 {invalid cipher characters} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c configure -ct foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test homophonic-2.2 {invalid characters in ciphertext} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c configure -ct 010} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Odd number of valid characters found in ciphertext.}}
+
+test homophonic-2.3 {key conflicts during restore} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c restore 01010101 abcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test homophonic-2.4 {key conflicts during substitute} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c restore 0102 aa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test homophonic-2.5 {attempt to use locate procedure} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c locate 0101 aa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {locate procedure not yet available for homophonic ciphers}}
+
+test homophonic-2.6 {bad solve method} {
+    set c [createValidCipher]
+    set result [catch {$c configure -solvemethod foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid solve algorithm.  Must be one of 'fast' or 'thorough'}}
+
+test homophonic-3.1 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+    rename $c {}
+    
+    set result
+} {365}
+
+test homophonic-3.2 {use of cget -intlength} {
+    set c [createValidCipher]
+    set result [list [$c cget -intlength]]
+    rename $c {}
+    
+    set result
+} {122}
+
+test homophonic-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test homophonic-3.4 {use of cget -ct} {
+    set c [cipher create homophonic]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test homophonic-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [list [$c cget -ct]]
+    rename $c {}
+    
+    set result
+} {6645425716058833265532958858898810860082983188730902766284040263008443439286467631146455360649954210627497574846968842504006275242144988571653761652429861880342000042739542775226879775980011794687535044861482983197512923279153406242256461536382}
+
+test homophonic-3.6 {use of cget -histogram} {
+    set c [createValidCipher]
+    set result [$c cget -histogram]
+    rename $c {}
+    
+    set result
+} {01 0 02 2 03 1 04 1 05 1 06 2 07 0 08 0 09 1 10 2 11 1 12 0 13 0 14 3 15 0 16 3 17 0 18 0 19 0 20 0 21 0 22 0 23 1 24 0 25 1 26 2 27 2 28 0 29 1 30 0 31 3 32 1 33 1 34 0 35 0 36 1 37 0 38 0 39 0 40 2 41 0 42 9 43 2 44 1 45 1 46 3 47 0 48 1 49 2 50 2 51 1 52 3 53 4 54 0 55 2 56 0 57 3 58 1 59 0 60 0 61 2 62 3 63 2 64 2 65 0 66 1 67 0 68 0 69 0 70 0 71 0 72 0 73 2 74 1 75 1 76 3 77 1 78 0 79 1 80 0 81 0 82 3 83 0 84 2 85 0 86 3 87 2 88 7 89 1 90 0 91 1 92 1 93 0 94 0 95 3 96 1 97 3 98 4 99 0 00 5}
+
+test homophonic-3.7 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                                                                                                                          }
+
+test homophonic-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {{01 26 51 76} {    }}
+
+test homophonic-3.9 {use of cget -fullkey} {
+    set c [createValidCipher]
+    set result [$c cget -fullkey]
+    rename $c {}
+    
+    set result
+} {{1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100} {{ } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { } { }}}
+
+test homophonic-3.10 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {homophonic}
+
+test homophonic-3.11 {use of undo} {
+    set c [createValidCipher]
+    $c substitute 01 a
+    $c substitute 26 a
+    $c substitute 51 a
+    $c substitute 76 a
+    $c undo {01 26 51 76}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} {    }} {                                                                                                                          }}
+
+test homophonic-3.12 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test homophonic-3.13 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test homophonic-4.1 {single valid substitution} {
+    set c [createValidCipher]
+    $c substitute 01 a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} {a   }} {    qe          k       ib   db          o   f   k           f   o   q  q     c               l       o      x      z     }}
+
+test homophonic-4.2 {multiple valid substitutions} {
+    set c [createValidCipher]
+    $c substitute 01265176 dogs
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-4.3 {multiple valid substitutions with spaces} {
+    set c [createValidCipher]
+    $c substitute {01 26 51 76} dogs
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-4.4 {alt substitution} {
+    set c [createValidCipher]
+    $c substitute 01265176 dogs
+    $c substitute 01 c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} cogs} whensgevolumeofemcryptedldssafdtrafficistqulyhmmemseonlineenchpheqmensisshepreeerredmethodofprnvidingcqyptogrzphicseburity}
+
+test homophonic-5.1 {solve from scratch} {
+    set c [createValidCipher]
+    $c solve
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-5.2 {solve with non-null key} {
+    set c [createValidCipher]
+    $c substitute 01 a
+    $c solve
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-5.3 {fast solve from scratch} {
+    set c [createValidCipher]
+    $c configure -solvemethod fast
+    $c solve
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-5.4 {fast solve with non-null key} {
+    set c [createValidCipher]
+    $c configure -solvemethod fast
+    $c substitute 01 a
+    $c solve
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-6.1 {restore with full key} {
+    set c [createValidCipher]
+    $c restore "01 26 51 76" "dogs"
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} dogs} whenthevolumeofencryptedmessagetrafficistrulyimmenseonlineenciphermentisthepreferredmethodofprovidingcryptographicsecurity}
+
+test homophonic-6.2 {restore with partial key} {
+    set c [createValidCipher]
+    $c restore "01 26 51 76" "d  s"
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{{01 26 51 76} {d  s}} {    the    me fencryp e mes age ra  ic s r   i m n  o   ne   i   r e t st  p ef rr  m t  do prov d   cryp o  a h    c    y}}
+
+
+test homophonic-8.1 {make sure the plaintext and key are consistent with the encoding function} {
+    set c [cipher create homophonic]
+    $c encode "this is a test" golf
+    set result [list [$c cget -pt] [$c cget -key]]
+    rename $c {}
+    set result
+} {thisisatest {{01 26 51 76} golf}}
+
+test homophonic-8.2 {use 'encode' output as ciphertext input} {
+    set c [cipher create homophonic]
+    set result {}
+    set ct [$c encode "this is a test" golf]
+    set c2 [cipher create homophonic -ct $ct]
+    $c2 restore 01265176 golf
+    set result [list [$c2 cget -pt] [$c2 cget -key]]
+    rename $c {}
+    rename $c2 {}
+    set result
+} {thisisatest {{01 26 51 76} golf}}
+
+test homophonic-8.3 {key too short} {
+    set c [cipher create homophonic]
+    set result [catch {$c encode "this is a test" bad} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be four lowercase letters.}}
+
+test homophonic-8.4 {key too long} {
+    set c [cipher create homophonic]
+    set result [catch {$c encode "this is a test" blade} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be four lowercase letters.}}
+
+test homophonic-8.5 {bad key character} {
+    set c [cipher create homophonic]
+    set result [catch {$c encode "this is a test" Golf} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {The key should be four lowercase letters.}}
+

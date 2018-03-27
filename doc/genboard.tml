@@ -1,0 +1,72 @@
+[docHeader "Cipher Program - genboard"]
+[Command genboard "generate a printable layouts for solving ciphers"]
+
+[SynopsisHeader]
+[Synopsis genboard "filename type ?period?"]
+
+[StartDescription]
+
+[Description "genboard filename type ?period?" {} \
+"Rewriting a cipher into a layout that is more useful for hand solving can be a
+tedious and error prone operation.  This program is used to read ciphertext
+from a file and format it in a way that can be printed out for hand solving.
+The <code>type</code> argument must be one of the supported types: 
+<ul>
+<li>homophonic</li>
+<li>twosquare</li>
+<li>phillips</li>
+<li>playfair</li>
+<li>foursquare</li>
+<li>fmorse (Fractionated Morse)</li>
+<li>trisquare</li>
+<li>bifid</li>
+<li>cmbifid (Conjugated Matrix Bifid)</li>
+<li>bigbifid (6x6 Bifid)</li>
+<li>trifid</li>
+<li>quagmire1</li>
+<li>quagmire2</li>
+<li>quagmire3</li>
+<li>quagmire4</li>
+<li>ragbaby</li>
+<li>gromark (Use the period argument to set the primer)</li>
+<li>nicodemus</li>
+</ul>
+<P>
+The period argument must be used with the periodic ciphers such as quagmires
+and nicodemus.  Use the period argument to set the primer for a gromark cipher.
+<p>
+Here is a sample layout for a gromark cipher:
+<P>
+<PRE>
+
+e v s h r e f t z b j t v r f v c l i l u h o m r v q g h e i e s u o
+2 3 4 1 7 5 7 5 8 2 2 2 3 0 4 4 5 3 4 8 9 8 7 2 7 7 5 9 9 4 2 4 8 3 6
+
+
+
+n k c h s x v o o w z r b r t r j s l f u j v a n e o m b x m b i o x
+6 2 1 9 2 8 3 0 1 0 1 3 1 1 1 4 4 2 2 5 8 6 4 7 3 4 0 1 0 7 4 1 1 7 1
+
+
+
+h p a s n p d i e o w e t w y v o a o v a r s d k n n e x i i r h o b
+5 2 8 8 6 7 0 6 4 3 7 6 0 7 0 3 6 7 7 3 9 3 4 0 2 2 7 4 2 4 9 1 6 6 3
+
+
+
+d u t g s x f b x t 
+0 7 2 9 3 7 9 1 2 0 
+
+
+
+
+ A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
+ _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _ 
+ _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _ 
+ _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _ 
+</PRE>
+"]
+
+[EndDescription]
+
+[footer]

@@ -1,0 +1,214 @@
+<HTML>
+<TITLE>Tcl Command - key</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+key - Perform key manipulations
+
+<H2>SYNOPSIS</H2>
+
+<B>key</B> <I>option args</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="generate"><B><CODE>key generate <i>-type</i> keyword1 ?keyword2?</CODE></B></A></DT>
+        <DD>Generate a keyed alphabet from a keyword or set of keywords.  The type
+must be one of <b>-k1</b>, <b>-k1list</b>, <b>-k2</b>, <b>-k2list</b>, <b>-k3</b>, or <b>-k3list</b>.  The -list types return a list of 26 keys by rotating the key through all 26 possible starting positions.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="convert"><B><CODE>key convert <I>type</I> char1 char2</CODE></B></A></DT>
+        <DD>key convert performs vigenere, variant, beaufort, porta, and portax key
+conversions.  <B><I>type</I></B> is one of the following:
+<DL>
+    <DT><B>vigpt</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the vigenere-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert vigpt b f</CODE></B>
+	<P>
+	returns <B>e</B>
+	<BR>
+	</DD>
+    <DT><B>vigct</B></DT>
+	<DD>Takes a key letter and plaintext letter as input and returns
+	the vigenere-encoded ciphertext letter.  Example:
+	<P>
+	<B><CODE>key convert vigct b f</CODE></B>
+	<P>
+	returns <B>g</B>
+	<BR>
+	</DD>
+    <DT><B>vigkey</B></DT>
+	<DD>Takes a ciphertext letter and plaintext letter as input and returns
+	the vigenere-encoded key letter.  Example:
+	<P>
+	<B><CODE>key convert vigkey b f</CODE></B>
+	<P>
+	returns <B>w</B>
+	<BR>
+	</DD>
+    <DT><B>varpt</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the variant-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert varpt b f</CODE></B>
+	<P>
+	returns <B>g</B>
+	<BR>
+	</DD>
+    <DT><B>varct</B></DT>
+	<DD>Takes a key letter and plaintext letter as input and returns
+	the variant-encoded ciphertext letter.  Example:
+	<P>
+	<B><CODE>key convert varct b f</CODE></B>
+	<P>
+	returns <B>e</B>
+	<BR>
+	</DD>
+    <DT><B>varkey</B></DT>
+	<DD>Takes a ciphertext letter and plaintext letter as input and returns
+	the variant-encoded key letter.  Example:
+	<P>
+	<B><CODE>key convert varkey b f</CODE></B>
+	<P>
+	returns <B>e</B>
+	<BR>
+	</DD>
+    <DT><B>beapt</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the beaufort-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert vigpt b f</CODE></B>
+	<P>
+	returns <B>w</B>
+	<BR>
+	</DD>
+    <DT><B>beact</B></DT>
+	<DD>Takes a key letter and plaintext letter as input and returns
+	the beaufort-encoded ciphertext letter.  Example:
+	<P>
+	<B><CODE>key convert beact b f</CODE></B>
+	<P>
+	returns <B>w</B>
+	<BR>
+	</DD>
+    <DT><B>beakey</B></DT>
+	<DD>Takes a ciphertext letter and plaintext letter as input and returns
+	the beaufort-encoded key letter.  Example:
+	<P>
+	<B><CODE>key convert beakey b f</CODE></B>
+	<P>
+	returns <B>g</B>
+	<BR>
+	</DD>
+    <DT><B>prtpt</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the porta-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert prtpt b f</CODE></B>
+	<P>
+	returns <B>s</B>
+	<BR>
+	</DD>
+    <DT><B>prtct</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the porta-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert prtpt b f</CODE></B>
+	<P>
+	returns <B>s</B>.  Since porta encipherment is reciprocal, the
+	<B>prtpt</B> and <B>prtct</B> types return the same value. 
+	<BR>
+	</DD>
+    <DT><B>prtkey</B></DT>
+	<DD>Takes a key letter and ciphertext letter as input and returns
+	the porta-decoded plaintext letter.  Example:
+	<P>
+	<B><CODE>key convert prtpt b w</CODE></B>
+	<P>
+	returns <B>q</B>
+	<BR>
+	</DD>
+    <DT><B>portaxct</B></DT>
+	<DD>Takes a key letter and plaintext letter pair as input and returns
+	the portax-encoded ciphertext letter pair.  Example:
+	<P>
+	<B><CODE>key convert portaxct c bw</CODE></B>
+	<P>
+	returns <B>ke</B>.  Since portax encipherment is reciprocal, the
+	types <B>portaxct</B> and <B>portaxpt</B> return the same values.
+	<BR>
+	</DD>
+    <DT><B>portaxpt</B></DT>
+	<DD>Takes a key letter and plaintext letter pair as input and returns
+	the portax-encoded ciphertext letter pair.  Example:
+	<P>
+	<B><CODE>key convert portaxct c ke</CODE></B>
+	<P>
+	returns <B>bw</B>.  Since portax encipherment is reciprocal, the
+	types <B>portaxct</B> and <B>portaxpt</B> return the same values.
+	<BR>
+	</DD>
+</DL>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="numtostring"><B><CODE>key numtostring number</CODE></B></A></DT>
+        <DD>Convert the numerical argument to it's english-language equivalent.  Any
+value less than one billion is accepted.
+<P>
+<B><CODE>key numtostring 123</CODE></B>
+<P>
+returns <B>one hundred twenty three</B>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="ordervalue"><B><CODE>key ordervalue string</CODE></B></A></DT>
+        <DD>Generate a value based on how ordered the string is.  This is generally
+used on keyed alphabets to determine how likely that the string is a valid
+K1 keyed alphabet.  For example, the random string
+<B>qwertyuiopasdfghjklzxcvbnm</B> gives an ordervalue of 8.  The keyed alphabet
+<B>logarithmbcdefjknpqsuvwxyz</B> has an ordervalue of 16.  This means that
+the latter is more likely to be a K1 keyed alphabet than the former.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="match"><B><CODE>key match string1 string2</CODE></B></A></DT>
+        <DD>Returns 1 or 0 based on whether or not the two keys match.  Spaces are treated
+as wildcard characters.
+<P>
+<B><CODE>key match abcdefghijklmnopqrstuvwxyz "a cdefghijklmn    stuvwxyz"</CODE></B>
+<P>
+returns <B>1</B>, while
+<P>
+<B><CODE>key match abcdefghijklmnopqrstuvwxyz "a xxxxxhijklmn    stuvwxyz"</CODE></B>
+<P>
+returns <B>0</B>
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

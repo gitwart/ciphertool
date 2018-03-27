@@ -1,0 +1,782 @@
+# quagmire.test
+# Test of the quagmire cipher types
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the quagmire1 ciphers
+# Laid out, the cipher looks like:
+#
+#       QPMGQ RBUJU YIFDM PYAIF QYYJJ JHJYC JLUUT PIDVW YMFSG AESDW HIZRB
+#       LIRVC FCZPE LBPZY YJJJH WLJJL PUP
+#
+# Solution:
+#
+#       the quag one is a periodic cipher with a keyed plain alphabet
+#       run against a straight cipher alphabet
+#
+#
+# Key block:
+# pt: springfevabcdhjklmoqtuwxyz
+# ct: WXYZABCDEFGHIJKLMNOPQRSTUV
+# ct: CDEFGHIJKLMNOPQRSTUVWXYZAB
+# ct: FGHIJKLMNOPQRSTUVWXYZABCDE
+# ct: NOPQRSTUVWXYZABCDEFGHIJKLM
+# ct: VWXYZABCDEFGHIJKLMNOPQRSTU
+# ct: IJKLMNOPQRSTUVWXYZABCDEFGH
+
+# Helper routine for testing the quagmire2 ciphers
+# Laid out, the cipher looks like:
+#
+#       JICIC OSLYK ILFVC HEBDX CCORJ IOEWA FMWKK TXBGW HRJIB KEDBJ WZABU
+#       XWHEH UXOXC U
+#
+# Solution:
+#
+#       in the quag two a straight plain alphabet is run against a
+#       keyed cipher alphabet
+#
+# Key block:
+# pt: abcdefghijklmnopqrstuvwxyz
+# ct: FEVABCDHJKLMOQTUWXYZSPRING
+# ct: LMOQTUWXYZSPRINGFEVABCDHJK
+# ct: OQTUWXYZSPRINGFEVABCDHJKLM
+# ct: WXYZSPRINGFEVABCDHJKLMOQTU
+# ct: EVABCDHJKLMOQTUWXYZSPRINGF
+# ct: RINGFEVABCDHJKLMOQTUWXYZSP
+
+
+# Helper routine for testing the quagmire3 ciphers
+# Laid out, the cipher looks like:
+#
+#       KRSLW MITJD VIABM RGQMT MLLIV IFUIX RHTNY ONVRH HIIIR MCAOV EI
+#
+# Solution:
+#
+#       the same keyed alphabet is used for plain and cipher alphabets
+#
+# Key block:
+# pt: autombilecdfghjknpqrsvwxyz
+# ct: HJKNPQRSVWXYZAUTOMBILECDFG
+# ct: ILECDFGHJKNPQRSVWXYZAUTOMB
+# ct: GHJKNPQRSVWXYZAUTOMBILECDF
+# ct: HJKNPQRSVWXYZAUTOMBILECDFG
+# ct: WXYZAUTOMBILECDFGHJKNPQRSV
+# ct: AUTOMBILECDFGHJKNPQRSVWXYZ
+# ct: YZAUTOMBILECDFGHJKNPQRSVWX
+
+
+# Helper routine for testing the quagmire4 ciphers
+# Laid out, the cipher looks like:
+#
+#       VBMRF CYISP MPBRR HEICX RREIG DX
+#
+# Solution:
+#
+#       this one employs three keywords
+#
+# Key block:
+# pt: senoryabcdfghijklmpqtuvwxz
+# ct: ERCTIONABDFGHJKLMQSUVWXYZP
+# ct: XYZPERCTIONABDFGHJKLMQSUVW
+# ct: TIONABDFGHJKLMQSUVWXYZPERC
+# ct: RCTIONABDFGHJKLMQSUVWXYZPE
+# ct: ABDFGHJKLMQSUVWXYZPERCTION
+
+
+proc createValidCipher {type {period 0}} {
+    set ct(quagmire1) "qpmgq rbuju yifdm pyaif qyyjj jhjyc jluut pidvw ymfsg aesdw hizrb lirvc fczpe lbpzy yjjjh wljjl pup"
+    set ct(quagmire2) "jicic oslyk ilfvc hebdx ccorj ioewa fmwkk txbgw hrjib kedbj wzabu xwheh uxoxc u"
+    set ct(quagmire3) "krslw mitjd viabm rgqmt mlliv ifuix rhtny onvrh hiiir mcaov ei"
+    set ct(quagmire4) "vbmrf cyisp mpbrr heicx rreig dx"
+
+    set c [cipher create $type -ct $ct($type)]
+    if {$period != 0} {
+        $c configure -period $period
+    }
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Undo tests
+#	6.x	Locate tip tests
+#	7.x	Save/Restore tests
+
+test quagmire-1.1 {error when creating cipher} {
+    set result [list [catch {cipher create quagmire1 -ct "12345"} msg] $msg]
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test quagmire-1.2 {invalid use of options} {
+    set c [createValidCipher quagmire1]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test quagmire-1.3 {invalid use of cget} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test quagmire-1.4 {invalid use of cget} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test quagmire-1.5 {invalid use of configure} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test quagmire-1.6 {invalid configure option} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test quagmire-1.7 {invalid use of restore} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct pt}}
+
+test quagmire-1.8 {invalid use of substitute} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt keyRow}}
+
+test quagmire-1.9 {invalid use of locate} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test quagmire-1.10 {invalid use of locate} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c locate foobar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for quagmire1 ciphers}}
+
+test quagmire-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test quagmire-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test quagmire-1.13 {invalid use of encode} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c encode} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar encode pt key}}
+
+test quagmire-1.14 {invalid use quagmire command} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore ct pt
+                 ciphervar substitute ct pt
+                 ciphervar undo ?ct?
+                 ciphervar encode pt key}}
+
+test quagmire-2.1 {invalid cipher characters} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c configure -ct foo1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+
+    lappend result [$c cget -ct]
+
+    rename $c {}
+    
+    set result
+} {0 {} foo}
+
+test quagmire-2.2 {invalid period value} {
+    set c [createValidCipher quagmire1]
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad period.  Integer expected:  a}}
+
+test quagmire-2.3 {invalid period value} {
+    set c [createValidCipher quagmire1]
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {period must be greater than 0.  Found -1}}
+
+test quagmire-2.4 {substitution with no period set} {
+    set c [createValidCipher quagmire1]
+    set result [catch {$c substitute a a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Period must be set before performing substitutions}}
+
+test quagmire-2.5 {get plaintext with no period set} {
+    set c [createValidCipher quagmire1]
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't decode quagmire cipher until period has been set}}
+
+test quagmire-2.6 {undo before period is set} {
+    set c [createValidCipher quagmire1]
+
+    set result [catch {$c undo # 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't undo quagmire cipher until period has been set}}
+
+test quagmire-2.7 {undo invalid character} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c undo # 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    lappend result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0 {} 3}
+
+test quagmire-2.8 {undo invalid key row} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c undo a 4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key row for quagmire undo must be less than the cipher period}}
+
+test quagmire-2.9 {substitute with null cipher} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c substitute a b 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test quagmire-2.10 {substitute with key row out of bounds} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c substitute a b 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key row for quagmire substitute must be between 0 and the cipher period}}
+
+test quagmire-2.11 {substitute with key row out of bounds} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c substitute a b 4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key row for quagmire substitute must be between 0 and the cipher period}}
+
+test quagmire-2.12 {undo with null cipher} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c undo a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test quagmire-2.13 {encode with non-listified key} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test quagmire-2.14 {encode with too many key elements} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c encode foobar "a b c d"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c d'.  Should have found 2.}}
+
+test quagmire-2.15 {restore with invalid characters in vertical keyword} {
+    set c [createValidCipher quagmire1 7]
+
+    set result [catch {$c restore foo-bar baz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in vertical keyword: foo-bar}}
+
+test quagmire-2.16 {restore with invalid characters in k1 keyword} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c restore foo bar-baz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in keyword bar-baz.  All letters must be lowercase from a-z}}
+
+test quagmire-2.17 {restore with empty k1 keyword} {
+    set c [createValidCipher quagmire1 3]
+
+    set result [catch {$c restore foo {}} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't restore quagmire with an empty keyword.}}
+
+test quagmire-3.1 {use of cget -length} {
+    set c [cipher create quagmire1]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test quagmire-3.2 {use of cget -length} {
+    set c [createValidCipher quagmire1]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {83}
+
+test quagmire-3.3 {use of cget -period} {
+    set c [createValidCipher quagmire1]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test quagmire-3.4 {use of cget -ct} {
+    set c [cipher create quagmire1]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test quagmire-3.5 {use of cget -ct with uppercase letters} {
+    set c [cipher create quagmire1 -ct "This Has Uppercase Letters."]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {thishasuppercaseletters}
+
+test quagmire-3.6 {use of cget -ct} {
+    set c [createValidCipher quagmire1]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {qpmgqrbujuyifdmpyaifqyyjjjhjycjluutpidvwymfsgaesdwhizrblirvcfczpelbpzyyjjjhwljjlpup}
+
+test quagmire-3.7 {use of cget -pt} {
+    set c [createValidCipher quagmire1 3]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                                                                                   }
+
+test quagmire-3.8 {use of cget -period} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 3
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {3}
+
+test quagmire-3.9 {use of cget -key (empty)} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 3
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                          } {                          } {                          }}
+
+test quagmire-3.10 {use of cget -type} {
+    set c [createValidCipher quagmire1]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {quagmire1}
+
+test quagmire-3.11 {use of undo} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 3
+    $c substitute abcdefghij bcdefghijk 1
+    $c undo abc 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {    defghij               } {                          } {                          }} {   h        g     j     k  k  k     j     g     e  j        g           k     k    }}
+
+test quagmire-3.12 {get default stepcommand} {
+    set c [createValidCipher quagmire1]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test quagmire-3.13 {set/get stepcommand (set to null)} {
+    set c [createValidCipher quagmire1]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test quagmire-3.14 {set/get stepcommand} {
+    set c [createValidCipher quagmire1]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test quagmire-3.15 {get default bestfitcommand} {
+    set c [createValidCipher quagmire1]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test quagmire-3.16 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher quagmire1]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test quagmire-3.17 {set/get bestfitcommand} {
+    set c [createValidCipher quagmire1]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test quagmire-3.18 {get default language} {
+    set c [createValidCipher quagmire1]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test quagmire-3.19 {set/get language} {monolingual} {
+    set c [createValidCipher quagmire1]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test quagmire-4.1 {single valid substitution} {
+    set c [createValidCipher quagmire1 6]
+    $c substitute j h 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {       j                  } {                          } {                          } {                          } {                          } {                          }} {                        h     h                                         h     h    }}
+
+test quagmire-4.2 {multiple valid substitutions} {
+    set c [createValidCipher quagmire1 6]
+    $c substitute qj th 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {       j           q      } {                          } {                          } {                          } {                          } {                          }} {t                       h     h                                         h     h    }}
+
+test quagmire-5.1 {undo with no effect} {
+    set c [createValidCipher quagmire1 6]
+    $c undo a 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          } {                          } {                          } {                          } {                          } {                          }} {                                                                                   }}
+
+test quagmire-5.2 {undo with no effect} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 6
+    $c substitute qj th 1
+    $c undo g 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {       j           q      } {                          } {                          } {                          } {                          } {                          }} {t                       h     h                                         h     h    }}
+
+test quagmire-5.3 {undo} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 6
+    $c substitute qj th 1
+    $c undo j 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                   q      } {                          } {                          } {                          } {                          } {                          }} {t                                                                                  }}
+
+test quagmire-5.4 {undo all} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 6
+    $c sub abcdef ghijkl 1
+    $c sub abcdef ghijkl 2
+    $c sub abcdef ghijkl 3
+    $c sub abcdef ghijkl 4
+    $c sub abcdef ghijkl 5
+    $c sub abcdef ghijkl 6
+    $c undo
+
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          } {                          } {                          } {                          } {                          } {                          }} {                                                                                   }}
+
+test quagmire-7.1 {quag1 restore test, full key} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 6
+    $c restore springfevabcdhjklmoqtuwxyz {wxyzabcdefghijklmnopqrstuv cdefghijklmnopqrstuvwxyzab fghijklmnopqrstuvwxyzabcde nopqrstuvwxyzabcdefghijklm vwxyzabcdefghijklmnopqrstu ijklmnopqrstuvwxyzabcdefgh}
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz fghidcbjzklmnaoxpywqrestuv lmnojihpfqrstgudvecwxkyzab opqrmlksituvwjxgyhfzanbcde wxyzutsaqbcderfogpnhivjklm efghcbaiyjklmznwoxvpqdrstu rstuponvlwxyzmajbkicdqefgh} thequagoneisaperiodiccipherwithakeyedplainalphabetrunagainstastraightcipheralphabet}
+
+test quagmire-7.2 {quag1 restore test with keywords} {
+    set c [createValidCipher quagmire1]
+    $c configure -period 6
+    $c restore flower springfever
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz fghidcbjzklmnaoxpywqrestuv lmnojihpfqrstgudvecwxkyzab opqrmlksituvwjxgyhfzanbcde wxyzutsaqbcderfogpnhivjklm efghcbaiyjklmznwoxvpqdrstu rstuponvlwxyzmajbkicdqefgh} thequagoneisaperiodiccipherwithakeyedplainalphabetrunagainstastraightcipheralphabet}
+
+test quagmire-7.3 {quag2 restore test, full key} {
+    set c [createValidCipher quagmire2]
+    $c configure -period 6
+    $c restore abcdefghijklmnopqrstuvwxyz {fevabcdhjklmoqtuwxyzspring lmoqtuwxyzspringfevabcdhjk oqtuwxyzspringfevabcdhjklm wxyzspringfevabcdhjklmoqtu evabcdhjklmoqtuwxyzspringf ringfevabcdhjklmoqtuwxyzsp}
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz fevabcdhjklmoqtuwxyzspring lmoqtuwxyzspringfevabcdhjk oqtuwxyzspringfevabcdhjklm wxyzspringfevabcdhjklmoqtu evabcdhjklmoqtuwxyzspringf ringfevabcdhjklmoqtuwxyzsp} inthequagtwoastraightplainalphabetisrunagainstakeyedcipheralphabet}
+
+test quagmire-7.4 {quag2 restore test with keywords} {
+    set c [createValidCipher quagmire2]
+    $c configure -period 6
+    $c restore flower springfever
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz fevabcdhjklmoqtuwxyzspring lmoqtuwxyzspringfevabcdhjk oqtuwxyzspringfevabcdhjklm wxyzspringfevabcdhjklmoqtu evabcdhjklmoqtuwxyzspringf ringfevabcdhjklmoqtuwxyzsp} inthequagtwoastraightplainalphabetisrunagainstakeyedcipheralphabet}
+
+test quagmire-7.5 {quag3 restore test, full key} {
+    set c [createValidCipher quagmire3]
+    $c configure -period 7
+    $c restore autombilecdfghjknpqrsvwxyz {hjknpqrsvwxyzautombilecdfg ilecdfghjknpqrsvwxyzautomb ghjknpqrsvwxyzautombilecdf hjknpqrsvwxyzautombilecdfg wxyzautombilecdfghjknpqrsv autombilecdfghjknpqrsvwxyz yzautombilecdfghjknpqrsvwx}
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz hqwxvyzarutsponmbilkjecdfg ifknjpqrgsvhdwcxyzaelutomb gpvwsxyzqaurntkombijhlecdf hqwxvyzarutsponmbilkjecdfg wubimlectdfoagzhjknyxpqrsv abcdefghijklmnopqrstuvwxyz yoleicdfmghbtjuknpqazrsvwx} thesamekeyedalphabetisusedforplainandcipheralphabets}
+
+test quagmire-7.6 {quag3 restore test with keywords} {
+    set c [createValidCipher quagmire3]
+    $c configure -period 7
+    $c restore highway automobile
+    set result [list [$c cget -key] [$c cget -pt]]
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz hqwxvyzarutsponmbilkjecdfg ifknjpqrgsvhdwcxyzaelutomb gpvwsxyzqaurntkombijhlecdf hqwxvyzarutsponmbilkjecdfg wubimlectdfoagzhjknyxpqrsv abcdefghijklmnopqrstuvwxyz yoleicdfmghbtjuknpqazrsvwx} thesamekeyedalphabetisusedforplainandcipheralphabets}
+
+test quagmire-8.1 {encode} {unsupported} {
+    set c [cipher create quagmire1]
+
+    set result [list [$c encode "the quag one is a periodic cipher with a keyed plain alphabet run against a straight cipher alphabet" flower springfever]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {qpmgqrbujuyifdmpyaifqyyjjjhjycjluutpidvwymfsgaesdwhizrblirvcfczpelbpzyyjjjhwljjlpup thequagoneisaperiodiccipherwithakeyedplainalphabetrunagainstastraightcipheralphabet {abcdefghijklmnopqrstuvwxyz fghidcbjzklmnaoxpywqrestuv lmnojihpfqrstgudvecwxkyzab opqrmlksituvwjxgyhfzanbcde wxyzutsaqbcderfogpnhivjklm efghcbaiyjklmznwoxvpqdrstu rstuponvlwxyzmajbkicdqefgh}}

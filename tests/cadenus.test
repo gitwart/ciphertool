@@ -1,0 +1,910 @@
+# cadenus.test
+# Test of the cadenus cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the cadenus cipher
+# Laid out, the cipher looks like:
+#
+#	s y s t 
+#	r e t o 
+#	m t a t 
+#	t l u s 
+#	o a t l 
+#	e e e s 
+#	f i y h 
+#	e a s d 
+#	f n m s 
+#	c h b h 
+#	n e u v 
+#	s n p m 
+#	t o f a 
+#	r e n u 
+#	s e i e 
+#	e i e l 
+#	t a r l 
+#	m e n t 
+#	i e e t 
+#	o g e v 
+#	e s i t 
+#	f a i s 
+#	l t n g 
+#	e e u v 
+#	o w u l 
+#
+# Solution:
+#
+#	a s e v 
+#	e r e l 
+#	i m i t 
+#	a t i o 
+#	n o n t 
+#	h e u s 
+#	e f u l 
+#	n e s s 
+#	o f t h 
+#	e c a d 
+#	e n u s 
+#	i s t h 
+#	a t e v 
+#	e r y m 
+#	e s s a 
+#	g e m u 
+#	s t b e 
+#	a m u l 
+#	t i p l 
+#	e o f t 
+#	w e n t 
+#	y f i v 
+#	e l e t 
+#	t e r s 
+#	l o n g 
+
+
+proc createValidCipher {} {
+    set c [cipher create cadenus -ct "systr etomt attlu soatl eeesf iyhea sdfnm schbh neuvs npmto faren useie eielt arlme ntiee togev esitf aislt ngeeu vowul"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Column rotation tests
+#       5.x     Column swapping tests
+#       6.x     Key rotation tests
+#	7.x	Restore tests
+#	8.x	Encode tests
+
+test cadenus-1.1 {creation of cipher with bad length} {
+    list [catch {cipher create cadenus -ct "abcd"} msg] $msg
+} {1 {Cipher format error:  Cadenus ciphers must have a length which is a multiple of 25.}}
+
+test cadenus-1.2 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test cadenus-1.3 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test cadenus-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test cadenus-1.5 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test cadenus-1.6 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test cadenus-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key order}}
+
+test cadenus-1.8 {attempt to substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No substitute command defined for cadenus ciphers}}
+
+test cadenus-1.9 {invalid use of rotate} {
+    set c [createValidCipher]
+
+    set result [catch {$c rotate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar rotate key|col|all amt}}
+
+test cadenus-1.10 {invalid use of rotate} {
+    set c [createValidCipher]
+
+    set result [catch {$c rotate a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-1.11 {invalid use of rotate} {
+    set c [createValidCipher]
+
+    set result [catch {$c rotate 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad rotation amount.}}
+
+test cadenus-1.12 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar fit ?col1 col2?}}
+
+test cadenus-1.13 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 0 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-1.14 {invalid use of fit} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit a 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-1.15 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test cadenus-1.16 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-1.17 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-1.18 {attempt to use locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No locate tip function defined for cadenus ciphers.}}
+
+test cadenus-1.19 {invalid use cadenus command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar rotate col amt
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test cadenus-2.1 {invalid cipher length} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -ct foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Cipher format error:  Cadenus ciphers must have a length which is a multiple of 25.}}
+
+test cadenus-2.2 {bad rotation column} {
+    set c [createValidCipher]
+
+    set result [catch {$c rotate 0 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value.}}
+
+test cadenus-2.3 {bad rotation amount} {
+    set c [createValidCipher]
+
+    set result [catch {$c rotate 1 26} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad rotation amount.}}
+
+test cadenus-2.4 {bad fit columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 0 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value}}
+
+test cadenus-2.5 {bad fit columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c fit 5 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column value}}
+
+test cadenus-2.6 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 5 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test cadenus-2.7 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 0 5} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test cadenus-2.8 {swap with no cipher set} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test cadenus-2.9 {rotate with no cipher set} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c rotate 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test cadenus-2.10 {fit with no cipher set} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c fit 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test cadenus-2.11 {encode with non-listified key} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode abcdefghijklmnopqrstuvwxy "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test cadenus-2.12 {encode with too many key elements} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode abcdefghijklmnopqrstuvwxy "1 2 3"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key '1 2 3'.  Should have found 1 or 2.}}
+
+test cadenus-2.13 {encode with key lengths that don't match} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode abcdefghijklmnopqrstuvwxy "ab 1"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Lengths of encoding key elements must match.}}
+
+test cadenus-2.14 {encode with short key elements} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode abcdefghijklmnopqrstuvwxy "ab 12"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match the period.}}
+
+test cadenus-2.15 {encode with invalid plaintext length} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode foobar "abc 123"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Cipher format error:  Cadenus ciphers must have a length which is a multiple of 25.}}
+
+test cadenus-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {100}
+
+test cadenus-3.2 {successful use of cget -period} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {4}
+
+test cadenus-3.3 {successful use of cget -ct} {
+    set c [cipher create cadenus]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test cadenus-3.4 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-3.5 {set ciphertext with uppercase letters} {
+    set c [cipher create cadenus -ct "Abcde Fghij Klmno Pqrst Uvwxy"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxy}
+
+test cadenus-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {cadenus}
+
+test cadenus-3.7 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "aaaaabbbbbcccccdddddeeeee"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbcccccdddddeeeee}
+
+test cadenus-3.8 {successful use of undo} {
+    set c [createValidCipher]
+    $c swap 1 4
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 1234} systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-3.9 {successful use getting the keyword} {
+    set c [createValidCipher]
+    $c rotate 1 1
+    $c rotate 2 2
+    $c rotate 3 3
+    $c rotate 4 4
+    set result [list [$c cget -keyword]]
+    rename $c {}
+    
+    set result
+} {bcde}
+
+test cadenus-3.10 {set period (no effect)} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg]]
+    lappend result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0 4}
+
+test cadenus-3.11 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test cadenus-3.12 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test cadenus-4.1 {short cipher set and get} {
+    set c [cipher create cadenus -ct aaaaabbbbbcccccdddddeeeee]
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+
+    set result
+} {{a 1} aaaaabbbbbcccccdddddeeeee}
+
+test cadenus-4.2 {long cipher set and get} {knownBug} {
+    set ct    "aaaaabbbbbcccccdddddeeeee"
+    append ct "fffffggggghhhhhiiiiijjjjj"
+    append ct "kkkkklllllmmmmmnnnnnooooo"
+    append ct "pppppqqqqqrrrrrsssssttttt"
+    append ct "uuuuuvvvvvwwwwwxxxxxyyyyy"
+    append ct "aaaaabbbbbcccccdddddeeeee"
+    append ct "fffffggggghhhhhiiiiijjjjj"
+    append ct "kkkkklllllmmmmmnnnnnooooo"
+    append ct "pppppqqqqqrrrrrsssssttttt"
+    append ct "uuuuuvvvvvwwwwwxxxxxyyyyy"
+    set c [cipher create cadenus -ct $ct]
+    set result [list [$c cget -key] [string match [$c cget -pt] $ct]]
+    rename $c {}
+    
+    set result
+} {{aaaaaaaaaa 1234567890} 1}
+
+test cadenus-4.3 {rotate first column no effect} {
+    set c [createValidCipher]
+    $c rotate 1 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 1234} systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-4.4 {rotate first column no effect} {
+    set c [createValidCipher]
+    $c rotate 1 25
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 1234} systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-4.5 {rotate first column no effect} {
+    set c [createValidCipher]
+    $c rotate 1 -25
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 1234} systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-4.6 {rotate first column up} {
+    set c [createValidCipher]
+    $c rotate 1 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{baaa 1234} rystmetottatoluseatlfeeseiyhfasdcnmsnhbhseuvtnpmrofasenueeietielmarlientoeetegevfsitlaisetngoeuvswul}
+
+test cadenus-4.7 {rotate first column up} {
+    set c [createValidCipher]
+    $c rotate 1 -24
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{baaa 1234} rystmetottatoluseatlfeeseiyhfasdcnmsnhbhseuvtnpmrofasenueeietielmarlientoeetegevfsitlaisetngoeuvswul}
+
+test cadenus-4.8 {rotate first column down} {
+    set c [createValidCipher]
+    $c rotate 1 -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{zaaa 1234} oystsetortatmlustatloeeseiyhfasdenmsfhbhceuvnnpmsofatenureiesielearltentmeetigevositeaisftngleuvewul}
+
+test cadenus-4.9 {rotate first column up} {
+    set c [createValidCipher]
+    $c rotate 1 24
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{zaaa 1234} oystsetortatmlustatloeeseiyhfasdenmsfhbhceuvnnpmsofatenureiesielearltentmeetigevositeaisftngleuvewul}
+
+test cadenus-4.10 {rotate last column no effect} {
+    set c [createValidCipher]
+    $c rotate 4 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 1234} systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul}
+
+test cadenus-4.11 {rotate last column up} {
+    set c [createValidCipher]
+    $c rotate 4 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaab 1234} sysorettmtastluloatseeehfiydeassfnmhchbvneumsnpatofureneseileieltartmentieevogetesisfaigltnveeulowut}
+
+test cadenus-4.12 {rotate last column down} {
+    set c [createValidCipher]
+    $c rotate 4 -24
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaab 1234} sysorettmtastluloatseeehfiydeassfnmhchbvneumsnpatofureneseileieltartmentieevogetesisfaigltnveeulowut}
+
+test cadenus-4.13 {rotate last column down} {
+    set c [createValidCipher]
+    $c rotate 4 -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaz 1234} syslrettmtaotlutoatseeelfiyseashfnmdchbsneuhsnpvtofmrenaseiueieetarlmenlieetogetesivfaitltnseeugowuv}
+
+test cadenus-4.14 {rotate last column up} {
+    set c [createValidCipher]
+    $c rotate 4 24
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaz 1234} syslrettmtaotlutoatseeelfiyseashfnmdchbsneuhsnpvtofmrenaseiueieetarlmenlieetogetesivfaitltnseeugowuv}
+
+test cadenus-4.15 {rotate all up} {
+    set c [createValidCipher]
+    $c rotate all 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{bbbb 1234} retomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowulsyst}
+
+test cadenus-4.16 {rotate all down} {
+    set c [createValidCipher]
+    $c rotate all -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{zzzz 1234} owulsystretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuv}
+
+test cadenus-4.17 {rotate before mixed cell} {
+    set c [createValidCipher]
+    $c rotate all 20
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{uuuu 1234} esitfaisltngeeuvowulsystretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogev}
+
+test cadenus-4.18 {rotate to mixed cell} {
+    set c [createValidCipher]
+    $c rotate all 21
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{vvvv 1234} faisltngeeuvowulsystretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesit}
+
+test cadenus-4.19 {rotate past mixed cell} {
+    set c [createValidCipher]
+    $c rotate all 22
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{xxxx 1234} ltngeeuvowulsystretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfais}
+
+test cadenus-5.1 {swap columns} {
+    set c [createValidCipher]
+    $c swap 1 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 2134} ysstertotmatltusaotleeesifyhaesdnfmshcbhenuvnspmotfaernuesieieelatrlemnteietgoevseitafistlngeeuvwoul}
+
+test cadenus-5.2 {swap columns} {
+    set c [createValidCipher]
+    $c swap 2 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 2134} ysstertotmatltusaotleeesifyhaesdnfmshcbhenuvnspmotfaernuesieieelatrlemnteietgoevseitafistlngeeuvwoul}
+
+test cadenus-5.3 {swap columns} {
+    set c [createValidCipher]
+    $c swap 1 4
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 4231} tyssoetrttamslutlatoseeehiyfdasesnmfhhbcveunmnpsaoftuenreeislieelarttenmteeivgeotsiesaifgtnlveuelwuo}
+
+test cadenus-5.4 {swap columns} {
+    set c [createValidCipher]
+    $c swap 4 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 4231} tyssoetrttamslutlatoseeehiyfdasesnmfhhbcveunmnpsaoftuenreeislieelarttenmteeivgeotsiesaifgtnlveuelwuo}
+
+test cadenus-5.5 {multiple swaps} {
+    set c [createValidCipher]
+    $c swap 4 1
+    $c swap 2 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 2431} ytsseotrttamlsutaltoeseeihyfadsensmfhhbcevunnmpsoafteunreeisileealrtetnmeteigveostieasiftgnlevuewluo}
+
+test cadenus-5.6 {multiple swap and rotate} {
+    set c [createValidCipher]
+    $c swap 4 1
+    $c swap 2 1
+    $c rotate 1 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{baaa 2431} etsstotrltamasuteltoiseeahyfndsehsmfehbcnvunompseafteunrieisaleeelrtetnmgteisveoatietsifegnlwvueyluo}
+
+test cadenus-6.1 {forward key rotation} {
+    set c [createValidCipher]
+    $c rotate key 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 2341} ystsetortatmlustatloeeseiyhfasdenmsfhbhceuvnnpmsofatenureiesielearltentmeetigevositeaisftngleuvewulo}
+
+test cadenus-6.2 {backward key rotation} {
+    set c [createValidCipher]
+    $c rotate key -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{aaaa 4123} tsysorettmtastluloatseeehfiydeassfnmhchbvneumsnpatofureneseileieltartmentieevogetesisfaigltnveeulowu}
+
+test cadenus-7.1 {restore with bad arg lengths} {
+    set c [createValidCipher]
+    set result [catch {$c restore foo bar} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Key and order must be the same length as the cipher period}}
+
+test cadenus-7.2 {restore with bad arg values} {
+    set c [createValidCipher]
+    set result [catch {$c restore aaaa aaaa} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in order}}
+
+test cadenus-7.3 {restore with bad arg values} {
+    set c [createValidCipher]
+    set result [catch {$c restore 1111 1111} msg]
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test cadenus-7.4 {valid restore} {
+    set c [createValidCipher]
+    $c restore abcd 4321
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcd 4321} ttttoalotuaestefleiesyafhsncdmhnsbeshuntvpormfesaneeuiiteeamlreilneotegetesfvialtitesneoguwsvuyrlsem}
+
+test cadenus-7.5 {restore with key letter after 'v/w'} {
+    set c [createValidCipher]
+    $c restore easy 2134
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{easy 2134} aseverelimitationontheusefulnessofthecadenusisthateverymessagemustbeamultipleoftwentyfiveletterslong}
+
+test cadenus-8.1 {encode} {
+    set c [cipher create cadenus]
+
+    set result [$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five letters long " [list easy 2134]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul aseverelimitationontheusefulnessofthecadenusisthateverymessagemustbeamultipleoftwentyfiveletterslong {easy 2134}}
+
+test cadenus-8.2 {encode with order determined by keyword} {
+    set c [cipher create cadenus]
+
+    set result [$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five letters long " easy]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul aseverelimitationontheusefulnessofthecadenusisthateverymessagemustbeamultipleoftwentyfiveletterslong {easy 2134}}

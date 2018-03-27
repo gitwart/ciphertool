@@ -1,0 +1,878 @@
+# nitrans.test
+# Test of the nitrans cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample nitrans cipher:
+#
+# eqder sehnu eread e
+#
+# Laid out:
+#
+# e r n e
+# q s u a
+# d e e d
+# e h r e
+#
+# Solution: (2 1 3 4)
+#
+# s q u a
+# r e n e
+# e d e d
+# h e r e
+
+proc createValidCipher {} {
+    set c [cipher create nitrans -ct "eqder sehnu eread e"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Restore tests
+#       5.x     Column swap tests
+#       6.x     Column shift tests
+#       7.x     Encode tests
+#       8.x     Solve tests
+
+test nitrans-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test nitrans-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test nitrans-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test nitrans-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test nitrans-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test nitrans-1.6 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key}}
+
+test nitrans-1.7 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test nitrans-1.8 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo}}
+
+test nitrans-1.9 {invalid use of solve} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar solve}}
+
+test nitrans-1.10 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test nitrans-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test nitrans-1.12 {invalid use of configure -read} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -read foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid direction.  Must be one of vertical or horizontal}}
+
+test nitrans-1.13 {encode with wrong # args} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c encode foobar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar encode pt key}}
+
+test nitrans-1.14 {shift with wrong # args} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c shift} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar shift col amount}}
+
+test nitrans-1.15 {invalid use nitrans command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar shift col amount
+                 ciphervar swap col1 col2
+                 ciphervar undo
+                 ciphervar encode pt key}}
+
+test nitrans-2.1 {Error during cipher creation} {
+    set result [list [catch {set c [cipher create nitrans -foo bar]} msg] $msg]
+
+    set result
+} {1 {Unknown option -foo}}
+
+test nitrans-2.2 {Invalid ciphertext length} {
+    set c [cipher create nitrans]
+    set result [list [catch {$c configure -ct foobar} msg] $msg]
+    rename $c {}
+    set result
+} {1 {Invalid cipher length.  Length must be a perfect square.}}
+
+test nitrans-2.3 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column}}
+
+test nitrans-2.4 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column}}
+
+test nitrans-2.5 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap a a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column}}
+
+test nitrans-2.6 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 e} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column}}
+
+test nitrans-2.7 {bad swap columns} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap e 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column}}
+
+test nitrans-2.8 {swap with no ciphertext set} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c swap a b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't swap columns/rows until ciphertext has been set}}
+
+test nitrans-2.9 {no valid characters in ciphertext} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c configure -ct ?????} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test nitrans-2.10 {restore with no ciphertext set} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c restore abcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test nitrans-2.11 {restore with invalid characters} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test nitrans-2.12 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcde} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match period}}
+
+test nitrans-2.13 {restore with characters out of range} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abce} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key character out of range}}
+
+test nitrans-2.14 {restore with invalid key (duplicate chars)} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aacc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test nitrans-2.15 {solve with no ciphertext} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test nitrans-2.16 {shift with no ciphertext} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c shift a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test nitrans-2.17 {shift an invalid column} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift z 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test nitrans-2.18 {shift first column backwards} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift a -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test nitrans-2.19 {shift last column backwards too far} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift d -4} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test nitrans-2.20 {shift an invalid amount} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift d foobar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid shift value foobar}}
+
+test nitrans-2.21 {encode with non-listified key} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c encode abcdefghijklmnop "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test nitrans-2.22 {encode with too many key elements} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c encode abcdefghijklmnop "1 2"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key '1 2'.  Should have found 1.}}
+
+test nitrans-2.23 {encode with short key elements} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c encode abcdefghijklmnop "123"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match the period.}}
+
+test nitrans-2.24 {encode with invalid plaintext length} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c encode foobar "123"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid cipher length.  Length must be a perfect square.}}
+
+test nitrans-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {16}
+
+test nitrans-3.2 {set period} {
+    set c [createValidCipher]
+    set result [$c configure -period 3]
+    rename $c {}
+    
+    set result
+} {}
+
+test nitrans-3.2 {get period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period] [$c cget -width] [$c cget -height]]
+    rename $c {}
+    
+    set result
+} {4 4 4}
+
+test nitrans-3.3 {successful use of cget -ct (empty)} {
+    set c [cipher create nitrans]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test nitrans-3.4 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {eqdersehnuereade}
+
+test nitrans-3.5 {set ciphertext with uppercase letters} {
+    set c [cipher create nitrans -ct "Abcde Fghij Klmno Pqrst Uvwxy"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxy}
+
+test nitrans-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {nitrans}
+
+test nitrans-3.7 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "aaaaabbbbbccccc-----eeeee"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbccccc-----eeeee}
+
+test nitrans-3.8 {successful retrieval of plaintext} {
+    set c [createValidCipher]
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-3.9 {set and get read orientation} {
+    set c [createValidCipher]
+    set result [$c cget -read]
+    $c configure -read horiz
+    lappend result [$c cget -read]
+    $c configure -read vertical
+    lappend result [$c cget -read]
+
+    rename $c {}
+
+    set result
+} {vertical horizontal vertical}
+
+test nitrans-3.10 {successful retrieval of plaintext with alternate route} {
+    set c [createValidCipher]
+    $c configure -read horiz
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd eqdersehnuereade}
+
+test nitrans-3.11 {successful retrieval of plaintext block} {
+    set c [createValidCipher]
+    set result [list [$c cget -key] [$c cget -ptblock]]
+    rename $c {}
+    
+    set result
+} {abcd {erne qsua deed ehre}}
+
+test nitrans-3.12 {successful use of undo} {
+    set c [createValidCipher]
+    $c swap a c
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-3.13 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test nitrans-3.14 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test nitrans-3.15 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test nitrans-3.16 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nitrans-3.17 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nitrans-3.18 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test nitrans-3.19 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nitrans-3.20 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test nitrans-3.21 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test nitrans-3.22 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test nitrans-3.23 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test nitrans-4.1 {restore} {
+    set c [createValidCipher]
+    $c restore abcd
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-4.2 {restore} {
+    set c [createValidCipher]
+    $c restore bacd
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacd squareneededhere}
+
+test nitrans-5.1 {swap} {
+    set c [createValidCipher]
+    $c swap a b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacd squareneededhere}
+
+test nitrans-5.2 {multiple swap} {
+    set c [createValidCipher]
+    $c swap a b
+    $c swap b c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cabd edednereuqsarehe}
+
+test nitrans-6.1 {shift by 0 has no effect} {
+    set c [createValidCipher]
+    $c shift b 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-6.2 {simple shift by 1} {
+    set c [createValidCipher]
+    $c shift a 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacd squareneededhere}
+
+test nitrans-6.3 {shift by 5 wraps} {
+    set c [createValidCipher]
+    $c shift b 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-6.4 {shift by negative amount} {
+    set c [createValidCipher]
+    $c shift b -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacd squareneededhere}
+
+test nitrans-6.5 {shift by negative amount} {
+    set c [createValidCipher]
+    $c shift d -3
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dabc eehreernaqsuddee}
+
+test nitrans-6.6 {shift twice} {
+    set c [createValidCipher]
+    $c shift b -1
+    $c shift a -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcd erneqsuadeedehre}
+
+test nitrans-7.1 {encode} {
+    set c [cipher create nitrans]
+
+    set result [$c encode "square needed here" [list bacd]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {eqdersehnuereade eqdersehnuereade squareneededhere bacd}
+
+test nitrans-8.1 {solve} {
+    set c [createValidCipher]
+    # This variable will end up holding the total number of possible solutions
+    set stepVar 0
+    proc myStepCmd {args} {
+        upvar 1 stepVar localStepVar
+        set localStepVar [lindex $args 0]
+    }
+    # This variable will end up holding the index of the best solution found
+    # within the total number of solutions.
+    set bestVar 0
+    proc myBestCmd {args} {
+        upvar 1 bestVar localBestVar
+        set localBestVar [lindex $args 0]
+    }
+    $c configure -stepcommand myStepCmd -stepinterval 1 -bestfitcommand myBestCmd
+
+    set result [$c solve]
+    lappend result [$c cget -pt]
+    lappend result $stepVar
+    lappend result $bestVar
+    rename $c {}
+    rename myStepCmd {}
+    rename myBestCmd {}
+
+    set result
+} {dbac eherasquerendede 24 21}
+
+test nitrans-8.2 {solve with error in step command} {
+    set c [createValidCipher]
+    # The error in this command is a mismatch of number of arguments.
+    proc myCmd {} {
+    }
+    $c configure -stepcommand myCmd -stepinterval 1
+
+    set result [list [catch {$c solve} msg] $msg]
+    rename $c {}
+    rename myCmd {}
+
+    set result
+} {1 {wrong # args: should be "myCmd"}}
+
+test nitrans-8.3 {solve with error in best fit command} {
+    set c [createValidCipher]
+    # The error in this command is a mismatch of number of arguments.
+    proc myCmd {} {
+    }
+    $c configure -bestfitcommand myCmd
+
+    set result [list [catch {$c solve} msg] $msg]
+    rename $c {}
+    rename myCmd {}
+
+    set result
+} {1 {wrong # args: should be "myCmd"}}

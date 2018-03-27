@@ -1,0 +1,79 @@
+<HTML>
+<TITLE>Tcl Command - stat</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+stat - Perform statistical analysis on a string
+
+<H2>SYNOPSIS</H2>
+
+<B>stat</B> <I>option string</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="ioc"><B><CODE>stat ioc string</CODE></B></A></DT>
+        <DD>Calculates the index of coincidence of the given string.  The index of
+coincidence is defined as
+<BR>
+(sum of (n<SUB>j</SUB> * (n<SUB>j</SUB>-1))) / (n<SUB>total</SUB> * (n<SUB>total</SUB> - 1))
+<BR>for all letters <I><B>j</B></I> where n<SUB>j</SUB> is the number of times the letter
+<I><B>j</B></I> appears in the string.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="histogram"><B><CODE>stat histogram string</CODE></B></A></DT>
+        <DD>Generates a histogram of the characters from <B>a</B> to <B>z</B> in string.
+For example:
+<P>
+<B><CODE>stat histogram foobar</CODE></B>
+<P>
+returns <B><CODE>a 1 b 1 c 0 d 0 e 0 f 1 g 0 h 0 i 0 j 0 k 0 l 0 m 0 n 0 o 2 p 0 q 0 r 1 s 0 t 0 u 0 v 0 w 0 x 0 y 0 z 0</CODE></B>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="histfit"><B><CODE>stat histfit histogram1 histogram2</CODE></B></A></DT>
+        <DD>Slides the second histogram along the first looking for the best match.  The best left shift for the second histogram is returned.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="histvals"><B><CODE>stat histvals histogram1 histogram2</CODE></B></A></DT>
+        <DD>Display the histogram fit values when the second histogram is slid along the first.  Each value are calculated by multiplying the values for each corresponding bin of the histograms and adding up the results.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="alphfit"><B><CODE>stat alphfit string</CODE></B></A></DT>
+        <DD>This performs the same function as the histfit method, except that a histogram is generated from a single string and the histogram is fit against a standard English distribution.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="kasiski"><B><CODE>stat kasiski string ?minperiod maxperiod?</CODE></B></A></DT>
+        <DD>Perform a kasiski analysis on the string.  The minimum and maximum
+periods to use may be specified and default to the range 3 - 15.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

@@ -1,0 +1,82 @@
+[docHeader "Cipher Type - homophonic"]
+[Ciphertype homophonic]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore key" restore]
+[Synopsis <I>cipherProc</I> "substitute ct pt" substitute]
+[Synopsis <I>cipherProc</I> "undo" undo]
+[Synopsis <I>cipherProc</I> "locate tip ?ct?" locate]
+[Synopsis <I>cipherProc</I> "solve" solve]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigureLanguage]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetLanguage]
+    [CgetOption -intlength \
+"Returns the number of ciphertext values.  Since each pair of ciphertext
+digits represents a single plaintext letter, this will be half of the
+ciphertext length."]
+    [CgetOption -histogram \
+    ""]
+    [CgetOption -fullkey \
+    ""]
+    [CgetPeriod]
+</DL>"]
+
+[Description "<I>cipherProc</I> substitute ct pt" substitute \
+"Substitute the numerical pairs <B>ct</B> with the plaintext values in
+<B>pt</B>.  An invalid substitution will generate an error.  For example:
+<P>
+<B><CODE><I>cipherProc</I> substitute 0102 aa</CODE></B>
+<P>
+causes conflicting substitutions (<B>01</B> -&gt; <B>a</B> and <B>02</B> -&gt;
+<B>a</B>).
+"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \$key</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> undo" undo \
+"Clears all changes that have been made to the ciphertext."]
+
+[Description "<I>cipherProc</I> locate tip ?ct?" locate \
+"Drag the tip along the ciphertext until a valid substitution is found.  If
+<B>ct</B> is specified then the tip dragging starts at the first occurrence
+of <B>ct</B> in the ciphertext."]
+
+[Description "<I>cipherProc</I> solve" solve \
+"Iterate through all 4 keyed alphabets.  The key letter for each alphabet is
+the one that produces the letter frequency distribution that best matches
+English."]
+
+[EndDescription]
+
+[footer]

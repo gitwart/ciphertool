@@ -1,0 +1,20 @@
+#!/usr/bin/tclsh
+
+set wordlist [lindex $argv 0]
+
+set wordChanId [open $wordlist r]
+while {![eof $wordChanId]} {
+    gets $wordChanId word
+
+    if {$word != ""} {
+	set wordFile "len[format %02d [string length $word]]"
+	if {![info exists chan($wordFile)]} {
+	    set chan($wordFile) [open $wordFile w]
+	}
+	puts $chan($wordFile) $word
+    }
+}
+
+foreach el [array names chan] {
+    close $chan($el)
+}

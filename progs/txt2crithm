@@ -1,0 +1,65 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# txt2crithm --
+#
+#	Converts equations in a text file to a ciphertool cryptarithm script.
+#
+# RCS: @(#) $Id: txt2crithm,v 1.1 2005/11/08 22:03:23 wart Exp $
+#
+# Copyright (C) 2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require Crithm
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list out.arg "-" "The name of the output cipher file"] \
+    [list nonzero "Indicates if nonzero constraints should be added to the test script."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+set fileid [open $file r]
+
+set constraintList {}
+set chars {}
+while {![eof $fileid]} {
+    gets $fileid line
+    if {![eof $fileid]} {
+        lappend constraintList [Crithm::createConstraint $line]
+        if {$nonzero} {
+            foreach constraint [Crithm::createNonzeroConstraint $line] {
+                lappend constraintList $constraint
+            }
+        }
+        append chars [Crithm::getUniqueLetters $line]
+    }
+}
+
+set checkKeyProcBody [Crithm::createCheckKeyProc $constraintList]
+
+Crithm::saveCipherFile $out [Crithm::getUniqueLetters $chars] $constraintList

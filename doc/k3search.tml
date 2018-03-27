@@ -1,0 +1,27 @@
+[docHeader "Cipher Program - k3search"]
+[Command k3search "find the keyword for a K3 mixed alphabet"]
+
+[SynopsisHeader]
+[Synopsis k3search "keystring"]
+
+[StartDescription]
+
+[Description "k3search keystring" {} \
+"<B>k3search</B> attempts to find the keyword for a K3 mixed alphabet.
+<B>keystring</B> is a K3 mixed alphabet.  Any one of the 26 K3 mixed alphabets
+may be used.  Spaces may be used to designate uknown letters:
+<P>
+<B><CODE>k3search &quot;log rithmbcd     qsu wx z&quot;</CODE></B>
+<P>
+[DictionaryDescription]
+<P>
+<B>k3search</B> takes each word found in the dictionary files and generates
+the 26 possible K3 mixed alphbets from the keyword.  Each alphabet is then
+compared to the <B>keystring</B> to see if it matches.  If a match is found,
+the keyword and full mixed alphabet is printed.  If multiple matches are found,
+all matches are printed.
+"]
+
+[EndDescription]
+
+[footer]

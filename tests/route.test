@@ -1,0 +1,637 @@
+# route.test
+# Test of the route cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample route cipher:
+#
+# abcdefghi
+# jklmnopqr
+# stuvwxyz#
+#
+
+proc createValidCipher {} {
+    set c [cipher create route -ct "abcdefghijklmnopqrstuvwxyz#" -period 9]
+
+    return $c
+}
+
+array set writeIn {
+    1	abcdefghijklmnopqrstuvwxyz#
+    2	abcdefghirqponmlkjstuvwxyz#
+    3	adgjmpsvybehknqtwzcfilorux#
+    4	afglmrsxybehknqtwzcdijopuv#
+    5	acfiloruxbehknqtwzdgjmpsvy#
+    6	dgjmpsvy#behknqtwzacfilorux
+    7	xurolifcazwtqnkheb#yvspmjgd
+    8	#yvspmjgdzwtqnkhebxurolifca
+    9	abdgjmpsvcehknqtwyfiloruxz#
+    10	vspmjgdbaywtqnkhec#zxurolif
+    11	filoruxz#cehknqtwyabdgjmpsv
+    12	#zxurolifywtqnkhecvspmjgdba
+    13	abfglmrsxcehknqtwydijopuvz#
+    14	dijopuvz#cehknqtwyabfglmrsx
+    15	xsrmlgfbaywtqnkhec#zvupojid
+    16	#zvupojidywtqnkhecxsrmlgfba
+    17	acdijopuvbehknqtwzfglmrsxy#
+    18	vupojidcazwtqnkheb#yxsrmlgf
+    19	fglmrsxy#behknqtwzacdijopuv
+    20	#yxsrmlgfzwtqnkhebvupojidca
+    21	abcdefghituvwxyz#jsrqponmlk
+    22	atsrqponmbuvwxyz#lcdefghijk
+    23	cdefghijkbuvwxyz#latsrqponm
+    24	srqponmlktuvwxyz#jabcdefghi
+    25	mnopqrstal#zyxwvubkjihgfedc
+    26	ihgfedcbaj#zyxwvutklmnopqrs
+    27	klmnopqrsj#zyxwvutihgfedcba
+    28	kjihgfedcl#zyxwvubmnopqrsta
+    29	#hijklmnozgfedcbapyxwvutsrq
+    30	#zyxwvutshgfedcbarijklmnopq
+    31	ijklmnopqhgfedcbar#zyxwvuts
+    32	yxwvutsrqzgfedcbap#hijklmno
+    33	stuvwxyz#rabcdefghqponmlkji
+    34	onmlkjih#pabcdefgzqrstuvwxy
+    35	qrstuvwxypabcdefgzonmlkjih#
+    36	qponmlkjirabcdefghstuvwxyz#
+    37	ihgfedcbarqponmlkj#zyxwvuts
+    38	ihgfedcbajklmnopqr#zyxwvuts
+    39	yvspmjgdazwtqnkheb#xurolifc
+    40	yxsrmlgfazwtqnkheb#vupojidc
+    41	stuvwxyz#jklmnopqrabcdefghi
+    42	stuvwxyz#rqponmlkjabcdefghi
+    43	cfilorux#behknqtwzadgjmpsvy
+    44	cdijopuv#behknqtwzafglmrsxy
+    45	#zyxwvutsrqponmlkjihgfedcba
+    46	#zyxwvutsjklmnopqrihgfedcba
+    47	#xurolifczwtqnkhebyvspmjgda
+    48	#vupojidczwtqnkhebyxsrmlgfa
+}
+
+array set readOut {
+    1	abcdefghijklmnopqrstuvwxyz#
+    2	abcdefghirqponmlkjstuvwxyz#
+    3	ajsbktcludmvenwfoxgpyhqzir#
+    4	ajstkbcluvmdenwxofgpyzqhir#
+    5	ajbskctldumevnfwogxphyqizr#
+    6	sjtakublvcmwdnxeoyfpzgq#hri
+    7	irh#qgzpfyoexndwmcvlbukatjs
+    8	#rziqyhpxgowfnvemudltcksbja
+    9	abjcksdltemufnvgowhpxiqyrz#
+    10	ihrgq#fpzeoydnxcmwblvakujts
+    11	stjukavlbwmcxndyoezpf#qgrhi
+    12	#zryqixphwogvnfumetldskcjba
+    13	abjskcdltumefnvwoghpxyqirz#
+    14	stjakuvlbcmwxndeoyzpfgq#rhi
+    15	ihr#qgfpzyoednxwmcblvukajts
+    16	#zriqyxphgowvnfemutldcksjba
+    17	ajbckstldemuvnfgowxphiqyzr#
+    18	irhgq#zpfeoyxndcmwvlbakutjs
+    19	sjtukablvwmcdnxyoefpz#qghri
+    20	#rzyqihpxwogfnvumedltskcbja
+    21	abcdefghir#zyxwvutsjklmnopq
+    22	ajstuvwxyz#rihgfedcbklmnopq
+    23	sjabcdefghir#zyxwvutklmnopq
+    24	stuvwxyz#rihgfedcbajklmnopq
+    25	ir#zyxwvutsjabcdefghqponmlk
+    26	ihgfedcbajstuvwxyz#rqponmlk
+    27	#zyxwvutsjabcdefghirqponmlk
+    28	#rihgfedcbajstuvwxyzqponmlk
+    29	qponmlkbcdefghir#zyxwvutsja
+    30	qponmlkjstuvwxyz#rihgfedcba
+    31	qponmlkjabcdefghir#zyxwvuts
+    32	qponmlktuvwxyz#rihgfedcbajs
+    33	klmnopqr#zyxwvutsjabcdefghi
+    34	klmnopqhgfedcbajstuvwxyz#ri
+    35	klmnopqzyxwvutsjabcdefghir#
+    36	klmnopqrihgfedcbajstuvwxyz#
+    37	ihgfedcbarqponmlkj#zyxwvuts
+    38	ihgfedcbajklmnopqr#zyxwvuts
+    39	ir#hqzgpyfoxenwdmvclubktajs
+    40	ir#zqhgpyxofenwvmdclutkbajs
+    41	stuvwxyz#jklmnopqrabcdefghi
+    42	stuvwxyz#rqponmlkjabcdefghi
+    43	sjatkbulcvmdwnexofypgzqh#ri
+    44	sjabktulcdmvwnefoxypghqz#ri
+    45	#zyxwvutsrqponmlkjihgfedcba
+    46	#zyxwvutsjklmnopqrihgfedcba
+    47	#rizqhypgxofwnevmdulctkbsja
+    48	#rihqzypgfoxwnedmvulcbktsja
+}
+# abcdefghi
+# jklmnopqr
+# stuvwxyz#
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#	4.x	writein tests
+#	5.x	readout tests
+#	6.x	misc tests
+#	7.x	restore tests
+#	8.x	encode tests
+
+test route-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test route-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test route-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test route-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test route-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test route-1.6 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test route-1.7 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period 1000} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid width setting.}}
+
+test route-1.8 {invalid writein setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -writein -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid value for writein:  -1}}
+
+test route-1.9 {invalid writein setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -writein a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid value for writein:  a}}
+
+test route-1.10 {invalid readout setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -readout -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid value for readout:  -1}}
+
+test route-1.11 {invalid readout setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -readout a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid value for readout:  a}}
+
+test route-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test route-1.13 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test route-1.14 {invalid use route command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar encode pt key}}
+
+test route-2.1 {get number of routes} {
+    set c [cipher create route]
+
+    set result [$c cget -numroutes]
+
+    rename $c {}
+    
+    set result
+} {48}
+
+test route-2.2 {encode with non-listified key} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test route-2.3 {encode with too many key elements} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "a b c"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
+
+test route-2.4 {encode with non-integral key elements} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "a 1"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {expected integer but got "a"}}
+
+test route-2.5 {encode with non-integral key elements} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "1 a"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {expected integer but got "a"}}
+
+test route-2.6 {encode with out-of-range key elements} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "0 1"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Route selections out of range.}}
+
+test route-2.7 {encode with out-of-range key elements} {
+    set c [cipher create route]
+
+    set result [catch {$c encode foobar "1 0"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Route selections out of range.}}
+
+test route-2.8 {solve before setting width} {
+    set c [cipher create route]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't solve route ciphers until a width or height has been set}}
+
+test route-3.1 {Get default width} {
+    set c [cipher create route]
+    set result [list [$c cget -width] [$c cget -height] [$c cget -period]]
+    rename $c {}
+
+    set result
+} {0 0 0}
+
+test route-3.2 {set width before ciphertext is set} {
+    set c [cipher create route]
+    $c configure -width 4
+    set result [$c cget -width]
+    $c configure -ciphertext "abcd efgh ijkl"
+    lappend result [$c cget -width]
+    $c configure -ciphertext "abcd efgh ijk"
+    lappend result [$c cget -width]
+
+    rename $c {}
+
+    set result
+} {4 4 0}
+
+test route-3.3 {set ciphertext} {
+    set c [cipher create route -ct "abcde fghij klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test route-3.4 {set ciphertext with uppercase letters} {
+    set c [cipher create route -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmno}
+
+test route-3.5 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test route-3.6 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test route-3.7 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test route-3.8 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test route-3.9 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test route-3.10 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test route-3.11 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test route-3.12 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test route-3.13 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+
+foreach i [lsort -integer [array names writeIn]] {
+    test route-4.$i "in 1 out $i" {
+	set c [createValidCipher]
+
+	$c configure -out $i
+	# Get the plaintext twice to exercise the route pattern cache.
+	set result [list [$c cget -pt] [$c cget -pt]]
+
+	rename $c {}
+	
+	set result
+    } [list $writeIn($i) $writeIn($i)]
+}
+
+foreach i [lsort -integer [array names readOut]] {
+    test route-5.$i "in $i out 1" {
+	set c [createValidCipher]
+
+	$c configure -in $i
+	# Get the plaintext twice to exercise the route pattern cache.
+	set result [list [$c cget -pt] [$c cget -pt]]
+
+	rename $c {}
+	
+	set result
+    } [list $readOut($i) $readOut($i)]
+}
+
+test route-6.1 {set ciphertext of same length} {
+    set c [cipher create route -ct "#zyxwvutsrqponmlkjihgfedcba" -period 9]
+    $c configure -in 1 -out 2
+    set result
+    $c configure -ct "abcdefghijklmnopqrstuvwxyz#"
+    $c configure -in 1 -out 2
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} [list $readOut(2)]
+
+test route-7.1 {Write cache should read from the in cache, not the ciphertext} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -width 5
+    $c configure -in 1
+    set result [$c cget -pt]
+    $c configure -in 7
+    set result [$c cget -pt]
+
+    rename $c {}
+
+    set result
+} {oedlcstkbizrhawyqgmxpfvnu}
+
+test route-7.2 {Restore from saved key} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -period 5
+    set result [list [$c restore 1 7] [$c cget -pt]]
+
+    rename $c {}
+
+    set result
+} {{1 7} lemswrkcoivqhbdyupgazxtnf}
+
+test route-7.3 {Restore from saved key, invalid writein value} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -period 5
+    set result [list [catch {$c restore a 7} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Invalid value for writein:  a}}
+
+test route-7.4 {Restore from saved key, invalid writein value} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -period 5
+    set result [list [catch {$c restore 0 7} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Invalid value for writein:  0}}
+
+test route-7.5 {Restore from saved key, invalid readout value} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -period 5
+    set result [list [catch {$c restore 1 a} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Invalid value for readout:  a}}
+
+test route-7.6 {Restore from saved key, invalid readout value} {
+    set c [cipher create route -ct "wisdomabcefghklnpqrtuvxyz"]
+    $c configure -period 5
+    set result [list [catch {$c restore 1 0} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Invalid value for readout:  0}}
+
+test route-8.1 {encode} {
+    set c [cipher create route]
+    $c configure -width 9
+
+    set result [list [$c encode "abcde fghij klmno pqrst uvwxy z#" [list 12 25]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {fcabdgjmpsvy#zxuroliehknqtw fcabdgjmpsvy#zxuroliehknqtw abcdefghijklmnopqrstuvwxyz# {12 25}}

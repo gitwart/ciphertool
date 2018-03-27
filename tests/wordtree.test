@@ -1,0 +1,266 @@
+# wordtree.test
+# Tests of the "wordtree" Tcl command.
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+test wordtree-1.1 {Invalid add usage} {
+    set result [list [catch {wordtree add} msg] $msg]
+} {1 {Usage:  wordtree add word}}
+
+test wordtree-1.2 {Invalid isvalid usage} {
+    set result [list [catch {wordtree isvalid} msg] $msg]
+} {1 {Usage:  wordtree isvalid word}}
+
+test wordtree-1.3 {Invalid longest usage} {
+    set result [list [catch {wordtree longest} msg] $msg]
+} {1 {Usage:  wordtree longest string}}
+
+test wordtree-1.4 {Invalid split usage} {
+    set result [list [catch {wordtree split} msg] $msg]
+} {1 {Usage:  wordtree split string}}
+
+test wordtree-1.5 {Invalid command usage} {
+    set result [list [catch {wordtree splitbest} msg] $msg]
+} {1 {Usage:  wordtree splitbest string}}
+
+test wordtree-1.6 {Invalid command usage} {
+    set result [list [catch {wordtree foobar} msg] $msg]
+} {1 {Usage:  wordtree add|delete|isvalid|longest|splitbest|split}}
+
+test wordtree-1.7 {Invalid command usage} {
+    set result [list [catch {wordtree} msg] $msg]
+} {1 {Usage:  wordtree option string}}
+
+test wordtree-2.1 {Find invalid word on an empty tree} {
+    set result [wordtree isvalid "foobar"]
+} {0}
+
+test wordtree-2.2 {Find the empty string on an empty tree} {
+    set result [wordtree isvalid ""]
+} {0}
+
+test wordtree-2.3 {Find invalid word on a non-empty tree} {
+    wordtree add foobar
+    set result [wordtree isvalid "bogusword"]
+
+    wordtree delete
+
+    set result
+} {0}
+
+test wordtree-2.4 {Find the empty string on a non-empty tree} {
+    wordtree add foobar
+    set result [wordtree isvalid ""]
+
+    wordtree delete
+
+    set result
+} {0}
+
+test wordtree-2.5 {Find a valid word} {
+    wordtree add foobar
+    set result [wordtree isvalid "foobar"]
+
+    wordtree delete
+
+    set result
+} {1}
+
+test wordtree-2.6 {Find a valid word, multiple initial matches} {
+    wordtree add the
+    wordtree add them
+    wordtree add there
+    set result [wordtree isvalid "the"]
+
+    wordtree delete
+
+    set result
+} {1}
+
+test wordtree-2.7 {Find an invalid word, word prefix was added twice} {
+    wordtree add the
+    wordtree add the
+    set result [list [wordtree isvalid "them"] [wordtree isvalid "the"]]
+
+    wordtree delete
+
+    set result
+} {0 1}
+
+test wordtree-3.1 {Find the longest of the empty string, empty not in tree} {
+    wordtree add foobar
+    set result [wordtree longest ""]
+
+    wordtree delete
+
+    set result
+} {-1}
+
+test wordtree-3.2 {Find the longest} {
+    wordtree add foobar
+    set result [wordtree longest "foobarbazbogus"]
+
+    wordtree delete
+
+    set result
+} {6}
+
+test wordtree-3.3 {Find the longest for an exact match} {
+    wordtree add foobar
+    set result [wordtree longest "foobar"]
+
+    wordtree delete
+
+    set result
+} {6}
+
+test wordtree-3.4 {Find the longest for an exact match} {
+    wordtree add foobar
+    set result [wordtree longest "foo"]
+
+    wordtree delete
+
+    set result
+} {-1}
+
+test wordtree-3.5 {Find the longest for an empty string, empty is in tree} {
+    wordtree add {}
+    set result [wordtree longest ""]
+
+    wordtree delete
+
+    set result
+} {0}
+
+test wordtree-3.6 {Find the longest for an empty string, multiple words in tree} {
+    wordtree add the
+    wordtree add them
+    wordtree add there
+    set result [wordtree longest "the"]
+
+    wordtree delete
+
+    set result
+} {3}
+
+test wordtree-3.7 {Find the longest for a two letter word} {
+    wordtree add in
+    set result [wordtree longest "inthehouse"]
+
+    wordtree delete
+
+    set result
+} {2}
+
+test wordtree-3.8 {Find the longest for a two letter word, first letter is also a word} {
+    wordtree add i
+    wordtree add in
+    set result [wordtree longest "inthehouse"]
+
+    wordtree delete
+
+    set result
+} {2}
+
+test wordtree-3.9 {Find the longest for a two letter word, word is also a prefix for another word} {
+    wordtree add i
+    wordtree add in
+    wordtree add ink
+    set result [wordtree longest "inthehouse"]
+
+    wordtree delete
+
+    set result
+} {2}
+
+test wordtree-3.10 {Find the longest for a two letter word, word partially matches another word} {
+    wordtree add intuitive
+    wordtree add in
+    wordtree add i
+    set result [wordtree longest "inthehouse"]
+
+    wordtree delete
+
+    set result
+} {2}
+
+test wordtree-4.1 {Split plaintext into words} {
+    wordtree add the
+    wordtree add quick
+    wordtree add brown
+    wordtree add fox
+
+    set result [wordtree split "thequickbrownfox"]
+
+    wordtree delete
+
+    set result
+} {the quick brown fox}
+
+test wordtree-4.2 {Split plaintext into words, no valid words} {
+    set result [wordtree split "the"]
+
+    wordtree delete
+
+    set result
+} {t h e}
+
+test wordtree-4.3 {Find the best word splitting} {
+    wordtree add the
+    wordtree add quick
+    wordtree add brown
+    wordtree add fox
+
+    set result [wordtree splitbest "thequickbrownfox"]
+
+    wordtree delete
+
+    set result
+} {the quick brown fox}
+
+test wordtree-4.4 {Find the best word splitting, alternate possibilities} {
+    wordtree add t
+    wordtree add he
+    wordtree add the
+    wordtree add quick
+    wordtree add brownf
+    wordtree add fox
+    wordtree add ox
+    wordtree add brownfox
+
+    set result [wordtree splitbest "thequickbrownfox"]
+
+    wordtree delete
+
+    set result
+} {the quick brownfox}
+
+test wordtree-4.5 {Find the best word splitting, some words not valid} {
+    wordtree add the
+    wordtree add quick
+    wordtree add fox
+    wordtree add brown
+
+    set result [wordtree splitbest "theqbrownfox"]
+
+    wordtree delete
+
+    set result
+} {the q brown fox}
+
+test wordtree-5.1 {Test for empty tree} {
+    set result [wordtree isempty]
+} {1}
+
+test wordtree-5.2 {Test for empty tree} {
+    wordtree add the
+    set result [wordtree isempty]
+
+    wordtree delete
+
+    set result
+} {0}

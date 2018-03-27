@@ -1,0 +1,483 @@
+# grandpre.test
+# Test of the grandpre cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the grandpre cipher
+# Laid out, the cipher looks like:
+#
+# 84 27 82 34 56 71 77 26 44 54 64 63 78 52 66 65 26 27 61 36 82 88 73 54 71 13
+#
+# Solution:
+#
+#  t  h  e  f  i  r  s  t  c  o  l  u  m  n  i  s  t  h  e  k  e  y  w  o  r  d
+#
+# Key:  
+#   12345678
+# 1 ladybugs
+# 2 azimuths
+# 3 calfskin
+# 4 quackish
+# 5 unjovial
+# 6 evulsion
+# 7 rowdyism
+# 8 sextuply
+#
+#ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply
+#
+
+
+proc createValidCipher {} {
+    set c [cipher create grandpre -ct "84 27 82 34 56 71 77 26 44 54 64 63 78 52 66 65 26 27 61 36 82 88 73 54 71 13"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Locate tests
+#       8.x     Encoding tests
+
+test grandpre-1.1 {creation of cipher with bad length} {
+    list [catch {cipher create grandpre -ct "1"} msg] $msg
+} {1 {Odd number of valid characters found in ciphertext.}}
+
+test grandpre-1.2 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test grandpre-1.3 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test grandpre-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test grandpre-1.5 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test grandpre-1.6 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test grandpre-1.7 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test grandpre-1.8 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key}}
+
+test grandpre-1.9 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test grandpre-1.10 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test grandpre-1.11 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test grandpre-1.12 {invalid use grandpre command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar substitute ct pt
+                 ciphervar restore key
+                 ciphervar locate pt
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test grandpre-2.1 {invalid cipher characters} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c configure -ct foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test grandpre-2.2 {invalid characters in ciphertext} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c configure -ct 212} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Odd number of valid characters found in ciphertext.}}
+
+test grandpre-2.3 {invalid key length during restore} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c restore abcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Restoration key must be 64 letters long.  Found 4.}}
+
+test grandpre-2.5 {locate with bad start position} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c locate 12 aa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid starting position}}
+
+test grandpre-2.6 {restore with invalid character} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c restore "ab?d                                                            "} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in key: '?'.}}
+
+test grandpre-3.1 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+    rename $c {}
+    
+    set result
+} {52}
+
+test grandpre-3.2 {use of cget -intlength} {
+    set c [createValidCipher]
+    set result [list [$c cget -intlength]]
+    rename $c {}
+    
+    set result
+} {26}
+
+test grandpre-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test grandpre-3.4 {use of cget -ct} {
+    set c [cipher create grandpre]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test grandpre-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [list [$c cget -ct]]
+    rename $c {}
+    
+    set result
+} {8427823456717726445464637852666526276136828873547113}
+
+test grandpre-3.6 {use of cget -histogram} {
+    set c [createValidCipher]
+    set result [$c cget -histogram]
+    rename $c {}
+    
+    set result
+} {}
+
+test grandpre-3.7 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                          }
+
+test grandpre-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {                                                                }
+
+test grandpre-3.10 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {grandpre}
+
+test grandpre-3.11 {use of undo} {
+    set c [createValidCipher]
+    $c substitute 26 a
+    $c substitute 51 a
+    $c substitute 76 a
+    $c undo {26 51 76}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                                                                } {                          }}
+
+test grandpre-3.12 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test grandpre-3.13 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test grandpre-4.1 {single valid substitution} {
+    set c [createValidCipher]
+    $c substitute 44 c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{                           c                                    } {        c                 }}
+
+test grandpre-4.2 {multiple valid substitutions} {
+    set c [createValidCipher]
+    $c substitute 8427823456 thefi
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+test grandpre-4.3 {multiple valid substitutions with spaces} {
+    set c [createValidCipher]
+    $c substitute {84 27 82 34 56} thefi
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+test grandpre-4.4 {alt substitution} {
+    set c [createValidCipher]
+    $c substitute 8427823456 thefi
+    $c substitute 27 q
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              q    f                 i                   e t    } {tqefi            q  e     }}
+
+test grandpre-5.1 {locate position starting at default start position} {
+    set c [createValidCipher]
+    $c locate thefi
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+test grandpre-5.2 {locate position starting at specified start position} {
+    set c [createValidCipher]
+    $c locate thefi 27
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              t    e                 f          i        h      } { thefi           t  h   i }}
+
+test grandpre-5.3 {locate position starting at specified start position (start of ct)} {
+    set c [createValidCipher]
+    $c locate thefi "84 27"
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+test grandpre-6.1 {restore from key} {
+    set c [createValidCipher]
+    $c restore {              h    f                 i                   e t    }
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+test grandpre-6.2 {restore from key with invalid character} {
+    set c [createValidCipher]
+    $c restore {              h    f                 i                   e t    }
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{              h    f                 i                   e t    } {thefi            h  e     }}
+
+#key:
+#ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply
+
+test grandpre-8.1 {make sure the plaintext and key are consistent with the encoding function} {
+    set c [cipher create grandpre]
+    $c encode "this is a test" ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply
+    set result [list [$c cget -pt] [$c cget -key]]
+    rename $c {}
+    set result
+} {thisisatest ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply}
+
+test grandpre-8.2 {use 'encode' output as ciphertext input} {
+    set c [cipher create grandpre]
+    set result {}
+    set ct [$c encode "this is a test" ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply]
+    set c2 [cipher create grandpre -ct $ct]
+    $c2 restore ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply
+    set result [list [$c2 cget -pt] [$c2 cget -key]]
+    rename $c {}
+    rename $c2 {}
+    set result
+} {thisisatest ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply}
+
+test grandpre-8.3 {check key length} {} {
+    set c [cipher create grandpre]
+    set result [catch {$c encode "this is a test" ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextupl} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Restoration key must be 64 letters long.  Found 63.}}
+
+test grandpre-8.4 {check key letters} {} {
+    set c [cipher create grandpre]
+    set result [catch {$c encode "this is a test" Ladybugsazimuthscalfskinquackishunjovialevulsionrowdyismsextuply} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Invalid character found in key: 'L'.}}
+
+test grandpre-8.5 {check key completeness} {} {
+    set c [cipher create grandpre]
+    set result [catch {$c encode "this is a test" ladybugsasimuthscalfskinquackishunjovialevulsionrowdyismsextuply} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    set result
+} {1 {Letter 'z' was not found in the key.}}
+
+
+
+
+

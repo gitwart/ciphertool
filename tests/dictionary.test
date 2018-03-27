@@ -1,0 +1,712 @@
+# dictionary.test
+# Tests of the dictionary package
+
+package require Dictionary
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+set len01 \
+{a
+i}
+
+set len02 \
+{aa
+ab
+ac
+bb
+bd}
+
+set len07 \
+{abcdefg
+qbcdefg
+qbzdefd
+abc'deg
+'abcdeg
+abcdef'}
+
+set len08 \
+{abcdefg
+qbcdefg
+qbzdefg}
+
+::tcltest::makeDirectory dict
+proc createDictionary {} {
+    global len01
+    global len02
+    global len07
+    global len08
+
+    foreach dictFile {len01 len02 len07 len08} {
+	::tcltest::makeFile [set $dictFile] dict/$dictFile
+    }
+}
+
+set Dictionary::directory $::tcltest::temporaryDirectory/dict
+
+# Test groups:
+#	1.x	
+
+
+test cacheTypes-1.1 {set to none} {
+    set ::Dictionary::cache {}
+} {}
+
+test cacheTypes-1.2 {set to all values} {
+    set ::Dictionary::cache [list length word pattern trigram]
+} {length word pattern trigram}
+
+test cacheTypes-1.3 {set to invalid value} {
+    set result [list [catch {set ::Dictionary::cache {foo bar}} msg] $msg]
+} {1 {can't set "::Dictionary::cache": value must be a combination of 'length', 'word', 'pattern', and 'trigram'.}}
+
+foreach state [list \
+    length-word-pattern-trigram \
+    length-word-pattern \
+    length-word-trigram \
+    length-pattern-trigram \
+    length-trigram \
+    length-pattern \
+    length-word \
+    length \
+    word-pattern-trigram \
+    word-pattern \
+    word-trigram \
+    word \
+    pattern-trigram \
+    pattern \
+    trigram \
+    none] {
+
+::Dictionary::clearCache
+if {$state == "none"} {
+    set stateList {}
+    set ::Dictionary::cache {}
+} else {
+    set stateList [string map {- { }} $state]
+    set ::Dictionary::cache $stateList
+}
+
+test lookupByPattern-$state-1.1 {single character word} {
+    createDictionary
+    set pattern a
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {a i}
+
+test lookupByPattern-$state-1.2 {multi character word with no duplicates} {
+    createDictionary
+    set pattern ab
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {ab ac bd}
+
+test lookupByPattern-$state-1.3 {multi character word with duplicates} {
+    createDictionary
+    set pattern aa
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {aa bb}
+
+test lookupByPattern-$state-1.4 {no match} {
+    createDictionary
+    set pattern abbbbba
+
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {}
+
+test lookupByLength-$state-1.1 {no pattern} {
+    createDictionary
+    set result [Dictionary::lookupByLength 2]
+
+    set result
+} {aa ab ac bb bd}
+
+test lookupByLength-$state-1.2 {greedy glob pattern} {
+    createDictionary
+    set result [Dictionary::lookupByLength 2 *]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {aa ab ac bb bd}
+
+test lookupByLength-$state-1.3 {semi-greedy glob pattern} {
+    createDictionary
+    set result [Dictionary::lookupByLength 2 a*]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {aa ab ac}
+
+test lookupByLength-$state-1.4 {semi-greedy glob pattern} {
+    createDictionary
+    set result [Dictionary::lookupByLength 2 b*]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {bb bd}
+
+test lookupByLength-$state-1.5 {semi-greedy corrupts cache} {
+    createDictionary
+    set result [list [Dictionary::lookupByLength 2 b*] [Dictionary::lookupByLength 2]]
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {{bb bd} {aa ab ac bb bd}}
+
+test lookupByLength-$state-1.6 {dictionary doesn't contain length} {
+    createDictionary
+    set result [catch {Dictionary::lookupByLength 0} msg]
+
+    regexp {.*(no such file or directory)} $msg null msg
+    lappend result $msg
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1 {no such file or directory}}
+
+test lookupByLength-$state-1.7 {dictionary file contains word of incorrect length} {
+    ::tcltest::makeFile "wordwithtoomanyletters" dict/len04
+
+    set result [catch {Dictionary::lookupByLength 4} msg]
+
+    regsub {/.*/} $msg {} msg
+    lappend result $msg
+
+    ::tcltest::removeFile dict/len04
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1 {Found word with invalid length in dictionary file: len04 contains wordwithtoomanyletters}}
+
+test availableLengths-$state-1.1 {no limits} {
+    createDictionary
+    set result [Dictionary::availableLengths]
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {8 7 2 1}
+
+test availableLengths-$state-1.2 {minimum length specified} {
+    createDictionary
+    set result [Dictionary::availableLengths 5]
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {8 7}
+
+test availableLengths-$state-1.3 {minimum and maximum length specified} {
+    createDictionary
+    set result [Dictionary::availableLengths 2 8]
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {8 7 2}
+
+test availableLengths-$state-1.4 {minimum is greater than maximum} {
+    createDictionary
+    set result [Dictionary::availableLengths 40 10]
+
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {}
+
+test isWord-$state-1.1 {word is found} {} {
+    createDictionary
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isWord ab]
+} {1}
+
+test isWord-$state-1.2 {word is not found} {} {
+    createDictionary
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isWord zz]
+} {0}
+
+test isNumber-$state-1.1 {Single digit number} {} {
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isNumber 0]
+} {1}
+
+test isNumber-$state-1.2 {empty string} {} {
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isNumber ""]
+} {0}
+
+test isNumber-$state-1.3 {multiple digits} {} {
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isNumber 2345678901]
+} {1}
+
+test isNumber-$state-1.4 {negative value does not count} {} {
+    eval ::Dictionary::clearCache $stateList
+
+    set result [Dictionary::isNumber -5]
+} {0}
+
+test addWord-$state-1.1 {word is added} {
+    ::tcltest::makeFile "abcde\nbcdef" dict/len05
+    set result [Dictionary::addWord fooba]
+    lappend result [Dictionary::isWord fooba]
+
+    ::tcltest::removeFile dict/len05
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1 1}
+
+test addWord-$state-1.2 {word already exists} {
+    ::tcltest::makeFile "abcde\nbcdef" dict/len05
+    set result [Dictionary::addWord abcde]
+    lappend result [Dictionary::isWord abcde]
+
+    ::tcltest::removeFile dict/len05
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0 1}
+
+test addWord-$state-1.3 {word containing apostrophe is added} {
+    ::tcltest::makeFile "abcde\nbcdef" dict/len05
+    ::tcltest::makeFile "word" dict/len04
+    set result [Dictionary::addWord ab'cd]
+    lappend result [Dictionary::isWord ab'cd]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len05
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1 1 0}
+
+test addWord-$state-1.4 {word containing apostrophe already exists, nonapostrophized version does not exist.} {
+    ::tcltest::makeFile "ab'cd\nbcdef" dict/len05
+    ::tcltest::makeFile "word" dict/len04
+    set result [Dictionary::addWord ab'cd]
+    lappend result [Dictionary::isWord ab'cd]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len05
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0 1 0}
+
+test addWord-$state-1.5 {word containing apostrophe already exists, nonapostrophized version also exists.} {
+    ::tcltest::makeFile "ab'cd\nbcdef" dict/len05
+    ::tcltest::makeFile "abcd" dict/len04
+    set result [Dictionary::addWord ab'cd]
+    lappend result [Dictionary::isWord ab'cd]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len05
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0 1 1}
+
+test addWord-$state-1.6 {word containing apostrophe and hyphen is added} {
+    ::tcltest::makeFile "abcdef\nbcdefg" dict/len06
+    ::tcltest::makeFile "word" dict/len04
+    set result [Dictionary::addWord ab'c-d]
+    lappend result [Dictionary::isWord ab'c-d]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len06
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1 1 0}
+
+test addWord-$state-1.7 {word containing apostrophe and hyphen already exists, nonpunctuized version does not exist.} {
+    ::tcltest::makeFile "ab'c-d\nbcdefg" dict/len06
+    ::tcltest::makeFile "word" dict/len04
+    set result [Dictionary::addWord ab'c-d]
+    lappend result [Dictionary::isWord ab'c-d]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len06
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0 1 0}
+
+test addWord-$state-1.8 {word containing apostrophe and hyphen already exists, nonpunctuized version also exists.} {
+    ::tcltest::makeFile "ab'c-d\nbcdefg" dict/len06
+    ::tcltest::makeFile "abcd" dict/len04
+    set result [Dictionary::addWord ab'c-d]
+    lappend result [Dictionary::isWord ab'c-d]
+    lappend result [Dictionary::isWord abcd]
+
+    ::tcltest::removeFile dict/len06
+    ::tcltest::removeFile dict/len04
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0 1 1}
+
+test isIllegalTrigram-$state-1.1 {legal trigram is a complete word} {
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram foo]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test isIllegalTrigram-$state-1.2 {legal trigram can begin a word} {
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram zfo]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test isIllegalTrigram-$state-1.3 {legal trigram can end a word} {
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram ooz]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test isIllegalTrigram-$state-1.4 {legal trigram contains a singleton word in the middle} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram ziz]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test isIllegalTrigram-$state-1.5 {illegal trigram has fewer than three letters} {
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram oo]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test isIllegalTrigram-$state-1.6 {illegal trigram} {
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    set result [Dictionary::isIllegalTrigram zzz]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-1.1 {all trigrams legal} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hepho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test containsIllegalTrigram-$state-1.2 {illegal trigram at start of string} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram zzhepho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-1.3 {illegal trigram at end of string} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hephozz]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-1.4 {illegal trigram in middle of string} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hezpho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-1.5 {spaces should not trigger an invalid trigram} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram "he pho"]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test containsIllegalTrigram-$state-1.6 {space near end should not trigger an invalid trigram} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram "heph o"]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test containsIllegalTrigram-$state-2.1 {all trigrams legal, result in cache} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hepho]
+    set result [Dictionary::containsIllegalTrigram hepho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test containsIllegalTrigram-$state-2.2 {illegal trigram at start of string, result in cache} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram zzhepho]
+    set result [Dictionary::containsIllegalTrigram zzhepho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-2.3 {illegal trigram at end of string, result in cache} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hephozz]
+    set result [Dictionary::containsIllegalTrigram hephozz]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-2.4 {illegal trigram in middle of string, result in cache} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram hezpho]
+    set result [Dictionary::containsIllegalTrigram hezpho]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {1}
+
+test containsIllegalTrigram-$state-2.5 {spaces near start should not trigger an invalid trigram} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram "he pho"]
+    set result [Dictionary::containsIllegalTrigram "he pho"]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test containsIllegalTrigram-$state-2.6 {space near end should not trigger an invalid trigram} {
+    ::tcltest::makeFile "the\nhep\neph\npho\n" dict/len03
+    set result [Dictionary::containsIllegalTrigram "heph o"]
+    set result [Dictionary::containsIllegalTrigram "heph o"]
+
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {0}
+
+test allWordsMatching-$state-1.1 {empty pattern matches nothing} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+
+    set result [Dictionary::allWordsMatching {}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {}
+
+test allWordsMatching-$state-1.2 {single wildcard only matches one letter words} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+
+    set result [Dictionary::allWordsMatching {?}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {a i}
+
+test allWordsMatching-$state-1.3 {Fixed pattern with no wordtree} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+
+    set result [Dictionary::allWordsMatching {foobar}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {foo}
+
+test allWordsMatching-$state-1.4 {Fixed pattern with wordtree} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    wordtree add foobar
+
+    set result [Dictionary::allWordsMatching {foobar}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+    wordtree delete
+
+    set result
+} {foobar}
+
+test allWordsMatching-$state-1.5 {wildcard pattern with wordtree, no matches} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    wordtree add foobar
+
+    set result [Dictionary::allWordsMatching {z?z?z}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+    wordtree delete
+
+    set result
+} {}
+
+test allWordsMatching-$state-1.6 {wildcard pattern with wordtree, only pattern matches} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    wordtree add foobar
+
+    set result [Dictionary::allWordsMatching {t?e?z?z}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+    wordtree delete
+
+    set result
+} {the}
+
+test allWordsMatching-$state-1.7 {wildcard pattern with wordtree, both match} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    wordtree add the
+    wordtree add th
+    wordtree add t
+
+    set result [Dictionary::allWordsMatching {the?z?z}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+    wordtree delete
+
+    set result
+} {the th t}
+
+test allWordsMatching-$state-1.8 {wildcard pattern with wordtree, both match on both sides of pattern wildcard boundary} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "th" dict/len02
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+    wordtree add the
+    wordtree add th
+    wordtree add t
+
+    set result [Dictionary::allWordsMatching {th????}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len02
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+    wordtree delete
+
+    set result
+} {the th t}
+
+test allWordsMatching-$state-1.9 {wildcard pattern with no wordtree, pattern matches full word} {
+    ::tcltest::makeFile "a\ni" dict/len01
+    ::tcltest::makeFile "th" dict/len02
+    ::tcltest::makeFile "the\nfoo\nbar" dict/len03
+
+    set result [Dictionary::allWordsMatching {th?}]
+
+    ::tcltest::removeFile dict/len01
+    ::tcltest::removeFile dict/len02
+    ::tcltest::removeFile dict/len03
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {the th}
+
+}
+
+if {[llength [info commands memory]] == 1} {
+    set result {}
+    puts stdout [memory info]
+    memory active mem.dump
+}
+
+::tcltest::cleanupTests

@@ -1,0 +1,145 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# ragbabysearch --
+#
+#	Automatic solver for a ragbaby cipher.  Keys are generate from
+#	a dictionary to find the best fit.
+#
+# RCS: @(#) $Id: ragbabysearch,v 1.9 2008/03/05 03:54:59 wart Exp $
+#
+# Copyright (C) 2001-2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list keyword.arg "" "The single key to try."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list stepinterval.arg 2000 "The interval between progress updates."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+set ciphertype ragbaby
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $ciphertype -ct $ct]
+
+# Iterate over all possible keys
+
+set Dictionary::cache {}
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set maxKeyBlock {}
+set count 0
+set stepInterval 20000
+
+if {$keyword == ""} {
+    foreach wordLength [Dictionary::availableLengths] {
+	foreach word [Dictionary::lookupByLength $wordLength] {
+	    set key [string map {j {} x {}} \
+		    [key generate -k1 [string map {j i x w - {} ' {}} $word]]]
+
+	    $cipher restore $key
+
+	    set value [score value [$cipher cget -pt]]
+
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKeyword $word
+		set maxKey [$cipher cget -key]
+
+		puts "# $keyword ([lindex $maxKey 0])  Fit: $value"
+		puts "# $count: [$cipher cget -pt]"
+		puts ""
+	    }
+
+	    if {$count%$stepInterval == 0} {
+		puts "# $word"
+		puts "# $count: [$cipher cget -pt]"
+		puts ""
+	    }
+
+	    incr count
+	}
+    }
+} else {
+    set key [string map {j {} x {}} \
+	    [key generate -k1 [string map {j i x w - {} ' {}} $keyword]]]
+    $cipher restore $key
+
+    set maxKey [$cipher cget -key]
+    set maxValue [score value [$cipher cget -pt]]
+    set maxKeyword $keyword
+}
+
+if {[string length $maxKey] == 0} {
+    puts "No useful solutions found."
+    exit
+}
+
+$cipher restore $maxKey
+
+CipherUtil::writeCipherToFile $cipher stdout
+puts stdout "keyword=$maxKeyword"

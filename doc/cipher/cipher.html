@@ -1,0 +1,59 @@
+<HTML>
+<TITLE>Tcl Command - cipher</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+cipher - Create cipher instances
+
+<H2>SYNOPSIS</H2>
+
+<B>cipher</B> <I>create ?options?</I>
+<BR>
+
+<B>cipher</B> <I>types</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="types"><B><CODE>cipher types</CODE></B></A></DT>
+        <DD>Display the list of known cipher types.  Returns a Tcl list of types that
+can be used with <B><CODE>cipher create</CODE></B>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="create"><B><CODE>cipher create ?args?</CODE></B></A></DT>
+        <DD>Create a new cipher instance.  This cipher instance can then be used to
+manipulate a given string of ciphertext.  The return value is a handle
+that can be used as a Tcl command:
+<P>
+<B><CODE>set cipherInstance [cipher create vigenere]</CODE></B>
+<BR>
+<B><CODE>$cipherInstance configure -ciphertext &quot;pgtwf gqpvx fmzfg vwimq uhvgg&quot;</CODE></B>
+<BR>
+<B><CODE>$cipherInstance configure -period 8</CODE></B>
+<P>
+See the help pages for the individual cipher types for more information on
+the available options.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

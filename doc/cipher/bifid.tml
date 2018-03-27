@@ -1,0 +1,61 @@
+[docHeader "Cipher Type - bifid"]
+[Ciphertype bifid]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore key" restore]
+[Synopsis <I>cipherProc</I> "substitute row col pt" substitute]
+[Synopsis <I>cipherProc</I> "undo string" undo]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureLanguage]
+
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetOption -bifidtext \
+"Undocumented feature"]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore key" restore \
+"The <B>restore</B> command restores the cipher's key to a previously stored
+state.  The output from <B><I>cipherProc</I> cget -key</B> can be passed back
+into the <B>restore</B> command to implement a crude <I>save</I> feature.
+Example:
+<P>
+<B><CODE>set key \[\$firstCipher cget -key\]</CODE></B>
+<BR>
+<B><CODE>\$secondCipher restore \$key</CODE></B>
+"]
+
+[Description "<I>cipherProc</I> substitute row col pt" substitute \
+"Substitute the plaintext letter <B>pt</B> into the keysquare position
+identified by <B>row</B> and <B>col</B>.
+<B>pt</B>.  An invalid row, column, or pt value will generate an error.
+"]
+
+[Description "<I>cipherProc</I> undo ct" undo \
+"Clears all key entries for the given ciphertext values."]
+
+[EndDescription]
+
+[footer]

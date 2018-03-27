@@ -1,0 +1,881 @@
+# amsco.test
+# Test of the amsco cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Sample amsco cipher:
+#
+# cecrt eglen phplu tnant eiomo wirsi tddsi ntnal inesa alemh atglr gr
+#
+# Laid out:
+#
+# 4   1   3   2   5
+# __________________
+# in  c   om  p   le
+# t   ec  o   lu  m
+# na  r   wi  t   ha
+# l   te  r   na  t
+# in  g   si  n   gl
+# e   le  t   te  r
+# sa  n   dd  i   gr
+# a   ph  s
+#
+
+proc createValidCipher {} {
+    set c [cipher create amsco -ct "cecrt eglen phplu tnant eiomo wirsi tddsi ntnal inesa alemh atglr gr"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Restore tests
+#       5.x     Column swap tests
+
+test amsco-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test amsco-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foo 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test amsco-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test amsco-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test amsco-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test amsco-1.6 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore key ?junk?}}
+
+test amsco-1.7 {attempt to substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No substitute command defined for amsco ciphers.}}
+
+test amsco-1.8 {invalid use of swap} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar swap col1 col2}}
+
+test amsco-1.9 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test amsco-1.10 {invalid period setting} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period 1000} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test amsco-1.11 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test amsco-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test amsco-1.13 {invalid use amsco command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore key
+                 ciphervar solve
+                 ciphervar swap col1 col2
+                 ciphervar undo ct
+                 ciphervar encode pt key}}
+
+test amsco-2.1 {bad swap columns} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap a f} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test amsco-2.2 {bad swap columns} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c swap 1 b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test amsco-2.3 {swap with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test amsco-2.4 {swap with no ciphertext set} {
+    set c [cipher create amsco]
+
+    set result [catch {$c swap 1 2} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test amsco-2.5 {no valid characters in ciphertext} {
+    set c [cipher create amsco]
+
+    set result [catch {$c configure -ct 11111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test amsco-2.6 {restore with no period set} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aaaa} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test amsco-2.7 {restore with invalid characters} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore 11111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character in key}}
+
+test amsco-2.8 {restore with characters out of range} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore abcfg} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {key character out of range}}
+
+test amsco-2.9 {restore with no ciphertext} {
+    set c [cipher create amsco]
+
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test amsco-2.10 {restore with invalid key length} {
+    set c [createValidCipher]
+
+    $c configure -period 2
+    set result [catch {$c restore abc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match period}}
+
+test amsco-2.11 {restore with invalid key (duplicate chars)} {
+    set c [createValidCipher]
+
+    $c configure -period 5
+    set result [catch {$c restore aabcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {duplicate key characters not allowed}}
+
+test amsco-2.12 {solve with no ciphertext} {
+    set c [cipher create amsco]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test amsco-2.13 {solve with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test amsco-2.14 {shift with no ciphertext} {
+    set c [cipher create amsco]
+
+    set result [catch {$c shift a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test amsco-2.15 {shift with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c shift a 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until period has been set}}
+
+test amsco-2.16 {shift an invalid column} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c shift g 1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad column index}}
+
+test amsco-2.17 {shift first column backwards} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c shift a -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test amsco-2.18 {shift last column backwards too far} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c shift c -3} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't shift backwards past the first column.}}
+
+test amsco-2.19 {set first cell size to an invalid value} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -startcellsize 0} msg] $msg]
+
+    rename $c {}
+    
+    set result
+} {1 {Invalid startcellsize setting.  Must be 1 or 2}}
+
+test amsco-2.20 {set first cell size to an invalid value} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -startcellsize a} msg] $msg]
+
+    rename $c {}
+    
+    set result
+} {1 {Invalid startcellsize setting.}}
+
+test amsco-2.21 {encode with non-listified key} {
+    set c [cipher create amsco]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test amsco-2.22 {encode with too many key elements} {
+    set c [cipher create amsco]
+
+    set result [catch {$c encode foobar "1 2"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key '1 2'.  Should have found 1.}}
+
+test amsco-2.23 {encode with short key elements} {
+    set c [cipher create amsco]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "123"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Length of key does not match the period.}}
+
+test amsco-3.1 {successful use of cget -length} {
+    set c [createValidCipher]
+    set result [$c cget -length]
+    rename $c {}
+    
+    set result
+} {57}
+
+test amsco-3.2 {get period (not set)} {
+    set c [createValidCipher]
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {0}
+
+test amsco-3.3 {get period} {
+    set c [createValidCipher]
+    $c configure -period 5
+    set result [$c cget -period]
+    rename $c {}
+    
+    set result
+} {5}
+
+test amsco-3.4 {successful use of cget -ct (empty)} {
+    set c [cipher create amsco]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test amsco-3.5 {successful use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {cecrteglenphplutnanteiomowirsitddsintnalinesaalemhatglrgr}
+
+test amsco-3.6 {successful use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {amsco}
+
+test amsco-3.7 {successful use of configure -ct} {
+    set c [createValidCipher]
+    set result [$c configure -ct "aaaaabbbbbcccccdddddeeeee"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbcccccdddddeeeee}
+
+test amsco-3.8 {set ciphertext with uppercase letters} {
+    set c [createValidCipher]
+    set result [$c configure -ct "AaaaaBbbbbCccccDddddEeeee"]
+    rename $c {}
+    
+    set result
+} {aaaaabbbbbcccccdddddeeeee}
+
+test amsco-3.9 {successful use of undo} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c configure -startcellsize 2
+    $c swap a c
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cepowtlecluinamrttrslhaenaiintglntdegletedsarnpisiagrhomn}
+
+test amsco-3.10 {successful retrieval of plaintext} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c configure -startcellsize 2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cepowtlecluinamrttrslhaenaiintglntdegletedsarnpisiagrhomn}
+
+test amsco-3.11 {successful retrieval of plaintext with alternate startcellsize} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c configure -startcellsize 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cplotneecuwiamhrtnrliateasintggntteslleeddargniosalrphmin}
+
+test amsco-3.12 {successful retrieval of plaintext with incomplete final cell} {
+    set c [cipher create amsco -ct "cecrt eglen phplu tnant eiomo wirsi tddsi ntnal inesa alemh atglr g"]
+    $c configure -period 5
+    $c configure -startcellsize 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cplontlecuwinemrtnralhteasiiatgnttnegleeddslrniosaagphmi}
+
+test amsco-3.13 {successful retrieval of plaintext with even period} {
+    set c [cipher create amsco -ct "roeti peseo ktams arren otety ctrth ulahi ftwrd ehodt inein fngee shmel loiwe cghlo dthis ttcap owtri nwece efaed agoas tsvec mntea rodin heeha eayet hstsg rshee onaee niteu nlemt bnana lseno tstud atyti cigp"]
+    $c configure -period 10
+    $c configure -startcellsize 1
+    $c restore cagedijhfb
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cagedijhfb fromthenineteentwentiestothefortiestheusstatedepartmentusedthesocalledgraycodediplomatsgottoknowitbyheartinthetwentiestheamericanconsulinshanghaigaveafarewellspeechingraycode}
+
+test amsco-3.14 {successful retrieval of plaintext with odd period (nd2002:e11)} {
+    set c [cipher create amsco -ct "roeti peseo ktams arren otety ctrth ulahi ftwrd ehodt inein fngee shmel loiwe cghlo dthis ttcap owtri nwece efaed agoas tsvec mntea rodin heeha eayet hstsg rshee onaee niteu nlemt bnana lseno tstud atyti cigp"]
+    $c configure -period 11
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcdefghijk rrrhnfgtrsnhgunooeeifnhlitsersltstnotgeonwvehhemtiptwredteecaeetudeetdshhcemeaobnaseyehmisentynaatyoctoeltfaeetenatktrdtltcearhenlicathioiadaostiseimsunewpogdistengpalaiecwoa}
+
+test amsco-3.15 {get default stepinterval} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test amsco-3.16 {set/get stepinterval (set to 0)} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 0
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {0}
+
+test amsco-3.17 {set/get stepinterval} {
+    set c [createValidCipher]
+
+    $c configure -stepinterval 10000
+    set result [$c cget -stepinterval]
+    rename $c {}
+    
+    set result
+} {10000}
+
+test amsco-3.18 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test amsco-3.19 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test amsco-3.20 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test amsco-3.21 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test amsco-3.22 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test amsco-3.23 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test amsco-3.24 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test amsco-3.25 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test amsco-3.26 {Set the ciphertext after setting the period} {
+    set c [cipher create amsco -period 5 -startcellsize 2]
+    $c configure -ct "cecrt eglen phplu tnant eiomo wirsi tddsi ntnal inesa alemh atglr gr"
+    set result [list [$c cget -period] [$c cget -pt]]
+} {5 cepowtlecluinamrttrslhaenaiintglntdegletedsarnpisiagrhomn}
+
+
+test amsco-3.27 {Set the ciphertext after setting the period triggers a period reset} {
+    set c [cipher create amsco -period 40]
+    $c configure -ct "nldof lbcui elk"
+    set result [$c cget -period]
+} {0}
+
+test amsco-4.1 {restore} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c restore abcde
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cplotneecuwiamhrtnrliateasintggntteslleeddargniosalrphmin}
+
+test amsco-4.2 {restore} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c configure -startcellsize 2
+    $c restore dacbe
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacbe incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-5.1 {swap} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c swap a b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacde pceotnelucwiamhtrtrlianaesintgnglteslteeddarginpsalromhin}
+
+test amsco-5.2 {multiple swap} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c swap a b
+    $c swap b c
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cabde oceptnewicluamhrrttliasienantgtglneslddeteargsnpialrinhom}
+
+test amsco-6.1 {shift by 0 has no effect} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c shift b 0
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {abcde cplotneecuwiamhrtnrliateasintggntteslleeddargniosalrphmin}
+
+test amsco-6.2 {simple shift by 1} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c shift a 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacde pceotnelucwiamhtrtrlianaesintgnglteslteeddarginpsalromhin}
+
+test amsco-6.3 {shift by 6 is stopped} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c shift a 6
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bcdea pomilechpontmeclwinharutralttensiiglgantnerletddsgrneisaa}
+
+test amsco-6.4 {shift by negative amount} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c shift b -1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {bacde pceotnelucwiamhtrtrlianaesintgnglteslteeddarginpsalromhin}
+
+test amsco-6.5 {shift by negative amount} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c shift c -2
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {cabde oceptnewicluamhrrttliasienantgtglneslddeteargsnpialrinhom}
+
+test amsco-6.6 {shift twice} {
+    set c [createValidCipher]
+    $c configure -startcellsize 2
+    $c configure -period 5
+    $c shift d -3
+    $c shift b 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacbe incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-7.1 {solve with odd period and startcellsize 1} {
+    set c [cipher create amsco -ct "nceartnglanp mplitnintdi ocowersetdhs ietnalilesra lumhatgerg"]
+    $c configure -period 5
+    $c solve
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacbe incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-7.2 {solve with odd period and startcellsize 2} {
+    set c [createValidCipher]
+    $c configure -period 5
+    $c solve
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacbe incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-7.3 {solve with even period and startcellsize 1} {
+    set c [cipher create amsco -ct "nctumterglerdis mpoarlatnetnra oecnhansilsag ilelwitingtedph"]
+    $c configure -period 4
+    $c solve
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacb incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-7.4 {solve with even period and startcellsize 2} {
+    set c [cipher create amsco -ct "cetmitrngeerihs pcoraltintana omenahnaslesgr inlluwteigltddp"]
+    $c configure -period 4
+    $c solve
+
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {dacb incompletecolumnarwithalternatingsinglelettersanddigraphs}
+
+test amsco-8.1 {encode} {
+    set c [cipher create amsco -period 5 -startcellsize 2]
+
+    set result [$c encode "incomplete columnar with alternating single letters and digraphs" [list dacbe]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {cecrteglenphplutnanteiomowirsitddsintnalinesaalemhatglrgr cecrteglenphplutnanteiomowirsitddsintnalinesaalemhatglrgr incompletecolumnarwithalternatingsinglelettersanddigraphs dacbe}

@@ -1,0 +1,195 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# runningkey --
+#
+#	Automatic solver for the running key cipher.
+#
+# RCS: @(#) $Id: runkey,v 1.5 2008/03/05 03:54:59 wart Exp $
+#
+# Copyright (C) 2000-2002  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+
+# Usage:  $argv0 file type ?tip?
+
+if {[llength $argv] < 2 || [llength $argv] > 4} {
+    puts stderr "Usage:  $argv0 file ciphertype ?tip?"
+    exit 1
+}
+
+set filename [lindex $argv 0]
+set cipherType [lindex $argv 1]
+set tip [lindex $argv 2]
+
+if {[lsearch [cipher types] $cipherType] == -1} {
+    puts stderr "Unknown cipher type $cipherType"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ciphertext [CipherUtil::readCiphertext $filename]
+
+regsub -all { } $ciphertext {} ciphertext
+
+# Generate vigenere, variant, and beaufort tables
+
+set alphabet [list a b c d e f g h i j k l m n o p q r s t u v w x y z]
+set ct [join $alphabet {}]
+
+set cipher [cipher create $cipherType -period 26]
+
+foreach ptLetter $alphabet {
+    set pt [string repeat $ptLetter 26]
+    $cipher substitute $ct $pt 1
+    set keyWord [$cipher cget -keyword]
+    for {set i 0} {$i < 26} {incr i} {
+	set key($ptLetter,[string index $ct $i]) [string index $keyWord $i]
+    }
+}
+
+proc bestFit {trigram} {
+    global key
+
+    set alphabet [list a b c d e f g h i j k l m n o p q r s t u v w x y z]
+    set ct1 [string index $trigram 0]
+    set ct2 [string index $trigram 1]
+    set ct3 [string index $trigram 2]
+    set ct4 [string index $trigram 3]
+    set ct5 [string index $trigram 4]
+    set ct6 [string index $trigram 5]
+    set ct7 [string index $trigram 6]
+
+    set maxValue 0
+    set maxPair {}
+
+    foreach pt1 $alphabet {
+		set key1 $key($pt1,$ct1)
+    foreach pt2 $alphabet {
+		set key2 $key($pt2,$ct2)
+    foreach pt3 $alphabet {
+		set key3 $key($pt3,$ct3)
+    puts "$pt1$pt2$pt3...."
+    foreach pt4 $alphabet {
+		set key4 $key($pt4,$ct4)
+    foreach pt5 $alphabet {
+		set key5 $key($pt5,$ct5)
+    foreach pt6 $alphabet {
+		set key6 $key($pt6,$ct6)
+    foreach pt7 $alphabet {
+		set key7 $key($pt7,$ct7)
+
+		set value [expr {[score value $pt1$pt2$pt3$pt4$pt5$pt6$pt7]} *\
+			{[score value $key1$key2$key3$key4$key5$key6$key7]}]
+
+		if {$value > $maxValue} {
+		    set maxPair [list $pt1$pt2$pt3$pt4$pt5$pt6$pt7 $key1$key2$key3$key4$key5$key6$key7]
+		    set maxValue $value
+		    puts "$value:  $maxPair"
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+
+    return [list $maxValue $maxPair]
+}
+
+proc locate_tip {tip ct} {
+    set maxVal 0
+    set maxStart 0
+
+    for {set startIndex 0} \
+	    {$startIndex < [string length $ct]-[string length $tip]+1} \
+	    {incr startIndex} {
+	set keyString [placeText $tip $ct $startIndex]
+
+	set value [score value $keyString]
+	if {$value > $maxVal} {
+	    set maxVal $value
+	    set maxStart $startIndex
+	}
+    }
+
+    puts "[string repeat { } $maxStart]$tip"
+    puts "[string repeat { } $maxStart][placeText $tip $ct $maxStart]"
+    puts "[string toupper $ct]"
+    puts ""
+}
+
+proc placeText {text ciphertext position} {
+    global key
+    set keyString {}
+
+    for {set i 0} {$i < [string length $text]} {incr i} {
+	set pt [string index $text $i]
+	set ct [string index $ciphertext [expr $position+$i]]
+
+	append keyString $key($pt,$ct)
+    }
+
+    return $keyString
+}
+
+if {[string length $tip] > 0} {
+    locate_tip $tip $ciphertext
+} else {
+    for {set startIndex 0} {$startIndex < [string length $ciphertext]-2} \
+	    {incr startIndex} {
+	set trigram [string range $ciphertext $startIndex [expr $startIndex+2]]
+	set trigram $ciphertext
+
+	puts -nonewline stdout "Best match for $trigram:  "
+	flush stdout
+
+	set result [bestFit $trigram]
+	set maxValue($startIndex) [lindex $result 0]	
+	set maxPair($startIndex) [lindex $result 1]	
+
+	puts stdout "$maxPair($startIndex) ($maxValue($startIndex))"
+    }
+
+    set ptrow1 {}
+    set ptrow2 { }
+    set ptrow3 {  }
+    set keyrow1 {}
+    set keyrow2 { }
+    set keyrow3 {  }
+
+    for {set startIndex 0} {$startIndex < [string length $ciphertext]-2} \
+	    {incr startIndex} {
+	set row [expr $startIndex%3 + 1]
+	append keyrow$row "[lindex $maxPair($startIndex) 0]"
+	append ptrow$row "[lindex $maxPair($startIndex) 1]"
+    }
+
+    puts ""
+    puts $keyrow1
+    puts $ptrow1
+    puts ""
+    puts $keyrow2
+    puts $ptrow2
+    puts ""
+    puts $keyrow3
+    puts $ptrow3
+    puts [string toupper $ciphertext]
+}

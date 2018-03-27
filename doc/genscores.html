@@ -1,0 +1,91 @@
+<HTML>
+<TITLE>Cipher Program - genscores</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+genscores - Generate scoring tables from a set of plaintext files.
+
+
+<H2>SYNOPSIS</H2>
+
+<B>genscores</B> <I>-type value [-verbose] [-elemsize nchars] [-output outfilename] [-validchars chars] file1 ?file2 ...?</I>
+<BR>
+
+
+<p>
+All data is normalized after being generated.  Multiple input files may be used to create a large sample of plaintext.
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="type"><B><CODE>-type value</CODE></B></A></DT>
+        <DD>The scoring method to use in the generated scoring table.  This must be one of the builtin types returned by the <code>score types</code> command.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="verbose"><B><CODE>-verbose</CODE></B></A></DT>
+        <DD>Print a little more information as the table is being generated.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="elemsize"><B><CODE>-elemsize nchars</CODE></B></A></DT>
+        <DD>The size of the elements for ngram based score types.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="output"><B><CODE>-output outfilename</CODE></B></A></DT>
+        <DD>The name of the file where the results should be written.  Use '-' for stdout (which is the default)
+        </DD>
+
+
+    <P>
+    <DT><A NAME="validchars"><B><CODE>-validchars chars</CODE></B></A></DT>
+        <DD>The set of valid characters for the scoring table elements.  Defaults to 'abcdefghijklmnopqrstuvwxyz'.  Make sure to shell-escape any questionable characters such as '*' and '?'.
+        </DD>
+
+
+</DL>
+
+
+<H2>EXAMPLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="example1"><B><CODE>genscores -type digramlog -output myDigramTable.tcl frank14.txt</CODE></B></A></DT>
+        <DD>Generate and save a sum-of-logs-of-digram-frequencies scoring table based on the standard Frankenstein text.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example2"><B><CODE>genscores -type ngramcount -verbose -elemsize 5 -output my5gramTable.tcl file1.txt file2.txt file3.txt file4.txt</CODE></B></A></DT>
+        <DD>Generate and save a 5-gram frequencies based on the sum of 4 input files.  Extra status information is printed while the program runs.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example2"><B><CODE>genscores -type ngramlog -elemsize 4 -output my4gramTable.tcl -validchars "abcdefghijklmnopqrstuvwxyz " file1.txt</CODE></B></A></DT>
+        <DD>Generate and save a 4-gram frequency scoring table that includes word boundaries.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

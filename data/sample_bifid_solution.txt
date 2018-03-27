@@ -1,0 +1,8 @@
+type	bifid
+period	5
+ciphertext	aystobhnqldpvtflvmhnlfeapamcrwixuydmdqsdsitfznhbhileirumlmmwc
+plaintext	anysufficientlyadvancedtechnologyisindistinguishablefrommagic
+key	{abcdefghiklmnopqrstuvwxyz 13221123212425313215123334354142144344455152535455}
+language	english
+keyword	clarkebdfghimnopqstuvwxyz
+# Score value:  415.303097971

@@ -1,0 +1,40 @@
+[docHeader "Cipher Type - digrafid"]
+[Ciphertype digrafid]
+[SynopsisHeader]
+[Synopsis {} "set cipherProc \[cipher create $cipherType\]"]
+<BR>
+[Synopsis <I>cipherProc</I> "configure ?options?" configure]
+[Synopsis <I>cipherProc</I> "cget option" cget]
+[Synopsis <I>cipherProc</I> "restore shift" restore]
+
+[StartDescription]
+
+[Description "<I>cipherProc</I> configure ?options?" configure \
+"Configure the settings for the $cipherType cipher.  Valid options are:
+<P>
+<DL>
+    [ConfigureCt]
+    [ConfigurePeriod]
+    [ConfigureLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> cget option" cget \
+"Look up the value for a given option.  Valid options are:
+<P>
+<DL>
+    [CgetType]
+    [CgetCt]
+    [CgetPt]
+    [CgetKey]
+    [CgetLength]
+    [CgetPeriod]
+    [CgetOption "-digrafidtext" "Undocumented feature."]
+    [CgetLanguage]
+</DL>"]
+
+[Description "<I>cipherProc</I> restore keysquare1 keysquare2" restore \
+"Restore a digrafid from keysquares."]
+
+[EndDescription]
+
+[footer]

@@ -1,0 +1,1002 @@
+# aristocrat.test
+# Test of the aristocrat cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the aristocrat cipher
+# Laid out, the cipher looks like:
+#
+# dmw oqbciedw boxwbd gok dc vceqiw kceh pcywk ub dc xciv ud cfwh
+# cyrw oyv aed ud uy kceh acrtwd.
+#
+# Solution:
+#
+# the absolute safest way to double your money is to fold it over
+# once and put it in your pocket. 
+#
+# K1 key:  psotuvwrl y h ambc kidefn 
+#          abcdefghijklmnopqrstuvwxyz
+# K2 key:  oqrvwx mu tipyca hbdefg k 
+
+
+proc createValidCipher {} {
+    set c [cipher create aristocrat -ct "dmw oqbciedw boxwbd gok dc vceqiw kceh pcywk ub dc xciv ud cfwh cyrw oyv aed ud uy kceh acrtwd."]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Undo tests
+#	6.x	Locate tip tests
+#	7.x	Save/Restore tests
+
+test aristocrat-1.1 {error when creating cipher} {
+    set result [list [catch {cipher create aristocrat -ct "12345"} msg] $msg]
+    
+    set result
+} {1 {Bad character in ciphertext:  1}}
+
+test aristocrat-1.2 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test aristocrat-1.3 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test aristocrat-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test aristocrat-1.5 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test aristocrat-1.6 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test aristocrat-1.7 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test aristocrat-1.8 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore ct pt}}
+
+test aristocrat-1.9 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test aristocrat-1.11 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test aristocrat-1.12 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test aristocrat-1.13 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test aristocrat-1.14 {invalid use of configure -solkeytype} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -solkeytype a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key type.  Must be one of '1', '2', or '3'.}}
+
+test aristocrat-1.15 {invalid use of configure -solkeytype} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -solkeytype 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid key type.  Must be one of '1', '2', or '3'.}}
+
+test aristocrat-1.16 {invalid use of configure -solkeywordlength} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -solkeywordlength a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid keyword length.  Must be between 1 and 26}}
+
+test aristocrat-1.17 {invalid use of configure -solkeywordlength} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -solkeywordlength 0} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid keyword length.  Must be between 1 and 26}}
+
+test aristocrat-1.18 {invalid use of encode} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c encode} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar encode pt key}}
+
+test aristocrat-1.19 {invalid use aristocrat command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar restore ct pt
+                 ciphervar substitute ct pt
+                 ciphervar undo ?ct?
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test aristocrat-2.1 {invalid cipher characters} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c configure -ct foo1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in ciphertext:  1}}
+
+test aristocrat-2.2 {key conflicts during restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcd aabc} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-2.3 {key conflicts during substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc zbcd} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-2.4 {locate with null cipher} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test aristocrat-2.5 {locate with invalid starting position} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Starting location not found.}}
+
+test aristocrat-2.6 {attempt to use solve proc} {timeIntensive} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test aristocrat-2.7 {undo invalid character} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {0 {}}
+
+test aristocrat-2.8 {substitute with null cipher} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c substitute a b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test aristocrat-2.9 {undo with null cipher} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c undo a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test aristocrat-2.10 {set strictness to an invalid value} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c configure -strict foobar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {expected boolean value but got "foobar"}}
+
+test aristocrat-2.11 {encode with non-listified key} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test aristocrat-2.12 {encode with too many key elements} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c encode foobar "a b c"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
+
+test aristocrat-2.13 {encode with short key elements} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c encode foobar "a b"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+test aristocrat-3.1 {use of cget -length} {
+    set c [cipher create aristocrat]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test aristocrat-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {95}
+
+test aristocrat-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test aristocrat-3.4 {use of cget -ct} {
+    set c [cipher create aristocrat]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test aristocrat-3.5 {use of cget -ct with uppercase letters} {
+    set c [cipher create aristocrat -ct "This Has Uppercase Letters."]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {this has uppercase letters.}
+
+test aristocrat-3.6 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {dmw oqbciedw boxwbd gok dc vceqiw kceh pcywk ub dc xciv ud cfwh cyrw oyv aed ud uy kceh acrtwd.}
+
+test aristocrat-3.7 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                                                                                              .}
+
+test aristocrat-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                          }}
+
+test aristocrat-3.9 {use of cget -K1key} {
+    set c [createValidCipher]
+    set result [$c cget -K1key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                          }}
+
+test aristocrat-3.10 {use of cget -K2key} {
+    set c [createValidCipher]
+    set result [$c cget -K2key]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz {                          }}
+
+test aristocrat-3.11 {use of cget -K1key} {
+    set c [createValidCipher]
+    $c substitute abz cde
+    set result [list [$c cget -K1key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {cd                       e}} {      d      d   d                            d                          c              c     .}}
+
+test aristocrat-3.12 {use of cget -K2key} {
+    set c [createValidCipher]
+    $c substitute abz cde
+    set result [list [$c cget -K2key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {  abz                     }} {      d      d   d                            d                          c              c     .}}
+
+test aristocrat-3.13 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {aristocrat}
+
+test aristocrat-3.14 {use of undo} {
+    set c [createValidCipher]
+    $c substitute abcdefghij bcdefghijk
+    $c undo abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {   efghijk                }} {e       jfe       e h   e    f j    fi          e    j   e  g i           fe  e      fi      e.}}
+
+
+test aristocrat-3.15 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test aristocrat-3.16 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test aristocrat-3.17 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test aristocrat-3.18 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test aristocrat-3.19 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test aristocrat-3.20 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test aristocrat-3.21 {get default solkeywordlength} {
+    set c [createValidCipher]
+
+    set result [$c cget -solkeywordlength]
+    rename $c {}
+    
+    set result
+} {0}
+
+test aristocrat-3.22 {set/get solkeywordlength} {
+    set c [createValidCipher]
+
+    $c configure -solkeywordlength 2
+    set result [$c cget -solkeywordlength]
+    rename $c {}
+    
+    set result
+} {2}
+
+test aristocrat-3.23 {get default solkeytype} {
+    set c [createValidCipher]
+
+    set result [$c cget -solkeytype]
+    rename $c {}
+    
+    set result
+} {2}
+
+test aristocrat-3.24 {set/get solkeytype} {
+    set c [createValidCipher]
+
+    $c configure -solkeytype 3
+    set result [$c cget -solkeytype]
+    rename $c {}
+    
+    set result
+} {3}
+
+test aristocrat-3.25 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test aristocrat-3.26 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test aristocrat-3.27 {get default strictness} {
+    set c [createValidCipher]
+    set result [$c cget -strict]
+    rename $c {}
+
+    set result
+} {0}
+
+test aristocrat-3.28 {set/get strictness} {
+    set c [createValidCipher]
+    $c configure -strict 1
+    set result [$c cget -strict]
+    rename $c {}
+
+    set result
+} {1}
+
+test aristocrat-4.1 {single valid substitution} {
+    set c [createValidCipher]
+    $c substitute a b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {b                         }} {                                                                         b              b     .}}
+
+test aristocrat-4.2 {multiple valid substitutions} {
+    set c [createValidCipher]
+    $c substitute ab cd
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {cd                        }} {      d      d   d                            d                          c              c     .}}
+
+test aristocrat-4.3 {alt substitution} {
+    set c [createValidCipher]
+    $c substitute ab cd
+    $c substitute a q
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {qd                        }} {      d      d   d                            d                          q              q     .}}
+
+test aristocrat-4.4 {substitution return value} {
+    set c [cipher create aristocrat -ct abcdefg]
+    set result [$c substitute ab cd]
+
+    rename $c {}
+
+    set result
+} {ab cd}
+
+test aristocrat-4.5 {alt substitution no effect return value} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute ab cd]
+
+    rename $c {}
+
+    set result
+} {ab cd}
+
+test aristocrat-4.6 {alt substitution one change return value} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute ab ce]
+
+    rename $c {}
+
+    set result
+} {ab ce b}
+
+test aristocrat-4.7 {alt substitution one change return value} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute ab ed]
+
+    rename $c {}
+
+    set result
+} {ab ed a}
+
+test aristocrat-4.8 {alt substitution two change return value} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute ab ef]
+
+    rename $c {}
+
+    set result
+} {ab ef ab}
+
+test aristocrat-4.9 {alt substitution pt change} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute q c]
+
+    rename $c {}
+
+    set result
+} {q c a}
+
+test aristocrat-4.10 {alt substitution pt change} {
+    set c [cipher create aristocrat -ct abcdefg]
+    $c substitute ab cd
+    set result [$c substitute q d]
+
+    rename $c {}
+
+    set result
+} {q d b}
+
+test aristocrat-4.11 {strict mode alt substitution no effect return value succeeds} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute ab cd} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {0 {ab cd}}
+
+test aristocrat-4.12 {strict mode alt substitution one change return value fails with error} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute ab ce} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-4.13 {strict mode alt substitution one change return value fails with error} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute ab ed} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-4.14 {strict mode alt substitution two change return value fails with error} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute ab ef} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-4.15 {strict mode alt substitution pt change fails with error} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute q c} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Bad Substitution}}
+
+test aristocrat-4.16 {strict mode alt substitution pt change fails with error} {
+    set c [cipher create aristocrat -ct abcdefg -strict 1]
+    $c substitute ab cd
+    set result [list [catch {$c substitute q d} msg] $msg]
+
+    rename $c {}
+
+    set result
+} {1 {Bad Substitution}}
+
+
+test aristocrat-5.1 {undo with no effect} {
+    set c [createValidCipher]
+    $c undo a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {                                                                                              .}}
+
+test aristocrat-5.2 {undo with no effect} {
+    set c [createValidCipher]
+    $c sub abcdef ghijkl
+    $c undo g
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {ghijkl                    }} {j     hi kj  h   hj     ji  ik     ik   i     h ji  i    j il   i        gkj  j     ik  gi   j.}}
+
+test aristocrat-5.3 {undo} {
+    set c [createValidCipher]
+    $c sub abcdef ghijkl
+    $c undo a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz { hijkl                    }} {j     hi kj  h   hj     ji  ik     ik   i     h ji  i    j il   i         kj  j     ik   i   j.}}
+
+test aristocrat-5.4 {invalid use of undo} {
+    set c [createValidCipher]
+    $c sub abcdef ghijkl
+    $c undo
+
+    set result [list [$c cget -key] [$c cget -pt]]
+
+    rename $c {}
+
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {                                                                                              .}}
+
+test aristocrat-6.1 {locate position at start} {
+    set c [cipher create aristocrat -ct "abc def ghijj"]
+    $c locate the
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {the                       }} {the          }}
+
+test aristocrat-6.2 {locate alt sub at start} {
+    set c [cipher create aristocrat -ct "abc def ghijj"]
+    $c locate abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz { abc                      }} { ab c        }}
+
+test aristocrat-6.3 {locate position at end} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate freed
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {      fred                }} {        freed}}
+
+test aristocrat-6.4 {locate position falls off end} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate freeds
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {             }}
+
+test aristocrat-6.5 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate the abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {the                       }} {the          }}
+
+test aristocrat-6.6 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate abc abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz { abc                      }} { ab c        }}
+
+test aristocrat-6.7 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate abc "bc d"
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz { abc                      }} { ab c        }}
+
+test aristocrat-6.8 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate abc ij
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {             }}
+
+test aristocrat-6.9 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate freed def
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {      fred                }} {        freed}}
+
+test aristocrat-6.10 {locate start specified} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate freed ghiij
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {      fred                }} {        freed}}
+
+test aristocrat-6.11 {locate using a start index} {
+    set c [cipher create aristocrat -ct "abc def ghiij"]
+    $c locate freed 1
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {      fred                }} {        freed}}
+
+test aristocrat-7.1 {save/restore test, empty key} {} {
+    set c1 [cipher create aristocrat -ct "abc def ghiij"]
+    set key [$c1 cget -key]
+    set c2 [cipher create aristocrat -ct "abc def ghiij"]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {                          }} {             }}
+
+test aristocrat-7.2 {save/restore test, full key} {
+    set c1 [cipher create aristocrat -ct "abc def ghiij"]
+    $c1 substitute abcdefghijklmnopqrstuvwxyz bcdefghijklmnopqrstuvwxyza
+    set key [$c1 cget -key]
+    set c2 [cipher create aristocrat -ct "abc def ghiij"]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz bcdefghijklmnopqrstuvwxyza} {bcd efg hijjk}}
+
+test aristocrat-7.3 {save/restore test, key with spaces} {
+    set c1 [cipher create aristocrat -ct "abc def ghiij"]
+    $c1 substitute abcdefghijklmnopqrstuvwxyz "b d f h j l n p r t v x z "
+    set key [$c1 cget -key]
+    set c2 [cipher create aristocrat -ct "abc def ghiij"]
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghijklmnopqrstuvwxyz {b d f h j l n p r t v x z }} {b d  f  h jj }}
+
+test aristocrat-8.1 {encode} {
+    set c [cipher create aristocrat]
+
+    set result [list [$c encode "foo bar" [list abcdefghijklmnopqrstuvwxyz bcdefghijklmnopqrstuvwxyza]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {{enn azq} {enn azq} {foo bar} {abcdefghijklmnopqrstuvwxyz bcdefghijklmnopqrstuvwxyza}}

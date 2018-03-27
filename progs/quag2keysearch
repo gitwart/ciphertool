@@ -1,0 +1,136 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# quag2keysearch --
+#
+#	Keyword search for quag2 ciphers
+#
+# RCS: @(#) $Id: quag2keysearch,v 1.14 2008/03/05 03:54:58 wart Exp $
+
+package require cipher
+package require cmdline
+package require CipherUtil
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg 0 "The period for the quagmire cipher"] \
+    [list type.arg quagmire2 "The quagmire type.  Must be one of quagmire1 or quagmire2"] \
+    [list vertical.arg {} "The vertical keyword for the cipher"] \
+    [list addspace "Locate spaces in the resulting plaintext."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+    [list stepinterval.arg 2000 "The interval between progress updates."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$period <= 0} {
+    puts stderr "Must specify a period for quagmire ciphers."
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+}
+
+if {[lsearch [list quagmire1 quagmire2] $type] == -1} {
+    puts stderr "Unknown cipher type $type"
+    exit 1
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set cipher [cipher create $type -ct $ct -period $period]
+
+set maxValue 0
+set maxKeyword {}
+set maxKey {}
+set i 0
+
+if {$vertical != ""} {
+    set verticalKeywordList $vertical
+} else {
+    set verticalKeywordList [Dictionary::lookupByLength $period]
+}
+
+foreach verticalKeyword $verticalKeywordList {
+    regsub -all {[^a-z]} $verticalKeyword {} verticalKeyword
+    if {[string length $verticalKeyword] != $period} {
+        continue
+    }
+    incr i
+    foreach wordLength [Dictionary::availableLengths] {
+        foreach k1Keyword [Dictionary::lookupByLength $wordLength] {
+            regsub -all {[^a-z]} $k1Keyword {} keyword
+            if {[string length $keyword] == 0} {
+                continue
+            }
+            $cipher restore $verticalKeyword $keyword
+            set value [score value [$cipher cget -pt]]
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKeyword [list $verticalKeyword $k1Keyword]
+		set maxKey [$cipher cget -key]
+
+		puts "# $k1Keyword[string toupper $verticalKeyword] Fit: $value"
+		puts "# $i: [$cipher cget -pt]"
+		puts ""
+	    }
+        }
+    }
+    if {$i%$stepinterval == 0} {
+        puts "# [string toupper $verticalKeyword]"
+        puts "# $i: [$cipher cget -pt]"
+        puts ""
+    }
+}
+
+$cipher restore [lindex $maxKeyword 0] [lindex $maxKeyword 1]
+regsub -all { } [$cipher cget -pt] {} pt
+if {$addspace} {
+    set Dictionary::cache [list word length]
+    set readablePt [Dictionary::findWords $pt]
+}
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
+if {$addspace} {
+    puts "#plaintext=$readablePt"
+}
+puts "keyword=$maxKeyword"

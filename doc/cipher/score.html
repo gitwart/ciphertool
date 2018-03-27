@@ -1,0 +1,297 @@
+<HTML>
+<TITLE>Tcl Command - score</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+score - Manipulate plaintext scoring tables.
+
+<H2>SYNOPSIS</H2>
+
+<B>score</B> <I>option string</I>
+<BR>
+
+
+<H2>DESCRIPTION</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="value"><B><CODE>score value plaintext ?weight?</CODE></B></A></DT>
+        <DD>Generates a score for the plaintext based on the default scoring table.  If
+specified, the result is multiplied by the supplied weight.  The initial
+default scoring table uses a sum-of-logs-of-digram-frequencies scoring method.
+The default scoring table can be changed using the command <code>score default
+command</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="elemvalue"><B><CODE>score elemvalue plaintext ?weight?</CODE></B></A></DT>
+        <DD>Lookup a single element in the default scoring table.  If specified, the
+result is multiplied by the supplied weight.  The initial default scoring table
+uses a sum-of-logs-of-digram-frequencies scoring method.  The default scoring
+table can be changed using the command <code>score default command</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="types"><B><CODE>score types</CODE></B></A></DT>
+        <DD>Returns the list of builtin scoring types.  These are the only valid types
+that can be used with the <code>score create</code> command.  This list of
+types includes:
+<ul>
+<li>digramlog - Sum of the natural logarithms of digram frequencies.</li>
+<li>digramcount - Raw digram frequency counts.</li>
+<li>trigramlog - Sum of the natural logarithms of trigram frequencies.</li>
+<li>trigramcount - Raw trigram frequency counts</li>
+<li>ngramlog - Sum of the natural logarithms of arbitrary n-grams.  The size of
+the ngrams must be set using the scoring table's <code>elemsize</code>
+command.</li>
+<li>ngramcount - Raw n-gram frequency counts.  The size of the ngrams must be
+set using the scoring table's <code>elemsize</code> command.</li>
+<li>wordtree - The square of the lengths of valid words longer than 2
+characters.  This scoring table does not have a fixed element size.</li>
+</ul>
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="create"><B><CODE>score create type</CODE></B></A></DT>
+        <DD>Create a new scoring table from one of the builtin types.  The value of the
+<code>type</code> argument must be one of the types returned by <code>score
+types</code>.  This command returns the name of a new scoring object.  This new
+scoring object is also a Tcl command that is used to populate the scoring table
+and retrieve values from the table.  Scoring object commands are described
+below.
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="default"><B><CODE>score default ?command?</CODE></B></A></DT>
+        <DD>Get the name of the command that implements the default scoring table, or set
+the command that should be used as the default scoring table.  The value for
+the <code>command</code> argument can be either a scoring object that was
+returned by <code>score create</code>, or a Tcl procedure that implements the
+scoring object command.  See below for details on scoring object commands.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="isinternal"><B><CODE>score isinternal command</CODE></B></A></DT>
+        <DD>Returns a boolean value indicating if this command was created by <code>score create</code>.
+        </DD>
+
+
+</DL>
+
+
+<H2>SCORING OBJECTS</H2>
+<DL>
+
+
+Each scoring object represents a single scoring table.  By using independent
+scoring objects, many scoring tables can be created and used simultaneously.
+Scoring tables can be created using one of the builtin types {see <code>score
+create</code>}, or using a custom Tcl procedure.  If a custom Tcl procedure is
+used, it must use the following signature:
+
+<pre>
+proc myScoreProc {subcommand args} {
+    ...
+}
+</pre>
+
+The list of possible values for the subcommand is given below.
+
+    <P>
+    <DT><A NAME="value"><B><CODE>scoreObj type</CODE></B></A></DT>
+        <DD>Returns the type of the scoring table.  This will be either one of the builtin
+types, or a custom type if a Tcl procedure is used.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="value"><B><CODE>scoreObj value plaintext ?weight?</CODE></B></A></DT>
+        <DD>Generates a score for the plaintext based on the command's scoring table.  If
+specified, the result is multiplied by the supplied weight.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="elemvalue"><B><CODE>scoreObj elemvalue plaintext ?weight?</CODE></B></A></DT>
+        <DD>Lookup a single element in the command's scoring table.  If specified, the
+result is multiplied by the supplied weight.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="elemsize"><B><CODE>scoreObj elemsize ?value?</CODE></B></A></DT>
+        <DD>Set the element size for this scoring table.  It is not possible to change the
+element size once it is set.  It is not possible to change the element size for
+the builtin di/tri-gram and wordtree scoring tables.  Only the builtin ngram
+and custom scoring tables can set an element size.  If no size is specified
+then this command will return the current element size.  An element size of -1
+indicates that the element size has not been set.  0 indicates that the element
+sizes are not fixed, as is the case with the wordtree type.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="add"><B><CODE>scoreObj add element ?value?</CODE></B></A></DT>
+        <DD>Add a single element to the scoring table.  If a value is not specified then
+1.0 is used.  If the element already exists in this scoring table then the
+indicated value is added to the existing table entry.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="normalize"><B><CODE>scoreObj normalize</CODE></B></A></DT>
+        <DD>Normalize the scoring table.  Note that the <i>normalize</i> sub-command is a
+misnomer.  <i>normalize</i> merely applies some calculation to all entries of
+the scoring table once the table has been filled.  For the di/tri/n-gramlog
+tables, the normalize method takes the natural logarithm of all entries in the
+table.  For the di/gri/n-gramcount tables, the normalize method does nothing.
+Be careful not to call <i>normzlize</i> multiple times as it will apply the
+normalization method every time it is called.  Also be careful not to add additional elements to a scoring table that has been normalized.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="dump"><B><CODE>scoreObj dump commandPrefix</CODE></B></A></DT>
+        <DD>Dump all elements of the scoring table.  The <i>commandPrefix</i> is called for every element in the table.  The element and element value are appended as a two-item list to the commandPrefix before it is invoked.  The following example prints the entire scoring table to stdout:
+<pre>
+$scoreObj dump puts
+</pre>
+        </DD>
+
+
+</DL>
+
+
+<H2>EXAMPLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="example1"><B><CODE>% score value "my dog has fleas"<br>
+    1302.0</CODE></B></A></DT>
+        <DD>Use the default sum-of-digram-logs on a string of plaintext.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example2"><B><CODE>% score create digramlog<br>
+     score1<br>
+     % score1 add my 2<br>
+     my<br>
+     % score add do 2<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     1.38629436112</CODE></B></A></DT>
+        <DD>Create a new sum-of-digram-logs scoring table based on a
+custom frequency table.  Note that the <code>normalize</code>
+sub-command is a misnomer.  In this case, it merely
+computes the log of every value that was added by <code>score
+add</code>.  This allows you to enter the raw frequency counts
+and let the score command calculate the logs for you.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example3"><B><CODE>% score create digramlog<br>
+     score1<br>
+     % score1 add my 0.693<br>
+     my<br>
+     % score add do 0.693<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     1.386</CODE></B></A></DT>
+        <DD>Create a new sum-of-digram-logs scoring table based on a
+custom frequency table.  In this example the input digram
+values have already been converted to log values, so the
+normalize sub-command is not used.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example3"><B><CODE>% score create digramcount<br>
+     score1<br>
+     % score1 add my 2<br>
+     my<br>
+     % score add do 2<br>
+     do<br>
+     % score1 normalize<br>
+     % score1 value "my dog has fleas"<br>
+     4.0</CODE></B></A></DT>
+        <DD>The normalize sub-command for the sum-of-frequency-counts
+scoring table does nothing.  This table stores only the
+raw frequency counts.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example4"><B><CODE>% score create wordtree<br>
+     score1<br>
+     % score1 add my<br>
+     my<br>
+     % score1 add dog<br>
+     dog<br>
+     % score1 add has<br>
+     has<br>
+     % score1 add fleas<br>
+     fleas<br>
+     % score1 value "my dog has fleas"<br>
+     43.0</CODE></B></A></DT>
+        <DD>The <i>wordtree</i> scoring table calculates scores based on
+the square of the lengths of valid words in the plaintext.
+1- and 2-letter words are ignored.  Again, normalization
+is not needed here.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example5"><B><CODE>% score create wordtree<br>
+     score1<br>
+     % score1 add dog<br>
+     dog<br>
+     % score default score1<br>
+     score1<br>
+     % score value "my dog has fleas"<br>
+     9.0</CODE></B></A></DT>
+        <DD>Change the default scoring method to a custom <i>wordtree</i>
+table.  Note that we use the <code>score</code> command to get the
+value here instead of calling the new </code>score1</code> command.
+The </code>score default score1</code> command associates </code>score1</code>
+as the default scoring method.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="example6"><B><CODE>% score default myScoringMethod<br>
+     myScoringMethod<br>
+     % score value "my dog has fleas"<br>
+     16</CODE></B></A></DT>
+        <DD>Change the default scoring method to the new custom
+scoring method above.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:22 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

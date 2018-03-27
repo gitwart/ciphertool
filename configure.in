@@ -1,0 +1,155 @@
+AC_REVISION(1.28)
+AC_INIT([cipher],[1.6.2])
+AC_CONFIG_AUX_DIR(config)
+
+# Stuff for the dist: target in the Makefile
+CVSPACKAGE_NAME=ciphertool
+AC_SUBST(CVSPACKAGE_NAME)
+
+# Usual Tcl stuff:
+#
+TEA_INIT([3.4])
+TEA_PATH_TCLCONFIG
+TEA_LOAD_TCLCONFIG
+
+TEA_PREFIX
+
+#--------------------------------------------------------------------
+# Check for getenv() on unix, or GetEnvironmentVariableA() on Windows.
+#--------------------------------------------------------------------
+
+AC_CHECK_FUNC(getenv, AC_DEFINE(HAVE_GETENV))
+AC_CHECK_FUNC(GetEnvironmentVariableA, AC_DEFINE(HAVE_GETENVIRONMENTVARIABLE))
+
+TEA_SETUP_COMPILER
+
+TEA_ADD_SOURCES([])
+TEA_ADD_INCLUDES([-I. -I\"`${CYGPATH} ${srcdir}`\"])
+
+# Build stuff:
+#
+TEA_PUBLIC_TCL_HEADERS
+TEA_ENABLE_THREADS
+TEA_ENABLE_SHARED
+TEA_ENABLE_SYMBOLS
+TEA_CONFIG_CFLAGS
+TEA_PROG_TCLSH
+
+# Windows installer stuff
+INSTALLER_NAME=Ciphertool
+INSTALLER_PUBLISHER="Ciphertool Devleopment Group"
+WEBSITE="http://ciphertool.sourceforge.net"
+INSTALLER_LICENSE=${srcdir}/COPYING
+
+AC_SUBST(INSTALLER_NAME)
+AC_SUBST(INSTALLER_PUBLISHER)
+AC_SUBST(INSTALLER_LICENSE)
+AC_SUBST(WEBSITE)
+
+#--------------------------------------------------------------------
+# We need to do a little path processing on the installation prefix
+# before it gets to the Windows installation template.
+#--------------------------------------------------------------------
+
+if test "${TEA_PLATFORM}" = "windows" ; then
+    if test x"${exec_prefix}" = x"NONE" ; then
+        if test x"${prefix}" = x"NONE" ; then
+            temp_path=/usr/local
+        else
+            temp_path=${prefix}
+        fi
+    else
+        temp_path=${exec_prefix}
+    fi
+
+    if test "${CYGPATH}" = "echo" ; then
+        win_prefix=`(cd ${temp_path} && pwd -W ${exec_prefix} 2> /dev/null)` 2> /dev/null
+    else
+        win_prefix=`(${CYGPATH} ${exec_prefix} 2> /dev/null)` 2> /dev/null
+    fi
+    win_prefix=`echo ${win_prefix} | tr '/' '\\\'`
+fi
+
+AC_SUBST(win_prefix)
+
+# Build options:
+#
+AC_ARG_ENABLE(compat,
+    [  --enable-compat        enable compatibility options],
+    [want_compat=$enableval],
+    [want_compat="no"])
+if test "$want_compat" = "yes" ; then
+    AC_DEFINE(ENABLE_COMPAT)
+fi
+
+AC_DEFINE(USE_TCL_STUBS,[1],[Should always be 1])
+AC_DEFINE(BUILD_cipher,[1],[Set to 1 when building package])
+
+TEA_MAKE_LIB
+
+#--------------------------------------------------------------------
+# Check if we should use dmalloc for memory debugging.
+#--------------------------------------------------------------------
+
+AC_ARG_ENABLE(dmalloc, [  --enable-dmalloc          Use the dmalloc memory debugging library], enable_dmalloc=${enableval}, enable_dmalloc=no)
+AC_MSG_CHECKING([if we are using dmalloc])
+if test x"${enable_dmalloc}" = x"no" ; then
+    USE_DMALLOC=0
+    DMALLOC_LIBS=""
+    AC_MSG_RESULT([no])
+else
+    USE_DMALLOC=1
+    DMALLOC_LIBS="-ldmalloc"
+    AC_DEFINE(USE_DMALLOC)
+    AC_MSG_RESULT([yes])
+fi
+
+AC_SUBST(DMALLOC_LIBS)
+
+if test "${TEA_PLATFORM}" = "windows" ; then
+    AC_DEFINE(BUILD_sample, 1, [Build windows export dll])
+    CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb vc*.pch"
+    #TEA_ADD_SOURCES([win/winFile.c])
+    #TEA_ADD_INCLUDES([-I\"$(${CYGPATH} ${srcdir}/win)\"])
+else
+    CLEANFILES="pkgIndex.tcl"
+    #TEA_ADD_SOURCES([unix/unixFile.c])
+    #TEA_ADD_LIBS([-lsuperfly])
+fi
+AC_SUBST(CLEANFILES)
+
+case "`uname -s`" in
+    *win32* | *WIN32* | *CYGWIN_NT*)
+	if test "${SHARED_BUILD}" = "1" ; then
+	    SHLIB_LD_LIBS="\"`cygpath -w ${TCL_BIN_DIR}/${TCL_STUB_LIB_FILE}`\" ${TCL_SHLIB_LD_LIBS} ${DMALLOC_LIBS}"
+	    RANLIB=:
+            RELPATH=".. .. bin"
+	fi
+#	MAKE_SHELL='$(CC) $(CFLAGS) $(PKG_SHELL_OBJECTS) $(TCL_STUB_LIB_FILE) $(LIBS) $(LDFLAGS_CONSOLE)'
+	;;
+    *MINGW32*)
+        RELPATH=".. .. bin"
+	RANLIB=:
+	eval "${PACKAGE}_DLL_FILE=${PACKAGE}.dll"
+	MAKE_DLL='${SHLIB_LD} $(LDFLAGS) -o $@ -Wl,--out-implib,$(patsubst %.dll,lib%.a,$@)'
+	MAKE_SHELL='$(CC) -o $@ $(PKG_SHELL_OBJECTS) $(TCL_LIB_SPEC) $(TCL_STUB_LIB_SPEC) $(DMALLOC_LIBS)'
+	;;
+    *)
+	if test "${SHARED_BUILD}" = "1" ; then
+	    MAKE_SHELL='$(CC) -o $@ $(PKG_SHELL_OBJECTS) $(TCL_LIB_SPEC) $(TCL_LIBS) $(DMALLOC_LIBS)'
+            RELPATH=.
+	fi
+	;;
+esac
+
+AC_SUBST(MAKE_SHELL)
+AC_SUBST(MAKE_DLL)
+AC_SUBST(RELPATH)
+
+CONFIGURE_OUTPUTS="Makefile config.cache config.log config.status"
+AC_SUBST(CONFIGURE_OUTPUTS)
+
+AC_CONFIG_FILES([Makefile \
+	install.nsi \
+	cipher.spec])
+AC_OUTPUT

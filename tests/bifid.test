@@ -1,0 +1,1150 @@
+# bifid.test
+# Test of the bifid cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Helper routine for testing the bifid cipher
+# Laid out, the cipher looks like:
+#
+# mwein gimge oyyrl veywy
+#
+# Solution:
+#
+# oddperiodsarepopular
+#
+# Key:  extraklmpohwzqdgvusifcbyn
+
+
+proc createValidCipher {} {
+    set c [cipher create bifid -ct "mwein gimge oyyrl veywy"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#       5.x     Undo tests
+#       6.x     Merge Substitution tests
+#	7.x	Save/Restore tests
+#	8.x	Locate tip tests
+#	9.x	Encoding tests
+
+test bifid-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test bifid-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -foobar 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foobar}}
+
+test bifid-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test bifid-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test bifid-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test bifid-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test bifid-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore pt positions}}
+
+test bifid-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute row col pt}}
+
+test bifid-1.9 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo ct}}
+
+test bifid-1.10 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar locate pt ct}}
+
+test bifid-1.11 {invalid use of configure -period} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -period a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid period setting.}}
+
+test bifid-1.12 {invalid use of encode} {
+    set c [cipher create bifid]
+
+    set result [catch {$c encode} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar encode pt key}}
+
+test bifid-1.13 {invalid use bifid command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar solve
+                 ciphervar substitute row col pt
+                 ciphervar mergesubstitute row col pt
+                 ciphervar undo ct
+                 ciphervar restore pt positions
+                 ciphervar locate pt ct
+                 ciphervar encode pt key}}
+
+test bifid-2.1 {invalid cipher characters} {
+    set c [cipher create bifid]
+
+    set result [catch {$c configure -ct 1111} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in ciphertext}}
+
+test bifid-2.2 {invalid length of restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore aabc 00000000} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length for key.}}
+
+test bifid-2.3 {invalid character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 1bcdefghiklmnopqrstuvwxyz [string repeat 0 50]} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid character found in key}}
+
+test bifid-2.4 {duplicate character in restore key} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore abcdefghiklmnopqrstuvwxya} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Duplicate letter/position in key}}
+
+test bifid-2.5 {Attempt to locate tip with no ciphertext} {
+    set c [cipher create bifid]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test bifid-2.6 {Attempt to locate tip with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate ttt zzz} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the period has been set}}
+
+test bifid-2.7 {attempt to use solve proc} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {You cheat!}}
+
+test bifid-2.8 {Attempt to undo invalid character} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Attempt to undo invalid character.}}
+
+test bifid-2.9 {Substitute with invalid row} {
+    set c [cipher create bifid]
+
+    set result [catch {$c substitute 6 2 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid row value.  Value must be between 0 and 5.}}
+
+test bifid-2.10 {Substitute with invalid column} {
+    set c [cipher create bifid]
+
+    set result [catch {$c substitute 2 6 a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid column value.  Value must be between 0 and 5.}}
+
+test bifid-2.11 {Substitute with invalid letter} {
+    set c [cipher create bifid]
+
+    set result [catch {$c substitute 1 2 #} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid letter value.}}
+
+test bifid-2.12 {Get plaintext with no ciphertext} {
+    set c [cipher create bifid]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until ciphertext has been set}}
+
+test bifid-2.13 {Get plaintext with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget -pt} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until a period has been set}}
+
+test bifid-2.14 {encode with non-listified key} {
+    set c [cipher create bifid]
+
+    set result [catch {$c encode foobar "abc \{bc"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {unmatched open brace in list}}
+
+test bifid-2.15 {Encode with no period} {
+    set c [createValidCipher]
+
+    set result [catch {$c encode foobar {abcdefghiklmnopqrstuvwxyz}} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can not encode bifid until a period has been set.}}
+
+test bifid-2.16 {Encode invalid number of key elements} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "a b c"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid number of items in encoding key 'a b c'.  Should have found 1 or 2.}}
+
+test bifid-2.17 {Encode with invalid key length} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "ab"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+test bifid-2.18 {Encode with invalid key length} {
+    set c [createValidCipher]
+    $c configure -period 5
+
+    set result [catch {$c encode foobar "ab cd"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid length of key elements.}}
+
+test bifid-3.1 {use of cget -length} {
+    set c [cipher create bifid]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test bifid-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {20}
+
+test bifid-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    $c configure -period 6
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {6}
+
+test bifid-3.4 {use of cget -ct} {
+    set c [cipher create bifid]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test bifid-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {mweingimgeoyyrlveywy}
+
+test bifid-3.6 {set ciphertext with uppercase letters} {
+    set c [cipher create bifid -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghiklmno}
+
+test bifid-3.7 {use of cget -pt with odd period} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                    }
+
+test bifid-3.8 {use of cget -pt with even period} {
+    set c [createValidCipher]
+    $c configure -period 10
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {                    }
+
+test bifid-3.9 {use of cget -key} {
+    set c [createValidCipher]
+    set result [list [string length [lindex [$c cget -key] 0]] [string length [lindex [$c cget -key] 1]] [$c cget -key]]
+    rename $c {}
+    
+    set result
+} {25 50 {abcdefghiklmnopqrstuvwxyz 00000000000000000000000000000000000000000000000000}}
+
+test bifid-3.10 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {bifid}
+
+test bifid-3.11 {use of undo} {unimplemented} {
+    set c [createValidCipher]
+    $c substitute abcdefghij bcdefghijk
+    $c undo abc
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {}
+
+test bifid-3.12 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test bifid-3.13 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test bifid-4.1 {single substitution - key corner} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 1 a
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.2 {single substitution - key corner} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 5 5 a
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 55000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.3 {single substitution - key corner} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 5 a
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.4 {single substitution - key corner} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 5 1 a
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 51000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.5 {single substitution - empty position (using substitute as undo)} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 5 1 m
+    $c substitute 0 0 m
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.6 {single substitution - incomplete position} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 5 0 m
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000000005000000000000000000000000000} {5             5                         } {                    }}
+
+test bifid-4.7 {single substitution - incomplete position} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 5 m
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000000000500000000000000000000000000} { 5             5                        } {                    }}
+
+test bifid-4.8 {substitute the same letter in two positions} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 5 1 k
+    $c substitute 1 1 k
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000011000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.9 {substitute different letters in the same position} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 2 a
+    $c substitute 1 2 k
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000012000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.10 {substitution - produces non-null plaintext} {
+    set c [createValidCipher]
+    
+    $c configure -period 7
+    $c substitute 2 5 o
+    $c substitute 3 5 d
+    $c substitute 2 3 m
+    $c substitute 5 5 n
+    $c substitute 4 5 i
+    $c substitute 3 2 w
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000035000000004500002355250000000000000032000000} {2332  4555  4523    25              32  } {odd   io            }}
+
+test bifid-4.11 {substitution - replacement and produces non-null plaintext} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 2 e
+    $c substitute 1 2 a
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 12000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-4.12 {substitution - detection of alt sub} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 1 2 e]]
+    lappend result [$c substitute 1 2 a]
+    rename $c {}
+
+    set result
+} {{} e}
+
+test bifid-4.13 {substitution - detection of alt sub} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 1 2 e]]
+    lappend result [list [$c substitute 2 3 e]]
+    rename $c {}
+
+    set result
+} {{} e}
+
+test bifid-4.14 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 1 0 e]]
+    lappend result [$c substitute 1 1 e]
+    rename $c {}
+
+    set result
+} {{} {}}
+
+test bifid-4.15 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 1 0 e]]
+    lappend result [$c substitute 2 0 e]
+    rename $c {}
+
+    set result
+} {{} e}
+
+test bifid-4.16 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 0 1 e]]
+    lappend result [$c substitute 1 1 e]
+    rename $c {}
+
+    set result
+} {{} {}}
+
+test bifid-4.17 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 0 1 e]]
+    lappend result [$c substitute 0 2 e]
+    rename $c {}
+
+    set result
+} {{} e}
+
+test bifid-4.18 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 0 1 e]]
+    lappend result [$c substitute 0 1 a]
+    rename $c {}
+
+    set result
+} {{} {}}
+
+test bifid-4.19 {substitution - detection of alt sub with incomplete key cell} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    set result [list [$c substitute 1 0 e]]
+    lappend result [$c substitute 1 0 a]
+    rename $c {}
+
+    set result
+} {{} {}}
+
+test bifid-5.1 {single undo - produces non-null plaintext} {
+    set c [createValidCipher]
+    
+    $c configure -period 7
+    $c substitute 2 5 o
+    $c substitute 3 5 d
+    $c substitute 2 3 m
+    $c substitute 5 5 n
+    $c substitute 4 5 i
+    $c substitute 3 2 w
+    $c undo m
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000035000000004500000055250000000000000032000000} {  32  4555  45      25              32  } {  d   i             }}
+
+test bifid-5.2 {multiple undo - produces non-null plaintext} {
+    set c [createValidCipher]
+    
+    $c configure -period 7
+    $c substitute 2 5 o
+    $c substitute 3 5 d
+    $c substitute 2 3 m
+    $c substitute 5 5 n
+    $c substitute 4 5 i
+    $c substitute 3 2 w
+    $c undo mo
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000035000000004500000055000000000000000032000000} {  32  4555  45                      32  } {  d   i             }}
+
+test bifid-5.3 {multiple undo of the same letter} {
+    set c [createValidCipher]
+    
+    $c configure -period 7
+    $c substitute 2 5 o
+    $c substitute 3 5 d
+    $c substitute 2 3 m
+    $c substitute 5 5 n
+    $c substitute 4 5 i
+    $c substitute 3 2 w
+    $c undo mm
+    $c undo mm
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000035000000004500000055250000000000000032000000} {  32  4555  45      25              32  } {  d   i             }}
+
+test bifid-5.4 {undo of letters before and after 'i'} {
+    set c [createValidCipher]
+    
+    $c configure -period 7
+    $c substitute 2 5 o
+    $c substitute 3 5 d
+    $c substitute 2 3 m
+    $c substitute 5 5 n
+    $c substitute 4 5 i
+    $c substitute 3 2 w
+    $c undo dmi
+    set result [list [$c cget -key] [$c cget -bt] [$c cget -pt]]
+    rename $c {}
+
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000000000055250000000000000032000000} {  32    55          25              32  } {                    }}
+
+test bifid-6.1 {merge substitution - 0,0 + 1,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 0 a
+    set result [list [$c mergesubstitute 1 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.2 {merge substitution - 0,0 + 1,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 0 a
+    set result [list [$c mergesubstitute 1 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 10000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.3 {merge substitution - 0,0 + 0,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 0 a
+    set result [list [$c mergesubstitute 0 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 01000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.4 {merge substitution - 0,0 + 0,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 0 a
+    set result [list [$c mergesubstitute 0 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 00000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.5 {merge substitution - 1,0 + 1,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 0 a
+    set result [list [$c mergesubstitute 1 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.6 {merge substitution - 1,0 + 1,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 0 a
+    set result [list [$c mergesubstitute 1 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 10000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.7 {merge substitution - 1,0 + 0,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 0 a
+    set result [list [$c mergesubstitute 0 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.8 {merge substitution - 1,0 + 0,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 0 a
+    set result [list [$c mergesubstitute 0 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 10000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.9 {merge substitution - 0,1 + 1,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 1 a
+    set result [list [$c mergesubstitute 1 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.10 {merge substitution - 0,1 + 1,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 1 a
+    set result [list [$c mergesubstitute 1 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.11 {merge substitution - 0,1 + 0,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 1 a
+    set result [list [$c mergesubstitute 0 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 01000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.12 {merge substitution - 0,1 + 0,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 0 1 a
+    set result [list [$c mergesubstitute 0 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 01000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.13 {merge substitution - 1,1 + 1,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 1 a
+    set result [list [$c mergesubstitute 1 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.14 {merge substitution - 1,1 + 1,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 1 a
+    set result [list [$c mergesubstitute 1 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.15 {merge substitution - 1,1 + 0,1} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 1 a
+    set result [list [$c mergesubstitute 0 1 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-6.16 {merge substitution - 1,1 + 0,0} {
+    set c [createValidCipher]
+    
+    $c configure -period 6
+    $c substitute 1 1 a
+    set result [list [$c mergesubstitute 0 0 a]]
+    lappend result [$c cget -key] [$c cget -bt] [$c cget -pt]
+    rename $c {}
+
+    set result
+} {{} {abcdefghiklmnopqrstuvwxyz 11000000000000000000000000000000000000000000000000} {                                        } {                    }}
+
+test bifid-7.1 {restore test} {} {
+    set c [createValidCipher]
+    $c configure -period 7
+    $c restore extraklmpohwzqdgvusifcbyn 11121314152122232425313233343541424344455152535455
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15535235115141314521222355252434144413434232125433} oddperiodsarepopular}
+
+test bifid-7.2 {save/restore test, empty key} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 7
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 7
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00000000000000000000000000000000000000000000000000} {                    }}
+
+test bifid-7.3 {save/restore test, full key} {} {
+    set c1 [createValidCipher]
+    $c1 configure -period 7
+    $c1 restore extraklmpohwzqdgvusifcbyn 11121314152122232425313233343541424344455152535455
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 7
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15535235115141314521222355252434144413434232125433} oddperiodsarepopular}
+
+test bifid-7.4 {save/restore test, key with spaces} {
+    set c1 [createValidCipher]
+    $c1 configure -period 7
+    $c1 restore extraklmpohwzqdgvusifcbyn 11121314002122232425313233343541424344455152535455
+    set key [$c1 cget -key]
+    set c2 [createValidCipher]
+    $c2 configure -period 7
+    $c2 restore [lindex $key 0] [lindex $key 1]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 00535235115141314521222355252434144413434232125433} {oddperiods repopul r}}
+
+test bifid-7.5 {restore with one argument} {
+    set c [createValidCipher]
+    $c configure -period 7
+    $c restore extraklmpohwzqdgvusifcbyn
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15535235115141314521222355252434144413434232125433} oddperiodsarepopular}
+
+test bifid-7.6 {restore with empty second argument} {
+    set c [createValidCipher]
+    $c configure -period 7
+    $c restore extraklmpohwzqdgvusifcbyn {}
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15535235115141314521222355252434144413434232125433} oddperiodsarepopular}
+
+test bifid-7.7 {multiple restores succeed} {
+    set c [createValidCipher]
+    $c configure -period 7
+    $c restore abcdefghiklmnopqrstuvwxyz
+    $c restore extraklmpohwzqdgvusifcbyn
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {{abcdefghiklmnopqrstuvwxyz 15535235115141314521222355252434144413434232125433} oddperiodsarepopular}
+
+test bifid-8.1 {Locate tip at first position} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [list [$c locate m]]
+    lappend result [$c cget -key] [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {mweingimgeoyyrlveywy {abcdefghiklmnopqrstuvwxyz 00000000000000000100001100000000000000000000000000} {m                   }}
+
+test bifid-8.2 {Locate tip at the first position explicitly} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [list [$c locate m mwei]]
+    lappend result [$c cget -key] [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {mweingimgeoyyrlveywy {abcdefghiklmnopqrstuvwxyz 00000000000000000100001100000000000000000000000000} {m                   }}
+
+test bifid-8.3 {Locate tip in the middle of the ciphertext} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [list [$c locate m gimge]]
+    lappend result [$c cget -key] [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {gimgeoyyrlveywy {abcdefghiklmnopqrstuvwxyz 00000000010000001000001100000000000000000000000000} {     m              }}
+
+test bifid-8.4 {Locate tip in the middle of the ciphertext} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [list [$c locate opular lveywy]]
+    lappend result [$c cget -key] [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {lveywy {abcdefghiklmnopqrstuvwxyz 00000000010000000000000000000100110000000000000100} {            r      r}}
+
+test bifid-8.5 {Locate tip in the middle of the ciphertext} {
+    set c [createValidCipher]
+    $c configure -period 7
+    set result [list [$c locate oddperiodsarepopular]]
+    lappend result [$c cget -key] [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {mweingimgeoyyrlveywy {abcdefghiklmnopqrstuvwxyz 10000000110021002000000000000200122200000000000200} {    er   s re      r}}
+
+test bifid-9.1 {encode} {
+    set c [cipher create bifid -period 7]
+    set result [list [$c encode "odd periods are popular" extraklmpohwzqdgvusifcbyn]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -keyword]
+    rename $c {}
+
+    set result
+} {mweingimgeoyyrlveywy mweingimgeoyyrlveywy oddperiodsarepopular extraklmpohwzqdgvusifcbyn}

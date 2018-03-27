@@ -1,0 +1,193 @@
+<HTML>
+<TITLE>Cipher Package - Dictionary</TITLE>
+<BODY BGCOLOR=white>
+
+<H2>NAME</H2>
+Dictionary - Dictionary utilities.
+
+
+<H2>SYNOPSIS</H2>
+
+<B></B> <I>package require Dictionary</I>
+<BR>
+
+
+<H2>VARIABLES</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="directory"><B><CODE>Dictionary::directory</CODE></B></A></DT>
+        <DD>The directory containing the dictionary files.  The dictionary must be laid out as a set
+of files, with each file containing a list of words (in
+any order) all of the same length, one word per line.
+The filenames must start with the string <B>len</B> and
+end with a 2 digit number describing the length of the
+words inside the file.  For example, the file
+<B>len04</B> could contain:
+<P>
+<CODE>
+very<BR>
+that<BR>
+lean<BR>
+keys<BR>
+used<BR>
+type<BR>
+foot<BR>
+mine<BR>
+eery<BR>
+flee<BR>
+</CODE>
+
+        </DD>
+
+
+    <P>
+    <DT><A NAME="cache"><B><CODE>Dictionary::cache</CODE></B></A></DT>
+        <DD>The level of caching performed by the dictionary procedures.  The possible
+caches that can be enabled are any combination of <code>length</code>,
+<code>word</code>, <code>pattern</code>, and <code>trigram</code>.
+<code>length</code> will cache the possible word lengths.  This is useful when
+new lengths will not be added to the dictionary while the program is running.
+<code>word</code> will cache the words in the dictionary, as they are read in
+by length.  <code>pattern</code> will cache the results of a pattern match on
+the dictionary words.  <code>trigram</code> will cache the results of a valid
+trigram determination.  Enabling the caches will consume more memory in
+exchange for faster dictionary lookups.  Caching will not provide any benefit
+for programs that make a only a single pass through the dictionary.
+        </DD>
+
+
+</DL>
+
+
+<H2>COMMANDS</H2>
+<DL>
+
+
+    <P>
+    <DT><A NAME="availableLengths"><B><CODE>Dictionary::availableLengths ?minimum? ?maximum?</CODE></B></A></DT>
+        <DD>Scan the dictionary files and return a list of the all possible word lengths.
+If <code>minimum</code> or <code>maximum</code> lengths are specified then the
+return values are guaranteed to lie within the min/max limits.  This procedure
+is use in conjunction with <code>Dictionary::lookupByLength</code> to iterate
+through all words in the dictionary.  If the <code>length</code> cache is
+enabled then this procedure will only search the dictionary files the first
+time it is called.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="lookupByLength"><B><CODE>Dictionary::lookupByLength length ?pattern?</CODE></B></A></DT>
+        <DD>Returns a list of all words in the dictionary that have the indicated length.
+A glob <code>pattern</code> can be used to limit the 
+If the <code>word</code> cache is enabled then this procedure will load the
+words from the appropriate dictionary file only once.  If the <code>pattern</code> cache is enabled then the result will be stored in the <code>pattern</code> cache.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="lookupByPattern"><B><CODE>Dictionary::lookupByPattern pattern</CODE></B></A></DT>
+        <DD>Deprecated.  See <code>Dictionary::lookupByLength</code>
+        </DD>
+
+
+    <P>
+    <DT><A NAME="clearCache"><B><CODE>Dictionary::clearCache cache1 ?cache2 ...?</CODE></B></A></DT>
+        <DD>Clear the specified caches.  This will free up the memory used by the
+indicated dictionary caches.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="isWord"><B><CODE>Dictionary::isWord word</CODE></B></A></DT>
+        <DD>Determine if <code>word</code> is in the dictionary.  Returns 1 if the word is
+in the dictionary, 0 if not.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="isNumber"><B><CODE>Dictionary::isNumber val</CODE></B></A></DT>
+        <DD>Determine if <code>val</code> is a valid number.  Valid numbers contain only
+the digits 0-9.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="addWord"><B><CODE>Dictionary::addWord word</CODE></B></A></DT>
+        <DD>Add a word to the dictionary.  The dictionary files on the disk are updated.
+If the <code>word</code> cache is enabled then the word is also added to the
+cache.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="isIllegalTrigram"><B><CODE>Dictionary::isIllegalTrigram trigram</CODE></B></A></DT>
+        <DD>Determine if the <code>trigram</code> can be formed from words in the
+dictionary.  If two or more words can not be joined to form the trigram then
+this procedure returns 0.  Otherwise it returns 1.  If the <code>trigram</code>
+cache is enabled then the result is stored in the cache.  Any necessary word
+and pattern lookups will also be cached if the <code>word</code> or
+<code>pattern</code> caches are enabled.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="containsIllegalTrigram"><B><CODE>Dictionary::containsIllegalTrigram string</CODE></B></A></DT>
+        <DD>Determine if the string contains any illegal trigrams.  This is done by
+calling <code>Dictionary::isIllegalTrigram</code> on all 3-character substrings
+composed of only the letters from a to z.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="dumpCache"><B><CODE>Dictionary::dumpCache</CODE></B></A></DT>
+        <DD>For debugging uses only.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="allWordsMatching"><B><CODE>Dictionary::allWordsMatching string</CODE></B></A></DT>
+        <DD>This procedure locates all words that can be formed starting at the beginning
+of <code>string</code>.  Spaces in <code>string</code> are treated as wildcard
+characters.  For example, the string <code>&quot;atten&quot;</code> would match
+<code>attentive</code>, <code>attention</code>, <code>attend</code>,
+<code>at</code>, and <code>a</code>.  And the string <code>&quot;i
+qr&quot;</code> would match <code>in</code>, <code>if</code>, and
+<code>i</code>.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="findWords"><B><CODE>Dictionary::findWords plaintext</CODE></B></A></DT>
+        <DD>Attempt to split a string of plaintext up into its constituent words.  Or to
+put it another way, try to find the word divisions in a string of plaintext.
+This procedure returns the input string with the space character used as a word
+divider.  If this procedure could not find <i>all</i> word divisions in the
+string, then it will simply return the input string with no word divisions.
+        </DD>
+
+
+    <P>
+    <DT><A NAME="createWordTree"><B><CODE>Dictionary::createWordTree</CODE></B></A></DT>
+        <DD>Initialize the builtin word tree from the dictionary.  This procedure will
+soon be deprecated by the <code>wordtree</code> scoring table of the
+<code><A HREF="../cipher/score.html">score</A></code> command.
+        </DD>
+
+
+</DL>
+
+
+
+<HR>
+<A HREF="index.html">Back to the Index</A>
+<BR>
+<I><A HREF="mailto:wart@kobold.org">wart@kobold.org</A></I>
+<BR>
+<I>Created on Mon Apr 05 10:56:23 PDT 2010</I>
+<BR>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=86325&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></BODY>
+</HTML>
+
+

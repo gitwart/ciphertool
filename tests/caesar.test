@@ -1,0 +1,514 @@
+# caesar.test
+# Test of the caesar cipher type
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+proc createValidCipher {} {
+    set c [cipher create caesar -ct "abcdefghijklmnopqrstuvwxyz"]
+
+    return $c
+}
+
+# Test groups:
+#	1.x	Invalid type and number of arguments to cipher command
+#	2.x	Invalid range of arguments to cipher command
+#       3.x     Valid trivial cipher command usage
+#       4.x     Substitution tests
+#	5.x	Save/Restore tests
+#       6.x     Encoding tests
+
+test caesar-1.1 {invalid use of options} {
+    set c [createValidCipher]
+    set result [catch {$c} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar ?option?}}
+
+test caesar-1.2 {use of invalid option} {
+    set c [createValidCipher]
+    set result [list [catch {$c configure -period 5} msg] $msg]
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -period}}
+
+test caesar-1.3 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar cget option}}
+
+test caesar-1.4 {invalid use of cget} {
+    set c [createValidCipher]
+
+    set result [catch {$c cget foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo}}
+
+test caesar-1.5 {invalid use of configure} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar configure ?option value?}}
+
+test caesar-1.6 {invalid configure option} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -foo bar} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option -foo}}
+
+test caesar-1.7 {invalid use of restore} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar restore shift}}
+
+test caesar-1.8 {invalid use of substitute} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar substitute ct pt}}
+
+test caesar-1.9 {substitute with values too long} {
+    set c [createValidCipher]
+
+    set result [catch {$c substitute aa zb} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {ciphertext and plaintext must both be one character long}}
+
+test caesar-1.10 {invalid use of undo} {
+    set c [createValidCipher]
+
+    set result [catch {$c undo ct} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar undo}}
+
+test caesar-1.11 {invalid use of locate} {
+    set c [createValidCipher]
+
+    set result [catch {$c locate} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Locate procedure is not defined for caesar ciphers.}}
+
+test caesar-1.12 {invalid use of solve} {
+    set c [createValidCipher]
+
+    set result [catch {$c solve} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Solve procedure is not defined for caesar ciphers.}}
+
+test caesar-1.13 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test caesar-1.14 {invalid use of configure -stepinterval} {
+    set c [createValidCipher]
+
+    set result [catch {$c configure -stepinterval -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Invalid interval.}}
+
+test caesar-1.15 {invalid use caesar command} {
+    set c [createValidCipher]
+
+    set result [catch {$c foo} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Unknown option foo
+Must be one of:  ciphervar cget ?option?
+                 ciphervar configure ?option value?
+                 ciphervar restore shift
+                 ciphervar substitute ct pt
+                 ciphervar undo
+                 ciphervar encode pt shift}}
+
+
+test caesar-1.16 {invalid use of encode} {
+    set c [cipher create caesar]
+    set result [catch {$c encode {this is a test}} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Usage:  ciphervar encode pt shift}}
+
+test caesar-2.1 {invalid cipher characters} {
+    set c [cipher create caesar]
+
+    set result [catch {$c configure -ct foo1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Bad character in ciphertext:  1}}
+
+test caesar-2.2 {Restore an invalid value.} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore a} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {caesar key must be from 0 to 26}}
+
+test caesar-2.3 {Restore an invalid amount.} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore -1} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {caesar key must be from 0 to 26}}
+
+test caesar-2.4 {Restore an invalid amount.} {
+    set c [createValidCipher]
+
+    set result [catch {$c restore 27} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {caesar key must be from 0 to 26}}
+
+test caesar-2.5 {substitute with null cipher} {
+    set c [cipher create caesar]
+
+    set result [catch {$c substitute a b} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {Can't do anything until the ciphertext has been set}}
+
+test caesar-2.6 {use of encode with bad shift value} {
+    set c [cipher create caesar]
+    set result [catch {$c encode {this is a test} 32} msg]
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {caesar key must be from 0 to 26}}
+
+test caesar-3.1 {use of cget -length} {
+    set c [cipher create caesar]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {0}
+
+test caesar-3.2 {use of cget -length} {
+    set c [createValidCipher]
+    set result [list [$c cget -length]]
+   rename $c {}
+    
+    set result
+} {26}
+
+test caesar-3.3 {use of cget -period} {
+    set c [createValidCipher]
+    set result [list [$c cget -period]]
+    rename $c {}
+    
+    set result
+} {0}
+
+test caesar-3.4 {use of cget -ct} {
+    set c [cipher create caesar]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {{}}
+
+test caesar-3.5 {use of cget -ct} {
+    set c [createValidCipher]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz}
+
+test caesar-3.6 {set ciphertext with uppercase letters} {
+    set c [cipher create caesar -ct "Abcde Fghij Klmno"]
+    set result [$c cget -ct]
+    rename $c {}
+    
+    set result
+} {abcde fghij klmno}
+
+test caesar-3.7 {use of cget -pt} {
+    set c [createValidCipher]
+    set result [$c cget -pt]
+    rename $c {}
+    
+    set result
+} {abcdefghijklmnopqrstuvwxyz}
+
+test caesar-3.8 {use of cget -key} {
+    set c [createValidCipher]
+    set result [$c cget -key]
+    rename $c {}
+    
+    set result
+} {0}
+
+test caesar-3.9 {use of cget -type} {
+    set c [createValidCipher]
+    set result [$c cget -type]
+    rename $c {}
+    
+    set result
+} {caesar}
+
+test caesar-3.10 {use of undo} {
+    set c [createValidCipher]
+    $c substitute a b
+    $c undo
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {0 abcdefghijklmnopqrstuvwxyz}
+
+
+test caesar-3.11 {get default stepcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test caesar-3.12 {set/get stepcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand {}
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test caesar-3.13 {set/get stepcommand} {
+    set c [createValidCipher]
+
+    $c configure -stepcommand puts
+    set result [$c cget -stepcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test caesar-3.14 {get default bestfitcommand} {
+    set c [createValidCipher]
+
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test caesar-3.15 {set/get bestfitcommand (set to null)} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand {}
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {}
+
+test caesar-3.16 {set/get bestfitcommand} {
+    set c [createValidCipher]
+
+    $c configure -bestfitcommand puts
+    set result [$c cget -bestfitcommand]
+    rename $c {}
+    
+    set result
+} {puts}
+
+test caesar-3.17 {get default language} {
+    set c [createValidCipher]
+
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {english}
+
+test caesar-3.18 {set/get language} {monolingual} {
+    set c [createValidCipher]
+
+    $c configure -language german
+    set result [$c cget -language]
+    rename $c {}
+    
+    set result
+} {german}
+
+test caesar-4.1 {valid substitution} {
+    set c [createValidCipher]
+    $c substitute a b
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {1 bcdefghijklmnopqrstuvwxyza}
+
+test caesar-4.2 {valid substitution with pt < ct} {
+    set c [createValidCipher]
+    $c substitute b a
+    set result [list [$c cget -key] [$c cget -pt]]
+    rename $c {}
+    
+    set result
+} {25 zabcdefghijklmnopqrstuvwxy}
+
+test caesar-5.1 {save/restore test, empty key} {
+    set c1 [cipher create caesar -ct "abc def ghiij"]
+    set key [$c1 cget -key]
+    set c2 [cipher create caesar -ct "abc def ghiij"]
+    $c2 restore [lindex $key 0]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {0 {abc def ghiij}}
+
+test caesar-5.2 {save/restore test, with nonzero key} {
+    set c1 [cipher create caesar -ct "abc def ghiij"]
+    $c1 substitute a c
+    set key [$c1 cget -key]
+    set c2 [cipher create caesar -ct "abc def ghiij"]
+    $c2 restore [lindex $key 0]
+    set result [list [$c2 cget -key] [$c2 cget -pt]]
+    rename $c1 {}
+    rename $c2 {}
+    
+    set result
+} {2 {cde fgh ijkkl}}
+
+
+test caesar-6.1 {use of encode} {
+    set c [cipher create caesar]
+    set result [list [$c encode {this is a test} 3]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+    
+    set result
+} {{qefp fp x qbpq} {qefp fp x qbpq} {this is a test} 3}
+
+test caesar-6.2 {use of encode overwriting previous ciphertext} {
+    set c [cipher create caesar -ct "abc def ghiij"]
+    set result [list [$c encode {this is a test} 3]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+    
+    set result
+} {{qefp fp x qbpq} {qefp fp x qbpq} {this is a test} 3}
+
+test caesar-6.3 {use of encode on an empty string} {
+    set c [cipher create caesar]
+    set result [list [$c encode {} 3]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+    
+    set result
+} {{} {} {} 3}

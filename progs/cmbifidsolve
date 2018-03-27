@@ -1,0 +1,210 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# cmbifidsolve --
+#
+#	Automatic solver for a conjugated bifid cipher.  This program
+#	generates bifid keys and applies it to the bifid cipher.
+#	It then gets the resulting plaintext and runs it through
+#	a patristocrat hill climb.
+#
+# RCS: @(#) $Id: cmbifidsolve,v 1.12 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2001-2005  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cmdline
+package require cipher
+package require CipherUtil
+package require Hillclimb
+package require Dictionary
+package require Scoredata
+package require Scoretypes
+
+# Command line processing
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list period.arg 0 "The period for the cipher.  Only use this with periodic ciphers"] \
+    [list tip.arg {} "The optional plaintext tip for this cipher."] \
+    [list tipstart.arg {} "The string of ct where this tip begins."] \
+    [list hills.arg 100 "The maximum number of hills to climb for each possible pat equivalent.  Defaults to 100."] \
+    [list scoretype.arg {} "The method to use when scoring plaintext."] \
+    [list stepinterval.arg 50 "The interval between progress updates.  Defaults to 100."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$period <= 0} {
+    puts stderr "[::cmdline::usage $options {option '-period' must be specified with a positive value.}]"
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
+if {$scoretype != ""} {
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
+
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
+
+    score default $defaultScore
+
+#    if {$comboweight != ""} {
+#        set Scoretypes::comboweight $comboweight
+#    }
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+set bifidCipher [cipher create bifid -ct $ct -period $period]
+set patCipher [cipher create aristocrat]
+
+# Locate the tip position in the ciphertext.
+
+set tipStartIndex ""
+set tipEndIndex ""
+if {$tipstart != ""} {
+    set tipStartIndex [string first $tipstart [$bifidCipher cget -ciphertext]]
+    if {$tipStartIndex != -1} {
+	set tipEndIndex [expr {$tipStartIndex + [string length $tip] - 1}]
+    } else {
+	set tipEndIndex -1
+    }
+    puts "#Applying tip to:  [string range [$bifidCipher cget -ct] $tipStartIndex $tipEndIndex]"
+} elseif {$tip != ""} {
+    # These values should give us a good starting point.
+    set tipStartIndex -1
+    set tipEndIndex -1
+} else {
+    set tipStartIndex -1
+    set tipEndIndex -1
+}
+
+if {[info exists ::env(CIPHER_LANGUAGE)]} {
+    $bifidCipher configure -language $::env(CIPHER_LANGUAGE)
+    $patCipher configure -language $::env(CIPHER_LANGUAGE)
+    puts "#Using language=[$c cget -language]"
+}
+
+set ::Dictionary::cache {}
+
+proc showFit {hillKey count {value 0} {pt {}} {bifidKey {}}} {
+    puts "# Iteration $count"
+    if {$bifidKey != ""} {
+	puts "# Bifid Square: [string range $bifidKey 0  4]"
+	puts "# Bifid Square: [string range $bifidKey 5  9]"
+	puts "# Bifid Square: [string range $bifidKey 10 14]"
+	puts "# Bifid Square: [string range $bifidKey 15 19]"
+	puts "# Bifid Square: [string range $bifidKey 20 24]"
+    }
+    puts "# Pat key:  $hillKey"
+    puts "# Fit: $value"
+    if {$pt != ""} {
+	puts "# Pt:  $pt"
+    }
+    puts ""
+}
+
+proc showIter {key iter {pt {}}} {
+    global bifidKey
+    #global key
+    global keyword
+
+    puts "# Iteration: $iter"
+    puts "# Bifid key:  ($keyword) $bifidKey"
+    puts "# Pat key:  $key"
+    if {$pt != ""} {
+	puts "# Pt:  $pt"
+    }
+    puts ""
+}
+
+# Initialize the hill climber parameters
+set Hillclimb::neighborProc $Hillclimb::swapKeyProc(aristocrat)
+set Hillclimb::decipherProc $Hillclimb::decipherProcFromType(aristocrat)
+set Hillclimb::cipherObject $patCipher
+set Hillclimb::stepCommand {}
+set Hillclimb::bestFitCommand {}
+
+set maxValue 0
+set maxBifidKey {}
+set maxHillKey {}
+set count 1
+set bifidMutationAmount 4
+set patMutationAmount 10
+
+set bifidKey {abcdefghiklmnopqrstuvwxyz}
+set hillKey {abcdefghijklmnopqrstuvwxyz}
+
+foreach wordLength [Dictionary::availableLengths] {
+    foreach keyword [Dictionary::lookupByLength $wordLength] {
+	# Apply each key to the cipher
+	foreach bifidKey [CipherUtil::generateKeysquares $keyword] {
+	    $bifidCipher restore $bifidKey
+
+	    $patCipher configure -ct [$bifidCipher cget -pt]
+	    $patCipher undo abcdefghijklmnopqrstuvwxyz
+
+	    set result [Hillclimb::patTipSearch $hills $tip $tipStartIndex]
+	    set key [lindex $result 0]
+	    set value [lindex $result 1]
+
+	    #puts "value, maxValue = $value, $maxValue"
+	    if {$value > $maxValue} {
+		set maxValue $value
+		set maxKey $key
+		set maxBifidKey $bifidKey
+		showFit $key $count $value [$patCipher cget -pt] $bifidKey
+	    }
+
+	    if {$value != 0} {
+		incr count
+
+		# Don't bother showing steps for invalid keys.
+		if {$count%$stepinterval == 0} {
+		    showIter $key $count [$patCipher cget -pt]
+		}
+	    }
+	}
+    }
+}

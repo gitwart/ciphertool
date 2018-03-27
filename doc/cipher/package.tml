@@ -1,0 +1,75 @@
+[docHeader "Cipher Package - cipher"]
+[Command cipher "Basic cipher manipulation commands."]
+
+[SynopsisHeader]
+[Synopsis {} "package require cipher"]
+
+[StartDescription COMMANDS]
+
+[Description "[Link cipher.html cipher]" cipher \
+"Create a new cipher instance for manipulating.  The following cipher types are
+supported:
+    <BR>
+    <UL>
+    <LI>[Link amsco.html amsco]
+    <LI>[Link aristocrat.html {aristocrat (patristocrat)}]
+    <LI>[Link baconian.html baconian]
+    <LI>[Link beaufort.html beaufort]
+    <LI>[Link bazeries.html bazeries]
+    <LI>[Link bifid.html bifid]
+    <LI>[Link bigbifid.html {bigbifid (6x6 bifid)}]
+    <LI>[Link bigplayfair.html {bigplayfair (6x6 playfair)}]
+    <LI>[Link cadenus.html cadenus]
+    <LI>[Link caesar.html caesar]
+    <LI>[Link columnar.html {columnar (complete and incomplete)}]
+    <LI>[Link digrafid.html digrafid]
+    <LI>[Link fmorse.html fmorse]
+    <LI>[Link foursquare.html foursquare]
+    <LI>[Link grandpre.html grandpre]
+    <LI>[Link grille.html grille]
+    <LI>[Link gromark.html gromark]
+    <LI>[Link gronsfeld.html gronsfeld]
+    <LI>[Link homophonic.html homophonic]
+    <LI>[Link morbit.html morbit]
+    <LI>[Link myszcowski.html myszcowski]
+    <LI>[Link nicodemus.html nicodemus]
+    <LI>[Link nitrans.html {nitrans (nihilist transposition)}]
+    <LI>[Link phillips.html phillips]
+    <LI>[Link playfair.html {playfair (seriated playfair)}]
+    <LI>[Link pollux.html pollux]
+    <LI>[Link porta.html porta]
+    <LI>[Link ragbaby.html ragbaby]
+    <LI>[Link railfence.html railfence]
+    <LI>[Link route.html route]
+    <LI>[Link swagman.html swagman]
+    <LI>[Link trifid.html trifid]
+    <LI>[Link twosquare.html twosquare]
+    <LI>[Link variant.html variant]
+    <LI>[Link vigenere.html vigenere]
+    </UL>"]
+
+[Description "[Link key.html key]" key \
+"Perform key manipulations.  Generate K1 keyed alphabets, perform
+vigenere/variant/beaufort/porta pt &lt;-&gt; ct &lt;-&gt; key conversions,
+compare two keys."]
+
+[Description "[Link score.html score]" score \
+"Manipulate plaintext scoring tables.  Create and populate new tables and score
+plaintext using an existing table."]
+
+[Description "[Link stat.html stat]" stat \
+"Useful statistical analysis routines including kasiski method, index of
+coincidence calculations, and histogram generation."]
+
+[Description "crithm" crithm \
+"Primitive functions for autosolving cryptarithm ciphers."]
+
+[Description "[Link permute.html permute]" permute \
+"Generate permutations for a list of numbers."]
+
+[Description "[Link morse.html morse]" morse \
+"Perform text to morse and morse to text conversions."]
+
+[EndDescription]
+
+[footer]

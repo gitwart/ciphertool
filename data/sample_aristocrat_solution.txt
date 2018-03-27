@@ -1,0 +1,11 @@
+type	aristocrat
+period	0
+ciphertext	{qko giwwztzvkhao qujqktvu hvtykeaexo zg zkuzghzkxizgyqsav wfer rqxzt }
+plaintext	{any sufficiently advanced technology is indistinguishable from magic }
+key	{abcdefghijklmnopqrstuvwxyz lpjqorstuvnkwxyzambcdefghi}
+language	english
+keyword	{abcdefghijklmnopqrstuvwxyz lpjqorstuvnkwxyzambcdefghi}
+# Score value:  369.281257451
+# K1 key:  lpjqorstuvnkwxyzambcdefghi
+#          abcdefghijklmnopqrstuvwxyz
+# K2 key:  qstuvwxyzclarkebdfghijmnop

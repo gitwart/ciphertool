@@ -1,0 +1,114 @@
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+# patwordbrute --
+#
+#	Automatic solver for patristocrat ciphers that attempts to
+#	apply successive plaintext words to the ciphertext.
+#
+# RCS: @(#) $Id: patwordbrute,v 1.8 2008/03/05 03:54:58 wart Exp $
+#
+# Copyright (C) 2003-2004  Mike Thomas <wart@kobold.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+package require cipher
+package require CipherUtil
+package require Dictionary
+package require PatWord
+package require cmdline
+
+set options [list \
+    [list file.arg "-" "The name of the input cipher file"] \
+    [list startwords.arg "" "The first words to start with in the plaintext solution.  This can be used to restart a session."] \
+    [list maxwords.arg 0 "The maximum number of words to allow in the plaintext.  No more than this number will be attempted."] \
+    [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
+]
+
+if {[catch {
+    foreach {var val} [::cmdline::getoptions argv $options] {
+	set $var $val
+    }
+} msg]} {
+    puts stderr $msg
+    exit 1
+}
+
+if {$dictionary != ""} {
+    set Dictionary::directory $dictionary
+}
+
+# Read the ciphertext from the input file
+set ct [CipherUtil::readCiphertext $file]
+
+regsub -all { } $ct {} ct
+set cipher [cipher create aristocrat -ct $ct -strict true]
+
+set Patword::maxValue 0
+set Patword::maxKey {}
+set Patword::updateScript breakIter
+set Patword::stepInterval 500000
+set Patword::count 0
+set Patword::maxEndPos 0
+set Patword::maxDepth $maxwords
+
+set Dictionary::cache [list length word pattern trigram]
+Dictionary::createWordTree
+
+proc breakIter {cipherObj count result word wordList} {
+    global startwords
+
+    puts "# [concat $result $word]"
+    puts "# $count: [$cipherObj cget -pt]"
+    puts ""
+
+    if {[lindex [concat $result $word] 0] != [lindex $startwords 0]} {
+	puts "Clearing cache..."
+	Dictionary::clearCache
+	puts "Clearing keys..."
+	foreach el [info vars ::Patword::KeysVisited::*] {
+	    array unset $el
+	}
+	puts "Dumping memory..."
+#	memory active mem.dump
+#	puts [memory info]
+	exit
+
+	return 0
+    }
+    return -1
+}
+
+#puts [memory info]
+
+Patword::fit $cipher 0 {} $startwords
+
+#puts [memory info]
+puts "Clearing cache..."
+Dictionary::clearCache
+puts "Clearing keys..."
+foreach el [info vars ::Patword::KeysVisited::*] {
+    array unset $el
+}
+#puts "Dumping memory..."
+#memory active mem.dump
+#puts [memory info]
+
+$cipher restore [lindex $Patword::maxKey 0] [lindex $Patword::maxKey 1]
+
+puts "#=========="
+puts ""
+CipherUtil::writeCipherToFile $cipher stdout
