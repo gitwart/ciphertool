@@ -199,7 +199,7 @@ ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	}
 
 	if (defaultScoreItem && strlen(argv[1]) != defaultScoreItem->elemSize) {
-	    sprintf(temp_str, "%d != %d", strlen(argv[1]), defaultScoreItem->elemSize);
+	    sprintf(temp_str, "%ld != %d", strlen(argv[1]), defaultScoreItem->elemSize);
 	    Tcl_AppendResult(interp, "Element size incorrect.  ", temp_str,
 		    (char *)NULL);
 	    return TCL_ERROR;
@@ -609,7 +609,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char *
         }
 
 	if (itemPtr->elemSize > 0 && strlen(argv[1]) != itemPtr->elemSize) {
-	    sprintf(temp_str, "%d != %d", strlen(argv[1]), itemPtr->elemSize);
+	    sprintf(temp_str, "%ld != %d", strlen(argv[1]), itemPtr->elemSize);
 	    Tcl_AppendResult(interp, "Element size incorrect.  ", temp_str,
 		    (char *)NULL);
 	    return TCL_ERROR;
@@ -642,7 +642,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char *
 	}
 
 	if (itemPtr->elemSize > 0 && strlen(argv[1]) != itemPtr->elemSize) {
-	    sprintf(temp_str, "%d != %d", strlen(argv[1]), itemPtr->elemSize);
+	    sprintf(temp_str, "%ld != %d", strlen(argv[1]), itemPtr->elemSize);
 	    Tcl_AppendResult(interp, "Element size incorrect.  ", temp_str,
 		    (char *)NULL);
 	    return TCL_ERROR;

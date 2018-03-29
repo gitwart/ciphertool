@@ -700,13 +700,13 @@ RestoreDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, co
     int i;
 
     if (strlen(square1) != KEYLEN) {
-	sprintf(keyLength, "%d", strlen(square1));
+	sprintf(keyLength, "%ld", strlen(square1));
 	Tcl_AppendResult(interp, "Key '", square1, "' has invalid length ", keyLength, (char *)NULL);
 	return TCL_ERROR;
     }
 
     if (strlen(square2) != KEYLEN) {
-	sprintf(keyLength, "%d", strlen(square2));
+	sprintf(keyLength, "%ld", strlen(square2));
 	Tcl_AppendResult(interp, "Key '", square2, "' has invalid length ", keyLength, (char *)NULL);
 	return TCL_ERROR;
     }

@@ -288,7 +288,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
     if (strlen(pt) /3 != strlen(ct)) {
 	char temp_str[256];
-	sprintf(temp_str, "3 * %d != %d", strlen(ct), strlen(pt));
+	sprintf(temp_str, "3 * %ld != %ld", strlen(ct), strlen(pt));
 	Tcl_AppendResult(interp,
 		"Plaintext and ciphertext don't match in length (",
 		temp_str, ")", (char *)NULL);

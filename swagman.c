@@ -357,8 +357,8 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
     }
 
     if (strlen(key) != itemPtr->period * itemPtr->period) {
-	char tempStr[TCL_DOUBLE_SPACE];
-	sprintf(tempStr, "%d should be %d", strlen(key), itemPtr->period * itemPtr->period);
+	char tempStr[TCL_DOUBLE_SPACE*2+11];
+	sprintf(tempStr, "%ld should be %d", strlen(key), itemPtr->period * itemPtr->period);
 	Tcl_AppendResult(interp, "Invalid key length:  ",
 	       tempStr,  ".  Invalid key was:  ", key, (char *)NULL);
 	return TCL_ERROR;

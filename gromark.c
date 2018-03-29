@@ -886,10 +886,10 @@ RestoreGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const
 	pt = "abcdefghijklmnopqrstuvwxyz";
     }
     if (strlen(part1) != strlen(pt)) {
-        char length1[16];
-        char length2[16];
-        sprintf(length1, " (%d)", strlen(part1));
-        sprintf(length2, " (%d)", strlen(pt));
+        char length1[32];
+        char length2[32];
+        sprintf(length1, " (%ld)", strlen(part1));
+        sprintf(length2, " (%ld)", strlen(pt));
         Tcl_AppendResult(interp, "Restoration key components are not the same length: ", part1, length1, " vs. ", pt, length2, (char *)NULL);
         return TCL_ERROR;
     }

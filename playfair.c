@@ -547,7 +547,7 @@ RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 
     if (strlen(key) != playPtr->keyLen) {
 	char temp_str[TCL_DOUBLE_SPACE];
-	sprintf(temp_str, "%d", strlen(key));
+	sprintf(temp_str, "%ld", strlen(key));
 	Tcl_AppendResult(interp, "Invalid key length ",
 		temp_str,
 		(char *)NULL);
