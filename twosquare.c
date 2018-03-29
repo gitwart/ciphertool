@@ -115,7 +115,7 @@ typedef struct TwosquareItem {
 
 CipherType TwosquareType = {
     "twosquare",
-    ATOZNOJ,
+    ATOZ,
     sizeof(TwosquareItem),
     CreateTwosquare,	/* create proc */
     DeleteTwosquare,	/* delete proc */
@@ -139,7 +139,7 @@ CipherType TwosquareType = {
 
 CipherType FoursquareType = {
     "foursquare",
-    ATOZNOJ,
+    ATOZ,
     sizeof(TwosquareItem),
     CreateTwosquare,	/* create proc */
     DeleteTwosquare,	/* delete proc */
