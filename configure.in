@@ -136,7 +136,7 @@ case "`uname -s`" in
 	;;
     *)
 	if test "${SHARED_BUILD}" = "1" ; then
-	    MAKE_SHELL='$(CC) -o $@ $(PKG_SHELL_OBJECTS) $(TCL_LIB_SPEC) $(TCL_LIBS) $(DMALLOC_LIBS)'
+	    MAKE_SHELL='$(CC) -o $@ $(PKG_SHELL_OBJECTS) $(TCL_LIB_SPEC) $(TCL_STUB_LIB_SPEC) $(TCL_LIBS) $(DMALLOC_LIBS)'
             RELPATH=.
 	fi
 	;;
