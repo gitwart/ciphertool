@@ -106,9 +106,11 @@ ExtractValidCharsJtoI(CipherItem *itemPtr, const char *ct)
 
     c = ExtractValidChars(itemPtr, ct);
 
-    for (d=c; *d; d++) {
-        if (*d == 'j') {
-            *d = 'i';
+    if (c) {
+        for (d=c; *d; d++) {
+            if (*d == 'j') {
+                *d = 'i';
+            }
         }
     }
 
