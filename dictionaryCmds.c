@@ -47,7 +47,7 @@ static int isIllegalTrigram		_ANSI_ARGS_((Tcl_Interp *interp,
  * Trap any attempts to change the dictionary directory and update the
  * dictionary structure with the new value.
  */
-char *DictionaryDirectoryTraceProc(ClientData clientData, Tcl_Interp *interp, char *name1, char *name2, int flags) {
+char *DictionaryDirectoryTraceProc(ClientData clientData, Tcl_Interp *interp, const char *name1, const char *name2, int flags) {
     Dictionary *dict = (Dictionary *)clientData;
 
     if (flags | TCL_TRACE_WRITES) {
@@ -64,7 +64,7 @@ char *DictionaryDirectoryTraceProc(ClientData clientData, Tcl_Interp *interp, ch
  * Trap any attempts to change the dictionary cache setting and update the
  * dictionary structure with the new value.
  */
-char *DictionaryCacheTraceProc(ClientData clientData, Tcl_Interp *interp, char *name1, char *name2, int flags) {
+char *DictionaryCacheTraceProc(ClientData clientData, Tcl_Interp *interp, const char *name1, const char *name2, int flags) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_Obj *varName = Tcl_NewStringObj("Dictionary::cache",
 	    strlen("Dictionary::cache"));
@@ -425,7 +425,7 @@ int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
     while (*lengthPtr) {
 	if (*lengthPtr <= patternLength) {
 	    strcpy(tempPattern, pattern);
-	    tempPattern[*lengthPtr] = (char)NULL;
+	    tempPattern[*lengthPtr] = '\0';
 
 	    if (*lengthPtr < firstWildIndex+1 && !isEmptyTree(treeRoot)) {
 		/*
@@ -450,7 +450,7 @@ int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
      * wildcard character.
      */
     strcpy(tempPattern, pattern);
-    tempPattern[firstWildIndex] = (char)NULL;
+    tempPattern[firstWildIndex] = '\0';
     if (! isEmptyTree(treeRoot)) {
 	/*
 	 * Duplicate the pattern so that we can modify it while searching
@@ -460,7 +460,7 @@ int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
 	while (wLen > 0) {
 	    Tcl_Obj *word = Tcl_NewStringObj(tempPattern, wLen);
 	    Tcl_ListObjAppendElement(interp, result, word);
-	    tempPattern[wLen-1] = (char)NULL;
+	    tempPattern[wLen-1] = '\0';
 	    wLen = treeMatchString(treeRoot, tempPattern, &value);
 	}
     }
@@ -509,7 +509,7 @@ readDictionaryFile(Tcl_Interp *interp, Dictionary *dict, int length) {
     Tcl_DStringInit(&filename);
     pathParts[0] = dict->directory;
     pathParts[1] = fileTail;
-    Tcl_JoinPath(2, pathParts, &filename);
+    Tcl_JoinPath(2, (const char * const *)pathParts, &filename);
 
     fileChannel = Tcl_OpenFileChannel(interp,
 	    Tcl_DStringValue(&filename), "r", 0);
@@ -576,7 +576,7 @@ writeDictionaryFile(Tcl_Interp *interp, Dictionary *dict, int length, Tcl_Obj *w
     Tcl_DStringInit(&filename);
     pathParts[0] = dict->directory;
     pathParts[1] = fileTail;
-    Tcl_JoinPath(2, pathParts, &filename);
+    Tcl_JoinPath(2, (const char * const *)pathParts, &filename);
 
     fileChannel = Tcl_OpenFileChannel(interp,
 	    Tcl_DStringValue(&filename), "w", 0);
@@ -784,9 +784,9 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     int isNewEntry = 0;
     Tcl_Obj *resultPtr = Tcl_GetObjResult(interp);
 
-    if (trigram[0] == (char)NULL
-	    || trigram[1] == (char)NULL
-	    || trigram[2] == (char)NULL) {
+    if (trigram[0] == '\0'
+	    || trigram[1] == '\0'
+	    || trigram[2] == '\0') {
 	Tcl_SetBooleanObj(resultPtr, 1);
 	return TCL_OK;
     }
@@ -797,7 +797,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     pattern[0] = trigram[0];
     pattern[1] = trigram[1];
     pattern[2] = trigram[2];
-    pattern[3] = (char)NULL;
+    pattern[3] = '\0';
     if (dict->cacheTypes & DICTIONARY_TRIGRAM_CACHE) {
 	hashEntry = Tcl_CreateHashEntry(dict->trigramTable, pattern, &isNewEntry);
 	if (!isNewEntry) {
@@ -818,7 +818,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     pattern[2] = trigram[1];
     pattern[3] = trigram[2];
     pattern[4] = '*';
-    pattern[5] = (char)NULL;
+    pattern[5] = '\0';
     lengthPtr = dict->wordLengths;
     while (*lengthPtr) {
 	if (*lengthPtr >= 3) {
@@ -851,7 +851,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     pattern[0] = '*';
     pattern[1] = trigram[0];
     pattern[2] = trigram[1];
-    pattern[3] = (char)NULL;
+    pattern[3] = '\0';
     lengthPtr = dict->wordLengths;
     while (*lengthPtr) {
 	if (*lengthPtr >= 2) {
@@ -884,7 +884,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     pattern[0] = trigram[1];
     pattern[1] = trigram[2];
     pattern[2] = '*';
-    pattern[3] = (char)NULL;
+    pattern[3] = '\0';
     lengthPtr = dict->wordLengths;
     while (*lengthPtr) {
 	if (*lengthPtr >= 2) {
@@ -916,7 +916,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
 
     wordList = lookupByLength(interp, dict, 1, (char *)NULL);
     pattern[0] = trigram[1];
-    pattern[1] = (char)NULL;
+    pattern[1] = '\0';
     if (wordList != NULL && wordIndexInList(interp, wordList, pattern) != -1) {
 	if ((dict->cacheTypes & DICTIONARY_TRIGRAM_CACHE)) {
 	    Tcl_Obj *boolObj = Tcl_NewBooleanObj(0);

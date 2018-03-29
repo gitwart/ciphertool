@@ -38,7 +38,7 @@ int DumpDictionaryCacheObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_O
 int AllWordsMatchingObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
 Tcl_Obj *lookupByLength	_ANSI_ARGS_((Tcl_Interp *interp, Dictionary *dict, int length, char *pattern));
 
-char *DictionaryDirectoryTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, char *, char *, int));
-char *DictionaryCacheTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, char *, char *, int));
+char *DictionaryDirectoryTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, const char *, const char *, int));
+char *DictionaryCacheTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, const char *, const char *, int));
 
 #endif

@@ -34,8 +34,8 @@
 #define MAXKASISKIPERIOD 15
 #define MAXKASISKILENGTH 8
 
-static void _statHist(char *, int *);
-static char *_statKasiski(char *, int, int, int);
+static void _statHist(const char *, int *);
+static char *_statKasiski(const char *, int, int, int);
 /*
  * Usage:   stat histogram string
  *	    stat ioc string
@@ -43,10 +43,10 @@ static char *_statKasiski(char *, int, int, int);
  */
 
 int
-StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    char	*cmd;
-    char 	*option;
+    const char	*cmd;
+    const char 	*option;
     int		hist[256];
     char	temp[256];
     int		i,
@@ -271,7 +271,7 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static char *
-_statKasiski(char *ct, int minperiod, int maxperiod, int maxlength)
+_statKasiski(const char *ct, int minperiod, int maxperiod, int maxlength)
 {
     int *ks;
     int length=0;
@@ -305,7 +305,7 @@ _statKasiski(char *ct, int minperiod, int maxperiod, int maxlength)
 
 	for(j = 0; j < length - i + 1; j++) {
 	    strncpy(string1, ct+j, i);
-	    string1[i] = (char)NULL;
+	    string1[i] = '\0';
 
 	    /*
 	     * Search for a repeat of the string just obtained
@@ -350,7 +350,7 @@ _statKasiski(char *ct, int minperiod, int maxperiod, int maxlength)
 }
 
 static void
-_statHist(char *string, int *hist)
+_statHist(const char *string, int *hist)
 {
     int		i;
 

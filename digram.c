@@ -78,14 +78,14 @@ get_letter_values(char *pt)
 int
 get_digram_value(char pt1, char pt2, int language)
 {
-    unsigned char temp_str[3];
+    char temp_str[3];
     if (initialScoreItem == NULL) {
 	return 0;
     }
     temp_str[0] = pt1;
     temp_str[1] = pt2;
-    temp_str[2] = (char)NULL;
-    return (int) ((initialScoreItem->typePtr->elemValueProc)(NULL, initialScoreItem, temp_str) * 100.0);
+    temp_str[2] = '\0';
+    return (int) ((initialScoreItem->typePtr->elemValueProc)(NULL, initialScoreItem, (const char *) temp_str) * 100.0);
 }
 
 int
@@ -93,8 +93,8 @@ get_digram_values(char *pt1, char *pt2, int language)
 {
     int i;
     double value = 0.0;
-    unsigned char temp_str[3];
-    temp_str[2] = (char)NULL;
+    char temp_str[3];
+    temp_str[2] = '\0';
 
     if (initialScoreItem == NULL) {
 	return 0;
@@ -103,7 +103,7 @@ get_digram_values(char *pt1, char *pt2, int language)
     for(i = 0; pt1[i] && pt2[i];  i++) {
 	temp_str[0] = pt1[i];
 	temp_str[1] = pt2[i];
-	value += (initialScoreItem->typePtr->elemValueProc)(NULL, initialScoreItem, temp_str);
+	value += (initialScoreItem->typePtr->elemValueProc)(NULL, initialScoreItem, (const char *) temp_str);
     }
 
     return (int) (value * 100.0);
@@ -251,7 +251,7 @@ freqval(int *hist1, int *hist2, int length, int offset)
 }
 
 int
-alphCharFit(char *string)
+alphCharFit(const char *string)
 {
     int hist[26];
     int i;

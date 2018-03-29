@@ -164,7 +164,7 @@ int loadAvailableLengths(Tcl_Interp *interp, Dictionary *dict) {
 	Tcl_DStringInit(&globPattern);
 	pathParts[0] = dict->directory;
 	pathParts[1] = "len*";
-	Tcl_JoinPath(2, pathParts, &globPattern);
+	Tcl_JoinPath(2, (const char * const *)pathParts, &globPattern);
 	command[1] = Tcl_NewStringObj(Tcl_DStringValue(&globPattern), Tcl_DStringLength(&globPattern));
 
 	// Eval the command and grab the list of filenames from the interpreter.

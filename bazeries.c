@@ -33,20 +33,20 @@
 #define KEY_PERIOD 5
 
 static int  CreateBazeries	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetBazeries		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int BazeriesCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int BazeriesUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int BazeriesSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int BazeriesLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int BazeriesSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
@@ -54,9 +54,9 @@ static int BazeriesSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 static int BazeriesSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int BazeriesInitSeq	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			char *));
+	    			const char *));
 static int EncodeBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *BazeriesTransform	_ANSI_ARGS_((CipherItem *, char *, int));
 
 typedef struct BazeriesItem {
@@ -91,7 +91,7 @@ CipherType BazeriesType = {
 };
 
 static int
-CreateBazeries(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateBazeries(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)itemPtr;
     char	temp_ptr[128];
@@ -107,7 +107,7 @@ CreateBazeries(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     bazPtr->keyNumber = 1;
     for(i=0; i < KEY_PERIOD; i++) {
 	for(j=0; j < KEY_PERIOD; j++) {
-	    bazPtr->key[i][j] = (char)NULL;
+	    bazPtr->key[i][j] = '\0';
 	}
     }
     for(i=0; i < 26; i++) {
@@ -142,7 +142,7 @@ CreateBazeries(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 static int
-SetBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -181,7 +181,7 @@ SetBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-BazeriesUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+BazeriesUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)itemPtr;
     int i, j;
@@ -191,7 +191,7 @@ BazeriesUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
     if (! ct) {
 	for(i=0; i < KEY_PERIOD; i++) {
 	    for(j=0; j < KEY_PERIOD; j++) {
-		bazPtr->key[i][j] = (char)NULL;
+		bazPtr->key[i][j] = '\0';
 	    }
 	}
 	for(i=0; i < 26; i++) {
@@ -210,7 +210,7 @@ BazeriesUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 
 	    if (keyVal) {
 		keyVal--;
-		bazPtr->key[keyVal/KEY_PERIOD][keyVal%KEY_PERIOD]=(char)NULL;
+		bazPtr->key[keyVal/KEY_PERIOD][keyVal%KEY_PERIOD]='\0';
 	    }
 
 	    ct++;
@@ -222,7 +222,7 @@ BazeriesUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-BazeriesSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+BazeriesSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)itemPtr;
     int row, col;
@@ -314,7 +314,7 @@ BazeriesTransform(CipherItem *itemPtr, char *text, int mode) {
 
 	Tcl_ValidateAllMemory(__FILE__, __LINE__);
     }
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     /*
      * Next perform the transposition
@@ -345,7 +345,7 @@ BazeriesTransform(CipherItem *itemPtr, char *text, int mode) {
 }
 
 static int
-RestoreBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *transString)
+RestoreBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *transString)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)itemPtr;
     int i;
@@ -380,7 +380,7 @@ RestoreBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *transS
 	col = i % KEY_PERIOD;
 
 	if (key[i] == ' ') {
-	    bazPtr->key[row][col] = (char)NULL;
+	    bazPtr->key[row][col] = '\0';
 	} else {
 	    bazPtr->key[row][col] = key[i];
 	    bazPtr->keyValPos[key[i]-'a'] = i+1;
@@ -482,7 +482,7 @@ BazeriesSwapRows(Tcl_Interp *interp, CipherItem *itemPtr, int row1, int row2)
 }
 
 static int
-BazeriesInitSeq(Tcl_Interp *interp, CipherItem *itemPtr, char *seqString)
+BazeriesInitSeq(Tcl_Interp *interp, CipherItem *itemPtr, const char *seqString)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)itemPtr;
     long seqNum;
@@ -517,12 +517,12 @@ BazeriesInitSeq(Tcl_Interp *interp, CipherItem *itemPtr, char *seqString)
 }
 
 int
-BazeriesCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+BazeriesCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     BazeriesItem *bazPtr = (BazeriesItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -578,13 +578,13 @@ BazeriesCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[KEY_PERIOD*KEY_PERIOD] = (char)NULL;
+	    temp_str[KEY_PERIOD*KEY_PERIOD] = '\0';
 	    Tcl_AppendElement(interp, temp_str);
 
 	    for(i=0; i < bazPtr->seqLength; i++) {
 		temp_str[i] = bazPtr->seqVal[i] + '0';
 	    }
-	    temp_str[bazPtr->seqLength] = (char)NULL;
+	    temp_str[bazPtr->seqLength] = '\0';
 	    Tcl_AppendElement(interp, temp_str);
 
 	    return TCL_OK;
@@ -764,7 +764,7 @@ BazeriesCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;
@@ -815,7 +815,7 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 		temp[i++] = *curPos;
 	    }
 	}
-	temp[i] = (char)NULL;
+	temp[i] = '\0';
 
 	keyedAlphabet = (char *)ckalloc(sizeof(char) * (26 + 1));
 	if (KeyGenerateK1(interp, temp, keyedAlphabet) != TCL_OK) {
@@ -829,7 +829,7 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 	// present once and only once.
 	for(i=0; keyedAlphabet[i] != 'j' && i < 26; i++);
 	for(; (keyedAlphabet[i] = keyedAlphabet[i+1]) && i < 26; i++);
-	keyedAlphabet[26] = (char)NULL;
+	keyedAlphabet[26] = '\0';
     }
 
     if (strlen(keyedAlphabet) != 25) {

@@ -32,27 +32,27 @@
 #include <cipherDebug.h>
 
 static int  CreatePollux	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetPollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetPollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestorePollux	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolvePollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int PolluxCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int PolluxUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int PolluxSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int PolluxLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
-static char *PolluxToMorse 	_ANSI_ARGS_((CipherItem *itemPtr, char *));
+static char *PolluxToMorse 	_ANSI_ARGS_((CipherItem *itemPtr, const char *));
 static int RecSolvePollux	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			char *, int));
 static int EncodePollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 
 typedef struct PolluxItem {
@@ -84,7 +84,7 @@ CipherType PolluxType = {
 };
 
 static int
-CreatePollux(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreatePollux(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     PolluxItem *polPtr = (PolluxItem *)itemPtr;
     char	temp_ptr[128];
@@ -96,7 +96,7 @@ CreatePollux(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     polPtr->header.period = 0;
     polPtr->solPt = (char *)NULL;
     for(i=0; i < 10; i++) {
-	polPtr->key[i] = (char)NULL;
+	polPtr->key[i] = '\0';
 	polPtr->histogram[i] = 0;
     }
 
@@ -127,7 +127,7 @@ CreatePollux(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 static int
-SetPollux(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetPollux(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     PolluxItem *polPtr = (PolluxItem *)itemPtr;
     char	*c=(char *)NULL;
@@ -136,8 +136,6 @@ SetPollux(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
     		val;
 
     Tcl_ValidateAllMemory(__FILE__, __LINE__);
-
-    c = ctext;
 
     /*
      * Count the number of valid characters
@@ -201,14 +199,14 @@ PolluxLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 static int
-PolluxUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+PolluxUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     PolluxItem *polPtr = (PolluxItem *)itemPtr;
     int		i;
 
     if (ct == (char *)NULL) {
 	for(i=0; i < 10; i++) {
-	    polPtr->key[i] = (char)NULL;
+	    polPtr->key[i] = '\0';
 	}
 
 	return TCL_OK;
@@ -216,7 +214,7 @@ PolluxUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 
     for(i=0; i < strlen(ct); i++) {
 	if (IsValidChar(itemPtr, ct[i])) {
-	    polPtr->key[ct[i]-'0'] = (char)NULL;
+	    polPtr->key[ct[i]-'0'] = '\0';
 	}
     }
 
@@ -224,11 +222,11 @@ PolluxUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     PolluxItem *polPtr = (PolluxItem *)itemPtr;
-    char	*p,
-		q[13],
+    const char	*p;
+    char	q[13],
 		r[13];
     int		e;
     char	key[10];
@@ -246,7 +244,7 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
     }
 
     for(i=0;i<10;i++) {
-	key[i] = (char)NULL;
+	key[i] = '\0';
 	index_used[i] = 0;
     }
 
@@ -348,7 +346,7 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 }
 
 static char *
-PolluxToMorse(CipherItem *itemPtr, char *key)
+PolluxToMorse(CipherItem *itemPtr, const char *key)
 {
     PolluxItem *polPtr = (PolluxItem *)itemPtr;
     char	*mt=(char *)ckalloc(sizeof(char) * itemPtr->length + 1);
@@ -365,7 +363,7 @@ PolluxToMorse(CipherItem *itemPtr, char *key)
 	    mt[i] = ' ';
     }
 
-    mt[i] = (char)NULL;
+    mt[i] = '\0';
 
     return mt;
 }
@@ -384,7 +382,7 @@ GetPollux(Tcl_Interp *interp, CipherItem *itemPtr)
 
     pt=(char *)ckalloc(sizeof(char) * itemPtr->length + 1);
 
-    mt = PolluxToMorse(itemPtr, (char *)NULL);
+    mt = PolluxToMorse(itemPtr, (const char *)NULL);
     if (MorseStringToString(mt, pt) == NULL) {
 	Tcl_SetResult(interp, "Error converting morse string", TCL_STATIC);
 	ckfree(pt);
@@ -417,7 +415,7 @@ GetSpaceyPollux(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static int
-RestorePollux(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestorePollux(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     if ( (itemPtr->typePtr->subProc)(interp, itemPtr, part1, part2, 0) == NEW_SUB) {
 	return TCL_OK;
@@ -439,7 +437,7 @@ SolvePollux(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     char	key[10];
 
     for(i=0; i < 10; i++) {
-	polPtr->maxSolKey[i] = (char)NULL;
+	polPtr->maxSolKey[i] = '\0';
     }
     polPtr->maxSolVal=0.0;
     itemPtr->curIteration=0;
@@ -511,7 +509,7 @@ RecSolvePollux(Tcl_Interp *interp, CipherItem *itemPtr, char *key, int depth)
 
 	if (mt && MorseValid(mt)) {
 	    if (MorseStringToString(mt, polPtr->solPt) != NULL) {
-		if (DefaultScoreValue(interp, (unsigned char *)polPtr->solPt, &val) != TCL_OK) {
+		if (DefaultScoreValue(interp, polPtr->solPt, &val) != TCL_OK) {
 		    return TCL_ERROR;
 		}
 		if (val > polPtr->maxSolVal) {
@@ -595,7 +593,7 @@ RecSolvePollux(Tcl_Interp *interp, CipherItem *itemPtr, char *key, int depth)
  */
 
 int
-EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
 
     /* Which digits can represent which marks? */
     int trans[128];
@@ -675,12 +673,12 @@ EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 }
 
 int
-PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     PolluxItem *polPtr = (PolluxItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[1024];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -748,14 +746,14 @@ PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i] = ' ';
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-key", 4) == 0) {
 	    for(i=0; i < 10; i++)
 		temp_str[i] = (polPtr->key[i]?polPtr->key[i]:' ');
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_AppendElement(interp, "0123456789");
 	    Tcl_AppendElement(interp, temp_str);

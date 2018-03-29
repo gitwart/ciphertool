@@ -26,13 +26,13 @@
 #include <wordtree.h>
 #include <cipherDebug.h>
 
-static Tcl_Obj *findBestSplit _ANSI_ARGS_((Tcl_Interp *, TreeNode *root, char *, int *, Tcl_Obj **, int *));
+static Tcl_Obj *findBestSplit _ANSI_ARGS_((Tcl_Interp *, TreeNode *root, const char *, int *, Tcl_Obj **, int *));
 
 int
-WordtreeCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+WordtreeCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    char *cmd;
-    char *option;
+    const char *cmd;
+    const char *option;
     TreeNode **rootNodePtr = (TreeNode **)clientData;
     TreeNode *rootNode = *rootNodePtr;
 
@@ -218,7 +218,7 @@ void WordtreeDelete(ClientData clientData) {
     }
 }
 
-static Tcl_Obj *findBestSplit(Tcl_Interp *interp, TreeNode *rootNode, char *text, int *value, Tcl_Obj **bestTextAtPosition, int *bestValueAtPosition) {
+static Tcl_Obj *findBestSplit(Tcl_Interp *interp, TreeNode *rootNode, const char *text, int *value, Tcl_Obj **bestTextAtPosition, int *bestValueAtPosition) {
     int textLength;
     int testLength;
     int bestValue = -1;

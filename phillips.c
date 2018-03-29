@@ -32,28 +32,28 @@
 #define MAX_NUM_BLOCKS 20
 
 static int  CreatePhillips	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeletePhillips		_ANSI_ARGS_((ClientData));
 static char *GetPhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetPhillips		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestorePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolvePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int PhillipsCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int PhillipsUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int PhillipsSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int PhillipsLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int PhillipsSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int EncodePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *PhillipsTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+				const char *, const char *));
+static char *PhillipsTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 typedef struct PhillipsItem {
     CipherItem header;
@@ -93,7 +93,7 @@ CipherType PhillipsType = {
 };
 
 static int
-CreatePhillips(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreatePhillips(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     char	temp_ptr[128];
@@ -108,7 +108,7 @@ CreatePhillips(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     philPtr->pt = (char *)NULL;
     for(i=0; i < PERIOD; i++) {
 	for(j=0; j < PERIOD; j++) {
-	    philPtr->key[i][j] = (char)NULL;
+	    philPtr->key[i][j] = '\0';
 	}
     }
     for(i=0; i < 26; i++) {
@@ -150,7 +150,7 @@ DeletePhillips(ClientData clientData)
 }
 
 static int
-SetPhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetPhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     char	*c;
@@ -195,7 +195,7 @@ SetPhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     int i, j;
@@ -203,7 +203,7 @@ PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
     if (! ct) {
 	for(i=0; i < PERIOD; i++) {
 	    for(j=0; j < PERIOD; j++) {
-		philPtr->key[i][j] = (char)NULL;
+		philPtr->key[i][j] = '\0';
 	    }
 	}
 	for(i=0; i < 26; i++) {
@@ -222,7 +222,7 @@ PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 
 	    if (keyVal) {
 		keyVal--;
-		philPtr->key[keyVal/PERIOD][keyVal%PERIOD]=(char)NULL;
+		philPtr->key[keyVal/PERIOD][keyVal%PERIOD]='\0';
 	    }
 
 	    ct++;
@@ -233,7 +233,7 @@ PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-PhillipsSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+PhillipsSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     int row, col;
@@ -285,7 +285,7 @@ GetPhillips(Tcl_Interp *interp, CipherItem *itemPtr)
  * is managed by the cipher, so don't try to free it yourself!
  */
 static char *
-PhillipsTransform(CipherItem *itemPtr, char *text, int mode) {
+PhillipsTransform(CipherItem *itemPtr, const char *text, int mode) {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     int		i;
     int keyRowToBlock[20][5] = {{0, 1, 2, 3, 4},
@@ -384,13 +384,13 @@ PhillipsTransform(CipherItem *itemPtr, char *text, int mode) {
 
 	philPtr->pt[i] = pt;
     }
-    philPtr->pt[itemPtr->length] = (char)NULL;
+    philPtr->pt[itemPtr->length] = '\0';
 
     return philPtr->pt;
 }
 
 static int
-RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     PhillipsItem *philPtr = (PhillipsItem *)itemPtr;
     int i;
@@ -421,7 +421,7 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
 	col = i % PERIOD;
 
 	if (key[i] == ' ') {
-	    philPtr->key[row][col] = (char)NULL;
+	    philPtr->key[row][col] = '\0';
 	} else {
 	    philPtr->key[row][col] = key[i];
 	    philPtr->keyValPos[key[i]-'a'] = i+1;
@@ -486,12 +486,12 @@ PhillipsSwapCols(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
 }
 
 int
-PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     PhillipsItem *philPtr = (PhillipsItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -550,7 +550,7 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[PERIOD*PERIOD] = (char)NULL;
+	    temp_str[PERIOD*PERIOD] = '\0';
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
 	    return TCL_OK;
@@ -739,7 +739,7 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodePhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

@@ -30,21 +30,21 @@
 #include <cipherDebug.h>
 
 static int  CreateSwagman	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteSwagman		_ANSI_ARGS_((ClientData));
 static char *GetSwagman		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetSwagman		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreSwagman	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveSwagman	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int SwagmanCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int SwagmanUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int SwagmanSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int SwagmanLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void SwagmanInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -95,7 +95,7 @@ CipherType SwagmanType = {
 };
 
 static int
-CreateSwagman(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateSwagman(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     SwagmanItem *swagPtr = (SwagmanItem *)itemPtr;
     char	temp_ptr[128];
@@ -169,7 +169,7 @@ SwagmanInitKey(CipherItem *itemPtr, int period)
     for(i=0; i < period; i++) {
 	swagPtr->key[i] = (char *)ckalloc(sizeof(char) * period);
 	for(j=0; j < period; j++) {
-	    swagPtr->key[i][j] = (char)NULL;
+	    swagPtr->key[i][j] = '\0';
 	}
     }
 
@@ -182,7 +182,7 @@ SwagmanInitKey(CipherItem *itemPtr, int period)
 }
 
 static int
-SetSwagman(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -219,21 +219,21 @@ SetSwagman(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-SwagmanUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+SwagmanUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     SwagmanItem *swagPtr = (SwagmanItem *)itemPtr;
     int i, j;
 
     for(i=0; i < itemPtr->period; i++) {
 	for(j=0; j < itemPtr->period; j++) {
-	    swagPtr->key[i][j] = (char)NULL;
+	    swagPtr->key[i][j] = '\0';
 	}
     }
     return TCL_OK;
 }
 
 static int
-SwagmanSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+SwagmanSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     SwagmanItem *swagPtr = (SwagmanItem *)itemPtr;
     int row, col;
@@ -331,13 +331,13 @@ GetSwagman(Tcl_Interp *interp, CipherItem *itemPtr)
 	}
     }
 
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     return result;
 }
 
 static int
-RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     SwagmanItem *swagPtr = (SwagmanItem *)itemPtr;
     int i;
@@ -374,7 +374,7 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
 	col = i % itemPtr->period;
 
 	if (key[i] == ' ') {
-	    swagPtr->key[row][col] = (char)NULL;
+	    swagPtr->key[row][col] = '\0';
 	} else {
 	    swagPtr->key[row][col] = key[i] - '0';
 	}
@@ -503,7 +503,7 @@ SwagmanSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int lengt
 		for(j=0; j < itemPtr->period; j++) {
 		    temp_str[j] = swagPtr->key[i][j] + '0';
 		}
-		temp_str[j] = (char)NULL;
+		temp_str[j] = '\0';
 		Tcl_DStringAppendElement(&dsPtr, temp_str);
 	    }
 	    Tcl_DStringEndSublist(&dsPtr);
@@ -522,7 +522,7 @@ SwagmanSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int lengt
 	}
 
 	if (pt) {
-	    if (DefaultScoreValue(interp, (unsigned char *)pt, &val)
+	    if (DefaultScoreValue(interp, pt, &val)
                     != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -546,7 +546,7 @@ SwagmanSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int lengt
 			temp_str[j] = swagPtr->key[i][j] + '0';
 			swagPtr->maxSolKey[i][j] = swagPtr->key[i][j];
 		    }
-		    temp_str[j] = (char)NULL;
+		    temp_str[j] = '\0';
 		    Tcl_DStringAppendElement(&dsPtr, temp_str);
 		}
 		Tcl_DStringEndSublist(&dsPtr);
@@ -620,7 +620,7 @@ SwagmanCtToBlock(Tcl_Interp *interp, CipherItem *itemPtr)
 		}
 		*/
 	    }
-	    word[k] = (char)NULL;
+	    word[k] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, word);
 	}
 	Tcl_DStringEndSublist(&dsPtr);
@@ -665,7 +665,7 @@ SwagmanPtToBlock(Tcl_Interp *interp, CipherItem *itemPtr)
 	    for(k=0; k < itemPtr->period && col<itemPtr->length/itemPtr->period; k++, col++) {
 		word[k] = pt[row*itemPtr->length/itemPtr->period+col];
 	    }
-	    word[k] = (char)NULL;
+	    word[k] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, word);
 	}
 	Tcl_DStringEndSublist(&dsPtr);
@@ -710,12 +710,12 @@ SwagmanSwapRows	(Tcl_Interp *interp, CipherItem *itemPtr, int row1, int row2)
 }
 
 int
-SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     SwagmanItem *swagPtr = (SwagmanItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -803,7 +803,7 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[itemPtr->period*itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period*itemPtr->period] = '\0';
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
 	    return TCL_OK;

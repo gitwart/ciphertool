@@ -29,33 +29,33 @@
 
 void DeleteGromark	_ANSI_ARGS_((ClientData));
 int GromarkCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
 static int  CreateGromark	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetGromark		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetGromark		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int GromarkUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int GromarkSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int GromarkLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void GromarkInitOffset	_ANSI_ARGS_((CipherItem *, int));
 static int GromarkChainSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char, int));
 static int EncodeGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *GromarkTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+				const char *, const char *));
+static char *GromarkTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 /*
  * This structure contains the data associated with a single gromark cipher.
@@ -112,7 +112,7 @@ CipherType GromarkType = {
  */
 
 static int
-CreateGromark(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateGromark(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char	temp_ptr[128];
@@ -126,8 +126,8 @@ CreateGromark(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     gromPtr->chain = (char *)NULL;
 
     for(i=0; i < 26; i++) {
-	gromPtr->ptkey[i] = (char)NULL;
-	gromPtr->ctkey[i] = (char)NULL;
+	gromPtr->ptkey[i] = '\0';
+	gromPtr->ctkey[i] = '\0';
     }
 
     sprintf(temp_ptr, "cipher%d", cipherid);
@@ -170,12 +170,12 @@ DeleteGromark(ClientData clientData)
 }
 
 int
-GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     GromarkItem *gromPtr = (GromarkItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -234,7 +234,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->length; i++) {
 		offsetString[i] = gromPtr->offset[i] + '0';
 	    }
-	    offsetString[i] = (char)NULL;
+	    offsetString[i] = '\0';
 	    Tcl_SetResult(interp, offsetString, TCL_VOLATILE);
 	    ckfree((char *)offsetString);
 	    return TCL_OK;
@@ -242,20 +242,20 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = (gromPtr->ctkey[i])?gromPtr->ctkey[i]:' ';
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-chain", 4) == 0) {
-	    temp_str[0] = (char)NULL;
+	    temp_str[0] = '\0';
 
 	    for (i=0; i < itemPtr->period; i++) {
 		temp_str[i] = gromPtr->chain[i];
-		if (temp_str[i] == (char)NULL) {
+		if (temp_str[i] == '\0') {
 		    temp_str[i] = ' ';
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -323,7 +323,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		for (i=0; argv[1][i]; i++) {
 		    if (argv[1][i] < 'a' || argv[1][i] > 'z') {
 			temp_str[0] = argv[1][i];
-			temp_str[1] = (char)NULL;
+			temp_str[1] = '\0';
 			Tcl_AppendResult(interp,
 				"Invalid character found in chain:  ",
 				temp_str, (char *)NULL);
@@ -342,7 +342,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		 */
 		for(i=0; i < itemPtr->period; i++) {
 		    if (gromPtr->chain[i] == ' ') {
-			gromPtr->chain[i] = (char)NULL;
+			gromPtr->chain[i] = '\0';
 		    }
 		}
 		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
@@ -357,7 +357,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		}
 		gromPtr->chain = (char *)ckalloc(sizeof(char)*period);
 		for (i=0; i < period; i++) {
-		    gromPtr->chain[i] = (char)NULL;
+		    gromPtr->chain[i] = '\0';
 		}
 		itemPtr->period = period;
 		GromarkInitOffset(itemPtr, gromPtr->primer);
@@ -500,7 +500,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetGromark(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char *c;
@@ -616,7 +616,7 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start
 	    }
 	}
     }
-    temp[t - tip] = (char)NULL;
+    temp[t - tip] = '\0';
 
     Tcl_ValidateAllMemory(__FILE__, __LINE__);
 
@@ -638,7 +638,7 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start
 }
 
 static int
-GromarkUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+GromarkUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char	t;
@@ -655,9 +655,9 @@ GromarkUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
     while (*ct) {
 	if (*ct >= 'a' && *ct <= 'z') {
 	    t = gromPtr->ptkey[*ct - 'a'];
-	    gromPtr->ptkey[*ct - 'a'] = (char)NULL;
+	    gromPtr->ptkey[*ct - 'a'] = '\0';
 	    if (t) {
-		gromPtr->ctkey[t - 'a'] = (char)NULL;
+		gromPtr->ctkey[t - 'a'] = '\0';
 	    }
 
 	}
@@ -672,7 +672,7 @@ GromarkUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char	*c,
@@ -694,12 +694,12 @@ GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, i
 
     q = (char *)ckalloc(sizeof(char *) * strlen(ct));
     r = q;
-    *r = (char)NULL;
+    *r = '\0';
 
 
     for(i=0;i<26;i++) {
-	key_pt[i] = (char)NULL;
-	key_ct[i] = (char)NULL;
+	key_pt[i] = '\0';
+	key_ct[i] = '\0';
     }
 
     c = ct;
@@ -743,15 +743,15 @@ GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, i
 
 	    if (*p < 'a' || *p > 'z') {
 		if (t) {
-		    gromPtr->ctkey[t - 'a'] = (char)NULL;
+		    gromPtr->ctkey[t - 'a'] = '\0';
 		}
-		gromPtr->ptkey[*c - 'a'] = (char)NULL;
+		gromPtr->ptkey[*c - 'a'] = '\0';
 	    } else {
 		if (t) {
-		    gromPtr->ctkey[t-'a'] = (char)NULL;
+		    gromPtr->ctkey[t-'a'] = '\0';
 		}
 		if (u) {
-		    gromPtr->ptkey[u-'a'] = (char)NULL;
+		    gromPtr->ptkey[u-'a'] = '\0';
 		}
 		gromPtr->ctkey[*p - 'a'] = *c;
 		gromPtr->ptkey[*c - 'a'] = *p;
@@ -764,7 +764,7 @@ GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, i
 	}
 	c++, p++;
     }
-    *r = (char)NULL;
+    *r = '\0';
 
     if (valid_sub == BAD_SUB) {
 	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
@@ -807,7 +807,7 @@ GetGromark(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-GromarkTransform(CipherItem *itemPtr, char *text, int mode)
+GromarkTransform(CipherItem *itemPtr, const char *text, int mode)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char	*c;
@@ -820,7 +820,7 @@ GromarkTransform(CipherItem *itemPtr, char *text, int mode)
 	char ctLetter = text[i];
 	char ptLetter = gromPtr->ptkey[(ctLetter - 'a')];
 
-	if (ptLetter == (char)NULL) {
+	if (ptLetter == '\0') {
 	    pt[i] = ' ';
 	} else {
 	    if (itemPtr->period) {
@@ -847,7 +847,7 @@ GromarkTransform(CipherItem *itemPtr, char *text, int mode)
 	    }
 	}
     }
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
 
     return pt;
 }
@@ -868,7 +868,7 @@ GromarkChainSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char value, int 
 	return TCL_ERROR;
     }
 
-    if (! IsValidChar(itemPtr, value) && value != (char)NULL) {
+    if (! IsValidChar(itemPtr, value) && value != '\0') {
 	Tcl_SetResult(interp, "Invalid chain character", TCL_VOLATILE);
 	return TCL_ERROR;
     }
@@ -879,9 +879,9 @@ GromarkChainSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char value, int 
 }
 
 static int
-RestoreGromark(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
-    char *pt = part2;
+    const char *pt = part2;
     if (pt == NULL) {
 	pt = "abcdefghijklmnopqrstuvwxyz";
     }
@@ -935,7 +935,7 @@ GromarkInitOffset(CipherItem *itemPtr, int primer)
 }
 
 static int
-EncodeGromark(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char *ct = (char *)NULL;
     int count;

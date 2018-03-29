@@ -30,11 +30,11 @@
 #include <cipherDebug.h>
 
 int
-CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     CrithmInfo	*cInfo = (CrithmInfo *)clientData;
-    char	*cmd;
-    char	*option;
+    const char	*cmd;
+    const char	*option;
     int		i;
 
     if (argc < 2) {
@@ -48,7 +48,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
     argv++, argc--;
 
     if (*option == 'v' && (strncmp(option, "value", 5) == 0)) {
-	char	*string;
+	const char	*string;
 	char	temp[32];
 	Tcl_WideInt	value=0;
 	int	wordLen=0;
@@ -145,8 +145,8 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	Tcl_SetResult(interp, temp, TCL_VOLATILE);
 	return TCL_OK;
     } else if (*option == 'i' && (strncmp(option, "init", 4) == 0)) {
-	char *string = *argv;
-	char *permCmd = (char *)NULL;
+	const char *string = *argv;
+	const char *permCmd = (char *)NULL;
 
 	if (argc != 1 && argc != 2) {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,

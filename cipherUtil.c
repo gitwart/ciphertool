@@ -35,7 +35,7 @@
  */
 
 int
-CountValidChars(CipherItem *itemPtr, char *ct)
+CountValidChars(CipherItem *itemPtr, const char *ct)
 {
     int		count=0;
     char	*c;
@@ -55,7 +55,7 @@ CountValidChars(CipherItem *itemPtr, char *ct)
  */
 
 char *
-ExtractValidChars(CipherItem *itemPtr, char *ct)
+ExtractValidChars(CipherItem *itemPtr, const char *ct)
 {
     int		length=0;
     int		index=0;
@@ -87,7 +87,7 @@ ExtractValidChars(CipherItem *itemPtr, char *ct)
 		
 	    ct++;
 	}
-	newct[index] = (char)NULL;
+	newct[index] = '\0';
     }
 
     return newct;
@@ -99,7 +99,7 @@ ExtractValidChars(CipherItem *itemPtr, char *ct)
  */
 
 char *
-ExtractValidCharsJtoI(CipherItem *itemPtr, char *ct)
+ExtractValidCharsJtoI(CipherItem *itemPtr, const char *ct)
 {
     char	*c;
 
@@ -116,14 +116,14 @@ ExtractValidCharsJtoI(CipherItem *itemPtr, char *ct)
  * Take a string of numbers and convert to an array of integers.
  */
 int *
-TextToInt(Tcl_Interp *interp, CipherItem *itemPtr, char *intstring, int *count, char *format, int fmt_length)
+TextToInt(Tcl_Interp *interp, CipherItem *itemPtr, const char *intstring, int *count, const char *format, int fmt_length)
 {
     int		intval;
     int		*newarr=(int *)NULL;
     char	numints[32];
     int		length=0;
     int		i;
-    char	*e=intstring;
+    char	*e=(char *)NULL;
     char	*new_ct=(char *)NULL;
 
     *count=0;

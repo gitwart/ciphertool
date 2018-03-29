@@ -28,7 +28,7 @@
 #define TOMORSE	1
 #define TOTEXT	2
 
-int		MorseCmd(ClientData, Tcl_Interp *, int , char **);
+int		MorseCmd(ClientData, Tcl_Interp *, int , const char **);
 
 #define _MORSECOMMAND_H_INCLUDED
 

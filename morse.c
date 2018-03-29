@@ -165,19 +165,19 @@ static char *toMorse[NUM_MORSE_CHARS] = {"",
  */
 
 char
-MorseStringToChar(char *mString)
+MorseStringToChar(const char *mString)
 {
     int i, len;
 
     len = strlen(mString);
 
     if (len < 1 || len > 6) {
-	return (char)NULL;
+	return '\0';
     }
 
     for(i=0; i < len; i++) {
 	if (mString[i] != DOT && mString[i] != DASH) {
-	    return (char)NULL;
+	    return '\0';
 	}
     }
 
@@ -191,18 +191,18 @@ MorseStringToChar(char *mString)
 	}
     }
 
-    return (char)NULL;
+    return '\0';
 }
 
 char *
-MorseStringToString(char *mString, char *result)
+MorseStringToString(const char *mString, char *result)
 {
     int i, len, numChars, rIndex, tIndex;
     char tResult;
     char *tempStr;
 
     len = strlen(mString);
-    result[0] = (char)NULL;
+    result[0] = '\0';
 
     for(i=0; i < len; i++) {
 	if (mString[i] != DOT && mString[i] != DASH && mString[i] != SPACE && mString[i]!= BLANK) {
@@ -226,8 +226,8 @@ MorseStringToString(char *mString, char *result)
     tempStr = (char *)malloc(sizeof(char) * (strlen(mString) + 1));
 
     for(i=0, rIndex=0, tIndex=0; i <= len; i++) {
-	if (mString[i] == SPACE || mString[i] == (char)NULL) {
-	    tempStr[tIndex] = (char)NULL;
+	if (mString[i] == SPACE || mString[i] == '\0') {
+	    tempStr[tIndex] = '\0';
 	    tResult = MorseStringToChar(tempStr);
 	    if (!tResult) {
 		/*
@@ -237,7 +237,7 @@ MorseStringToString(char *mString, char *result)
 		if (i != len) {
 		    result[rIndex++] = ' ';
 		} else {
-		    result[rIndex++] = (char)NULL;
+		    result[rIndex++] = '\0';
 		}
 	    } else {
 		result[rIndex++] = tResult;
@@ -247,7 +247,7 @@ MorseStringToString(char *mString, char *result)
 	    tempStr[tIndex++] = mString[i];
 	}
     }
-    result[rIndex] = (char)NULL;
+    result[rIndex] = '\0';
 
     free(tempStr);
 
@@ -255,14 +255,14 @@ MorseStringToString(char *mString, char *result)
 }
 
 char *
-MorseStringToSpaceyString(char *mString, char *result)
+MorseStringToSpaceyString(const char *mString, char *result)
 {
     int i, len, numChars, rIndex, tIndex;
     char tResult;
     char *tempStr;
 
     len = strlen(mString);
-    result[0] = (char)NULL;
+    result[0] = '\0';
 
     for(i=0; i < len; i++) {
 	if (mString[i] != DOT && mString[i] != DASH && mString[i] != SPACE && mString[i]!= BLANK) {
@@ -286,8 +286,8 @@ MorseStringToSpaceyString(char *mString, char *result)
     tempStr = (char *)malloc(sizeof(char) * (strlen(mString) + 1));
 
     for(i=0, rIndex=0, tIndex=0; i <= len; i++) {
-	if (mString[i] == SPACE || mString[i] == (char)NULL) {
-	    tempStr[tIndex] = (char)NULL;
+	if (mString[i] == SPACE || mString[i] == '\0') {
+	    tempStr[tIndex] = '\0';
 	    tResult = MorseStringToChar(tempStr);
 	    if (!tResult) {
 		/*
@@ -297,7 +297,7 @@ MorseStringToSpaceyString(char *mString, char *result)
 		if (i != len) {
 		    result[rIndex++] = ' ';
 		} else {
-		    result[rIndex++] = (char)NULL;
+		    result[rIndex++] = '\0';
 		}
 	    } else if (tResult == BLANK) {
 		result[rIndex++] = '_';
@@ -313,7 +313,7 @@ MorseStringToSpaceyString(char *mString, char *result)
     /*
     printf("rIndex = %d\n", rIndex);
     */
-    result[rIndex] = (char)NULL;
+    result[rIndex] = '\0';
 
     free(tempStr);
 
@@ -345,7 +345,7 @@ CharToMorse(char l)
  */
 
 char *
-StringToMorse(char *text) {
+StringToMorse(const char *text) {
     int i;
     int index_out = 0;
     int n = strlen(text);
@@ -364,7 +364,7 @@ StringToMorse(char *text) {
 	strcpy(mt+index_out, ml);
 	index_out += strlen(ml);
     }
-    mt[index_out] = (char)NULL;
+    mt[index_out] = '\0';
     return mt;
 }
 
@@ -373,7 +373,7 @@ StringToMorse(char *text) {
  */
 
 int
-MorseValid(char *mt)
+MorseValid(const char *mt)
 {
 
     int spaces_in_a_row = 0;

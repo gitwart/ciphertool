@@ -27,16 +27,16 @@
 #include <string.h>
 #include <wordtree.h>
 
-static int CreateNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, char **));
+static int CreateNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
 static int AddNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
 void DeleteNgramScore _ANSI_ARGS_((ClientData));
 static int NormalizeNgramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double NgramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static double NgramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-double  NgramStringValue _ANSI_ARGS_((unsigned char *, double **));
+static double NgramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static double NgramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+double  NgramStringValue _ANSI_ARGS_((const char *, double **));
 double  NgramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
 static void NormalizeTreeNodeLog _ANSI_ARGS_((TreeNode *));
-static int DumpNgramScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
+static int DumpNgramScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
 
 typedef struct NgramItem {
     ScoreItem header;
@@ -73,7 +73,7 @@ ScoreType NgramCountType = {
 };
 
 static int
-CreateNgram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, char **argv) {
+CreateNgram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, const char **argv) {
     NgramItem *ngPtr = (NgramItem *)itemPtr;
     char temp_ptr[TCL_DOUBLE_SPACE];
     Tcl_DString dsPtr;
@@ -126,7 +126,7 @@ AddNgram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double 
 }
 
 static double
-NgramValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+NgramValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     NgramItem *ngPtr = (NgramItem *)itemPtr;
     int wordLen;
     unsigned short int value = 0;
@@ -144,7 +144,7 @@ NgramValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
 }
 
 static double
-NgramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+NgramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     NgramItem *ngPtr = (NgramItem *)itemPtr;
     unsigned short int value=0;
 
@@ -183,7 +183,7 @@ NormalizeTreeNodeLog(TreeNode *rootNode) {
 }
 
 static int
-DumpNgramScore(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
+DumpNgramScore(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     NgramItem *ngPtr = (NgramItem *)itemPtr;
     Tcl_DString element;
     Tcl_DString command;

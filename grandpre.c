@@ -28,25 +28,25 @@
 #include <cipherDebug.h>
 
 static int  CreateGrandpre	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteGrandpre		_ANSI_ARGS_((ClientData));
 static char *GetGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int GrandpreCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int GrandpreUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int GrandpreSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int GrandpreLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int EncodeGrandpre _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 typedef struct GrandpreItem {
     CipherItem header;
@@ -78,7 +78,7 @@ CipherType GrandpreType = {
 };
 
 static int
-CreateGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     char	temp_ptr[128];
@@ -91,7 +91,7 @@ CreateGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     grandPtr->int_ct = (int *)NULL;
     for(i=0; i < 8; i++) {
 	for(j=0; j < 8; j++) {
-	    grandPtr->key[i][j] = (char)NULL;
+	    grandPtr->key[i][j] = '\0';
 	    grandPtr->histogram[i][j] = 0;
 	}
     }
@@ -135,10 +135,10 @@ DeleteGrandpre(ClientData clientData)
 }
 
 static int
-SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
-    char	*c=(char *)NULL;
+    const char	*c=(char *)NULL;
     int		valid = TCL_OK,
     		length=0;
     int		count=0;
@@ -169,12 +169,12 @@ SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
     if (grandPtr->prv_ciphertext) {
 	ckfree(grandPtr->prv_ciphertext);
     }
-    grandPtr->prv_ciphertext = (char)NULL;
+    grandPtr->prv_ciphertext = '\0';
 
     if (grandPtr->int_ct) {
 	ckfree((char *)(grandPtr->int_ct));
     }
-    grandPtr->prv_ciphertext = (char)NULL;
+    grandPtr->prv_ciphertext = '\0';
 
     grandPtr->prv_ciphertext = ExtractValidChars(itemPtr, ctext);
     grandPtr->int_ct = TextToInt(interp, itemPtr, ctext, &count, "%2d", 2);
@@ -236,7 +236,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 
     for(i=0; i < 8; i++) {
 	for(j=0; j < 8; j++) {
-	    key[i][j] = (char)NULL;
+	    key[i][j] = '\0';
 	}
     }
 
@@ -288,7 +288,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 
 	for(k=0; k < 8; k++) {
 	    for(m=0; m < 8; m++) {
-		key[k][m] = (char)NULL;
+		key[k][m] = '\0';
 	    }
 	}
 
@@ -332,7 +332,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 }
 
 static int
-GrandpreSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+GrandpreSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     char key[8][8];
@@ -345,7 +345,7 @@ GrandpreSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 
     for(i=0;i<8;i++) {
 	for(j=0;j<8;j++) {
-	    key[i][j] = (char)NULL;
+	    key[i][j] = '\0';
 	}
     }
 
@@ -426,7 +426,7 @@ GrandpreSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 }
 
 static int
-GrandpreUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+GrandpreUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     int	*ctIntarr=(int *)NULL;
@@ -446,7 +446,7 @@ GrandpreUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 	    Tcl_SetResult(interp, "Invalid characters in undo.", TCL_STATIC);
 	}
 
-	grandPtr->key[col][row] = (char)NULL;
+	grandPtr->key[col][row] = '\0';
     }
     ckfree((char *)ctIntarr);
 
@@ -478,7 +478,7 @@ GetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr)
 	    pt[i] = ' ';
 	}
     }
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
 
     return pt;
 }
@@ -516,12 +516,12 @@ GrandpreKeyToString(Tcl_Interp *interp, CipherItem *itemPtr)
 		temp_word2[8*i+j] = ' ';
 	    }
 	}
-	temp_word[j] = (char)NULL;
+	temp_word[j] = '\0';
 	/*
 	Tcl_DStringAppendElement(&dsPtr, temp_word);
 	*/
     }
-    temp_word2[64]=(char)NULL;
+    temp_word2[64]='\0';
     /*
     Tcl_DStringEndSublist(&dsPtr);
     */
@@ -552,7 +552,7 @@ GrandpreKeyToList(Tcl_Interp *interp, CipherItem *itemPtr)
 		temp_word[j] = ' ';
 	    }
 	}
-	temp_word[j] = (char)NULL;
+	temp_word[j] = '\0';
 	Tcl_DStringAppendElement(&dsPtr, temp_word);
     }
     /*
@@ -565,7 +565,7 @@ GrandpreKeyToList(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static int
-RestoreGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     int i, j;
@@ -583,13 +583,13 @@ RestoreGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part
 	for(j=0; j < 8; j++) {
 	    int charIndex = i*8 + j;
 	    if (part1[charIndex] == ' ') {
-		grandPtr->key[i][j]=(char)NULL;
+		grandPtr->key[i][j]='\0';
 	    } else if (part1[charIndex] >= 'a' && part1[charIndex] <= 'z') {
 		grandPtr->key[i][j]=part1[charIndex];
 	    } else {
 		char temp_str[2];
 		temp_str[0] = part1[charIndex];
-		temp_str[1] = (char)NULL;
+		temp_str[1] = '\0';
 		Tcl_AppendResult(interp, "Invalid character found in key: '",
 			temp_str, "'.", (char *)NULL);
 		return TCL_ERROR;
@@ -601,7 +601,7 @@ RestoreGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part
 }
 
 static int
-EncodeGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key)
+EncodeGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key)
 {
     int i, row, col;
     char *ct;
@@ -670,12 +670,12 @@ EncodeGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key)
 }
 
 int
-GrandpreCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+GrandpreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[1024];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     Tcl_DString dsPtr;
 

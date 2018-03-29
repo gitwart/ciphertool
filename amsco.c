@@ -30,21 +30,21 @@
 #include <cipherDebug.h>
 
 static int  CreateAmsco		_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteAmsco		_ANSI_ARGS_((ClientData));
 static char *GetAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreAmsco	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int AmscoCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int AmscoUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int AmscoSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int AmscoLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void AmscoInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -55,7 +55,7 @@ static int AmscoSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 static int AmscoShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int EncodeAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *AmscoTransform	_ANSI_ARGS_((CipherItem *, char *, int));
 
 typedef struct AmscoItem {
@@ -92,7 +92,7 @@ CipherType AmscoType = {
 };
 
 static int
-CreateAmsco(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateAmsco(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     AmscoItem *amscoPtr = (AmscoItem *)itemPtr;
     char	temp_ptr[128];
@@ -156,7 +156,7 @@ DeleteAmsco(ClientData clientData)
 }
 
 static int
-SetAmsco(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetAmsco(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     AmscoItem *amscoPtr = (AmscoItem *)itemPtr;
     char	*c;
@@ -203,7 +203,7 @@ SetAmsco(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-AmscoUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+AmscoUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     AmscoInitKey(itemPtr, itemPtr->period);
 
@@ -211,7 +211,7 @@ AmscoUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-AmscoSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+AmscoSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     Tcl_SetResult(interp, "No substitute command defined for amsco ciphers.",
 	    TCL_STATIC);
@@ -226,7 +226,6 @@ GetAmsco(Tcl_Interp *interp, CipherItem *itemPtr) {
 static char *
 AmscoTransform(CipherItem *itemPtr, char *text, int mode) {
     AmscoItem *amscoPtr = (AmscoItem *)itemPtr;
-    char	*c;
     int		i, col, pos;
     int		newCol;
     int		lineOffset = 0;
@@ -282,9 +281,7 @@ AmscoTransform(CipherItem *itemPtr, char *text, int mode) {
     for (i=0; i < itemPtr->length; i++) {
 	amscoPtr->pt[i] = '_';
     }
-    amscoPtr->pt[itemPtr->length] = (char)NULL;
-
-    c = itemPtr->ciphertext;
+    amscoPtr->pt[itemPtr->length] = '\0';
 
     for (col=0; col < itemPtr->period; col++) {
 	int row=0;
@@ -350,7 +347,7 @@ AmscoTransform(CipherItem *itemPtr, char *text, int mode) {
 	colStartCellSize = 3 - colStartCellSize;
     }
 
-    amscoPtr->pt[itemPtr->length] = (char)NULL;
+    amscoPtr->pt[itemPtr->length] = '\0';
 
     ckfree((char *)startPos);
 
@@ -358,7 +355,7 @@ AmscoTransform(CipherItem *itemPtr, char *text, int mode) {
 }
 
 static int
-RestoreAmsco(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreAmsco(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     AmscoItem *amscoPtr = (AmscoItem *)itemPtr;
     int		i;
@@ -438,7 +435,7 @@ AmscoCheckSolutionValue(Tcl_Interp *interp, ClientData clientData, int *key, int
 
     pt = GetAmsco(interp, (CipherItem *)amscoPtr);
 
-    if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+    if (DefaultScoreValue(interp, (const char *)pt, &value) != TCL_OK) {
 	return TCL_ERROR;
     }
 
@@ -575,7 +572,7 @@ SolveAmsco(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 	amscoPtr->key[i] = amscoPtr->maxKey[i];
 	maxkey[i] = amscoPtr->key[i] + 'a';
     }
-    maxkey[i] = (char)NULL;
+    maxkey[i] = '\0';
 
     Tcl_SetResult(interp, maxkey, TCL_VOLATILE);
 
@@ -642,7 +639,7 @@ AmscoInitKey(CipherItem *itemPtr, int period)
 	    }
 	}
 
-	amscoPtr->key[period]=(char)NULL;
+	amscoPtr->key[period]='\0';
     }
 }
 
@@ -805,12 +802,12 @@ AmscoShiftColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amount)
 }
 
 int
-AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     AmscoItem *amscoPtr = (AmscoItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -862,7 +859,7 @@ AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		if (temp_str[i] > 'v') temp_str[i]++;
 		*/
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
@@ -1088,7 +1085,7 @@ AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeAmsco(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeAmsco(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

@@ -46,10 +46,10 @@
  */
 
 int
-KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    char	*cmd;
-    char 	*option;
+    const char	*cmd;
+    const char 	*option;
     char	temp[256];
     int		i;
     Tcl_Obj	*resultPtr;
@@ -66,7 +66,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
     argv++, argc--;
 
     if (*option == 'g' && (strncmp(option, "generate", 1) == 0)) {
-	char *type;
+	const char *type;
 
 	if (argc < 2) {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ",
@@ -95,7 +95,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		for(j=0; j < 26; j++) {
 		    temp[(i+j)%26] = fixedKey[j];
 		}
-		temp[26] = (char)NULL;
+		temp[26] = '\0';
 
 		Tcl_AppendElement(interp, temp);
 	    }
@@ -145,7 +145,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		for(j=0; j < 26; j++) {
 		    temp[(i+j)%26] = fixedKey[j];
 		}
-		temp[26] = (char)NULL;
+		temp[26] = '\0';
 
 		Tcl_AppendElement(interp, temp);
 	    }
@@ -172,8 +172,8 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	Tcl_SetResult(interp, temp, TCL_VOLATILE);
 	return TCL_OK;
     } else if (*option == 'c' && (strncmp(option, "convert", 1) == 0)) {
-	char *subcommand;
-	temp[1] = (char)NULL;
+	const char *subcommand;
+	temp[1] = '\0';
 
 	if (argc != 3) {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,
@@ -210,7 +210,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		|| strncmp(subcommand, "portaxct", 6) == 0) {
 	    PortaxGetPt(argv[1][0], argv[2][0], argv[2][1],
 		    temp, temp+1);
-	    temp[2] = (char)NULL;
+	    temp[2] = '\0';
 	} else {
 	    Tcl_AppendResult(interp, "Unknown type ", subcommand,
 		    "Must be one of vigpt, vigct, vigkey, varpt, varct, varkey, beapt, beact, beakey, prtct, prtpt, prtkey, portaxpt, portaxct",
@@ -248,7 +248,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	return TCL_OK;
     } else if (*option == 'o' && (strncmp(option, "ordervalue", 1) == 0)) {
 	int value=0;
-	char *key;
+	const char *key;
 	resultPtr = Tcl_GetObjResult(interp);
 
 	if (argc != 1) {
@@ -280,8 +280,8 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	Tcl_SetIntObj(resultPtr, value);
 	return TCL_OK;
     } else if (*option == 'm' && (strncmp(option, "match", 1) == 0)) {
-	char *key1;
-	char *key2;
+	const char *key1;
+	const char *key2;
 	int	match=1;
 	resultPtr = Tcl_GetObjResult(interp);
 
@@ -336,7 +336,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 int
-KeyGenerateK1(Tcl_Interp *interp, char *keyword, char *result)
+KeyGenerateK1(Tcl_Interp *interp, const char *keyword, char *result)
 {
     char usedLetters[26];
     int	resultIndex;
@@ -344,7 +344,7 @@ KeyGenerateK1(Tcl_Interp *interp, char *keyword, char *result)
 
     for(i=0; i < 26; i++) {
 	usedLetters[i] = 0;
-	result[i]=(char)NULL;
+	result[i]='\0';
     }
 
     resultIndex=0;
@@ -374,7 +374,7 @@ KeyGenerateK1(Tcl_Interp *interp, char *keyword, char *result)
 		__FILE__, __LINE__);
 	abort();
     }
-    result[26]=(char)NULL;
+    result[26]='\0';
 
     return TCL_OK;
 }
@@ -395,7 +395,7 @@ KeyGenerateNum(Tcl_Interp *interp, long value)
     }
 
     result = (char *)ckalloc(sizeof(char) * MAX_NUM_STRING_LENGTH);
-    result[0] = (char)NULL;
+    result[0] = '\0';
 
     if (value == 0) {
 	strcpy(result, "zero");
@@ -427,7 +427,7 @@ KeyGenerateNum(Tcl_Interp *interp, long value)
 	    }
 	    value = value - ((int)(value / dividend)) * dividend;
 	}
-	result[curIndex] = (char)NULL;
+	result[curIndex] = '\0';
     }
 
     return result;
@@ -453,7 +453,7 @@ KeyTripletToString(int value)
     }
 
     result = (char *)ckalloc(sizeof(char) * MAX_NUM_STRING_LENGTH);
-    result[0] = (char)NULL;
+    result[0] = '\0';
     curIndex = 0;
 
     hundreds = (int) (value / 100);
@@ -495,7 +495,7 @@ KeyTripletToString(int value)
 	}
     }
 
-    result[curIndex] = (char)NULL;
+    result[curIndex] = '\0';
 
     return result;
 }

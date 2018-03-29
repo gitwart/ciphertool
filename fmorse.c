@@ -36,29 +36,29 @@
 #define KEY_LENGTH 26
 
 static int  CreateFmorse	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreFmorse	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int FmorseCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int FmorseUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int FmorseSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int FmorseLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
-static char *FmorseToMorse 	_ANSI_ARGS_((CipherItem *, char *));
-static int FmorseStringToKeyElem _ANSI_ARGS_((char *));
+static char *FmorseToMorse 	_ANSI_ARGS_((CipherItem *, const char *));
+static int FmorseStringToKeyElem _ANSI_ARGS_((const char *));
 static char *FmorseKeyElemToString _ANSI_ARGS_((int));
 int FmorseSolveValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
 	    			int *, int));
 static int EncodeFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 static char fmorse_key_elems[28][4] = {"   ",
 	"...", "..-", "..x",
@@ -102,7 +102,7 @@ CipherType FmorseType = {
 };
 
 static int
-CreateFmorse(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateFmorse(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     FmorseItem *fmorPtr = (FmorseItem *)itemPtr;
     char	temp_ptr[128];
@@ -112,9 +112,9 @@ CreateFmorse(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     fmorPtr->header.period = 0;
     fmorPtr->solPt = (char *)NULL;
     for(i=0; i < KEY_LENGTH; i++) {
-	fmorPtr->key[i] = (char)NULL;
+	fmorPtr->key[i] = '\0';
 	fmorPtr->histogram[i] = 0;
-	fmorPtr->maxSolKey[i] = (char)NULL;
+	fmorPtr->maxSolKey[i] = '\0';
     }
 
     sprintf(temp_ptr, "cipher%d", cipherid);
@@ -140,7 +140,7 @@ CreateFmorse(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 static int
-SetFmorse(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     FmorseItem *fmorPtr = (FmorseItem *)itemPtr;
     char	*c=(char *)NULL;
@@ -221,14 +221,14 @@ FmorseLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 static int
-FmorseUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+FmorseUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     FmorseItem *fmorPtr = (FmorseItem *)itemPtr;
     int		i;
 
     if (ct == (char *)NULL) {
 	for(i=0; i < KEY_LENGTH; i++) {
-	    fmorPtr->key[i] = (char)NULL;
+	    fmorPtr->key[i] = '\0';
 	}
 
 	return TCL_OK;
@@ -236,7 +236,7 @@ FmorseUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 
     for(i=0; i < strlen(ct); i++) {
 	if (IsValidChar(itemPtr, ct[i])) {
-	    fmorPtr->key[ct[i]-'a'] = (char)NULL;
+	    fmorPtr->key[ct[i]-'a'] = '\0';
 	}
     }
 
@@ -249,11 +249,11 @@ FmorseUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
  */
 
 static int
-FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     FmorseItem *fmorPtr = (FmorseItem *)itemPtr;
-    char	*p,
-		q[KEY_LENGTH*3+1],
+    const char	*p;
+    char	q[KEY_LENGTH*3+1],
 		r[KEY_LENGTH*3+1];
     int		e;
     char	key[KEY_LENGTH + 1];
@@ -297,7 +297,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 
     index_used = (int *)ckalloc(sizeof(int)*(KEY_LENGTH));
     for(i=0; i < KEY_LENGTH; i++) {
-	key[i] = (char)NULL;
+	key[i] = '\0';
 	index_used[i] = 0;
     }
     
@@ -391,7 +391,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 }
 
 static char *
-FmorseToMorse(CipherItem *itemPtr, char *key)
+FmorseToMorse(CipherItem *itemPtr, const char *key)
 {
     FmorseItem *fmorPtr = (FmorseItem *)itemPtr;
     char	*mt=(char *)ckalloc(sizeof(char) * itemPtr->length * 3 + 1);
@@ -417,7 +417,7 @@ FmorseToMorse(CipherItem *itemPtr, char *key)
 	}
     }
 
-    mt[i*3] = (char)NULL;
+    mt[i*3] = '\0';
 
     return mt;
 }
@@ -490,7 +490,7 @@ GetSpaceyFmorse(Tcl_Interp *interp, CipherItem *itemPtr)
  */
 
 static int
-RestoreFmorse(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     if (part2 != NULL) {
 	if( (itemPtr->typePtr->subProc)(interp, itemPtr, part1, part2, 0) == BAD_SUB) {
@@ -523,7 +523,7 @@ SolveFmorse(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
  */
 
 static int
-FmorseStringToKeyElem(char *string)
+FmorseStringToKeyElem(const char *string)
 {
 
     int i;
@@ -557,12 +557,12 @@ FmorseKeyElemToString(int val) {
 }
 
 int
-FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     FmorseItem *fmorPtr = (FmorseItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[1024];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -634,7 +634,7 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -650,7 +650,7 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i*3+2] = ' ';
 		}
 	    }
-	    temp_str[i*3] = (char)NULL;
+	    temp_str[i*3] = '\0';
 
 	    Tcl_AppendElement(interp, ATOZ);
 	    Tcl_AppendElement(interp, temp_str);
@@ -835,14 +835,14 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
  * Functions in keygen.c and morse.c are called.
  */
 
-static int EncodeFmorse(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+static int EncodeFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
 
     char permutation[27];
     int i;
     int ct_length;
     char *mt = (char *) NULL;
     char *ct = (char *) NULL;
-    char spacestring[] = {SPACE, (char) NULL};
+    char spacestring[] = {SPACE, '\0'};
 
     /*
      * I don't know the environment from which this function will be called,

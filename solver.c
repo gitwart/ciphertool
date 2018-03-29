@@ -84,7 +84,7 @@ main(int argc, char **argv)
 	exit(0);
     }
 	
-    *filename = (char)NULL;
+    *filename = '\0';
 
     /* Deal with the arguments.
     */
@@ -233,14 +233,14 @@ main(int argc, char **argv)
     num_words = 0;
 
     for(i = 0; i < 128; i++){
-	key.ct[i] = (char) NULL;
-	key.pt[i] = (char) NULL;
+	key.ct[i] = '\0';
+	key.pt[i] = '\0';
 	key.hist[i] = 0;
     }
 
     for(i = 0; i < MAXWORDS; i++){
 	tword = wordlist+i;
-	tword->word[0] = (char)NULL;
+	tword->word[0] = '\0';
 	tword->length = 0;
 	tword->mult = 0;
 	tword->dict = NULL;
@@ -260,7 +260,7 @@ main(int argc, char **argv)
 	 * fgets(cipher[i], MAXLENGTH, fptr);
 	 */
     }
-    cipher[i-1] = (char)NULL;
+    cipher[i-1] = '\0';
 
     rewind(fptr);
 
@@ -377,7 +377,7 @@ main(int argc, char **argv)
 	while(!feof(dfptr)){
 	    fgets(temp_word, MAXLENGTH, dfptr);
 	    if(!feof(dfptr)){
-		*strrchr(temp_word, '\n') = (char)NULL;
+		*strrchr(temp_word, '\n') = '\0';
 		lowerchar(temp_word);
 		if(validate_mapping(temp_word, wordlist[i].word))
 		    if(validate_mapping(wordlist[i].word, temp_word))
@@ -486,7 +486,7 @@ decode_word(Key *key, char *cword, char *dword)
     while(*cword){
 	if(isalpha(*cword)) {
 	    dword[i] = key->ct[(int)*cword];
-	    if (key->ct[(int)*cword] == (char) NULL) {
+	    if (key->ct[(int)*cword] == '\0') {
 	    dword[i] = ' ';
 	    }
 	} else {
@@ -494,7 +494,7 @@ decode_word(Key *key, char *cword, char *dword)
 	}
 	cword++, i++;
     }
-    dword[i] = (char)NULL;
+    dword[i] = '\0';
 
     return dword;
 }
@@ -521,7 +521,7 @@ get_next_word(FILE *fptr, char *word){
 	    c |= ' ';
     }
     
-    *word = (char)NULL;
+    *word = '\0';
     lowerchar(word);
 }
 
@@ -609,7 +609,7 @@ get_dfname(char *word, char *string)
 	length = strlen(word);
 	sprintf(string, "%s/len%02d", DICT_DIR, length);
     } else
-	string[0] = (char) NULL;
+	string[0] = '\0';
 
     return string;
 }
@@ -640,7 +640,7 @@ delete_word(char *word){
 	fgets(tmp_word, MAXLENGTH, dfptr);
 	if(!feof(dfptr)){
 	    lowerchar(tmp_word);
-	    *strrchr(tmp_word, '\n') = (char)NULL;
+	    *strrchr(tmp_word, '\n') = '\0';
 	    if(strcmp(tmp_word, word) == 0);
 	    else{
 		/* The word didn't match.  Copy it.
@@ -670,7 +670,7 @@ query_word(char *word){
   while(!feof(dfptr)){
     fgets(temp_word, MAXLENGTH, dfptr);
     if(!feof(dfptr)){
-      *strrchr(temp_word, '\n') = (char)NULL;
+      *strrchr(temp_word, '\n') = '\0';
       if(strcmp(temp_word, word) == 0){
 	word_found = TRUE;
 	printf("%s is in the dictionary.\n", temp_word);
@@ -709,7 +709,7 @@ move_to_end(char *word) {
 	while(!feof(dfptr)){
 	    fgets(tmp_word, MAXLENGTH, dfptr);
 	    if(!feof(dfptr)){
-		*strrchr(tmp_word, '\n') = (char)NULL;
+		*strrchr(tmp_word, '\n') = '\0';
 		lowerchar(tmp_word);
 		lowerchar(word);
 		if(strcmp(word, tmp_word)){
@@ -755,7 +755,7 @@ add_word(char *word){
       while(!feof(dfptr)){
 	fgets(word1, MAXLENGTH, dfptr);
 	if(!feof(dfptr)){
-	  *strrchr(word1, '\n') = (char)NULL;
+	  *strrchr(word1, '\n') = '\0';
 	  if(strcmp(word1, temp_word) == 0){
 	    printf("Word %s already exists in dictionary.\n", temp_word);
 	    valid = FALSE;
@@ -870,7 +870,7 @@ locate_keyword(char *word){
 	*/
 	while(!feof(dfptr)){
 	    fgets(tmp_word, MAXLENGTH, dfptr);
-	    tmp_word[wordlen] = (char) NULL;
+	    tmp_word[wordlen] = '\0';
 	    /* Check to see if the current word is a valid keyword.
 	    ** Print it if it is.
 	    */
@@ -906,7 +906,7 @@ locate_keyword(char *word){
 	    }
 	    while(!feof(dfptr)){
 		fgets(tmp_word, MAXLENGTH, dfptr);
-		tmp_word[i] = (char) NULL;
+		tmp_word[i] = '\0';
 		for(j = 0; j < 26; j++)
 		    let_used[j] = FALSE;
 		for(valid=TRUE,d=tmp_word,c = word; (*c) && (*d) && valid;){
@@ -1119,7 +1119,7 @@ solve_cipher(Key *key, int word_index, int real_words){
 			*/
 		    }
 		}
-		plaintext[i] = (char)NULL;
+		plaintext[i] = '\0';
 		fprintf(ofptr, "\nplaintext=%s\n", plaintext);
 		/*
 		fputc('}', ofptr);

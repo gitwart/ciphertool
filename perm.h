@@ -22,5 +22,5 @@
  */
 #include <tcl.h>
 
-int PermCmd(ClientData, Tcl_Interp *, int , char **);
+int PermCmd(ClientData, Tcl_Interp *, int , const char **);
 int _internalDoPermCmd(ClientData, Tcl_Interp *, int, int (*testFunc)(Tcl_Interp *, ClientData, int *, int));

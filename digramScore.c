@@ -26,13 +26,13 @@
 #include <math.h>
 #include <string.h>
 
-static int CreateDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, char **));
+static int CreateDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
 static int AddDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
 static void DeleteDigram _ANSI_ARGS_((ClientData));
 static int NormalizeDigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double DigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static double DigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static int DumpDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
+static double DigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static double DigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static int DumpDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
 
 typedef struct DigramItem {
     ScoreItem header;
@@ -69,7 +69,7 @@ ScoreType DigramCountType = {
 };
 
 static int
-CreateDigram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, char **argv) {
+CreateDigram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, const char **argv) {
     DigramItem *dlPtr = (DigramItem *)itemPtr;
     char temp_ptr[TCL_DOUBLE_SPACE];
     Tcl_DString dsPtr;
@@ -136,14 +136,14 @@ AddDigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double
 }
 
 static double
-DigramValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+DigramValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     DigramItem *dlPtr = (DigramItem *)itemPtr;
 
     return DigramStringValue(string, (double **)dlPtr->value);
 }
 
 static double
-DigramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+DigramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     DigramItem *dlPtr = (DigramItem *)itemPtr;
 
     return DigramSingleValue((unsigned char)string[0], (unsigned char)string[1], dlPtr->value);
@@ -169,15 +169,15 @@ NormalizeDigramLog(Tcl_Interp *interp, ScoreItem *itemPtr) {
 }
 
 static int
-DumpDigram(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
+DumpDigram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     DigramItem *dlPtr = (DigramItem *)itemPtr;
     Tcl_DString dsPtr;
     int i, j;
     int length;
-    unsigned char element[3];
+    char element[3];
     Tcl_Obj *valueObj = Tcl_NewDoubleObj(0.0);
 
-    element[2] = (char)NULL;
+    element[2] = '\0';
 
     Tcl_DStringInit(&dsPtr);
     Tcl_DStringAppend(&dsPtr, script, strlen(script));
@@ -191,7 +191,7 @@ DumpDigram(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
 
 		Tcl_DStringSetLength(&dsPtr, length);
 		Tcl_DStringStartSublist(&dsPtr);
-		Tcl_DStringAppendElement(&dsPtr, element);
+		Tcl_DStringAppendElement(&dsPtr, (const char *)element);
 		Tcl_SetDoubleObj(valueObj, DigramSingleValue(i, j, dlPtr->value));
 		Tcl_DStringAppendElement(&dsPtr, Tcl_GetString(valueObj));
 		Tcl_DStringEndSublist(&dsPtr);

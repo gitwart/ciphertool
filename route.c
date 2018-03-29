@@ -29,29 +29,29 @@
 #include <cipherDebug.h>
 
 static int  CreateRoute		_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void  DeleteRoute		_ANSI_ARGS_((ClientData));
 static char *GetRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreRoute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int RouteCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int RouteUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int RouteSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static void RouteSetWidth	_ANSI_ARGS_((CipherItem *, int));
 static int RouteLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int ApplyRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int, int, char *, char *));
+	    			int, int, int, const char *, char *));
 static void InitRouteCache	_ANSI_ARGS_((CipherItem *));
 static int EncodeRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 #define WRITE	1
 #define READ	2
@@ -104,7 +104,7 @@ CipherType RouteType = {
 };
 
 static int
-CreateRoute(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateRoute(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     RouteItem *routePtr = (RouteItem *)itemPtr;
     char	temp_ptr[128];
@@ -172,7 +172,7 @@ DeleteRoute(ClientData clientData)
 }
 
 static int
-SetRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetRoute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     RouteItem *routePtr = (RouteItem *)itemPtr;
     char	*c;
@@ -230,13 +230,13 @@ SetRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-RouteUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+RouteUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     return TCL_OK;
 }
 
 static int
-RouteSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+RouteSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     Tcl_SetResult(interp, "No substitute command for Route ciphers.",
 	    TCL_STATIC);
@@ -244,7 +244,7 @@ RouteSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int
 }
 
 static int
-ApplyRoute(Tcl_Interp *interp, CipherItem *itemPtr, int route, int mode, int width, char *text, char *result)
+ApplyRoute(Tcl_Interp *interp, CipherItem *itemPtr, int route, int mode, int width, const char *text, char *result)
 {
     RouteItem *routePtr = (RouteItem *)itemPtr;
     int		i;
@@ -2343,7 +2343,7 @@ ApplyRoute(Tcl_Interp *interp, CipherItem *itemPtr, int route, int mode, int wid
 	    return TCL_ERROR;
     }
 
-    result[length] = (char)NULL;
+    result[length] = '\0';
 
     return TCL_OK;
 }
@@ -2359,7 +2359,7 @@ GetRoute(Tcl_Interp *interp, CipherItem *itemPtr)
 	    for (i=0; i < itemPtr->length; i++) {
 		routePtr->pt1[i] = itemPtr->ciphertext[routePtr->readCache[routePtr->readOut-1][i]];
 	    }
-	    routePtr->pt1[itemPtr->length] = (char)NULL;
+	    routePtr->pt1[itemPtr->length] = '\0';
 	} else if (ApplyRoute(interp, itemPtr, routePtr->readOut, READ, routePtr->width, itemPtr->ciphertext, routePtr->pt1) == TCL_ERROR) {
 	    return (char *)NULL;
 	}
@@ -2370,7 +2370,7 @@ GetRoute(Tcl_Interp *interp, CipherItem *itemPtr)
 	    for (i=0; i < itemPtr->length; i++) {
 		routePtr->pt2[i] = routePtr->pt1[routePtr->writeCache[routePtr->writeIn-1][i]];
 	    }
-	    routePtr->pt2[itemPtr->length] = (char)NULL;
+	    routePtr->pt2[itemPtr->length] = '\0';
 	} else if (ApplyRoute(interp, itemPtr, routePtr->writeIn, WRITE, routePtr->width, routePtr->pt1, routePtr->pt2) == TCL_ERROR) {
 	    return (char *)NULL;
 	}
@@ -2383,7 +2383,7 @@ GetRoute(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static int
-RestoreRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreRoute(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     return TCL_OK;
 }
@@ -2417,7 +2417,7 @@ SolveRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 	    routePtr->outDirty = 1;
 	    pt = GetRoute(interp, itemPtr);
 	    if (pt) {
-		if (DefaultScoreValue(interp, (unsigned char *)pt, &val)
+		if (DefaultScoreValue(interp, pt, &val)
                         != TCL_OK) {
 		    return TCL_ERROR;
 		}
@@ -2497,7 +2497,7 @@ SolveRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     routePtr->readOut = bestOut;
     routePtr->inDirty = 1;
     routePtr->outDirty = 1;
-    maxkey[0] = (char)NULL;
+    maxkey[0] = '\0';
     pt = GetRoute(interp, itemPtr);
     Tcl_SetResult(interp, pt, TCL_STATIC);
 
@@ -2558,12 +2558,12 @@ RouteLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 int
-RouteCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+RouteCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     RouteItem *routePtr = (RouteItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -2597,7 +2597,7 @@ RouteCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		for(j=0; j < routePtr->width; j++) {
 		    temp_str[j] = tPtr[i*routePtr->width + j];
 		}
-		temp_str[j] = (char)NULL;
+		temp_str[j] = '\0';
 		Tcl_DStringAppendElement(&dsPtr, temp_str);
 	    }
 
@@ -2851,7 +2851,7 @@ RouteCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeRoute(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeRoute(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     RouteItem *routePtr = (RouteItem *)itemPtr;
     char *ct = (char *)NULL;
     int count;

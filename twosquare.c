@@ -29,7 +29,7 @@
 #include <cipherDebug.h>
 
 int TwosquareCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 #define KEY0	'0'
 #define KEY1	'1'
@@ -54,25 +54,25 @@ void	DeleteTwosquare		_ANSI_ARGS_((ClientData));
 static char *GetTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static char *GetFoursquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int TwosquareUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int TwosquareSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int TwosquareLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
-static int TwosquareKeyvalToLetter	_ANSI_ARGS_((CipherItem *, char *,
+static int TwosquareKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *,
 				int));
 static char *TwosquareLetterToKeyval _ANSI_ARGS_((CipherItem *, char, int));
 static int TwosquareKeycharToInt	_ANSI_ARGS_((char));
 static int TwosquareKeyPairToIndex	_ANSI_ARGS_((int, int));
 static int EncodeTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *EncodeFoursquareString	_ANSI_ARGS_((CipherItem *, char *));
+				const char *, const char *));
+static char *EncodeFoursquareString	_ANSI_ARGS_((CipherItem *, const char *));
 
 char *twosquareKeyConv[36] = {"00", "01", "02", "03", "04", "05",
 			      "10", "11", "12", "13", "14", "15",
@@ -280,12 +280,12 @@ DeleteTwosquare(ClientData clientData)
 }
 
 int
-TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     TwosquareItem *twoPtr = (TwosquareItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -344,7 +344,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    temp_str_pos=0;
 	    Tcl_AppendElement(interp, temp_str);
@@ -361,7 +361,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 	    return TCL_OK;
@@ -509,7 +509,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     TwosquareItem *twoPtr = (TwosquareItem *)itemPtr;
     char	*c;
@@ -562,7 +562,7 @@ TwosquareLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *sta
 }
 
 static int
-TwosquareUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+TwosquareUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_AppendResult(interp,
 	    "No undo function defined for ",
@@ -573,7 +573,7 @@ TwosquareUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-TwosquareSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, int value)
+TwosquareSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const char *col, int value)
 {
     Tcl_AppendResult(interp,
 	    "No substitute function defined for ",
@@ -638,16 +638,16 @@ GetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr)
 	pt2cell[1] = ct1cell[1];
 
 	twoPtr->pt[i] = TwosquareKeyvalToLetter(itemPtr, pt1cell, SQUARE1);
-	if (twoPtr->pt[i] == (char)NULL) {
+	if (twoPtr->pt[i] == '\0') {
 	    twoPtr->pt[i] = ' ';
 	}
 
 	twoPtr->pt[i+1] = TwosquareKeyvalToLetter(itemPtr, pt2cell, SQUARE2);
-	if (twoPtr->pt[i+1] == (char)NULL) {
+	if (twoPtr->pt[i+1] == '\0') {
 	    twoPtr->pt[i+1] = ' ';
 	}
     }
-    twoPtr->pt[itemPtr->length] = (char)NULL;
+    twoPtr->pt[itemPtr->length] = '\0';
 	
     return twoPtr->pt;
 }
@@ -683,22 +683,22 @@ GetFoursquare(Tcl_Interp *interp, CipherItem *itemPtr)
 	pt2cell[1] = ct1cell[1];
 
 	twoPtr->pt[i] = TwosquareKeyvalToLetter(itemPtr, pt1cell, FIXEDSQUARE);
-	if (twoPtr->pt[i] == (char)NULL) {
+	if (twoPtr->pt[i] == '\0') {
 	    twoPtr->pt[i] = ' ';
 	}
 
 	twoPtr->pt[i+1] = TwosquareKeyvalToLetter(itemPtr, pt2cell, FIXEDSQUARE);
-	if (twoPtr->pt[i+1] == (char)NULL) {
+	if (twoPtr->pt[i+1] == '\0') {
 	    twoPtr->pt[i+1] = ' ';
 	}
     }
-    twoPtr->pt[itemPtr->length] = (char)NULL;
+    twoPtr->pt[itemPtr->length] = '\0';
 	
     return twoPtr->pt;
 }
 
 static int
-RestoreTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, char *square1, char *square2)
+RestoreTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, const char *square2)
 {
     TwosquareItem *twoPtr = (TwosquareItem *)itemPtr;
     char keyLength[TCL_DOUBLE_SPACE];
@@ -779,20 +779,20 @@ TwosquareLetterToKeyval(CipherItem *itemPtr, char letter, int squareID)
 }
 
 static int
-TwosquareKeyvalToLetter(CipherItem *itemPtr, char *keyVal, int squareID)
+TwosquareKeyvalToLetter(CipherItem *itemPtr, const char *keyVal, int squareID)
 {
     TwosquareItem *twoPtr = (TwosquareItem *)itemPtr;
     int letterIndex;
 
     if (!keyVal[0] || !keyVal[1]) {
-	return (char)NULL;
+	return '\0';
     }
 
     if ( (keyVal[0] != KEY1 && keyVal[0] != KEY2 && keyVal[0] != KEY3
 		&& keyVal[0] != KEY4 && keyVal[0] != KEY5)
 	    || (keyVal[1] != KEY1 && keyVal[1] != KEY2 && keyVal[1] != KEY3
 		&& keyVal[1] != KEY4 && keyVal[1] != KEY5)) {
-	return (char)NULL;
+	return '\0';
     }
 
     letterIndex = (keyVal[0]-'0') * 6 + (keyVal[1]-'0');
@@ -800,12 +800,12 @@ TwosquareKeyvalToLetter(CipherItem *itemPtr, char *keyVal, int squareID)
     if (twoPtr->ptkey[squareID][letterIndex] != EMPTY) {
 	return twoPtr->ptkey[squareID][letterIndex];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
 static char *
-EncodeFoursquareString(CipherItem *itemPtr, char *pt) {
+EncodeFoursquareString(CipherItem *itemPtr, const char *pt) {
     TwosquareItem *twoPtr = (TwosquareItem *)itemPtr;
     int		i;
 
@@ -839,22 +839,22 @@ EncodeFoursquareString(CipherItem *itemPtr, char *pt) {
 	ct2cell[1] = pt1keyIndex%5 + '1';
 
 	twoPtr->pt[i] = TwosquareKeyvalToLetter(itemPtr, ct1cell, SQUARE1);
-	if (twoPtr->pt[i] == (char)NULL) {
+	if (twoPtr->pt[i] == '\0') {
 	    twoPtr->pt[i] = ' ';
 	}
 
 	twoPtr->pt[i+1] = TwosquareKeyvalToLetter(itemPtr, ct2cell, SQUARE2);
-	if (twoPtr->pt[i+1] == (char)NULL) {
+	if (twoPtr->pt[i+1] == '\0') {
 	    twoPtr->pt[i+1] = ' ';
 	}
     }
-    twoPtr->pt[itemPtr->length] = (char)NULL;
+    twoPtr->pt[itemPtr->length] = '\0';
 	
     return twoPtr->pt;
 }
 
 static int
-EncodeTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     char *newPt = (char *)NULL;
     char *tempCt = (char *)NULL;
@@ -891,9 +891,9 @@ EncodeTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
     }
     if (strlen(tempCt) % 2 == 1) {
         newPt[i] = 'x';
-        newPt[i+1] = (char)NULL;
+        newPt[i+1] = '\0';
     } else {
-        newPt[i] = (char)NULL;
+        newPt[i] = '\0';
     }
     ckfree((char *)tempCt);
 

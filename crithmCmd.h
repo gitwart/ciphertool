@@ -39,7 +39,7 @@ typedef struct crithmInfo {
     int runState;
 } CrithmInfo;
 
-int CrithmCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *, int , char **));
+int CrithmCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *, int , const char **));
 void CrithmDelete	_ANSI_ARGS_((ClientData));
 int CrithmPermCmd	_ANSI_ARGS_((Tcl_Interp *, ClientData, int *,
 			int));

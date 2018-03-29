@@ -32,7 +32,7 @@ int get_digram_string_average(char *pt, int language);
 int find_best_fit(char *string1, char *string2, int language);
 int freqfit(int *hist1, int *hist2, int length);
 int freqval(int *hist1, int *hist2, int length, int offset);
-int alphCharFit(char *string);
+int alphCharFit(const char *string);
 int alphHistFit(int *hist);
 int histFit(int *hist1, int *hist2, int length);
 int alphfit(int *hist);

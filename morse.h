@@ -34,12 +34,12 @@ A double SPACE is used to separate words.
 #define	SPACE	'x'
 #define	BLANK	' '
 
-char	*MorseStringToString(char *, char *);
-char	*MorseStringToSpaceyString(char *, char *);
-char	MorseStringToChar(char *);
-int	MorseValid(char *);
+char	*MorseStringToString(const char *, char *);
+char	*MorseStringToSpaceyString(const char *, char *);
+char	MorseStringToChar(const char *);
+int	MorseValid(const char *);
 char	*CharToMorse(char);
-char	*StringToMorse(char *);
+char	*StringToMorse(const char *);
 
 #define _MORSE_H_INCLUDED
 #endif

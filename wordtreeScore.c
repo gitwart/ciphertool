@@ -26,15 +26,15 @@
 #include <score.h>
 #include <wordtree.h>
 
-static int CreateWordtree _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, char **));
-static int AddWordtreeWord _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
+static int CreateWordtree _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
+static int AddWordtreeWord _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
 void DeleteWordtreeScore _ANSI_ARGS_((ClientData));
-static double WordtreeValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static double WordtreeElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
+static double WordtreeValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static double WordtreeElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
 static int NormalizeWordtreeScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static int DumpWordtreeScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
+static int DumpWordtreeScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
 static void NormalizeTreeNodeSquare _ANSI_ARGS_((TreeNode *, int));
-double  WordtreeStringValue _ANSI_ARGS_((unsigned char *, double **));
+double  WordtreeStringValue _ANSI_ARGS_((const char *, double **));
 double  WordtreeSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
 
 typedef struct WordtreeItem {
@@ -58,7 +58,7 @@ ScoreType WordtreeType = {
 };
 
 static int
-CreateWordtree(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, char **argv) {
+CreateWordtree(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, const char **argv) {
     WordtreeItem *wtPtr = (WordtreeItem *)itemPtr;
     char temp_ptr[TCL_DOUBLE_SPACE];
     Tcl_DString dsPtr;
@@ -101,7 +101,7 @@ DeleteWordtreeScore(ClientData clientData) {
 }
 
 static int
-AddWordtreeWord(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double value)  {
+AddWordtreeWord(Tcl_Interp *interp, ScoreItem *itemPtr, const char *element, double value)  {
     WordtreeItem *wtPtr = (WordtreeItem *)itemPtr;
 
     addWordToTree(wtPtr->rootNode, element, (unsigned short int) value);
@@ -111,7 +111,7 @@ AddWordtreeWord(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, 
 }
 
 static double
-WordtreeValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+WordtreeValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     WordtreeItem *wtPtr = (WordtreeItem *)itemPtr;
     int wordLen;
     int wVal;
@@ -134,7 +134,7 @@ WordtreeValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
 }
 
 static double
-WordtreeElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+WordtreeElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     WordtreeItem *wtPtr = (WordtreeItem *)itemPtr;
     unsigned short int value = 0;
 
@@ -146,7 +146,7 @@ WordtreeElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *stri
 }
 
 static int
-DumpWordtreeScore(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
+DumpWordtreeScore(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     WordtreeItem *wtPtr = (WordtreeItem *)itemPtr;
     Tcl_DString element;
     Tcl_DString command;

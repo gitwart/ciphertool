@@ -4,6 +4,8 @@ Todo:
 1.6.3
 =================
 
+Obey const of input args in SetAristocrat
+
 Implement lookupByPattern in C using CadenusGenerateKeyOrder as a template
 
 Fill out quagmire tests for more error conditions

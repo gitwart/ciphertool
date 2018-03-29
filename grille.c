@@ -30,23 +30,23 @@
 #include <cipherDebug.h>
 
 static int  CreateGrille	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteGrille		_ANSI_ARGS_((ClientData));
 static char *GetGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static char *GetStaticGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int  SetGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int GrilleCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int GrilleUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int GrilleSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int GrilleIntSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int, int, int));
 static int GrilleLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -95,7 +95,7 @@ CipherType GrilleType = {
 };
 
 static int
-CreateGrille(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateGrille(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     GrilleItem *grilPtr = (GrilleItem *)itemPtr;
     char	temp_ptr[128];
@@ -188,15 +188,13 @@ GrilleInitKey(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 }
 
 static int
-SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
     		length=0,
 		period;
     Tcl_Obj *intObj;
-
-    c = ctext;
 
     length = CountValidChars(itemPtr, ctext);
     c = ExtractValidChars(itemPtr, ctext);
@@ -253,7 +251,7 @@ SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-GrilleUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *junk, int null)
+GrilleUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *junk, int null)
 {
     GrilleItem *grilPtr = (GrilleItem *)itemPtr;
     int i;
@@ -269,7 +267,7 @@ GrilleUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *junk, int null)
 }
 
 static int
-GrilleSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, int orientation)
+GrilleSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const char *col, int orientation)
 {
     int 	rowVal;
     int 	colVal;
@@ -433,13 +431,13 @@ GetStaticGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
                 = itemPtr->ciphertext[(int) itemPtr->length / 2];
     }
 
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     return result;
 }
 
 static int
-RestoreGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     GrilleItem *grilPtr = (GrilleItem *)itemPtr;
     int		i;
@@ -523,7 +521,7 @@ SolveGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     for(i=0; i < itemPtr->length; i++) {
 	tempPt[i] = ' ';
     }
-    tempPt[itemPtr->length] = (char)NULL;
+    tempPt[itemPtr->length] = '\0';
 
     baseKey = (char *)ckalloc(sizeof(char) * itemPtr->length / 4);
     itemPtr->curIteration = 0;
@@ -580,7 +578,7 @@ RecSolveGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *baseKey, char *pt,
 	int col;
 
 	GetStaticGrille(interp, itemPtr, pt);
-	if (DefaultScoreValue(interp, (unsigned char *)pt, &ptValue)
+	if (DefaultScoreValue(interp, pt, &ptValue)
                 != TCL_OK) {
 	    return TCL_ERROR;
 	}
@@ -745,12 +743,12 @@ GrilleLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 int
-GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     GrilleItem *grilPtr = (GrilleItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -814,7 +812,7 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			}
 		    }
 		}
-		temp_str[itemPtr->length] = (char)NULL;
+		temp_str[itemPtr->length] = '\0';
 		Tcl_DStringAppendElement(&dsPtr, temp_str);
 	    }
 	    Tcl_DStringResult(interp, &dsPtr);
@@ -841,7 +839,7 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    grilPtr->key[row][col] + '0';
 		}
 	    }
-	    temp_str[itemPtr->length] = (char)NULL;
+	    temp_str[itemPtr->length] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 

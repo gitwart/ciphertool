@@ -31,21 +31,21 @@
 #include <cipherDebug.h>
 
 static int  CreateCadenus	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteCadenus		_ANSI_ARGS_((ClientData));
 static char *GetCadenus		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetCadenus		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int CadenusCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int CadenusUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int CadenusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int CadenusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int CadenusRotate	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -60,9 +60,9 @@ int CadenusCheckValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
 static void RecSolveCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, char *));
 static int EncodeCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *CadenusTransform	_ANSI_ARGS_((CipherItem *, char *, int));
-static char *CadenusGenerateKeyOrder _ANSI_ARGS_((char *));
+				const char *, const char *));
+static char *CadenusTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static char *CadenusGenerateKeyOrder _ANSI_ARGS_((const char *));
 
 #define KEY_ROTATE	-2
 #define ALL_ROTATE	-1
@@ -97,7 +97,7 @@ CipherType CadenusType = {
 };
 
 static int
-CreateCadenus(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateCadenus(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
     char	temp_ptr[128];
@@ -150,7 +150,7 @@ DeleteCadenus(ClientData clientData)
 }
 
 static int
-SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -199,13 +199,13 @@ SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-CadenusUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+CadenusUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
     int		i;
 
     for(i=0; i < itemPtr->period; i++) {
-	cadPtr->key[i] = (char)NULL;
+	cadPtr->key[i] = '\0';
 	cadPtr->order[i] = i;
     }
 
@@ -213,7 +213,7 @@ CadenusUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-CadenusSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+CadenusSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     Tcl_SetResult(interp, "No substitute command for cadenus ciphers.",
 	    TCL_VOLATILE);
@@ -227,9 +227,8 @@ GetCadenus(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-CadenusTransform(CipherItem *itemPtr, char *text, int mode) {
+CadenusTransform(CipherItem *itemPtr, const char *text, int mode) {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
-    char	*c;
     int		i, col, offset;
     char	*result=(char *)NULL;
     int		newCol;
@@ -263,13 +262,13 @@ CadenusTransform(CipherItem *itemPtr, char *text, int mode) {
 	}
     }
 
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     return result;
 }
 
 static int
-RestoreCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *order)
+RestoreCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *order)
 {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
     int i;
@@ -315,7 +314,7 @@ SolveCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 
     curKey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     for(i=0; i < itemPtr->period; i++) {
-	curKey[i] = (char)NULL;
+	curKey[i] = '\0';
     }
 
     if (cadPtr->maxKey) {
@@ -398,7 +397,7 @@ CadenusCheckValue(Tcl_Interp *interp, ClientData clientData, int *key, int keyle
     pt = GetCadenus(interp, (CipherItem *)clientData);
 
     if (pt) {
-	if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+	if (DefaultScoreValue(interp, pt, &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 
@@ -440,10 +439,10 @@ CadenusInitKey(CipherItem *itemPtr, int period)
 	cadPtr->key=ckalloc(sizeof(char)*period+1);
 	cadPtr->order=(int *)ckalloc(sizeof(int)*(period+1));
 	for(i=0; i < cadPtr->header.period; i++) {
-	    cadPtr->key[i] = (char)NULL;
+	    cadPtr->key[i] = '\0';
 	    cadPtr->order[i] = i;
 	}
-	cadPtr->key[period]=(char)NULL;
+	cadPtr->key[period]='\0';
 	cadPtr->order[period]=0;
     }
 }
@@ -527,7 +526,7 @@ CadenusFitColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
     for(i=0; i < 25; i++) {
 	string1[i] = itemPtr->ciphertext[tcol1+((i+cadPtr->key[col1]+25)%25)*itemPtr->period];
 	string2[i] = itemPtr->ciphertext[tcol2+((i+cadPtr->key[col2]+25)%25)*itemPtr->period]; }
-    string1[25] = string2[25] = (char)NULL;
+    string1[25] = string2[25] = '\0';
     /*
     printf("Fitting: %s\n         %s\n", string1, string2);
     */
@@ -611,12 +610,12 @@ CadenusSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
 }
 
 int
-CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     CadenusItem *cadPtr = (CadenusItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -668,7 +667,7 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i]++;
 		}
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -679,14 +678,14 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i]++;
 		}
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 
 	    for(i=0; i < itemPtr->period; i++) {
 		sprintf(temp_str+i, "%d", cadPtr->order[i]+1);
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 
@@ -915,7 +914,7 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static char *
-CadenusGenerateKeyOrder(char *key) {
+CadenusGenerateKeyOrder(const char *key) {
     int keyLength = strlen(key);
     char *order = (char *)ckalloc(sizeof(char) * (keyLength+1));
     int i, j;
@@ -932,13 +931,13 @@ CadenusGenerateKeyOrder(char *key) {
             }
         }
     }
-    order[keyLength] = (char)NULL;
+    order[keyLength] = '\0';
     
     return order;
 }
 
 static int
-EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char *order = (char *)NULL;

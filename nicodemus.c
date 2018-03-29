@@ -38,21 +38,21 @@
 #define PRT_TYPE 4
 
 static int  CreateNicodemus	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteNicodemus		_ANSI_ARGS_((ClientData));
 static char *GetNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int NicodemusCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int NicodemusUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int NicodemusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int NicodemusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void NicodemusInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -63,8 +63,8 @@ static int NicodemusFitColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 int NicodemusCheckValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
 				int *, int));
 static int EncodeNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *NicodemusTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+				const char *, const char *));
+static char *NicodemusTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 typedef struct NicodemusItem {
     CipherItem header;
@@ -126,7 +126,7 @@ CipherType NicodemusType = {
 };
 
 static int
-CreateNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     char	temp_ptr[128];
@@ -206,14 +206,12 @@ DeleteNicodemus(ClientData clientData)
 }
 
 static int
-SetNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     char	*c;
     int		valid = TCL_OK,
     		length=0;
-
-    c = ctext;
 
     length = CountValidChars(itemPtr, ctext);
     c = ExtractValidChars(itemPtr, ctext);
@@ -250,7 +248,7 @@ SetNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-NicodemusUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+NicodemusUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     int		i;
@@ -278,7 +276,7 @@ NicodemusUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-NicodemusSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+NicodemusSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     char	keyLetter;
@@ -334,7 +332,7 @@ GetNicodemus(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-NicodemusTransform(CipherItem *itemPtr, char *text, int mode) {
+NicodemusTransform(CipherItem *itemPtr, const char *text, int mode) {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     int		i, col, row;
     char	pt;
@@ -460,17 +458,16 @@ NicodemusTransform(CipherItem *itemPtr, char *text, int mode) {
 	nicPtr->pt[ptIndex] = pt;
     }
 
-    nicPtr->pt[itemPtr->length] = (char)NULL;
+    nicPtr->pt[itemPtr->length] = '\0';
 
     return nicPtr->pt;
 }
 
 static int
-RestoreNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *order)
+RestoreNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *order)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)itemPtr;
     int i;
-
 
     if (strlen(order) != itemPtr->period || strlen(key) != itemPtr->period) {
 	Tcl_SetResult(interp,
@@ -483,7 +480,7 @@ RestoreNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *order
 	if (order[i]-'a' < 0 || order[i]-'a' >= itemPtr->period) {
 	    char temp_char[2];
 	    temp_char[0] = order[i];
-	    temp_char[1] = (char)NULL;
+	    temp_char[1] = '\0';
 	    Tcl_AppendResult(interp, "Invalid character in order:  '",
 		    temp_char, "'", (char *)NULL);
 	    return TCL_ERROR;
@@ -491,7 +488,7 @@ RestoreNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *order
 	if (key[i] < 'a' || key[i] > 'z') {
 	    char temp_char[2];
 	    temp_char[0] = key[i];
-	    temp_char[1] = (char)NULL;
+	    temp_char[1] = '\0';
 	    Tcl_AppendResult(interp, "Invalid character in key:  '",
 		    temp_char, "'", (char *)NULL);
 	    return TCL_ERROR;
@@ -579,7 +576,7 @@ NicodemusCheckValue(Tcl_Interp *interp, ClientData clientData, int *key, int key
     if (pt) {
 	Tcl_DString dsPtr;
 	char temp_str[128];
-	if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+	if (DefaultScoreValue(interp, pt, &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 	itemPtr->curIteration++;
@@ -603,13 +600,13 @@ NicodemusCheckValue(Tcl_Interp *interp, ClientData clientData, int *key, int key
 		for(i=0; i < itemPtr->period; i++) {
 		    temp_str[i] = nicPtr->key[i];
 		}
-		temp_str[i] = (char)NULL;
+		temp_str[i] = '\0';
 		Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 		for(i=0; i < itemPtr->period; i++) {
 		    temp_str[i] = nicPtr->revOrder[i] + 'a';
 		}
-		temp_str[i] = (char)NULL;
+		temp_str[i] = '\0';
 		Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 		Tcl_DStringEndSublist(&dsPtr);
@@ -643,13 +640,13 @@ NicodemusCheckValue(Tcl_Interp *interp, ClientData clientData, int *key, int key
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = nicPtr->key[i];
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = nicPtr->revOrder[i] + 'a';
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 	    Tcl_DStringEndSublist(&dsPtr);
@@ -745,7 +742,7 @@ NicodemusInitKey(CipherItem *itemPtr, int period)
 	    }
 	    */
 	}
-	nicPtr->key[period]=(char)NULL;
+	nicPtr->key[period]='\0';
 	nicPtr->order[period]=0;
     }
 }
@@ -819,7 +816,7 @@ NicodemusFitColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col)
 
     nicPtr->key[col] = maxKeyLetter;
     result[0] = maxKeyLetter;
-    result[1] = (char)NULL;
+    result[1] = '\0';
 
     Tcl_SetResult(interp, result, TCL_VOLATILE);
 
@@ -919,12 +916,12 @@ NicodemusSetPeriod(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 }
 
 int
-NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     NicodemusItem *nicPtr = (NicodemusItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -971,7 +968,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = nicPtr->key[i];
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
 	    return TCL_OK;
@@ -979,7 +976,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = nicPtr->key[i];
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 
@@ -989,7 +986,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		sprintf(temp_str+i, "%d", nicPtr->revOrder[i]+1);
 		*/
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 
@@ -1261,7 +1258,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

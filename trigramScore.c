@@ -26,16 +26,16 @@
 #include <math.h>
 #include <string.h>
 
-double TrigramStringValue _ANSI_ARGS_((unsigned char *, double ***));
+double TrigramStringValue _ANSI_ARGS_((const char *, double ***));
 double TrigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, unsigned char, double ***));
 
-static int CreateTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, char **));
+static int CreateTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
 static int AddTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
 static void DeleteTrigram _ANSI_ARGS_((ClientData));
 static int NormalizeTrigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double TrigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static double TrigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *));
-static int DumpTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
+static double TrigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static double TrigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static int DumpTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
 
 typedef struct TrigramItem {
     ScoreItem header;
@@ -72,7 +72,7 @@ ScoreType TrigramCountType = {
 };
 
 static int
-CreateTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, char **argv) {
+CreateTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, int argc, const char **argv) {
     TrigramItem *tlPtr = (TrigramItem *)itemPtr;
     char temp_ptr[TCL_DOUBLE_SPACE];
     Tcl_DString dsPtr;
@@ -153,21 +153,21 @@ AddTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, doubl
 }
 
 static double
-TrigramValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+TrigramValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     TrigramItem *tlPtr = (TrigramItem *)itemPtr;
 
     return TrigramStringValue(string, (double ***)tlPtr->value);
 }
 
 static double
-TrigramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *string) {
+TrigramElementValue(Tcl_Interp *interp, ScoreItem *itemPtr, const char *string) {
     TrigramItem *tlPtr = (TrigramItem *)itemPtr;
 
     return TrigramSingleValue((unsigned char)string[0], (unsigned char)string[1], (unsigned char)string[2], tlPtr->value);
 }
 
 double
-TrigramStringValue(unsigned char *string, double ***table) {
+TrigramStringValue(const char *string, double ***table) {
     int length = strlen(string);
     double value = 0.0;
     int i;
@@ -213,7 +213,7 @@ NormalizeTrigramLog(Tcl_Interp *interp, ScoreItem *itemPtr) {
 }
 
 static int
-DumpTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
+DumpTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     TrigramItem *tlPtr = (TrigramItem *)itemPtr;
     Tcl_DString dsPtr;
     unsigned char i, j, k;
@@ -221,7 +221,7 @@ DumpTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
     unsigned char element[4];
     Tcl_Obj *valueObj = Tcl_NewDoubleObj(0.0);
 
-    element[3] = (char)NULL;
+    element[3] = '\0';
 
     Tcl_DStringInit(&dsPtr);
     Tcl_DStringAppend(&dsPtr, script, strlen(script));

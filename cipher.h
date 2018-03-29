@@ -126,7 +126,7 @@ typedef long long Tcl_WideInt;
 #define SE_COL_X_COL   47 /* COL by COL, bottom to top, right to left */
 #define SE_COL_X_I_COL 48 /* COL by COL, bottom to top then top to bottom */
 
-int CipherCmd(ClientData, Tcl_Interp *, int , char **);
+int CipherCmd(ClientData, Tcl_Interp *, int , const char **);
 int cipherid;
 
 typedef struct {
@@ -148,39 +148,39 @@ typedef struct {
     struct CipherType *typePtr;
 } CipherItem;
 
-int	CountValidChars _ANSI_ARGS_((CipherItem *, char *));
-char *	ExtractValidChars _ANSI_ARGS_((CipherItem *, char *));
-int *	TextToInt _ANSI_ARGS_((Tcl_Interp *, CipherItem *, char *,
-	int *, char *, int));
+int	CountValidChars _ANSI_ARGS_((CipherItem *, const char *));
+char *	ExtractValidChars _ANSI_ARGS_((CipherItem *, const char *));
+int *	TextToInt _ANSI_ARGS_((Tcl_Interp *, CipherItem *, const char *,
+	int *, const char *, int));
 int	IsValidChar _ANSI_ARGS_((CipherItem *, char));
 int	cipherSelectLanguage _ANSI_ARGS_((const char *));
 char *	cipherGetLanguage _ANSI_ARGS_((int));
-int	CipherSetStepCmd _ANSI_ARGS_((CipherItem *, char *));
-int	CipherSetBestFitCmd _ANSI_ARGS_((CipherItem *, char *));
+int	CipherSetStepCmd _ANSI_ARGS_((CipherItem *, const char *));
+int	CipherSetBestFitCmd _ANSI_ARGS_((CipherItem *, const char *));
 void	DeleteCipher _ANSI_ARGS_((ClientData));
 int 	CipherNullEncoder _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	char *, char *));
 
 typedef int	CipherCreateProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		int, char **));
+		int, const char **));
 typedef void	CipherDeleteProc _ANSI_ARGS_((ClientData));
 typedef int	CipherCmdProc _ANSI_ARGS_((ClientData, Tcl_Interp *,
-		int, char **));
+		int, const char **));
 typedef char *	GetPlaintextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 typedef int	SetCiphertextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *));
+		const char *));
 typedef int	SolveCiphertextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 		char *));
 typedef int	RestoreCiphertextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *, char *));
+		const char *, const char *));
 typedef int	LocateTipProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 		char *, char *));
 typedef int	SubstituteProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *, char *, int));
+		const char *, const char *, int));
 typedef int	UndoProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *, int));
+		const char *, int));
 typedef int	EncodeProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *, char *));
+		const char *, const char *));
 
 typedef struct CipherType {
     char *type;				/* name of cipher type */

@@ -25,11 +25,11 @@
 #include <wordtree.h>
 #include <cipherDebug.h>
 
-TreeNode NullNode = {(char)NULL, 0, (TreeNode **)NULL};
+TreeNode NullNode = {'\0', 0, (TreeNode **)NULL};
 
 static TreeNode *createWordTreeNode(char val);
 
-void addWordToTree(TreeNode *root, char *string, unsigned short int measure) {
+void addWordToTree(TreeNode *root, const char *string, unsigned short int measure) {
     TreeNode *newNode;
     TreeNode **newNextPtr;
     int count;
@@ -59,7 +59,7 @@ void addWordToTree(TreeNode *root, char *string, unsigned short int measure) {
      */
     for (count=0; root->next[count]; count++) {
 	if (root->next[count]->val == string[0]) {
-	    if (string[0] == (char)NULL) {
+	    if (string[0] == '\0') {
 		root->measure += measure;
 	    } else {
 		addWordToTree(root->next[count], string+1, measure);
@@ -77,7 +77,7 @@ void addWordToTree(TreeNode *root, char *string, unsigned short int measure) {
     // We can only get here if the root node doesn't have
     // an entry for the first character in the string.
     newNode = createWordTreeNode(string[0]);
-    if (string[0] == (char)NULL) {
+    if (string[0] == '\0') {
 	root->measure += measure;
     }
 
@@ -118,7 +118,7 @@ void addWordToTree(TreeNode *root, char *string, unsigned short int measure) {
     }
 #endif
 
-    if (string[0] != (char)NULL) {
+    if (string[0] != '\0') {
 	addWordToTree(newNode, string+1, measure);
     }
 #ifdef USE_DMALLOC
@@ -131,7 +131,7 @@ void addWordToTree(TreeNode *root, char *string, unsigned short int measure) {
 static TreeNode *createWordTreeNode(char val) {
     TreeNode *newNode;
 
-    if (val == (char)NULL) {
+    if (val == '\0') {
 	return &NullNode;
     }
 
@@ -185,7 +185,7 @@ void deleteWordTree(TreeNode *node) {
     free((char *)node);
 }
 
-int treeMatchString(TreeNode *node, char *word, unsigned short int *measure) {
+int treeMatchString(TreeNode *node, const char *word, unsigned short int *measure) {
     int i;
     int result = 0;
     int foundWordEnd = 0;
@@ -202,7 +202,7 @@ int treeMatchString(TreeNode *node, char *word, unsigned short int *measure) {
 	    foundWordEnd = 1;
 	}
 	if (node->next[i]->val == word[0]) {
-	    if (word[0] == (char)NULL) {
+	    if (word[0] == '\0') {
 		return 0;
 	    } else {
 		result = treeMatchString(node->next[i], word+1, measure);
@@ -221,7 +221,7 @@ int treeMatchString(TreeNode *node, char *word, unsigned short int *measure) {
     }
 }
 
-int treeContainsWord(TreeNode *node, char *word, unsigned short int *measure, unsigned int length) {
+int treeContainsWord(TreeNode *node, const char *word, unsigned short int *measure, unsigned int length) {
     int i;
     int result = 0;
 
@@ -231,7 +231,7 @@ int treeContainsWord(TreeNode *node, char *word, unsigned short int *measure, un
 
     for(i=0; node->next[i]; i++) {
 	if (node->next[i]->val == word[0] || (node->next[i]->val == NULL && length == 0)) {
-	    if (word[0] == (char)NULL || length <= 0 ) {
+	    if (word[0] == '\0' || length <= 0 ) {
 		*measure = node->measure;
 		return 1;
 	    } else {

@@ -44,21 +44,21 @@
 #include <cipherDebug.h>
 
 static int  CreateMyszcowski	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteMyszcowski		_ANSI_ARGS_((ClientData));
 static char *GetMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int MyszcowskiCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int MyszcowskiUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int MyszcowskiSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int MyszcowskiLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void MyszcowskiInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -67,9 +67,9 @@ static int RecSolveMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int, int));
 static int MyszcowskiShiftColumn _ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
-static char *MyszcowskiTransform _ANSI_ARGS_((CipherItem *, char *, int));
+static char *MyszcowskiTransform _ANSI_ARGS_((CipherItem *, const char *, int));
 static int EncodeMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 typedef struct MyszcowskiItem {
     CipherItem header;
@@ -104,7 +104,7 @@ CipherType MyszcowskiType = {
 };
 
 static int
-CreateMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)itemPtr;
     char	temp_ptr[128];
@@ -176,7 +176,7 @@ DeleteMyszcowski(ClientData clientData)
 }
 
 static int
-SetMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -223,7 +223,7 @@ SetMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-MyszcowskiUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+MyszcowskiUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     MyszcowskiInitKey(itemPtr, itemPtr->period);
 
@@ -231,7 +231,7 @@ MyszcowskiUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-MyszcowskiSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *offset, int col)
+MyszcowskiSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *offset, int col)
 {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)itemPtr;
     int intOffset = *offset-'a';
@@ -278,7 +278,7 @@ GetMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-MyszcowskiTransform(CipherItem *itemPtr, char *text, int mode) {
+MyszcowskiTransform(CipherItem *itemPtr, const char *text, int mode) {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)itemPtr;
     char	*c;
     int		i, col, pos;
@@ -356,7 +356,7 @@ MyszcowskiTransform(CipherItem *itemPtr, char *text, int mode) {
 	orderArr[newCol]++;
     }
 
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     ckfree((char *)startPos);
     ckfree((char *)colArr);
@@ -429,7 +429,7 @@ MyszcowskiAdjustKey(CipherItem *itemPtr)
 }
 
 static int
-RestoreMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *junk)
+RestoreMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *junk)
 {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)itemPtr;
     int i;
@@ -493,7 +493,7 @@ SolveMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     myszPtr->maxKey = (int *)ckalloc(sizeof(int) * itemPtr->period);
     myszPtr->curKey = (int *)ckalloc(sizeof(int) * itemPtr->period);
     for(i=0; i < itemPtr->period; i++) {
-	myszPtr->maxKey[i] = (char)NULL;
+	myszPtr->maxKey[i] = '\0';
     }
     myszPtr->maxVal = 0.0;
     itemPtr->curIteration = 0;
@@ -577,7 +577,7 @@ RecSolveMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, int depth, int sum, 
 	}
 
 	if (pt) {
-	    if (DefaultScoreValue(interp, (unsigned char *)pt, &value)
+	    if (DefaultScoreValue(interp, pt, &value)
                     != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -748,7 +748,7 @@ MyszcowskiSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col
     if (col1 < 1 || col1 > itemPtr->period) {
 	    char temp_str[2];
 	temp_str[0] = (char) (col1 + 'a' - 1);
-	temp_str[1] = (char)NULL;
+	temp_str[1] = '\0';
 	Tcl_AppendResult(interp, "Bad column index '", temp_str, "'",
 		(char *)NULL);
 	return TCL_ERROR;
@@ -757,7 +757,7 @@ MyszcowskiSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col
     if (col2 < 1 || col2 > itemPtr->period) {
 	char temp_str[2];
 	temp_str[0] = (char) (col2 + 'a' - 1);
-	temp_str[1] = (char)NULL;
+	temp_str[1] = '\0';
 	Tcl_AppendResult(interp, "Bad column index '", temp_str, "'",
 		(char *)NULL);
 	return TCL_ERROR;
@@ -790,12 +790,12 @@ MyszcowskiSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col
 }
 
 int
-MyszcowskiCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+MyszcowskiCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -845,7 +845,7 @@ MyszcowskiCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = myszPtr->key[i]+'a';
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
@@ -1081,7 +1081,7 @@ MyszcowskiCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 
 	return (itemPtr->typePtr->encodeProc)(interp, itemPtr, argv[1], argv[2]);
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
-	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], (int) NULL);
+	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
 	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
@@ -1203,7 +1203,7 @@ MyszcowskiShiftColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amou
 }
 
 static int
-EncodeMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

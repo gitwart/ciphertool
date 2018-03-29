@@ -69,7 +69,7 @@ InitScoreTypes(Tcl_Interp *interp)
     initialScoreItem->typePtr = typeList;
     initialScoreItem->elemSize = -1;
     initialScoreItem->initialized = 1;
-    if ((*typeList->createProc)(interp, initialScoreItem, 0, (char **)NULL)
+    if ((*typeList->createProc)(interp, initialScoreItem, 0, (const char **)NULL)
 	    != TCL_OK) {
 	/*
 	 * If the create procedure failed then we should assume that it
@@ -92,7 +92,7 @@ InitScoreTypes(Tcl_Interp *interp)
 	for(j=0; j < 256; j++) {
 	    temp_str[0] = i;
 	    temp_str[1] = j;
-	    temp_str[2] = (char)NULL;
+	    temp_str[2] = '\0';
 	    (typeList->addProc)(interp, initialScoreItem, temp_str, defaultScoreData[i][j]);
 	}
     }
@@ -148,12 +148,12 @@ DeleteScoreCommand(ClientData clientData) {
 }
 
 int
-ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     ScoreType *typePtr, *matchPtr = NULL;
     ScoreItem *itemPtr;
     char temp_str[128];
-    char *cmd = argv[0];
+    const char *cmd = argv[0];
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "Usage:  ", cmd, " ?option? ?args?",
@@ -174,7 +174,7 @@ ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
 	}
 
-	if (DefaultScoreValue(interp, (unsigned char *)argv[1], &value) != TCL_OK) {
+	if (DefaultScoreValue(interp, argv[1], &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 
@@ -205,7 +205,7 @@ ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
 	}
 
-	if (DefaultScoreElementValue(interp, (unsigned char *)argv[1], &value) != TCL_OK) {
+	if (DefaultScoreElementValue(interp, argv[1], &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 
@@ -399,7 +399,7 @@ AddInternalScore(ScoreItem *itemPtr) {
 }
 
 double
-DigramStringValue(unsigned char *string, double **table) {
+DigramStringValue(const char *string, double **table) {
     int length = strlen(string);
     double value = 0.0;
     int i;
@@ -422,7 +422,7 @@ DigramSingleValue(unsigned char val1, unsigned char val2, double **table) {
 */
 
 int
-DefaultScoreValue(Tcl_Interp *interp, unsigned char *string, double *value) {
+DefaultScoreValue(Tcl_Interp *interp, const char *string, double *value) {
     *value = 0.0;
 
     if (defaultScoreItem != NULL) {
@@ -463,7 +463,7 @@ DefaultScoreValue(Tcl_Interp *interp, unsigned char *string, double *value) {
 }
 
 int
-DefaultScoreElementValue(Tcl_Interp *interp, unsigned char *element, double *value) {
+DefaultScoreElementValue(Tcl_Interp *interp, const char *element, double *value) {
     *value = 0.0;
 
     if (defaultScoreItem != NULL) {
@@ -524,7 +524,7 @@ DumpTreeNode(Tcl_Interp *interp, TreeNode *rootNode, Tcl_DString *command, Tcl_D
     }
 
     for (count=0; rootNode->next && rootNode->next[count]; count++) {
-	if (rootNode->next[count]->val == (char)NULL && rootNode->measure > 0) {
+	if (rootNode->next[count]->val == '\0' && rootNode->measure > 0) {
 	    int length = Tcl_DStringLength(command);
 	    int result = TCL_OK;
 	    Tcl_Obj *valueObj = Tcl_NewDoubleObj(0);
@@ -549,9 +549,9 @@ DumpTreeNode(Tcl_Interp *interp, TreeNode *rootNode, Tcl_DString *command, Tcl_D
 }
 
 int
-ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv) {
+ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
     ScoreItem *itemPtr = (ScoreItem *)clientData;
-    char *cmd;
+    const char *cmd;
     char temp_str[TCL_DOUBLE_SPACE];
 
     cmd = *argv;
@@ -579,7 +579,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
         }
 
-	value = (itemPtr->typePtr->valueProc(interp, itemPtr, (unsigned char *) argv[1]));
+	value = (itemPtr->typePtr->valueProc(interp, itemPtr, argv[1]));
 
 	if (argc == 3) {
 	    if (Tcl_GetDouble(interp, argv[2], &weight) != TCL_OK) {
@@ -615,7 +615,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
 	}
 
-	value = (itemPtr->typePtr->elemValueProc(interp, itemPtr, (unsigned char *)argv[1]));
+	value = (itemPtr->typePtr->elemValueProc(interp, itemPtr, argv[1]));
 
 	if (argc == 3) {
 	    if (Tcl_GetDouble(interp, argv[2], &weight) != TCL_OK) {

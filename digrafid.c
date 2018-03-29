@@ -29,7 +29,7 @@
 #include <cipherDebug.h>
 
 int DigrafidCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 #define KEY0	'0'
 #define KEY1	'1'
@@ -52,18 +52,18 @@ int DigrafidCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
  */
 
 static int  CreateDigrafid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int DigrafidUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int DigrafidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int DigrafidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int DigrafidKeyvalToDigram	_ANSI_ARGS_((CipherItem *, char *,
@@ -74,7 +74,7 @@ static int DigrafidKeyPairToIndex	_ANSI_ARGS_((int, int));
 static int DigrafidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
 static char *GetDigrafidText	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int EncodeDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 /*
  * This structure contains the data associated with a single digrafid cipher.
@@ -143,7 +143,7 @@ CipherType DigrafidType = {
  */
 
 static int
-CreateDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     DigrafidItem *digPtr = (DigrafidItem *)itemPtr;
     char	temp_ptr[128];
@@ -214,8 +214,8 @@ CreateDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     digPtr->centerSquare[2][2] = '9';
 
     for(i=0; i < KEYLEN; i++) {
-	digPtr->ctkey[SQUARE1][i] = (char) NULL;
-	digPtr->ctkey[SQUARE2][i] = (char) NULL;
+	digPtr->ctkey[SQUARE1][i] = '\0';
+	digPtr->ctkey[SQUARE2][i] = '\0';
     }
     for (i=0; i < KEYLEN+14; i++) {
 	digPtr->ptkey[SQUARE1][i] = EMPTY;
@@ -248,12 +248,12 @@ CreateDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 int
-DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     DigrafidItem *digPtr = (DigrafidItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
 
     cmd = *argv;
@@ -322,7 +322,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    temp_str_pos=0;
 	    Tcl_AppendElement(interp, temp_str);
@@ -338,7 +338,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 	    return TCL_OK;
@@ -488,7 +488,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -535,7 +535,7 @@ DigrafidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 }
 
 static int
-DigrafidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+DigrafidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_AppendResult(interp,
 	    "No undo function defined for ",
@@ -546,7 +546,7 @@ DigrafidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-DigrafidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, int value)
+DigrafidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const char *col, int value)
 {
     Tcl_AppendResult(interp,
 	    "No substitute function defined for ",
@@ -621,7 +621,7 @@ GetDigrafidText(Tcl_Interp *interp, CipherItem *itemPtr) {
 	    dt[dtIndex++] = '0';
 	}
     }
-    dt[dtIndex] = (char)NULL;
+    dt[dtIndex] = '\0';
 
     return dt;
 }
@@ -677,23 +677,23 @@ GetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr)
 	keyVal[0] = digText[blockStart + i%itemPtr->period + 0*blockPeriod];
 	keyVal[1] = digText[blockStart + i%itemPtr->period + 1*blockPeriod];
 	keyVal[2] = digText[blockStart + i%itemPtr->period + 2*blockPeriod];
-	keyVal[3] = (char)NULL;
+	keyVal[3] = '\0';
 	(void)DigrafidKeyvalToDigram(itemPtr, keyVal, pt + i*2);
-	if (pt[i*2] == (char)NULL) {
+	if (pt[i*2] == '\0') {
 	    pt[i*2] = ' ';
 	}
-	if (pt[i*2+1] == (char)NULL) {
+	if (pt[i*2+1] == '\0') {
 	    pt[i*2+1] = ' ';
 	}
     }
-    pt[i*2] = (char)NULL;
+    pt[i*2] = '\0';
     ckfree(digText);
 
     return pt;
 }
 
 static int
-RestoreDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, char *square1, char *square2)
+RestoreDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, const char *square2)
 {
     char keyLength[TCL_DOUBLE_SPACE];
     DigrafidItem *digPtr = (DigrafidItem *)itemPtr;
@@ -765,11 +765,11 @@ DigrafidKeyvalToDigram(CipherItem *itemPtr, char *keyVal, char *result)
     int letterCol;
     int letterIndex;
 
-    result[0] = (char)NULL;
-    result[1] = (char)NULL;
+    result[0] = '\0';
+    result[1] = '\0';
 
     if (!keyVal[0] || !keyVal[1] | !keyVal[2]) {
-	return (char)NULL;
+	return '\0';
     }
 
     if ( (keyVal[0] != KEY1 && keyVal[0] != KEY2 && keyVal[0] != KEY3
@@ -781,7 +781,7 @@ DigrafidKeyvalToDigram(CipherItem *itemPtr, char *keyVal, char *result)
 	    || (keyVal[2] != KEY1 && keyVal[2] != KEY2 && keyVal[2] != KEY3
 		&& keyVal[2] != KEY4 && keyVal[2] != KEY5 && keyVal[2] != KEY6
 		&& keyVal[2] != KEY7 && keyVal[2] != KEY8 && keyVal[2] != KEY9)) {
-	return (char)NULL;
+	return '\0';
     }
 
     letterCol = (keyVal[0] - '0');
@@ -791,7 +791,7 @@ DigrafidKeyvalToDigram(CipherItem *itemPtr, char *keyVal, char *result)
     if (digPtr->ptkey[SQUARE1][letterIndex] != EMPTY) {
 	result[0] = digPtr->ptkey[SQUARE1][letterIndex];
     } else {
-	result[0] = (char) NULL;
+	result[0] = '\0';
     }
 
     letterCol = (keyVal[2] - '0');
@@ -800,10 +800,10 @@ DigrafidKeyvalToDigram(CipherItem *itemPtr, char *keyVal, char *result)
     if (digPtr->ptkey[SQUARE2][letterIndex] != EMPTY) {
 	result[1] = digPtr->ptkey[SQUARE2][letterIndex];
     } else {
-	result[1] = (char) NULL;
+	result[1] = '\0';
     }
 
-    return (char)NULL;
+    return '\0';
 }
 
 static int
@@ -877,7 +877,7 @@ EncodeDigrafidString(CipherItem *itemPtr, char *text) {
 	keyVal[0] = digText[i*3];
 	keyVal[1] = digText[i*3+1];
 	keyVal[2] = digText[i*3+2];
-	keyVal[3] = (char)NULL;
+	keyVal[3] = '\0';
 
 	ct1cell[0] = (keyVal[1]-'1') / 3 + 1;
 	ct1cell[1] = (keyVal[0]-'1') + 1;
@@ -887,16 +887,15 @@ EncodeDigrafidString(CipherItem *itemPtr, char *text) {
 	ct[index++] = digPtr->ptkey[SQUARE1][ct1cell[0]*10+ct1cell[1]];
 	ct[index++] = digPtr->ptkey[SQUARE2][ct2cell[0]*10+ct2cell[1]];
     }
-    ct[index] = (char)NULL;
+    ct[index] = '\0';
     ckfree(digText);
 
     return ct;
 }
 
 static int
-EncodeDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    char *bifVal = (char *)NULL;
     int count;
     char **argv;
     int i;

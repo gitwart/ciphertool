@@ -22,4 +22,4 @@
  */
 #include <tcl.h>
 
-int StatCmd(ClientData, Tcl_Interp *, int , char **);
+int StatCmd(ClientData, Tcl_Interp *, int , const char **);

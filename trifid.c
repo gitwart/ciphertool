@@ -28,7 +28,7 @@
 #include <cipherDebug.h>
 
 int TrifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 #define KEY1	'1'
 #define KEY2	'2'
@@ -41,27 +41,27 @@ int TrifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  */
 
 static int  CreateTrifid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreTrifid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int TrifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int TrifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int TrifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int TrifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int));
-static char TrifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, char *));
+static char TrifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *));
 static char *TrifidLetterToKeyval _ANSI_ARGS_((CipherItem *, char));
 static char *GetTrifidText	_ANSI_ARGS_((CipherItem *, char));
 static int EncodeTrifid		 _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *EncodeTrifidString	 _ANSI_ARGS_((CipherItem *, char *));
 
 static char *trifidKeyConv[27] = {
@@ -127,7 +127,7 @@ CipherType TrifidType = {
  */
 
 static int
-CreateTrifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateTrifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     TrifidItem *trifPtr = (TrifidItem *)itemPtr;
     char	temp_ptr[128];
@@ -167,12 +167,12 @@ CreateTrifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 int
-TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     TrifidItem *trifPtr = (TrifidItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -231,7 +231,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < KEYLEN; i++) {
 		temp_str[i] = (trifPtr->ptkey[i]==EMPTY)?' ':trifPtr->ptkey[i];
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -369,7 +369,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetTrifid(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -414,7 +414,7 @@ TrifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 static int
-TrifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+TrifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_SetResult(interp,
 	    "No undo function defined for trifid ciphers.",
@@ -423,7 +423,7 @@ TrifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-TrifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+TrifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     Tcl_SetResult(interp, "Substitution is not yet defined for trifid ciphers",
 	    TCL_VOLATILE);
@@ -433,7 +433,6 @@ TrifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 static char *
 GetTrifid(Tcl_Interp *interp, CipherItem *itemPtr)
 {
-    char	*c;
     int		i;
     char	*pt=(char *)NULL;
     char	*trifVal=(char *)NULL;
@@ -451,13 +450,12 @@ GetTrifid(Tcl_Interp *interp, CipherItem *itemPtr)
     }
 
     pt=(char *)ckalloc(sizeof(char) * itemPtr->length+1);
-    c = itemPtr->ciphertext;
 
     /*
      * Fill in the array of intermediate trifid values
      */
     
-    trifVal = GetTrifidText(itemPtr, (char)NULL);
+    trifVal = GetTrifidText(itemPtr, '\0');
 
     /*
      * Read out the plaintext from the trifid array
@@ -482,13 +480,13 @@ GetTrifid(Tcl_Interp *interp, CipherItem *itemPtr)
 	keyVal[0] = trifVal[blockStart + i%itemPtr->period + 0*blockPeriod];
 	keyVal[1] = trifVal[blockStart + i%itemPtr->period + 1*blockPeriod];
 	keyVal[2] = trifVal[blockStart + i%itemPtr->period + 2*blockPeriod];
-	keyVal[3] = (char)NULL;
+	keyVal[3] = '\0';
 	pt[i] = TrifidKeyvalToLetter(itemPtr, keyVal);
-	if (pt[i] == (char)NULL) {
+	if (pt[i] == '\0') {
 	    pt[i] = ' ';
 	}
     }
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
     ckfree(trifVal);
 	
     return pt;
@@ -509,18 +507,18 @@ GetTrifidText(CipherItem *itemPtr, char fillChar)
 	    trifVal[i*3+1] = keyVal[1];
 	    trifVal[i*3+2] = keyVal[2];
 	} else {
-	    trifVal[i*3+0] = (char)NULL;
-	    trifVal[i*3+1] = (char)NULL;
-	    trifVal[i*3+2] = (char)NULL;
+	    trifVal[i*3+0] = '\0';
+	    trifVal[i*3+1] = '\0';
+	    trifVal[i*3+2] = '\0';
 	}
     }
-    trifVal[itemPtr->length*3] = (char)NULL;
+    trifVal[itemPtr->length*3] = '\0';
 
     return trifVal;
 }
 
 static int
-RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, char *savedKey, char *dummy)
+RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, const char *dummy)
 {
     TrifidItem *trifPtr = (TrifidItem *)itemPtr;
     int i;
@@ -537,7 +535,7 @@ RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, char *savedKey, char *dum
     }
 
     for(i=0; i < KEYLEN; i++) {
-	tempReverseKey[i] = (char)NULL;
+	tempReverseKey[i] = '\0';
     }
 
     for(i=0; i < KEYLEN; i++) {
@@ -625,7 +623,7 @@ TrifidLetterToKeyval(CipherItem *itemPtr, char letter)
 }
 
 static char
-TrifidKeyvalToLetter(CipherItem *itemPtr, char *keyVal)
+TrifidKeyvalToLetter(CipherItem *itemPtr, const char *keyVal)
 {
     TrifidItem *trifPtr = (TrifidItem *)itemPtr;
     int letterIndex;
@@ -634,7 +632,7 @@ TrifidKeyvalToLetter(CipherItem *itemPtr, char *keyVal)
 	|| ((keyVal[1] != KEY1) && (keyVal[1] != KEY2) && (keyVal[1] != KEY3))
 	|| ((keyVal[2] != KEY1) && (keyVal[2] != KEY2) && (keyVal[2] != KEY3))){
 
-	return (char)NULL;
+	return '\0';
     }
 
     letterIndex = (keyVal[0]-'1') * 9 + (keyVal[1]-'1') * 3 + (keyVal[2]-'1');
@@ -642,7 +640,7 @@ TrifidKeyvalToLetter(CipherItem *itemPtr, char *keyVal)
     if (trifPtr->ptkey[letterIndex] != EMPTY) {
 	return trifPtr->ptkey[letterIndex];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
@@ -716,14 +714,14 @@ EncodeTrifidString(CipherItem *itemPtr, char *pt) {
     for (i=0; i < itemPtr->length; i++) {
 	ct[i] = TrifidKeyvalToLetter(itemPtr, trifVal + i*3);
     }
-    ct[i] = (char)NULL;
+    ct[i] = '\0';
     ckfree(trifVal);
 
     return ct;
 }
 
 static int
-EncodeTrifid(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

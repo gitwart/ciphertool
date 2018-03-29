@@ -41,36 +41,36 @@ typedef struct {
 
 #define DigramSingleValue(a, b, c) ( c[a][b] )
 
-int ScoreMethodCmd	_ANSI_ARGS_((ClientData, Tcl_Interp *, int, char **));
+int ScoreMethodCmd	_ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
 
 void	AddInternalScore _ANSI_ARGS_((ScoreItem *));
 void	DeleteScoreCommand _ANSI_ARGS_((ClientData));
 int	InitScoreTypes _ANSI_ARGS_((Tcl_Interp *));
 int	NullScoreNormalizer _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
 int	DumpScoreTable _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
-int	ScoreCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, char **));
+int	ScoreCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
 void	DeleteScore _ANSI_ARGS_((ClientData));
 void    DumpTreeNode _ANSI_ARGS_((Tcl_Interp *, TreeNode *, Tcl_DString *, Tcl_DString *, int));
-double	DigramStringValue _ANSI_ARGS_((unsigned char *, double **));
+double	DigramStringValue _ANSI_ARGS_((const char *, double **));
 double	DigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
-int  DefaultScoreValue _ANSI_ARGS_((Tcl_Interp *, unsigned char *, double *));
-int  DefaultScoreElementValue _ANSI_ARGS_((Tcl_Interp *, unsigned char *, double *));
+int  DefaultScoreValue _ANSI_ARGS_((Tcl_Interp *, const char *, double *));
+int  DefaultScoreElementValue _ANSI_ARGS_((Tcl_Interp *, const char *, double *));
 
 typedef int	ScoreCommandProc _ANSI_ARGS_((ClientData, Tcl_Interp *,
-		int, char **));
+		int, const char **));
 typedef int	ScoreCreateProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		int, char **));
+		int, const char **));
 typedef void	ScoreDeleteProc _ANSI_ARGS_((ClientData));
 typedef int	ScoreAddProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
 		unsigned char *, double));
 typedef double	ScoreValueProc  _ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		unsigned char *));
+		const char *));
 typedef double	ScoreElementValueProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		unsigned char *));
+		const char *));
 typedef int	ScoreNormalizeProc	_ANSI_ARGS_((Tcl_Interp *,
 		ScoreItem *));
 typedef int	ScoreDumpProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		char *));
+		const char *));
 
 typedef struct ScoreType {
     char *type;				/* Name of scoring type */

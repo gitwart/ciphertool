@@ -27,20 +27,22 @@
 #include <morseCommand.h>
 
 #include <cipherDebug.h>
+#include <string.h>
+#include <stdlib.h>
 
 /*
  * Usage:  morse string
  */
 
-int		MorseCmd(ClientData, Tcl_Interp *, int , char **);
+int		MorseCmd(ClientData, Tcl_Interp *, int , const char **);
 
 int
-MorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+MorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     int         inputLength=0;
     int		convType = TOTEXT;
-    char	*cmd;
-    char	*inputString;
+    const char	*cmd;
+    const char	*inputString;
     char	*result=(char *)NULL;
 
     if (argc != 2) {

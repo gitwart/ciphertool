@@ -140,7 +140,7 @@ CreateCipherType(CipherType *typePtr)
 }
 
 int
-CipherSetBestFitCmd(CipherItem *itemPtr, char *cmd)
+CipherSetBestFitCmd(CipherItem *itemPtr, const char *cmd)
 {
     if (itemPtr->bestFitCommand) {
 	ckfree(itemPtr->bestFitCommand);
@@ -156,7 +156,7 @@ CipherSetBestFitCmd(CipherItem *itemPtr, char *cmd)
 }
 
 int
-CipherSetStepCmd(CipherItem *itemPtr, char *cmd)
+CipherSetStepCmd(CipherItem *itemPtr, const char *cmd)
 {
     if (itemPtr->stepCommand) {
 	ckfree(itemPtr->stepCommand);
@@ -192,7 +192,7 @@ DeleteCipher(ClientData clientData)
 }
 
 int
-CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     CipherType	*typePtr,
     		*matchPtr = NULL;

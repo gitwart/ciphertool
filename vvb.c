@@ -41,23 +41,23 @@
 #define SOLVE_THOROUGH	1
 
 static int  CreateVigenere	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteVigenere		_ANSI_ARGS_((ClientData));
 static char *GetVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetVigenere		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int  QuickSolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int VigenereCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int VigenereUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int VigenereSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int VigenereLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int VigenereSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -68,14 +68,14 @@ static int RecSolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int RecQuickSolveVigenere _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int, char *));
 static int FindBestTipLocation	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			char *));
+	    			const char *));
 static char PortaCtPtToKey	_ANSI_ARGS_((char, char));
 static char PortaCtKeyToPt	_ANSI_ARGS_((char, char));
 static char *GetKeyedVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int VigenereFitColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
 static int EncodeVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 static char _portaCtPt[26][26] = {
     { "\000\000\000\000\000\000\000\000\000\000\000\000\000acegikmoqsuwy" },
@@ -245,7 +245,7 @@ CipherType PortaType = {
 };
 
 static int
-CreateVigenere(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateVigenere(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     char	temp_ptr[128];
@@ -324,12 +324,12 @@ DeleteVigenere(ClientData clientData)
 }
 
 int
-VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     VigenereItem *vigPtr = (VigenereItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -404,7 +404,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    break;
 		case GRN_TYPE:
 		    for(i=0; i < itemPtr->period; i++) {
@@ -414,7 +414,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    break;
 		case VAR_TYPE:
 		    for(i=0; i < itemPtr->period; i++) {
@@ -424,7 +424,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    break;
 		case BEA_TYPE:
 		    for(i=0; i < itemPtr->period; i++) {
@@ -434,7 +434,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    break;
 		case PRT_TYPE:
 		    for(i=0; i < itemPtr->period; i++) {
@@ -444,7 +444,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    Tcl_AppendElement(interp, temp_str);
 
 		    for(i=0; i < itemPtr->period; i++) {
@@ -454,7 +454,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[itemPtr->period] = (char)NULL;
+		    temp_str[itemPtr->period] = '\0';
 		    break;
 	    }
 
@@ -516,8 +516,8 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		    break;
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
-	    temp_ct[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
+	    temp_ct[itemPtr->period] = '\0';
 
 	    Tcl_AppendElement(interp, temp_ct);
 	    Tcl_AppendElement(interp, temp_str);
@@ -753,7 +753,7 @@ VigenereCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -789,7 +789,7 @@ PortaCtPtToKey(char ct, char pt)
      */
 
     if (ct < 'a' || ct > 'z' || pt < 'a' || pt > 'z')
-	return (char)NULL;
+	return '\0';
 
     return _portaCtPt[ct-'a'][pt-'a'];
 }
@@ -798,10 +798,10 @@ static char
 PortaCtKeyToPt(char ct, char key)
 {
     if (!key)
-	return (char)NULL;
+	return '\0';
 
     if (ct < 'a' || ct > 'z' || key < 'a' || key > 'z')
-	return (char)NULL;
+	return '\0';
 
     return _portaCtKey[ct-'a'][key-'a'];
 }
@@ -817,18 +817,15 @@ VigenereLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
     char	*varkey;
     char	*beakey;
     char	*prtkey;
-    char	*temp;
     int		valid_sub=NEW_SUB;
     int		tipLen = strlen(tip);
-
-    temp = (char *)ckalloc(sizeof(char)*tipLen + 2);
 
     vigkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     varkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     beakey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     prtkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     for(i=0; i < itemPtr->period; i++) {
-	vigkey[i] = varkey[i] = beakey[i] = prtkey[i] = (char)NULL;
+	vigkey[i] = varkey[i] = beakey[i] = prtkey[i] = '\0';
     }
 
     ct = itemPtr->ciphertext;
@@ -845,7 +842,6 @@ VigenereLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 
     if (!s) {
 	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
-	ckfree(temp);
 	return BAD_SUB;
     }
 
@@ -868,14 +864,13 @@ VigenereLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
     ckfree(varkey);
     ckfree(beakey);
     ckfree(prtkey);
-    ckfree(temp);
 
     Tcl_SetResult(interp, tip, TCL_VOLATILE);
     return TCL_OK;
 }
 
 static int
-FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, char *tip)
+FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip)
 {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     int		i;
@@ -898,10 +893,10 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, char *tip)
     beakey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     prtkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     for(i=0; i < itemPtr->period; i++) {
-	vigkey[i] = (char)NULL;
-	varkey[i] = (char)NULL;
-	beakey[i] = (char)NULL;
-	prtkey[i] = (char)NULL;
+	vigkey[i] = '\0';
+	varkey[i] = '\0';
+	beakey[i] = '\0';
+	prtkey[i] = '\0';
     }
 
     ct = itemPtr->ciphertext;
@@ -917,10 +912,10 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, char *tip)
 	 */
 
 	for(i=0; i < itemPtr->period; i++) {
-	    vigPtr->vigkey[i] = (char)NULL;
-	    vigPtr->varkey[i] = (char)NULL;
-	    vigPtr->beakey[i] = (char)NULL;
-	    vigPtr->prtkey[i] = (char)NULL;
+	    vigPtr->vigkey[i] = '\0';
+	    vigPtr->varkey[i] = '\0';
+	    vigPtr->beakey[i] = '\0';
+	    vigPtr->prtkey[i] = '\0';
 	}
 
 	/*
@@ -936,7 +931,7 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, char *tip)
 	    curPt = GetVigenere(interp, itemPtr);
 
 	    if (curPt) {
-		if (DefaultScoreValue(interp, (unsigned char *)curPt, &curkey) != TCL_OK) {
+		if (DefaultScoreValue(interp, curPt, &curkey) != TCL_OK) {
 		    return TCL_ERROR;
 		}
 		if (curkey > maxkey) {
@@ -969,7 +964,7 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, char *tip)
 }
 
 static int
-VigenereUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+VigenereUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     int		i;
@@ -986,19 +981,19 @@ VigenereUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 
     i--;
 
-    vigPtr->vigkey[i] = (char)NULL;
-    vigPtr->varkey[i] = (char)NULL;
-    vigPtr->beakey[i] = (char)NULL;
-    vigPtr->prtkey[i] = (char)NULL;
+    vigPtr->vigkey[i] = '\0';
+    vigPtr->varkey[i] = '\0';
+    vigPtr->beakey[i] = '\0';
+    vigPtr->prtkey[i] = '\0';
 
     return TCL_OK;
 }
 
 static int
-VigenereSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+VigenereSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
-    char	*c,
+    const char	*c,
 		*p;
     char	*vigkey;
     char	*varkey;
@@ -1037,7 +1032,7 @@ VigenereSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
     prtkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     q = (char *)ckalloc(sizeof(char) * strlen(ct) +1);
     for(i=0; i < itemPtr->period; i++) {
-	vigkey[i] = varkey[i] = beakey[i] = prtkey[i] = (char)NULL;
+	vigkey[i] = varkey[i] = beakey[i] = prtkey[i] = '\0';
     }
 
     c = ct;
@@ -1060,7 +1055,7 @@ VigenereSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 	 * A little extra care must be taken for the porta cipher
 	 */
 	prtk = PortaCtPtToKey(*c, *p);
-	if (vigPtr->type == PRT_TYPE && prtk == (char)NULL) {
+	if (vigPtr->type == PRT_TYPE && prtk == '\0') {
 	    valid_sub = BAD_SUB;
 	}
 
@@ -1110,7 +1105,7 @@ VigenereSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 
 	c++, p++;
     }
-    q[index] = (char)NULL;
+    q[index] = '\0';
 
     if (valid_sub == BAD_SUB) {
 	Tcl_SetResult(interp, "Bad substitution", TCL_STATIC);
@@ -1178,7 +1173,7 @@ GetVigenere(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-GetKeyedVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *key)
+GetKeyedVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *key)
 {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     char	*c;
@@ -1232,13 +1227,13 @@ GetKeyedVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *key)
 	}
     }
 
-    result[i] = (char)NULL;
+    result[i] = '\0';
 
     return result;
 }
 
 static int
-RestoreVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     if ((itemPtr->typePtr->subProc)(interp, itemPtr, part1, part2, 0) == BAD_SUB) {
 	return TCL_ERROR;
@@ -1266,9 +1261,9 @@ SolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     vigPtr->maxkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
 
     for(i=0; i < itemPtr->period; i++) {
-	key[i] = (char)NULL;
-	maxkey[i] = (char)NULL;
-	vigPtr->maxkey[i] = (char)NULL;
+	key[i] = '\0';
+	maxkey[i] = '\0';
+	vigPtr->maxkey[i] = '\0';
     }
 
     vigPtr->maxSolVal = 0.0;
@@ -1349,12 +1344,12 @@ QuickSolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     key = (char *)ckalloc(sizeof(char) * itemPtr->period);
 
     for(i=0; i < itemPtr->period; i++) {
-        key[i] = maxkey[i] = (char)NULL;
+        key[i] = maxkey[i] = '\0';
     }
 
     for(key[0] = 'a', tally=0; key[0] <= 'z'; key[0]++) {
         for(i=1; i < itemPtr->period; i++) {
-            key[i] = (char)NULL;
+            key[i] = '\0';
 	}
 
         tally = RecQuickSolveVigenere(interp, itemPtr, 1, key);
@@ -1364,7 +1359,7 @@ QuickSolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
             for(i=0; i < itemPtr->period; i++) {
                 maxkey[i] = key[i];
 	    }
-            maxkey[i] = (char)NULL;
+            maxkey[i] = '\0';
         }
     }
 
@@ -1432,7 +1427,7 @@ RecSolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, int index, char *key)
 	 * We're at the end.  Tally up the count and save it.
 	 */
 	pt = GetKeyedVigenere(interp, itemPtr, key);
-	if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+	if (DefaultScoreValue(interp, pt, &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 	itemPtr->curIteration++;
@@ -1660,10 +1655,10 @@ VigenereInitKey(CipherItem *itemPtr, int period)
 	    vigPtr->prtkey = (char *)ckalloc(sizeof(char) * period);
 
 	    for(i=0; i < period; i++) {
-		vigPtr->vigkey[i] = (char) NULL;
-		vigPtr->varkey[i] = (char) NULL;
-		vigPtr->beakey[i] = (char) NULL;
-		vigPtr->prtkey[i] = (char) NULL;
+		vigPtr->vigkey[i] = '\0';
+		vigPtr->varkey[i] = '\0';
+		vigPtr->beakey[i] = '\0';
+		vigPtr->prtkey[i] = '\0';
 	    }
 	}
     }
@@ -1749,14 +1744,14 @@ VigenereFitColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col)
 
     vigPtr->vigkey[col] = result[0];
 
-    result[1] = (char)NULL;
+    result[1] = '\0';
 
     Tcl_SetResult(interp, result, TCL_VOLATILE);
     return TCL_OK;
 }
 
 static int
-EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     char *ct = (char *)NULL;
     int count;
@@ -1854,7 +1849,7 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 
 	    ct[i] = VigenereGetCt(keyLetter, pt[i]);
 	}
-	ct[i] = (char)NULL;
+	ct[i] = '\0';
     } else {
 	if ((itemPtr->typePtr->setctProc)(interp, itemPtr, pt) != TCL_OK) {
 	    ckfree((char *)argv);

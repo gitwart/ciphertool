@@ -30,21 +30,21 @@
 #include <cipherDebug.h>
 
 static int  CreateColumnar	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteColumnar		_ANSI_ARGS_((ClientData));
 static char *GetColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetColumnar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int ColumnarCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int ColumnarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int ColumnarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int ColumnarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void ColumnarInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -55,8 +55,8 @@ static int ColumnarSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 static int ColumnarShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int EncodeColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *ColumnarTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+				const char *, const char *));
+static char *ColumnarTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 typedef struct ColumnarItem {
     CipherItem header;
@@ -89,7 +89,7 @@ CipherType ColumnarType = {
 };
 
 static int
-CreateColumnar(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateColumnar(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     ColumnarItem *colPtr = (ColumnarItem *)itemPtr;
     char	temp_ptr[128];
@@ -152,7 +152,7 @@ DeleteColumnar(ClientData clientData)
 }
 
 static int
-SetColumnar(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     ColumnarItem *colPtr = (ColumnarItem *)itemPtr;
     char	*c;
@@ -199,7 +199,7 @@ SetColumnar(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-ColumnarUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+ColumnarUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     ColumnarInitKey(itemPtr, itemPtr->period);
 
@@ -207,7 +207,7 @@ ColumnarUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-ColumnarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+ColumnarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     Tcl_SetResult(interp, "No substitute command defined for columnar ciphers.",
 	    TCL_STATIC);
@@ -221,9 +221,8 @@ GetColumnar(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-ColumnarTransform(CipherItem *itemPtr, char *text, int mode) {
+ColumnarTransform(CipherItem *itemPtr, const char *text, int mode) {
     ColumnarItem *colPtr = (ColumnarItem *)itemPtr;
-    char	*c;
     int		i, col, pos;
     int		newCol, row;
     int		*startPos=(int *)ckalloc(sizeof(int)*itemPtr->period);
@@ -245,9 +244,7 @@ ColumnarTransform(CipherItem *itemPtr, char *text, int mode) {
     for (i=0; i < itemPtr->length; i++) {
 	colPtr->pt[i] = '_';
     }
-    colPtr->pt[itemPtr->length] = (char)NULL;
-
-    c = itemPtr->ciphertext;
+    colPtr->pt[itemPtr->length] = '\0';
 
     for(col=0; col < itemPtr->period; col++) {
 	newCol = colPtr->key[col];
@@ -277,7 +274,7 @@ ColumnarTransform(CipherItem *itemPtr, char *text, int mode) {
 	}
     }
 
-    colPtr->pt[itemPtr->length] = (char)NULL;
+    colPtr->pt[itemPtr->length] = '\0';
 
     ckfree((char *)startPos);
 
@@ -285,7 +282,7 @@ ColumnarTransform(CipherItem *itemPtr, char *text, int mode) {
 }
 
 static int
-RestoreColumnar(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     ColumnarItem *colPtr = (ColumnarItem *)itemPtr;
     int		i;
@@ -365,7 +362,7 @@ ColumnarCheckSolutionValue(Tcl_Interp *interp, ClientData clientData, int *key, 
 
     pt = GetColumnar(interp, (CipherItem *)colPtr);
 
-    if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+    if (DefaultScoreValue(interp, pt, &value) != TCL_OK) {
 	return TCL_ERROR;
     }
 
@@ -525,7 +522,7 @@ ColumnarInitKey(CipherItem *itemPtr, int period)
 		colPtr->colLength[i] = colPtr->maxColLen - 1;
 	    }
 	}
-	colPtr->key[period]=(char)NULL;
+	colPtr->key[period]='\0';
     }
 }
 
@@ -692,12 +689,12 @@ ColumnarShiftColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amount
 }
 
 int
-ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     ColumnarItem *colPtr = (ColumnarItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -749,7 +746,7 @@ ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		if (temp_str[i] > 'v') temp_str[i]++;
 		*/
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
@@ -922,7 +919,7 @@ ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_OK;
 	}
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
-	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], (int) NULL);
+	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
 	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
@@ -953,7 +950,7 @@ ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeColumnar(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

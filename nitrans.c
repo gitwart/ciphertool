@@ -31,19 +31,19 @@
 #include <cipherDebug.h>
 
 static int  CreateNitrans	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteNitrans		_ANSI_ARGS_((ClientData));
 static char *GetNitrans		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetNitrans		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int NitransCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int NitransUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static void NitransInitKey	_ANSI_ARGS_((CipherItem *));
 static int NitransSwapVals	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int));
@@ -52,8 +52,8 @@ int NitransCheckSolutionValue  _ANSI_ARGS_((Tcl_Interp *, ClientData,
 static int NitransShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int EncodeNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static char *NitransTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+				const char *, const char *));
+static char *NitransTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 #define VERTICAL	1
 #define HORIZONTAL	2
@@ -88,7 +88,7 @@ CipherType NitransType = {
 };
 
 static int
-CreateNitrans(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateNitrans(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     NitransItem *nitransPtr = (NitransItem *)itemPtr;
     char	temp_ptr[128];
@@ -136,7 +136,7 @@ DeleteNitrans(ClientData clientData)
 }
 
 static int
-SetNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetNitrans(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -189,7 +189,7 @@ SetNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-NitransUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+NitransUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     NitransInitKey(itemPtr);
     return TCL_OK;
@@ -312,7 +312,7 @@ NitransShiftColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amount)
 }
 
 static int
-RestoreNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestoreNitrans(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     NitransItem *nitransPtr = (NitransItem *)itemPtr;
     int		i;
@@ -362,7 +362,7 @@ GetNitrans(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-NitransTransform(CipherItem *itemPtr, char *text, int mode) {
+NitransTransform(CipherItem *itemPtr, const char *text, int mode) {
     NitransItem *nitransPtr = (NitransItem *)itemPtr;
     int		i;
     char	*result=(char *)ckalloc(sizeof(char) * itemPtr->length + 1);
@@ -391,7 +391,7 @@ NitransTransform(CipherItem *itemPtr, char *text, int mode) {
 	    result[i] = text[newRow * itemPtr->period + newCol];
 	}
     }
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     return result;
 }
@@ -429,7 +429,7 @@ NitransCheckSolutionValue(Tcl_Interp *interp, ClientData clientData, int *key, i
 
     pt = GetNitrans(interp, (CipherItem *)nitransPtr);
 
-    if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+    if (DefaultScoreValue(interp, pt, &value) != TCL_OK) {
         /* TODO:  Test */
 	return TCL_ERROR;
     }
@@ -545,7 +545,7 @@ SolveNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 	    nitransPtr->key[i] = nitransPtr->maxKey[i];
             result_key[i] = nitransPtr->key[i] + 'a';
 	}
-        result_key[i] = (char) NULL;
+        result_key[i] = '\0';
 
         Tcl_SetResult(interp, result_key, TCL_DYNAMIC);
     }
@@ -554,12 +554,12 @@ SolveNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 }
 
 int
-NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     NitransItem *nitransPtr = (NitransItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -601,7 +601,7 @@ NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		for(j=0; j < itemPtr->period; j++) {
 		    temp_str[j] = tPtr[i*itemPtr->period+j];
 		}
-		temp_str[itemPtr->period] = (char)NULL;
+		temp_str[itemPtr->period] = '\0';
 		Tcl_AppendElement(interp, temp_str);
 	    }
 
@@ -619,7 +619,7 @@ NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = nitransPtr->key[i] + 'a';
             }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
@@ -821,7 +821,7 @@ NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-EncodeNitrans(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeNitrans(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

@@ -30,11 +30,11 @@ typedef struct TreeNode {
     struct TreeNode **next;
 } TreeNode;
 
-void addWordToTree(TreeNode *root, char *string, unsigned short int measure);
+void addWordToTree(TreeNode *root, const char *string, unsigned short int measure);
 void deleteWordTree(TreeNode *node);
 TreeNode *createWordTreeRoot(void);
-int treeContainsWord(TreeNode *root, char *word, unsigned short int *measure, unsigned int length);
-int treeMatchString(TreeNode *root, char *word, unsigned short int *measure);
+int treeContainsWord(TreeNode *root, const char *word, unsigned short int *measure, unsigned int length);
+int treeMatchString(TreeNode *root, const char *word, unsigned short int *measure);
 int isEmptyTree(TreeNode *root);
 
 #define _WORDTREE_INCLUDED

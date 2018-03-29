@@ -35,28 +35,28 @@
 
 void DeleteQuagmire		_ANSI_ARGS_((ClientData));
 int QuagmireCmd		        _ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
 static int  CreateQuagmire	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetQuagmire	        _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void QuagmireSetPeriod   _ANSI_ARGS_((CipherItem *, int));
 static int QuagmireUndo	        _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int QuagmireSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int QuagmireLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int EncodeQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int SolveQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 
@@ -171,7 +171,7 @@ CipherType Quagmire4Type = {
  */
 
 static int
-CreateQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     char	temp_ptr[128];
@@ -242,8 +242,8 @@ QuagmireSetPeriod(CipherItem *itemPtr, int period)
             quagPtr->ptkey[i]  = (char *)ckalloc(sizeof(char) * 26);
             quagPtr->ctkey[i]  = (char *)ckalloc(sizeof(char) * 26);
             for (j=0; j < 26; j++) {
-                quagPtr->ptkey[i][j] = (char)NULL;
-                quagPtr->ctkey[i][j] = (char)NULL;
+                quagPtr->ptkey[i][j] = '\0';
+                quagPtr->ctkey[i][j] = '\0';
             }
         }
         itemPtr->period = period;
@@ -252,12 +252,12 @@ QuagmireSetPeriod(CipherItem *itemPtr, int period)
 }
 
 int
-QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -318,7 +318,7 @@ QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
                     for(i=0; i < 26; i++) {
                         temp_str[i] = (quagPtr->ctkey[keyRow][i])?quagPtr->ctkey[keyRow][i]:' ';
                     }
-                    temp_str[i] = (char)NULL;
+                    temp_str[i] = '\0';
                     Tcl_AppendElement(interp, temp_str);
                 }
             } else if (itemPtr->typePtr->type[8] == '2') {
@@ -328,7 +328,7 @@ QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
                     for(i=0; i < 26; i++) {
                         temp_str[i] = (quagPtr->ctkey[keyRow][i])?quagPtr->ctkey[keyRow][i]:' ';
                     }
-                    temp_str[i] = (char)NULL;
+                    temp_str[i] = '\0';
                     Tcl_AppendElement(interp, temp_str);
                 }
             } else {
@@ -338,7 +338,7 @@ QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
                     for(i=0; i < 26; i++) {
                         temp_str[i] = (quagPtr->ctkey[keyRow][i])?quagPtr->ctkey[keyRow][i]:' ';
                     }
-                    temp_str[i] = (char)NULL;
+                    temp_str[i] = '\0';
                     Tcl_AppendElement(interp, temp_str);
                 }
             }
@@ -483,7 +483,7 @@ QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 
 	return TCL_OK;
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
-	char *ct = NULL;
+	const char *ct = NULL;
         int keyRow = 0;
 
 	if (argc != 1 && argc != 3) {
@@ -532,7 +532,7 @@ QuagmireCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -572,7 +572,7 @@ QuagmireLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 }
 
 static int
-QuagmireUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int keyRow)
+QuagmireUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int keyRow)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     char	t;
@@ -608,8 +608,8 @@ QuagmireUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int keyRow)
     if (ct == NULL) {
 	for (i=0; i < 26; i++) {
             for (j=0; j < itemPtr->period; j++) {
-                quagPtr->ptkey[j][i] = (char)NULL;
-                quagPtr->ctkey[j][i] = (char)NULL;
+                quagPtr->ptkey[j][i] = '\0';
+                quagPtr->ctkey[j][i] = '\0';
             }
         }
     } else {
@@ -617,16 +617,16 @@ QuagmireUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int keyRow)
 	    if (*ct >= 'a' && *ct <= 'z') {
                 if (keyRow >= 0) {
                     t = quagPtr->ptkey[keyRow][*ct - 'a'];
-                    quagPtr->ptkey[keyRow][*ct - 'a'] = (char)NULL;
+                    quagPtr->ptkey[keyRow][*ct - 'a'] = '\0';
                     if (t) {
-                        quagPtr->ctkey[keyRow][t - 'a'] = (char)NULL;
+                        quagPtr->ctkey[keyRow][t - 'a'] = '\0';
                     }
                 } else {
                     for (j=0; j < itemPtr->period; j++) {
                         t = quagPtr->ptkey[j][*ct - 'a'];
-                        quagPtr->ptkey[j][*ct - 'a'] = (char)NULL;
+                        quagPtr->ptkey[j][*ct - 'a'] = '\0';
                         if (t) {
-                            quagPtr->ctkey[j][t - 'a'] = (char)NULL;
+                            quagPtr->ctkey[j][t - 'a'] = '\0';
                         }
                     }
                 }
@@ -639,7 +639,7 @@ QuagmireUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int keyRow)
 }
 
 static int
-QuagmireSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int keyRow)
+QuagmireSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int keyRow)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
 
@@ -720,7 +720,7 @@ GetQuagmire(Tcl_Interp *interp, CipherItem *itemPtr)
         }
     }
 
-    pt[index] = (char)NULL;
+    pt[index] = '\0';
 
     return pt;
 }
@@ -901,7 +901,7 @@ QuagmireApplyKeywords(Tcl_Interp *interp, CipherItem *itemPtr, char *vertical, c
 }
 
 static int
-RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     int count;
@@ -979,7 +979,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part
 }
 
 static int
-EncodeQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

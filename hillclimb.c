@@ -166,7 +166,7 @@ HillclimbGenerateSwapNeighborKeys(Tcl_Interp *interp, char *fixedKey, char *fixe
     }
 
     swapKey = (char *)ckalloc((sizeof(char) * (keyLength+1)));
-    swapKey[keyLength] = (char)NULL;
+    swapKey[keyLength] = '\0';
     keyListObj = Tcl_NewObj();
 
     /*
@@ -231,7 +231,7 @@ HillclimbKeysquareSwapNeighborKeys(Tcl_Interp *interp, char *fixedKey, char *fix
     }
 
     swapKey = (char *)ckalloc((sizeof(char) * (keyLength+1)));
-    swapKey[keyLength] = (char)NULL;
+    swapKey[keyLength] = '\0';
     keyListObj = Tcl_NewObj();
 
     /*

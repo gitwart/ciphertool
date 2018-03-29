@@ -90,7 +90,7 @@ PortaGetKey(char ct, char pt)
     if (ct >= 'a' && ct < 'z' && pt >= 'a' && pt <= 'z') {
 	return _portaCtPt[ct-'a'][pt-'a'];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
@@ -100,7 +100,7 @@ PortaGetCt(char key, char pt)
     if (key >= 'a' && key < 'z' && pt >= 'a' && pt <= 'z') {
 	return _portaCtKey[pt-'a'][key-'a'];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
@@ -110,7 +110,7 @@ PortaGetPt(char key, char ct)
     if (key >= 'a' && key < 'z' && ct >= 'a' && ct <= 'z') {
 	return _portaCtKey[ct-'a'][key-'a'];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
@@ -128,14 +128,14 @@ PortaxGetPt(char key, char ct1, char ct2, char *pt1, char *pt2)
     int keycol;
 
     if (key < 'a' || key > 'z') {
-	*pt1 = (char)NULL;
-	*pt2 = (char)NULL;
+	*pt1 = '\0';
+	*pt2 = '\0';
 	return 0;
     }
 
     if (ct1 < 'a' || ct1 > 'z' || ct2 < 'a' || ct2 > 'z') {
-	*pt1 = (char)NULL;
-	*pt2 = (char)NULL;
+	*pt1 = '\0';
+	*pt2 = '\0';
 	return 0;
     }
 

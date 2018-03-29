@@ -98,32 +98,32 @@ static char *baconAlphabet[26] = {"aaaaa", "aaaab", "aaaba", "aaabb",
 				  "babba", "babbb" };
 
 static int CreateBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, char **));
+				int, const char **));
 void DeleteBaconian		_ANSI_ARGS_((ClientData));
 static char *GetBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetBaconian		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int BaconianCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int BaconianUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int BaconianSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int BaconianLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int BaconianSingleSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int BaconianGroupSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *BaconianTranslate	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
-static int BaconianCheckSub	_ANSI_ARGS_((CipherItem *, char *, char *));
+static int BaconianCheckSub	_ANSI_ARGS_((CipherItem *, const char *, const char *));
 static int EncodeBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 typedef struct BaconianItem {
     CipherItem header;
@@ -157,7 +157,7 @@ CipherType BaconianType = {
 };
 
 static int
-CreateBaconian(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateBaconian(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	temp_ptr[128];
@@ -171,7 +171,7 @@ CreateBaconian(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     baconPtr->bt = (char *)NULL;
 
     for(i=0; i < 26 ; i++) {
-	baconPtr->ptkey[i] = (char)NULL;
+	baconPtr->ptkey[i] = '\0';
     }
 
     sprintf(temp_ptr, "cipher%d", cipherid);
@@ -212,7 +212,7 @@ DeleteBaconian(ClientData clientData)
 }
 
 int
-BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     BaconianItem *baconPtr = (BaconianItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
@@ -319,7 +319,7 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i] = ' ';
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 	    Tcl_AppendElement(interp, "abcdefghijklmnopqrstuvwxyz");
 	    Tcl_AppendElement(interp, temp_str);
 	    return TCL_OK;
@@ -454,7 +454,7 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetBaconian(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	*c;
@@ -566,7 +566,7 @@ BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 	c-=5;
     }
     strncpy(temp, c, Tcl_DStringLength(&dsPtr));
-    temp[Tcl_DStringLength(&dsPtr)] = (char)NULL;
+    temp[Tcl_DStringLength(&dsPtr)] = '\0';
 
     if (valid_tip == NEW_SUB) {
 	BaconianSingleSub(interp, itemPtr, temp, Tcl_DStringValue(&dsPtr));
@@ -584,12 +584,12 @@ BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *star
 }
 
 static int
-BaconianUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+BaconianUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
 
     while (*ct) {
-	baconPtr->ptkey[*ct - 'a'] = (char)NULL;
+	baconPtr->ptkey[*ct - 'a'] = '\0';
 	ct++;
     }
 
@@ -597,7 +597,7 @@ BaconianUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-BaconianSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+BaconianSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     if (strlen(ct)%5 == 0 && strlen(ct)/5 == strlen(pt)) {
 	return BaconianGroupSub(interp, itemPtr, ct, pt);
@@ -612,7 +612,7 @@ BaconianSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 }
 
 static int
-BaconianCheckSub(CipherItem *itemPtr, char *ct, char *pt)
+BaconianCheckSub(CipherItem *itemPtr, const char *ct, const char *pt)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	key_pt[26];
@@ -626,7 +626,7 @@ BaconianCheckSub(CipherItem *itemPtr, char *ct, char *pt)
 		p2;
 
     for(i=0; i < 26; i++) {
-	key_pt[i] = (char)NULL;
+	key_pt[i] = '\0';
     }
 
     c = ct, p = pt;
@@ -667,7 +667,7 @@ BaconianCheckSub(CipherItem *itemPtr, char *ct, char *pt)
 }
 
 static int
-BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
+BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	*c,
@@ -679,7 +679,7 @@ BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
 
     q = (char *)ckalloc(sizeof(char) * strlen(ct));
     r = q;
-    *r = (char)NULL;
+    *r = '\0';
 
     Tcl_DStringInit(&dsPtr);
     p = pt;
@@ -713,7 +713,7 @@ BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
 	baconPtr->ptkey[*c - 'a'] = *p;
 	c++, p++;
     }
-    *r = (char)NULL;
+    *r = '\0';
 
     Tcl_AppendElement(interp, ct);
     Tcl_AppendElement(interp, pt);
@@ -729,7 +729,7 @@ BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
 }
 
 static int
-BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
+BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	*c,
@@ -754,7 +754,7 @@ BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
 
     q = (char *)ckalloc(sizeof(char *) * strlen(ct));
     r = q;
-    *r = (char)NULL;
+    *r = '\0';
 
     c = ct, p = pt;
     while (*c && *p) {
@@ -765,7 +765,7 @@ BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt)
 	baconPtr->ptkey[*c - 'a'] = *p;
 	p++, c++;
     }
-    *r = (char)NULL;
+    *r = '\0';
 
     Tcl_AppendElement(interp, ct);
     Tcl_AppendElement(interp, pt);
@@ -808,7 +808,7 @@ GetBaconian(Tcl_Interp *interp, CipherItem *itemPtr)
 	c++, index++;
     }
 
-    baconPtr->pt[index] = (char)NULL;
+    baconPtr->pt[index] = '\0';
 
     return baconPtr->pt;
 }
@@ -842,13 +842,13 @@ BaconianTranslate(Tcl_Interp *interp, CipherItem *itemPtr, char *btext, char *re
 	    result[index] = ' ';
 	}
     }
-    result[index] = (char)NULL;
+    result[index] = '\0';
 
     return result;
 }
 
 static int
-RestoreBaconian(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     char *alphabet = part1;
     char *btext = part2;
@@ -929,7 +929,7 @@ SolveBaconian(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 	    }
 	}
 
-	baconPtr->solPt[i] = (char)NULL;
+	baconPtr->solPt[i] = '\0';
 
 	/*
 	 * Check the value of this decipherment and save the key if
@@ -980,7 +980,7 @@ SolveBaconian(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 	    continue;
 	}
 
-	if (DefaultScoreValue(interp, (unsigned char *)baconPtr->solPt, &val)
+	if (DefaultScoreValue(interp, (const char *)baconPtr->solPt, &val)
                 != TCL_OK) {
 	    return TCL_ERROR;
 	}
@@ -1089,7 +1089,7 @@ GetWordFilePtr() {
  * 'key' maps {0..25} ==> {'a', 'b'}.
  */
 char
-GetPtLetter(char *key, char *word) {
+GetPtLetter(const char *key, const char *word) {
     int i;
     int index = 0;
     for (i=0; i<5; i++) {
@@ -1108,7 +1108,7 @@ GetPtLetter(char *key, char *word) {
 }
 
 static int
-EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     int i;

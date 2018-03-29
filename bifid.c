@@ -29,7 +29,7 @@
 #include <cipherDebug.h>
 
 int BifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 #define KEY0	'0'
 #define KEY1	'1'
@@ -45,18 +45,18 @@ int BifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  */
 
 static int  CreateBifid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreBifid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int BifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int BifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int BifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int BifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -68,11 +68,11 @@ static int BifidKeycharToInt	_ANSI_ARGS_((char));
 static int BifidKeyPairToIndex	_ANSI_ARGS_((int, int));
 static int BifidIsCompleteKeyIndex	_ANSI_ARGS_((int));
 static int BifidMergeSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int BifidIsValidTipPlacement _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, int));
 static int EncodeBifid		 _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 /*
  * This structure contains the data associated with a single bifid cipher.
@@ -140,7 +140,7 @@ CipherType BifidType = {
  */
 
 static int
-CreateBifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateBifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     char	temp_ptr[128];
@@ -183,12 +183,12 @@ CreateBifid(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 int
-BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     BifidItem *bifPtr = (BifidItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -258,7 +258,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 	    return TCL_OK;
@@ -277,7 +277,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[temp_str_pos] = (char)NULL;
+	    temp_str[temp_str_pos] = '\0';
 
 	    Tcl_AppendElement(interp, temp_str);
 	    return TCL_OK;
@@ -466,7 +466,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetBifid(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -563,7 +563,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 
 	    if (! valid_tip) {
 		BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars,
-			(int)NULL);
+			0);
 		BifidSubstitute(interp, itemPtr, "1", "1",
 			(int) (*curTipLetter));
 		if (BifidIsValidTipPlacement(interp, itemPtr, tip, c-ct)
@@ -574,7 +574,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 
 	    if (! valid_tip) {
 		BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars,
-			(int)NULL);
+			0);
 		BifidSubstitute(interp, itemPtr, "1", "2",
 			(int) (*curTipLetter));
 		if (BifidIsValidTipPlacement(interp, itemPtr, tip, c-ct)
@@ -596,7 +596,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
      */
 
     if (! valid_tip) {
-	BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, (int)NULL);
+	BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, 0);
 	Tcl_SetResult(interp, "", TCL_VOLATILE);
     } else {
 	Tcl_SetResult(interp, validTipLocation, TCL_VOLATILE);
@@ -662,7 +662,7 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int
 
 	    tipBtextValue[0] = tipKeyRow;
 	    tipBtextValue[1] = tipKeyCol;
-	    tipBtextValue[2] = (char)NULL;
+	    tipBtextValue[2] = '\0';
 
 	    /*
 	    fprintf(stderr, "MergeSub %c = %c, %c\n",
@@ -818,7 +818,7 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int
 }
 
 static int
-BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     int keyIndex;
@@ -847,17 +847,17 @@ BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-BifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, int value)
+BifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const char *col, int value)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     int valid_sub=NEW_SUB;
     char ptLetter = (char)value;
-    int ptLetterIndex = (char)NULL;
+    int ptLetterIndex = '\0';
     int keyIndex = 0;
     int iRow = *row-'0';
     int iCol = *col-'0';
     char altLetter[2];
-    altLetter[1] = (char)NULL;
+    altLetter[1] = '\0';
 
     ptLetterIndex = BifidKeycharToInt(ptLetter);
 
@@ -935,18 +935,18 @@ BifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, i
 }
 
 static int
-BifidMergeSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *row, char *col, int value)
+BifidMergeSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const char *col, int value)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     char ptLetter = (char)value;
-    int ptLetterIndex = (char)NULL;
+    int ptLetterIndex = '\0';
     char mRow[2];
     char mCol[2];
 
     mRow[0] = *row;
     mCol[0] = *col;
-    mRow[1] = (char)NULL;
-    mCol[1] = (char)NULL;
+    mRow[1] = '\0';
+    mCol[1] = '\0';
 
     ptLetterIndex = BifidKeycharToInt(ptLetter);
 
@@ -1027,7 +1027,7 @@ GetBifid(Tcl_Interp *interp, CipherItem *itemPtr)
      * Fill in the array of intermediate bifid values
      */
 
-    bifVal = GetBifidText(itemPtr, (char)NULL);
+    bifVal = GetBifidText(itemPtr, '\0');
 
     /*
      * Read out the plaintext from the bifid array
@@ -1051,13 +1051,13 @@ GetBifid(Tcl_Interp *interp, CipherItem *itemPtr)
 	}
 	keyVal[0] = bifVal[blockStart + i%itemPtr->period + 0*blockPeriod];
 	keyVal[1] = bifVal[blockStart + i%itemPtr->period + 1*blockPeriod];
-	keyVal[2] = (char)NULL;
+	keyVal[2] = '\0';
 	pt[i] = BifidKeyvalToLetter(itemPtr, keyVal);
-	if (pt[i] == (char)NULL) {
+	if (pt[i] == '\0') {
 	    pt[i] = ' ';
 	}
     }
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
     ckfree(bifVal);
 
     return pt;
@@ -1099,13 +1099,13 @@ GetBifidText(CipherItem *itemPtr, char emptyChar) {
 	     */
 	}
     }
-    bifVal[itemPtr->length*2] = (char)NULL;
+    bifVal[itemPtr->length*2] = '\0';
 
     return bifVal;
 }
 
 static int
-RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *position)
+RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *position)
 {
     int i;
 
@@ -1127,7 +1127,7 @@ RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *position)
      * substitutions from the existing key.
      */
 
-    BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, (int)NULL);
+    BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, 0);
 
     for(i=0; i < KEYLEN; i++) {
 	int result = BifidSubstitute(interp, itemPtr, position + i*2,
@@ -1177,14 +1177,14 @@ BifidKeyvalToLetter(CipherItem *itemPtr, char *keyVal)
     int letterIndex;
 
     if (!keyVal[0] || !keyVal[1]) {
-	return (char)NULL;
+	return '\0';
     }
 
     if ( (keyVal[0] != KEY1 && keyVal[0] != KEY2 && keyVal[0] != KEY3
 		&& keyVal[0] != KEY4 && keyVal[0] != KEY5)
 	    || (keyVal[1] != KEY1 && keyVal[1] != KEY2 && keyVal[1] != KEY3
 		&& keyVal[1] != KEY4 && keyVal[1] != KEY5)) {
-	return (char)NULL;
+	return '\0';
     }
 
     letterIndex = (keyVal[0]-'0') * 6 + (keyVal[1]-'0');
@@ -1192,7 +1192,7 @@ BifidKeyvalToLetter(CipherItem *itemPtr, char *keyVal)
     if (bifPtr->ptkey[letterIndex] != EMPTY) {
 	return bifPtr->ptkey[letterIndex];
     } else {
-	return (char)NULL;
+	return '\0';
     }
 }
 
@@ -1265,14 +1265,14 @@ EncodeBifidString(CipherItem *itemPtr, char *pt) {
     for (i=0; i < itemPtr->length; i++) {
 	ct[i] = BifidKeyvalToLetter(itemPtr, bifVal + i*2);
     }
-    ct[i] = (char)NULL;
+    ct[i] = '\0';
     ckfree(bifVal);
 
     return ct;
 }
 
 static int
-EncodeBifid(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     char *bifVal = (char *)NULL;
     int count;

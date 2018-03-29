@@ -134,7 +134,7 @@ RecSolveMyszcowski(int depth)
 	    myszItem.orderArr[newCol]++;
 	}
 
-	myszItem.result[myszItem.length] = (char)NULL;
+	myszItem.result[myszItem.length] = '\0';
 
 	/*
 	 * Print the current key/plaintext to the screen to provide
@@ -188,7 +188,7 @@ RecSolveMyszcowski(int depth)
 		myszItem.maxKey[i] = myszItem.key[i];
 	    for(i=0; i < myszItem.length; i++)
 		myszItem.maxresult[i] = myszItem.result[i];
-	    myszItem.maxresult[i] = (char)NULL;
+	    myszItem.maxresult[i] = '\0';
 	}
     } else {
 	register int valid=1;
@@ -344,7 +344,7 @@ main(int argc, char **argv)
 	}
     }
     fclose(inFptr);
-    *e = (char)NULL;
+    *e = '\0';
 
     myszItem.length = strlen(ct);
 
@@ -384,7 +384,7 @@ main(int argc, char **argv)
     for (i=0; i < myszItem.length; i++) {
 	myszItem.ct[i] = ct[i];
     }
-    myszItem.ct[i] = (char)NULL;
+    myszItem.ct[i] = '\0';
 
     /*
      * If the user wants to start the search partway through (ie, they used
@@ -407,7 +407,7 @@ main(int argc, char **argv)
 		exit(1);
 	    }
 	    strncpy(tempKeyString, keyPrefix, (sepPos - keyPrefix));
-	    tempKeyString[sepPos - keyPrefix] = (char)NULL;
+	    tempKeyString[sepPos - keyPrefix] = '\0';
 
 	    if (sscanf(tempKeyString, "%d", &tempKeyVal) != 1) {
 		fprintf(stderr, "Key values > 999 are not permitted\n");
@@ -457,7 +457,7 @@ main(int argc, char **argv)
 		}
 	    }
 
-	    if (*sepPos == (char)NULL) {
+	    if (*sepPos == '\0') {
 		keyPrefix = (char *)NULL;
 	    } else {
 		keyPrefix = sepPos + 1;

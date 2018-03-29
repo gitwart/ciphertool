@@ -166,7 +166,7 @@ doPerm (Tcl_Interp *interp, int n, PermInfo *pInfo)
  */
 
 int
-PermCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+PermCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     int n, i, result;
     PermInfo pInfo;

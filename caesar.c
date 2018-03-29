@@ -29,29 +29,29 @@
 #include <cipherDebug.h>
 
 int CaesarCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
 static int  CreateCaesar	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreCaesar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int CaesarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int CaesarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int CaesarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int EncodeCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 /* Helper function? */
 static void ShiftString		(char *s, int shift);
@@ -106,7 +106,7 @@ CipherType CaesarType = {
  */
 
 static int
-CreateCaesar(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateCaesar(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
     char	temp_ptr[128];
@@ -145,12 +145,12 @@ CreateCaesar(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 int
-CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     CaesarItem *caesarPtr = (CaesarItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -331,7 +331,7 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " undo", (char *)NULL);
 	    return TCL_ERROR;
 	}
-	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, (char)NULL, 0) == TCL_OK) {
+	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, (char *)NULL, 0) == TCL_OK) {
 	    Tcl_SetResult(interp, "", TCL_VOLATILE);
 	    return TCL_OK;
 	} else {
@@ -366,7 +366,7 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c,
 		*e;
@@ -418,7 +418,7 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 	while((*e++ = *c++));
 	Tcl_SetResult(interp, itemPtr->ciphertext, TCL_STATIC);
     } else {
-	badchar[1] = (char)NULL;
+	badchar[1] = '\0';
 	Tcl_AppendResult(interp, "Bad character in ciphertext:  ", badchar,
 	       	(char *)NULL);
     }
@@ -429,7 +429,7 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-CaesarUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+CaesarUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
 
@@ -439,7 +439,7 @@ CaesarUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-CaesarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+CaesarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
 
@@ -507,7 +507,7 @@ It's important that the shift here is interpreted to be in the opposite
 direction from that of the decoding function.
 */
 static int
-EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
 
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
 
@@ -545,7 +545,7 @@ EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 }
 
 static int
-RestoreCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
     int shift = 0;

@@ -35,25 +35,25 @@
 
 void DeleteAristocrat		_ANSI_ARGS_((ClientData));
 int AristocratCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
 static int  CreateAristocrat	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveSwapAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int AristocratUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int AristocratSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int AristocratLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int AristocratRecKeygen	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -62,7 +62,7 @@ static int AristocratApplyBlankKeyword _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int));
 static int AristocratRecSwap	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int EncodeAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 /*
  * This structure contains the data associated with a single aristocrat cipher.
@@ -128,7 +128,7 @@ CipherType AristocratType = {
  */
 
 static int
-CreateAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;
     char	temp_ptr[128];
@@ -143,8 +143,8 @@ CreateAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     aristPtr->isStrict = 0;
 
     for(i=0; i < 26; i++) {
-	aristPtr->ptkey[i] = (char)NULL;
-	aristPtr->ctkey[i] = (char)NULL;
+	aristPtr->ptkey[i] = '\0';
+	aristPtr->ctkey[i] = '\0';
     }
 
     sprintf(temp_ptr, "cipher%d", cipherid);
@@ -187,12 +187,12 @@ DeleteAristocrat(ClientData clientData)
 }
 
 int
-AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     AristocratItem *aristPtr = (AristocratItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -265,7 +265,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = (aristPtr->ptkey[i])?aristPtr->ptkey[i]:' ';
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_AppendElement(interp, "abcdefghijklmnopqrstuvwxyz");
 	    Tcl_AppendElement(interp, temp_str);
@@ -274,7 +274,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = (aristPtr->ptkey[i])?aristPtr->ptkey[i]:' ';
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_AppendElement(interp, "abcdefghijklmnopqrstuvwxyz");
 	    Tcl_AppendElement(interp, temp_str);
@@ -283,7 +283,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = (aristPtr->ctkey[i])?aristPtr->ctkey[i]:' ';
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_AppendElement(interp, "abcdefghijklmnopqrstuvwxyz");
 	    Tcl_AppendElement(interp, temp_str);
@@ -455,7 +455,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 
 	return TCL_OK;
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
-	char *ct = NULL;
+	const char *ct = NULL;
 	if (argc != 1 && argc != 2) {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " undo ?ct?",
 		    (char *)NULL);
@@ -508,10 +508,10 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
-    char	*c,
-		*e;
+    char	*c;
+    char	*e;
     int		valid = TCL_OK,
     		length=0;
     char	badchar[2];
@@ -541,6 +541,7 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
     }
 
     if (valid==TCL_OK) {
+        const char *iter;
 	itemPtr->length = length;
 	if (itemPtr->ciphertext) {
 	    ckfree(itemPtr->ciphertext);
@@ -554,13 +555,13 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 	}
 	itemPtr->length = length;
 
-	c = ctext;
+	iter = ctext;
 	e = itemPtr->ciphertext;
 
-	while((*e++ = *c++));
+	while((*e++ = *iter++));
 	Tcl_SetResult(interp, itemPtr->ciphertext, TCL_STATIC);
     } else {
-	badchar[1] = (char)NULL;
+	badchar[1] = '\0';
 	Tcl_AppendResult(interp, "Bad character in ciphertext:  ", badchar,
 	       	(char *)NULL);
     }
@@ -652,7 +653,7 @@ AristocratLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *st
 	    }
 	}
     }
-    temp[t - tip] = (char)NULL;
+    temp[t - tip] = '\0';
 
     if (valid_tip == NEW_SUB) {
 	i = 0;
@@ -672,7 +673,7 @@ AristocratLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *st
 }
 
 static int
-AristocratUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+AristocratUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;
     char	t;
@@ -687,16 +688,16 @@ AristocratUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 
     if (ct == NULL) {
 	for (i=0; i < 26; i++) {
-	    aristPtr->ptkey[i] = (char)NULL;
-	    aristPtr->ctkey[i] = (char)NULL;
+	    aristPtr->ptkey[i] = '\0';
+	    aristPtr->ctkey[i] = '\0';
 	}
     } else {
 	while (*ct) {
 	    if (*ct >= 'a' && *ct <= 'z') {
 		t = aristPtr->ptkey[*ct - 'a'];
-		aristPtr->ptkey[*ct - 'a'] = (char)NULL;
+		aristPtr->ptkey[*ct - 'a'] = '\0';
 		if (t) {
-		    aristPtr->ctkey[t - 'a'] = (char)NULL;
+		    aristPtr->ctkey[t - 'a'] = '\0';
 		}
 
 	    }
@@ -708,7 +709,7 @@ AristocratUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;
     char	*c,
@@ -735,11 +736,11 @@ AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt
     }
 
     for(i=0;i<26;i++) {
-	key_pt[i] = (char)NULL;
-	key_ct[i] = (char)NULL;
+	key_pt[i] = '\0';
+	key_ct[i] = '\0';
 	ctKeyOrig[i] = aristPtr->ctkey[i];
 	ptKeyOrig[i] = aristPtr->ptkey[i];
-	replacedCtSet[i] = (char)NULL;
+	replacedCtSet[i] = '\0';
 	ctIsReplaced[i] = 0;
     }
 
@@ -820,15 +821,15 @@ AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt
 
 	    if (*p < 'a' || *p > 'z') {
 		if (ptOrig) {
-		    aristPtr->ctkey[ptOrig - 'a'] = (char)NULL;
+		    aristPtr->ctkey[ptOrig - 'a'] = '\0';
 		}
-		aristPtr->ptkey[*c - 'a'] = (char)NULL;
+		aristPtr->ptkey[*c - 'a'] = '\0';
 	    } else {
 		if (ptOrig) {
-		    aristPtr->ctkey[ptOrig-'a'] = (char)NULL;
+		    aristPtr->ctkey[ptOrig-'a'] = '\0';
 		}
 		if (ctOrig) {
-		    aristPtr->ptkey[ctOrig-'a'] = (char)NULL;
+		    aristPtr->ptkey[ctOrig-'a'] = '\0';
 		}
 		aristPtr->ctkey[*p - 'a'] = *c;
 		aristPtr->ptkey[*c - 'a'] = *p;
@@ -851,7 +852,7 @@ AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt
 	    *r++ = i + 'a';
 	}
     }
-    *r = (char)NULL;
+    *r = '\0';
 
     if (valid_sub == BAD_SUB) {
 	/*
@@ -899,13 +900,13 @@ GetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr)
 	c++, index++;
     }
 
-    pt[index] = (char)NULL;
+    pt[index] = '\0';
 
     return pt;
 }
 
 static int
-RestoreAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     if ((itemPtr->typePtr->subProc)(interp, itemPtr, part1, part2, 0)
 	    == BAD_SUB) {
@@ -939,7 +940,7 @@ SolveSwapAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *junk)
     aristPtr->maxValue = 0.0;
     itemPtr->curIteration = 0;
     for (i=0; i < 26; i++) {
-	aristPtr->maxKey[i] = (char)NULL;
+	aristPtr->maxKey[i] = '\0';
     }
 
     /*
@@ -947,7 +948,7 @@ SolveSwapAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *junk)
      */
 
     for(i=0; i < 26; i++) {
-	if (aristPtr->ptkey[i] == (char)NULL) {
+	if (aristPtr->ptkey[i] == '\0') {
 	    initKey = 1;
 	}
     }
@@ -987,7 +988,7 @@ AristocratRecSwap(Tcl_Interp *interp, CipherItem *itemPtr)
     double maxValue = 0.0;
 
     pt = GetAristocrat(interp, itemPtr);
-    if (DefaultScoreValue(interp, (unsigned char *)pt, &aristPtr->maxValue)
+    if (DefaultScoreValue(interp, (const char *)pt, &aristPtr->maxValue)
             != TCL_OK) {
 	return TCL_ERROR;
     }
@@ -1018,7 +1019,7 @@ AristocratRecSwap(Tcl_Interp *interp, CipherItem *itemPtr)
 		aristPtr->ctkey[aristPtr->ptkey[pos2]-'a'] = pos2+'a';
 
 		pt = GetAristocrat(interp, itemPtr);
-		if (DefaultScoreValue(interp, (unsigned char *)pt, &value)
+		if (DefaultScoreValue(interp, (const char *)pt, &value)
                         != TCL_OK) {
 		    return TCL_ERROR;
 		}
@@ -1035,11 +1036,11 @@ AristocratRecSwap(Tcl_Interp *interp, CipherItem *itemPtr)
 
 		    for(i=0; i < 26; i++) {
 			temp_str[i] = aristPtr->ptkey[i];
-			if (temp_str[i] == (char)NULL) {
+			if (temp_str[i] == '\0') {
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[i] = (char)NULL;
+		    temp_str[i] = '\0';
 		    Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 		    Tcl_DStringAppendElement(&dsPtr, pt);
@@ -1074,11 +1075,11 @@ AristocratRecSwap(Tcl_Interp *interp, CipherItem *itemPtr)
 
 		    for(i=0; i < 26; i++) {
 			temp_str[i] = aristPtr->ptkey[i];
-			if (temp_str[i] == (char)NULL) {
+			if (temp_str[i] == '\0') {
 			    temp_str[i] = ' ';
 			}
 		    }
-		    temp_str[26] = (char)NULL;
+		    temp_str[26] = '\0';
 		    Tcl_DStringAppendElement(&dsPtr, temp_str);
 
 		    sprintf(temp_str, "%g", value);
@@ -1181,7 +1182,7 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
      */
     /*
     for(i=0; i < period; i++) {
-	fixedKey[i] = (char)NULL;
+	fixedKey[i] = '\0';
     }
     */
 
@@ -1201,12 +1202,12 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 		if (fixedKey[j]) {
 		    aristPtr->ctkey[fixedKey[j]-'a'] = (i+j)%26 + 'a';
 		} else {
-		    aristPtr->ctkey[fixedKey[j]-'a'] = (char)NULL;
+		    aristPtr->ctkey[fixedKey[j]-'a'] = '\0';
 		}
 	    }
 	} else if (aristPtr->solKeyType == 2) {
 	    for(j=0; j < 26; j++) {
-		aristPtr->ptkey[j] = (char)NULL;
+		aristPtr->ptkey[j] = '\0';
 	    }
 	    for(j=0; j < 26; j++) {
 		keyedAlphabet[(i+j)%26] = fixedKey[j];
@@ -1214,7 +1215,7 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 		if (fixedKey[j]) {
 		    aristPtr->ptkey[fixedKey[j]-'a'] = (i+j)%26 + 'a';
 		} else {
-		    aristPtr->ptkey[fixedKey[j]-'a'] = (char)NULL;
+		    aristPtr->ptkey[fixedKey[j]-'a'] = '\0';
 		}
 	    }
 	} else if (aristPtr->solKeyType == 3) {
@@ -1222,8 +1223,8 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 	     * TODO:  Test this.  I think it's wrong.
 	     */
 	    for(j=0; j < 26; j++) {
-		aristPtr->ptkey[j] = (char)NULL;
-		aristPtr->ctkey[j] = (char)NULL;
+		aristPtr->ptkey[j] = '\0';
+		aristPtr->ctkey[j] = '\0';
 	    }
 	    for(j=0; j < 26; j++) {
 		keyedAlphabet[(i+j)%26] = fixedKey[j];
@@ -1234,10 +1235,10 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 		}
 	    }
 	}
-	keyedAlphabet[26] = (char)NULL;
+	keyedAlphabet[26] = '\0';
 
 	pt = GetAristocrat(interp, itemPtr);
-	if (DefaultScoreValue(interp, (unsigned char *)pt, &value) != TCL_OK) {
+	if (DefaultScoreValue(interp, (const char *)pt, &value) != TCL_OK) {
 	    return TCL_ERROR;
 	}
 
@@ -1254,11 +1255,11 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 	    Tcl_DStringStartSublist(&dsPtr);
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = keyedAlphabet[i];
-		if (temp_str[i] == (char)NULL) {
+		if (temp_str[i] == '\0') {
 		    temp_str[i] = ' ';
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, temp_str);
 	    Tcl_DStringAppendElement(&dsPtr, aristPtr->keyWord);
 	    Tcl_DStringEndSublist(&dsPtr);
@@ -1291,11 +1292,11 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 	    Tcl_DStringStartSublist(&dsPtr);
 	    for(i=0; i < 26; i++) {
 		temp_str[i] = keyedAlphabet[i];
-		if (temp_str[i] == (char)NULL) {
+		if (temp_str[i] == '\0') {
 		    temp_str[i] = ' ';
 		}
 	    }
-	    temp_str[26] = (char)NULL;
+	    temp_str[26] = '\0';
 	    Tcl_DStringAppendElement(&dsPtr, temp_str);
 	    Tcl_DStringAppendElement(&dsPtr, aristPtr->keyWord);
 	    Tcl_DStringEndSublist(&dsPtr);
@@ -1330,7 +1331,7 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 }
 
 static int
-EncodeAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
     char **argv;

@@ -34,28 +34,28 @@
 #define SOLVE_THOROUGH	1
 
 static int  CreateHomophonic	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteHomophonic		_ANSI_ARGS_((ClientData));
 static char *GetHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int HomophonicCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int HomophonicUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int HomophonicSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int HomophonicLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static char HomophonicCtToPt	_ANSI_ARGS_((int ct, char key));
 static char HomophonicPtToKey	_ANSI_ARGS_((char pt, int ct));
 static char *HomophonicGetFullKey _ANSI_ARGS_((CipherItem *itemPtr));
 static int EncodeHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 
 typedef struct HomophonicItem {
@@ -89,7 +89,7 @@ CipherType HomophonicType = {
 };
 
 static int
-CreateHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
     char	temp_ptr[128];
@@ -97,10 +97,10 @@ CreateHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     int		i;
 
     homoPtr->header.period = 0;
-    homoPtr->key[0] = (char)NULL;
-    homoPtr->key[1] = (char)NULL;
-    homoPtr->key[2] = (char)NULL;
-    homoPtr->key[3] = (char)NULL;
+    homoPtr->key[0] = '\0';
+    homoPtr->key[1] = '\0';
+    homoPtr->key[2] = '\0';
+    homoPtr->key[3] = '\0';
     homoPtr->int_ct = (int *)NULL;
     homoPtr->int_ct_length = 0;
     homoPtr->prv_ciphertext = (char *)NULL;
@@ -149,12 +149,12 @@ DeleteHomophonic(ClientData clientData)
 }
 
 int
-HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[1024];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -229,7 +229,7 @@ HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 4; i++) {
 		temp_str[i] = (homoPtr->key[i]?homoPtr->key[i]:' ');
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -237,7 +237,7 @@ HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < 4; i++) {
 		temp_str[i] = (homoPtr->key[i]?homoPtr->key[i]:' ');
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_AppendElement(interp, "01 26 51 76");
 	    Tcl_AppendElement(interp, temp_str);
@@ -375,7 +375,7 @@ HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 static int
-SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
     char	*c=(char *)NULL;
@@ -384,8 +384,6 @@ SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
     int		count=0;
     int		i,
     		val;
-
-    c = ctext;
 
     /*
      * Count the number of valid characters
@@ -508,7 +506,7 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *st
 	    }
 	}
     }
-    temp[t - tip] = (char)NULL;
+    temp[t - tip] = '\0';
 
     if (valid_tip == NEW_SUB) {
 	i = 0;
@@ -524,7 +522,7 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *st
 }
 
 static int
-HomophonicUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+HomophonicUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
     int		*ctIntarr=(int *)NULL;
@@ -539,7 +537,7 @@ HomophonicUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 
     for(i=0; i < count; i++) {
 	col = (ctIntarr[i]-1)/25;
-	homoPtr->key[col] = (char)NULL;
+	homoPtr->key[col] = '\0';
     }
     ckfree((char *)ctIntarr);
 
@@ -547,11 +545,11 @@ HomophonicUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-HomophonicSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+HomophonicSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
-    char	*p,
-		q[13],
+    const char	*p;
+    char	q[13],
 		r[13];
     char	e,
     		f;
@@ -569,7 +567,7 @@ HomophonicSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt
 
 
     for(i=0;i<4;i++) {
-	key[i] = (char)NULL;
+	key[i] = '\0';
 	col_used[i] = 0;
     }
 
@@ -692,7 +690,7 @@ GetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr)
 	    pt[i] = ' ';
     }
 
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
 
     return pt;
 }
@@ -724,7 +722,7 @@ HomophonicPtToKey(char pt, int ct)
     char key;
 
     if (pt < 'a' || pt > 'z') {
-	return (char)NULL;
+	return '\0';
     }
 
     pt -= 'a';
@@ -742,7 +740,7 @@ HomophonicPtToKey(char pt, int ct)
 }
 
 static int
-RestoreHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     int result;
 
@@ -786,7 +784,7 @@ SolveHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
                     for (homoPtr->key[3]='a'; homoPtr->key[3] <= 'z'; homoPtr->key[3]++) {
                         double value;
                         pt = GetHomophonic(interp, itemPtr);
-                        if (DefaultScoreValue(interp, (unsigned char *)pt, &value)
+                        if (DefaultScoreValue(interp, pt, &value)
                                 != TCL_OK) {
                             ckfree(pt);
                             return TCL_ERROR;
@@ -806,7 +804,7 @@ SolveHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     }
 
 
-    maxkey[4] = (char)NULL;
+    maxkey[4] = '\0';
     homoPtr->key[0] = maxkey[0];
     homoPtr->key[1] = maxkey[1];
     homoPtr->key[2] = maxkey[2];
@@ -835,7 +833,7 @@ HomophonicGetFullKey (CipherItem *itemPtr)
     Tcl_DStringEndSublist(&dsPtr);
 
     Tcl_DStringStartSublist(&dsPtr);
-    temp[1] = (char)NULL;
+    temp[1] = '\0';
     for (i=1; i <= 100; i++) {
 	if (homoPtr->key[(i-1)/25])
 	    temp[0] = HomophonicCtToPt(i, homoPtr->key[(i-1)/25]);
@@ -869,7 +867,7 @@ Reduce (char c) {
 
 
 int
-EncodeHomophonic (Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key)
+EncodeHomophonic (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key)
 {
     char offset[4];
     char firstPart[] = "01265176";

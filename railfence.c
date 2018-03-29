@@ -29,21 +29,21 @@
 #include <cipherDebug.h>
 
 static int  CreateRailfence	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void DeleteRailfence		_ANSI_ARGS_((ClientData));
 static char *GetRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int RailfenceCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int RailfenceUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int RailfenceSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int RailfenceLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static void RailfenceInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -53,7 +53,7 @@ static int RailfenceSwapRails	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int RailfenceMoveStart	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int));
 static void RailfenceSetKey	_ANSI_ARGS_((CipherItem *, int, int));
-static char *RailfenceTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+static char *RailfenceTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
 
 typedef struct RailfenceItem {
     CipherItem header;
@@ -83,7 +83,7 @@ CipherType RailfenceType = {
 };
 
 static int
-CreateRailfence(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateRailfence(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     RailfenceItem *railPtr = (RailfenceItem *)itemPtr;
     char	temp_ptr[128];
@@ -135,7 +135,7 @@ DeleteRailfence(ClientData clientData)
 }
 
 static int
-SetRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetRailfence(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		valid = TCL_OK,
@@ -179,7 +179,7 @@ SetRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-RailfenceUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+RailfenceUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     RailfenceInitKey(itemPtr, itemPtr->period);
 
@@ -187,7 +187,7 @@ RailfenceUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-RailfenceSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *offset, int col)
+RailfenceSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *offset, int col)
 {
     RailfenceItem *railPtr = (RailfenceItem *)itemPtr;
 
@@ -203,9 +203,7 @@ RailfenceSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *off
 	return TCL_ERROR;
     }
 
-    *offset-='1';
-
-    railPtr->key[col] = *offset;
+    railPtr->key[col] = *offset - '1';
 
     RailfenceAdjustKey(itemPtr);
 
@@ -220,9 +218,8 @@ GetRailfence(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static char *
-RailfenceTransform(CipherItem *itemPtr, char *text, int mode) {
+RailfenceTransform(CipherItem *itemPtr, const char *text, int mode) {
     RailfenceItem *railPtr = (RailfenceItem *)itemPtr;
-    char	*c;
     int		i, col, pos;
     char	*result=(char *)ckalloc(sizeof(char) * itemPtr->length + 1);
     int		newCol, row, numCols;
@@ -261,8 +258,6 @@ RailfenceTransform(CipherItem *itemPtr, char *text, int mode) {
 	pos = temp_pos;
     }
 
-    c = itemPtr->ciphertext;
-
     for (col=0; col < itemPtr->length ; col++) {
 	result[col] = '_';
     }
@@ -294,7 +289,7 @@ RailfenceTransform(CipherItem *itemPtr, char *text, int mode) {
 	orderArr[newCol]++;
     }
 
-    result[itemPtr->length] = (char)NULL;
+    result[itemPtr->length] = '\0';
 
     ckfree((char *)startPos);
     ckfree((char *)colArr);
@@ -362,7 +357,7 @@ RailfenceAdjustKey(CipherItem *itemPtr)
 }
 
 static int
-RestoreRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *junk)
+RestoreRailfence(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *junk)
 {
     RailfenceItem *railPtr = (RailfenceItem *)itemPtr;
     int i;
@@ -419,7 +414,7 @@ SolveRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 	pt = GetRailfence(interp, itemPtr);
 
 	if (pt) {
-	    if (DefaultScoreValue(interp, (unsigned char *)pt, &value)
+	    if (DefaultScoreValue(interp, pt, &value)
                     != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -443,7 +438,7 @@ SolveRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 	pt = GetRailfence(interp, itemPtr);
 
 	if (pt) {
-	    if (DefaultScoreValue(interp, (unsigned char *)pt, &value)
+	    if (DefaultScoreValue(interp, pt, &value)
                     != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -467,7 +462,7 @@ SolveRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     }
     RailfenceAdjustKey(itemPtr);
 
-    maxkey[i] = (char)NULL;
+    maxkey[i] = '\0';
 
     ckfree((char *)maxKey);
 
@@ -660,12 +655,12 @@ RailfenceMoveStart(Tcl_Interp *interp, CipherItem *itemPtr, int rail, int dir)
 }
 
 int
-RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     RailfenceItem *railPtr = (RailfenceItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -714,7 +709,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < itemPtr->period; i++) {
 		temp_str[i] = railPtr->key[i]+'a';
 	    }
-	    temp_str[itemPtr->period] = (char)NULL;
+	    temp_str[itemPtr->period] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 

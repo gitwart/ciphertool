@@ -44,23 +44,23 @@ typedef struct PlayfairItem {
 } PlayfairItem;
 
 static int  CreatePlayfair	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void  DeletePlayfair		_ANSI_ARGS_((ClientData));
 static int  CreateBigPlayfair	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetPlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetPlayfair		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestorePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolvePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int PlayfairCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int PlayfairUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int PlayfairSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int PlayfairLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static int PlayfairSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
@@ -72,10 +72,10 @@ static void DecodePair	_ANSI_ARGS_((PlayfairItem *, char, char,
 static int PlayfairSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
 static int PlayfairLetterToKeyIndex _ANSI_ARGS_((PlayfairItem *, char));
 static int EncodePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *DecodePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
-static char *PlayfairAddNulls   _ANSI_ARGS_((char *, int));
+				const char *, int));
+static char *PlayfairAddNulls   _ANSI_ARGS_((const char *, int));
 
 CipherType PlayfairType = {
     "playfair",
@@ -114,7 +114,7 @@ CipherType BigplayfairType = {
 };
 
 static int
-CreateBigPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateBigPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     char	temp_ptr[128];
@@ -132,7 +132,7 @@ CreateBigPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv
     for(i=0; i < playPtr->keyPeriod; i++) {
 	playPtr->key[i] = (char *)ckalloc(sizeof(char) * playPtr->keyPeriod);
 	for(j=0; j < playPtr->keyPeriod; j++) {
-	    playPtr->key[i][j] = (char)NULL;
+	    playPtr->key[i][j] = '\0';
 	}
     }
     playPtr->keyValPos = (char *)ckalloc(sizeof(char *) * playPtr->keyLen + 1);
@@ -163,7 +163,7 @@ CreateBigPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv
 }
 
 static int
-CreatePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreatePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     char	temp_ptr[128];
@@ -181,7 +181,7 @@ CreatePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     for(i=0; i < playPtr->keyPeriod; i++) {
 	playPtr->key[i] = (char *)ckalloc(sizeof(char) * playPtr->keyPeriod);
 	for(j=0; j < playPtr->keyPeriod; j++) {
-	    playPtr->key[i][j] = (char)NULL;
+	    playPtr->key[i][j] = '\0';
 	}
     }
     playPtr->keyValPos = (char *)ckalloc(sizeof(char *) * playPtr->alphabetLen + 1);
@@ -232,7 +232,7 @@ DeletePlayfair(ClientData clientData)
 }
 
 static int
-SetPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     char	*c;
     int		length=0;
@@ -274,7 +274,7 @@ SetPlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 }
 
 static int
-PlayfairUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
+PlayfairUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset)
 {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     int i, j;
@@ -282,7 +282,7 @@ PlayfairUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
     if (! ct) {
 	for(i=0; i < playPtr->keyPeriod; i++) {
 	    for(j=0; j < playPtr->keyPeriod; j++) {
-		playPtr->key[i][j] = (char)NULL;
+		playPtr->key[i][j] = '\0';
 	    }
 	}
 	for(i=0; i < playPtr->alphabetLen; i++) {
@@ -302,7 +302,7 @@ PlayfairUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 
 	    if (keyVal) {
 		keyVal--;
-		playPtr->key[keyVal/playPtr->keyPeriod][keyVal%playPtr->keyPeriod]=(char)NULL;
+		playPtr->key[keyVal/playPtr->keyPeriod][keyVal%playPtr->keyPeriod]='\0';
 	    }
 
 	    ct++;
@@ -313,7 +313,7 @@ PlayfairUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int offset)
 }
 
 static int
-PlayfairSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int offset)
+PlayfairSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     int row, col;
@@ -352,8 +352,6 @@ PlayfairSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, 
 static char *
 GetPlayfair(Tcl_Interp *interp, CipherItem *itemPtr)
 {
-    char	*result = (char *)NULL;
-
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
 		TCL_STATIC);
@@ -367,13 +365,13 @@ GetPlayfair(Tcl_Interp *interp, CipherItem *itemPtr)
  * Utility function for encoding/decoding a playfair cipher.
  */
 static char *
-DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
+DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *text, int mode) {
     int		i;
-    char	pt1 = (char)NULL;
-    char	pt2 = (char)NULL;
+    char	pt1 = '\0';
+    char	pt2 = '\0';
     char	*result=(char *)ckalloc(sizeof(char) * itemPtr->length * 2 + 1);
-    char	ct1 = (char)NULL;
-    char	ct2 = (char)NULL;
+    char	ct1 = '\0';
+    char	ct2 = '\0';
     int         numNulls = 0;
 
     if (itemPtr->period > 0) {
@@ -394,8 +392,8 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
                 int ctIndex1 = index1 - (numNulls - nullsInBlock);
                 int ctIndex2 = ctIndex1 + blockLen - nullsInBlock;
 
-		pt1 = (char)NULL;
-		pt2 = (char)NULL;
+		pt1 = '\0';
+		pt2 = '\0';
 		ct1 = text[ctIndex1];
 		ct2 = text[ctIndex2];
                 /*
@@ -415,10 +413,10 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
 			&pt1, &pt2,
 			mode);
 
-		if (pt1 == (char)NULL) {
+		if (pt1 == '\0') {
 		    pt1 = ' ';
 		}
-		if (pt2 == (char)NULL) {
+		if (pt2 == '\0') {
 		    pt2 = ' ';
 		}
 
@@ -428,8 +426,8 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
 	}
     } else {
 	for(i=0; i < itemPtr->length; i+=2) {
-	    pt1 = (char)NULL;
-	    pt2 = (char)NULL;
+	    pt1 = '\0';
+	    pt2 = '\0';
 	    if (text[i] == text[i+1]) {
 		Tcl_SetResult(interp,
 			"Invalid double letters found in ciphertext",
@@ -441,10 +439,10 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
 		    text[i], text[i+1],
 		    &pt1, &pt2,
 		    mode);
-	    if (pt1 == (char)NULL) {
+	    if (pt1 == '\0') {
 		pt1 = ' ';
 	    }
-	    if (pt2 == (char)NULL) {
+	    if (pt2 == '\0') {
 		pt2 = ' ';
 	    }
 
@@ -452,7 +450,7 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *text, int mode) {
 	    result[i+1] = pt2;
 	}
     }
-    result[itemPtr->length + numNulls] = (char)NULL;
+    result[itemPtr->length + numNulls] = '\0';
 
     return result;
 }
@@ -485,11 +483,11 @@ DecodePair(PlayfairItem *playPtr, char in1, char in2, char *out1, char *out2, in
     int keyPos2 = playPtr->keyValPos[keyPosIndex2];
 
     if (keyPosIndex1 == INVALID_KEY_INDEX || keyPosIndex2 == INVALID_KEY_INDEX) {
-	*out1 = (char)NULL;
-	*out2 = (char)NULL;
+	*out1 = '\0';
+	*out2 = '\0';
     } else if ((keyPos1 == keyPos2) && keyPos1 && keyPos2) {
-	*out1 = (char)NULL;
-	*out2 = (char)NULL;
+	*out1 = '\0';
+	*out2 = '\0';
     } else if (keyPos1 && keyPos2) {
 	keyPos1--;
 	keyPos2--;
@@ -534,7 +532,7 @@ DecodePair(PlayfairItem *playPtr, char in1, char in2, char *out1, char *out2, in
 }
 
 static int
-RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
+RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const char *dummy)
 {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     int i;
@@ -570,7 +568,7 @@ RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *key, char *dummy)
 	col = i % playPtr->keyPeriod;
 
 	if (key[i] == ' ') {
-	    playPtr->key[row][col] = (char)NULL;
+	    playPtr->key[row][col] = '\0';
 	} else {
 	    playPtr->key[row][col] = key[i];
 	    playPtr->keyValPos[keyValIndex] = i+1;
@@ -686,12 +684,12 @@ PlayfairSwapRows(Tcl_Interp *interp, CipherItem *itemPtr, int row1, int row2)
 }
 
 int
-PlayfairCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+PlayfairCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     PlayfairItem *playPtr = (PlayfairItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     int		i;
     char	*tPtr=(char *)NULL;
 
@@ -747,7 +745,7 @@ PlayfairCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[playPtr->keyPeriod*playPtr->keyPeriod] = (char)NULL;
+	    temp_str[playPtr->keyPeriod*playPtr->keyPeriod] = '\0';
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 
 	    return TCL_OK;
@@ -992,11 +990,10 @@ PlayfairSetPeriod(Tcl_Interp *interp, CipherItem *itemPtr, int period) {
 }
 
 static int
-EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     char *ct = (char *)NULL;
     char *newPt = (char *)NULL;
-    int curPos=0;
     int count;
     char **argv;
 
@@ -1056,7 +1053,7 @@ EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 }
 
 static char *
-PlayfairAddNulls(char *pt, int period) {
+PlayfairAddNulls(const char *pt, int period) {
     /*
      * Create a new buffer that's twice the size of the plaintext to
      * account for any extra inserted null characters.
@@ -1102,7 +1099,7 @@ PlayfairAddNulls(char *pt, int period) {
                 newPt[curPos++] = 'x';
             }
         }
-        newPt[curPos] = (char)NULL;
+        newPt[curPos] = '\0';
     } else {
         int addedNull=0;
 	int block;
@@ -1114,7 +1111,7 @@ PlayfairAddNulls(char *pt, int period) {
         for (i=0; i < ptLength; i++) {
             newPt[i] = pt[i];
         }
-        newPt[i] = (char)NULL;
+        newPt[i] = '\0';
 
         do {
             addedNull = 0;
@@ -1128,7 +1125,6 @@ PlayfairAddNulls(char *pt, int period) {
                 if (blockLen >= period) {
                     blockLen = period;
                 }
-                int nullsInBlock = 0;
                 for (i=0; i < blockLen && !addedNull; i++) {
                     int index1 = block * 2 * period + i;
                     int index2 = index1 + blockLen;
@@ -1158,7 +1154,7 @@ PlayfairAddNulls(char *pt, int period) {
             }
         } while (addedNull);
 
-        newPt[ptLength + numNulls] = (char)NULL;
+        newPt[ptLength + numNulls] = '\0';
     }
 
     return newPt;

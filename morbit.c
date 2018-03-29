@@ -32,29 +32,29 @@
 #include <cipherDebug.h>
 
 static int  CreateMorbit	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreMorbit	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 int MorbitCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 static int MorbitUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int MorbitSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int MorbitLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
-static char *MorbitToMorse 	_ANSI_ARGS_((CipherItem *, char *));
-static int MorbitStringToKeyElem _ANSI_ARGS_((char *));
+static char *MorbitToMorse 	_ANSI_ARGS_((CipherItem *, const char *));
+static int MorbitStringToKeyElem _ANSI_ARGS_((const char *));
 static char *MorbitKeyElemToString _ANSI_ARGS_((int));
 int MorbitSolveValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
 	    			int *, int));
 static int EncodeMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 static char morbit_key_elems[10][3] = {"  ", "..", ".-", ".x", "-.", "--", "-x", "x.", "x-", "xx"};
 
@@ -89,7 +89,7 @@ CipherType MorbitType = {
 };
 
 static int
-CreateMorbit(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateMorbit(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     MorbitItem *morPtr = (MorbitItem *)itemPtr;
     char	temp_ptr[128];
@@ -99,9 +99,9 @@ CreateMorbit(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
     morPtr->header.period = 0;
     morPtr->solPt = (char *)NULL;
     for(i=0; i < 9; i++) {
-	morPtr->key[i] = (char)NULL;
+	morPtr->key[i] = '\0';
 	morPtr->histogram[i] = 0;
-	morPtr->maxSolKey[i] = (char)NULL;
+	morPtr->maxSolKey[i] = '\0';
     }
 
     sprintf(temp_ptr, "cipher%d", cipherid);
@@ -128,7 +128,7 @@ CreateMorbit(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
 }
 
 static int
-SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     MorbitItem *morPtr = (MorbitItem *)itemPtr;
     char	*c=(char *)NULL;
@@ -204,14 +204,14 @@ MorbitLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
 }
 
 static int
-MorbitUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+MorbitUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     MorbitItem *morPtr = (MorbitItem *)itemPtr;
     int		i;
 
     if (ct == (char *)NULL) {
 	for(i=0; i < 9; i++) {
-	    morPtr->key[i] = (char)NULL;
+	    morPtr->key[i] = '\0';
 	}
 
 	return TCL_OK;
@@ -219,7 +219,7 @@ MorbitUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 
     for(i=0; i < strlen(ct); i++) {
 	if (IsValidChar(itemPtr, ct[i])) {
-	    morPtr->key[ct[i]-'1'] = (char)NULL;
+	    morPtr->key[ct[i]-'1'] = '\0';
 	}
     }
 
@@ -232,11 +232,11 @@ MorbitUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
  */
 
 static int
-MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     MorbitItem *morPtr = (MorbitItem *)itemPtr;
-    char	*p,
-		q[30];
+    const char	*p;
+    char	q[30];
     int		e;
     char	f;
     char	key[10];
@@ -248,7 +248,7 @@ MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 
 
     for(i=0;i<10;i++) {
-	key[i] = (char)NULL;
+	key[i] = '\0';
 	index_used[i] = 0;
 	keyval_used[i] = 0;
     }
@@ -312,7 +312,7 @@ MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
      * Look for "alternate" substitutions
      */
 
-    q[0] = (char)NULL;
+    q[0] = '\0';
     p = pt;
     for(i=0, p=pt; i < strlen(ct) && *p && valid_sub != BAD_SUB; i++, p+=2) {
 	if (ct[i] != ' ') {
@@ -322,7 +322,7 @@ MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 		valid_sub = ALT_SUB;
 		if (! index_used[e]) {
 		    sprintf(q+qcount*3, "%2d ", (int)e);
-		    q[qcount*3 + 1] = (char)NULL;
+		    q[qcount*3 + 1] = '\0';
 		    qcount++;
 		}
 	    }
@@ -349,7 +349,7 @@ MorbitSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, in
 }
 
 static char *
-MorbitToMorse(CipherItem *itemPtr, char *key)
+MorbitToMorse(CipherItem *itemPtr, const char *key)
 {
     MorbitItem *morPtr = (MorbitItem *)itemPtr;
     char	*mt=(char *)ckalloc(sizeof(char) * itemPtr->length * 2 + 1);
@@ -373,7 +373,7 @@ MorbitToMorse(CipherItem *itemPtr, char *key)
 	}
     }
 
-    mt[i*2] = (char)NULL;
+    mt[i*2] = '\0';
 
     return mt;
 }
@@ -426,7 +426,7 @@ GetSpaceyMorbit(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static int
-RestoreMorbit(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *part2)
+RestoreMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     if( (itemPtr->typePtr->subProc)(interp, itemPtr, part1, part2, 0) == BAD_SUB) {
 	return TCL_ERROR;
@@ -458,7 +458,7 @@ SolveMorbit(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     itemPtr->curIteration = 0;
     morPtr->solValidCount = 0;
     for(i=0; i < 9; i++) {
-	morPtr->maxSolKey[i] = (char)NULL;
+	morPtr->maxSolKey[i] = '\0';
     }
     if (morPtr->solPt) {
 	ckfree(morPtr->solPt);
@@ -536,7 +536,7 @@ MorbitSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int length
     if (mt && MorseValid(mt)) {
 	morPtr->solValidCount++;
 	if (MorseStringToString(mt, morPtr->solPt) != NULL) {
-	    if (DefaultScoreValue(interp, (unsigned char *)morPtr->solPt, &val) != TCL_OK) {
+	    if (DefaultScoreValue(interp, morPtr->solPt, &val) != TCL_OK) {
 		return TCL_ERROR;
 	    }
 	    if (val > morPtr->maxSolVal) {
@@ -602,7 +602,7 @@ MorbitSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int length
 }
 
 static int
-MorbitStringToKeyElem(char *string)
+MorbitStringToKeyElem(const char *string)
 {
     char c1, c2;
     int value=0;
@@ -649,12 +649,12 @@ MorbitKeyElemToString(int val) {
  */
 
 static int
-EncodeMorbit (Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeMorbit (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
 
     int ct_length;
     char *mt = (char *) NULL;
     char *ct = (char *) NULL;
-    char spacestring[] = {SPACE, (char) NULL};
+    char spacestring[] = {SPACE, '\0'};
 
     char morbit_key[19]; /* 2*9+1 == 19 */
     char permutation[9];
@@ -750,12 +750,12 @@ EncodeMorbit (Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
 }
 
 int
-MorbitCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+MorbitCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     MorbitItem *morPtr = (MorbitItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[1024];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -827,7 +827,7 @@ MorbitCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    }
 		}
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -840,7 +840,7 @@ MorbitCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 		    temp_str[i*2] = temp_str[i*2+1] = ' ';
 		}
 	    }
-	    temp_str[i*2] = (char)NULL;
+	    temp_str[i*2] = '\0';
 
 	    Tcl_AppendElement(interp, "123456789");
 	    Tcl_AppendElement(interp, temp_str);

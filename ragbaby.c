@@ -29,7 +29,7 @@
 
 void DeleteRagbaby		_ANSI_ARGS_((ClientData));
 int RagbabyCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
+				int, const char **));
 
 #define MAXKEYLEN	24
 #define EMPTY		-1
@@ -39,23 +39,23 @@ int RagbabyCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  */
 
 static int  CreateRagbaby	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 static char *GetRagbaby		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static int  SetRagbaby		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+				const char *));
 static int  RestoreRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int  SolveRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *));
 static int RagbabyUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int RagbabySubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+				const char *, const char *, int));
 static int RagbabyLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *));
 static char *GetRagbabyOffsets	_ANSI_ARGS_((CipherItem *, char));
 static int EncodeRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 
 /*
  * This structure contains the data associated with a single ragbaby cipher.
@@ -120,7 +120,7 @@ CipherType RagbabyType = {
  */
 
 static int
-CreateRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
     char	temp_ptr[128];
@@ -172,12 +172,12 @@ DeleteRagbaby(ClientData clientData)
 }
 
 int
-RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
+RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     RagbabyItem *ragPtr = (RagbabyItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -225,7 +225,7 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < ragPtr->keylen; i++) {
 		temp_str[i] = (ragPtr->key[i]==EMPTY)?' ':ragPtr->key[i];
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 	    tPtr = GetRagbabyOffsets(itemPtr, ' ');
 	    if (!tPtr) {
 		return TCL_ERROR;
@@ -237,7 +237,7 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    for(i=0; i < ragPtr->keylen; i++) {
 		temp_str[i] = (ragPtr->key[i]==EMPTY)?' ':ragPtr->key[i];
 	    }
-	    temp_str[i] = (char)NULL;
+	    temp_str[i] = '\0';
 
 	    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
 	    return TCL_OK;
@@ -474,7 +474,7 @@ GetOffsets(char *text, int alphabetSize) {
 }
 
 static int
-SetRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
+SetRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
     int length = CountValidChars(itemPtr, ctext);
@@ -520,7 +520,7 @@ RagbabyLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start
 }
 
 static int
-RagbabyUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
+RagbabyUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_SetResult(interp,
 	    "No undo function defined for ragbaby ciphers.",
@@ -529,7 +529,7 @@ RagbabyUndo(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, int dummy)
 }
 
 static int
-RagbabySubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt, int dummy)
+RagbabySubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     Tcl_SetResult(interp, "Substitution is not yet defined for ragbaby ciphers",
 	    TCL_VOLATILE);
@@ -615,7 +615,7 @@ GetRagbaby(Tcl_Interp *interp, CipherItem *itemPtr)
 	    }
 	}
     }
-    pt[i] = (char)NULL;
+    pt[i] = '\0';
 	
     return pt;
 }
@@ -624,7 +624,7 @@ GetRagbaby(Tcl_Interp *interp, CipherItem *itemPtr)
  * TODO:  Restore will fail if there are any empty spaces in the key
  */
 static int
-RestoreRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, char *savedKey, char *dummy)
+RestoreRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, const char *dummy)
 {
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
     int i;
@@ -701,7 +701,7 @@ GetRagbabyOffsets(CipherItem *itemPtr, char blankChar)
 	}
     }
 
-    offsetStr[i] = (char)NULL;
+    offsetStr[i] = '\0';
 
     return offsetStr;
 }
@@ -711,7 +711,7 @@ GetRagbabyOffsets(CipherItem *itemPtr, char blankChar)
  * It doesn't have to be a permutation of the whole alphabet.
  */
 static int
-EncodeRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
+EncodeRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
     int i, n, count, offset;
