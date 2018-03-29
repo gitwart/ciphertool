@@ -174,7 +174,7 @@ typedef int	SolveCiphertextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 typedef int	RestoreCiphertextProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 		const char *, const char *));
 typedef int	LocateTipProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-		char *, char *));
+		const char *, const char *));
 typedef int	SubstituteProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 		const char *, const char *, int));
 typedef int	UndoProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,

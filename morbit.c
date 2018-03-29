@@ -47,7 +47,7 @@ static int MorbitUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int MorbitSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int MorbitLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *MorbitToMorse 	_ANSI_ARGS_((CipherItem *, const char *));
 static int MorbitStringToKeyElem _ANSI_ARGS_((const char *));
 static char *MorbitKeyElemToString _ANSI_ARGS_((int));
@@ -196,7 +196,7 @@ SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
  */
 
 static int
-MorbitLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+MorbitLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for morbit ciphers.",
 	    TCL_STATIC);

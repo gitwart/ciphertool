@@ -49,7 +49,7 @@ static int GromarkUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int GromarkSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int GromarkLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void GromarkInitOffset	_ANSI_ARGS_((CipherItem *, int));
 static int GromarkChainSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char, int));
@@ -535,7 +535,7 @@ SetGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
  * TODO
  */
 static int
-GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     int		valid_tip=0,

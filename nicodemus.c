@@ -54,7 +54,7 @@ static int NicodemusUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int NicodemusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int NicodemusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void NicodemusInitKey	_ANSI_ARGS_((CipherItem *, int));
 static int NicodemusSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int));
@@ -752,7 +752,7 @@ NicodemusInitKey(CipherItem *itemPtr, int period)
  */
 
 static int
-NicodemusLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+NicodemusLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for nicodemus ciphers.",
 	    TCL_STATIC);

@@ -54,7 +54,7 @@ static int QuagmireUndo	        _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int QuagmireSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int QuagmireLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int EncodeQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 static int SolveQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -561,7 +561,7 @@ SetQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-QuagmireLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+QuagmireLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_AppendResult(interp,
 	    "No locate tip function defined for ",

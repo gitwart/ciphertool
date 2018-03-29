@@ -60,7 +60,7 @@ static int MyszcowskiUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int MyszcowskiSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int MyszcowskiLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void MyszcowskiInitKey	_ANSI_ARGS_((CipherItem *, int));
 static void MyszcowskiAdjustKey	_ANSI_ARGS_((CipherItem *));
 static int RecSolveMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -728,7 +728,7 @@ MyszcowskiInitKey(CipherItem *itemPtr, int period)
  */
 
 static int
-MyszcowskiLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+MyszcowskiLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for Myszcowski ciphers.",

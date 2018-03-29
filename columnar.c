@@ -46,7 +46,7 @@ static int ColumnarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int ColumnarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int ColumnarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void ColumnarInitKey	_ANSI_ARGS_((CipherItem *, int));
 int ColumnarCheckSolutionValue  _ANSI_ARGS_((Tcl_Interp *, ClientData,
 	    			int *, int));
@@ -531,7 +531,7 @@ ColumnarInitKey(CipherItem *itemPtr, int period)
  */
 
 static int
-ColumnarLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+ColumnarLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for Columnar ciphers.",

@@ -57,7 +57,7 @@ static int BifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int BifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int BifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int BifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int));
 static int BifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, char *));
@@ -428,7 +428,7 @@ SetBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for bigbifid ciphers.",

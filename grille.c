@@ -50,7 +50,7 @@ static int GrilleSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int GrilleIntSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int, int, int));
 static int GrilleLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int GrilleInitKey	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
 static int RecSolveGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				char *, char *, int));
@@ -735,7 +735,7 @@ RecSolveGrille(Tcl_Interp *interp, CipherItem *itemPtr, char *baseKey, char *pt,
 }
 
 static int
-GrilleLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+GrilleLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for Grille ciphers.",
 	    TCL_VOLATILE);

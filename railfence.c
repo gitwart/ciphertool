@@ -45,7 +45,7 @@ static int RailfenceUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int RailfenceSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int RailfenceLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void RailfenceInitKey	_ANSI_ARGS_((CipherItem *, int));
 static void RailfenceAdjustKey	_ANSI_ARGS_((CipherItem *));
 static int RailfenceSwapRails	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -556,7 +556,7 @@ RailfenceSetKey(CipherItem *itemPtr, int start, int dir)
  */
 
 static int
-RailfenceLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+RailfenceLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for Railfence ciphers.",
 	    TCL_VOLATILE);

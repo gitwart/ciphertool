@@ -59,7 +59,7 @@ static int VigenereUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int VigenereSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int VigenereLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int VigenereSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int));
 static void VigenereInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -807,7 +807,7 @@ PortaCtKeyToPt(char ct, char key)
 }
 
 static int
-VigenereLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+VigenereLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     int		i;
     char	*s,

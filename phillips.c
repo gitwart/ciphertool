@@ -48,7 +48,7 @@ static int PhillipsUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int PhillipsSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int PhillipsLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int PhillipsSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int EncodePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -440,7 +440,7 @@ SolvePhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 }
 
 static int
-PhillipsLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+PhillipsLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for phillips ciphers.",

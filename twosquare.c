@@ -49,7 +49,7 @@ int TwosquareCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
  */
 
 static int  CreateTwosquare	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
+				CipherItem *, int, const char **));
 void	DeleteTwosquare		_ANSI_ARGS_((ClientData));
 static char *GetTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static char *GetFoursquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
@@ -64,7 +64,7 @@ static int TwosquareUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int TwosquareSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int TwosquareLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int TwosquareKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *,
 				int));
 static char *TwosquareLetterToKeyval _ANSI_ARGS_((CipherItem *, char, int));
@@ -172,7 +172,7 @@ CipherType FoursquareType = {
  */
 
 static int
-CreateTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, int argc, char **argv)
+CreateTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, int argc, const char **argv)
 {
     TwosquareItem *twoPtr = (TwosquareItem *)itemPtr;
     char	temp_ptr[128];
@@ -551,7 +551,7 @@ SetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-TwosquareLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+TwosquareLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_AppendResult(interp,
 	    "No locate tip function defined for ",

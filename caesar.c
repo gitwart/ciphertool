@@ -49,7 +49,7 @@ static int CaesarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int CaesarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int CaesarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int EncodeCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 
@@ -572,7 +572,7 @@ SolveCaesar(Tcl_Interp *interp, CipherItem *itemPtr, char *junk) {
 }
 
 static int
-CaesarLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+CaesarLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for caesar ciphers",
 	    TCL_STATIC);

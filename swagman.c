@@ -46,7 +46,7 @@ static int SwagmanUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int SwagmanSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int SwagmanLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void SwagmanInitKey	_ANSI_ARGS_((CipherItem *, int));
 static char *SwagmanCtToBlock	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
 static char *SwagmanPtToBlock	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
@@ -584,7 +584,7 @@ SwagmanSolveValue(Tcl_Interp *interp, ClientData clientData, int *key, int lengt
 }
 
 static int
-SwagmanLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+SwagmanLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for Swagman ciphers.",

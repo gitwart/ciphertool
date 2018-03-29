@@ -55,7 +55,7 @@ static int AristocratUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int AristocratSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int AristocratLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int AristocratRecKeygen	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int));
 static int AristocratApplyBlankKeyword _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -570,7 +570,7 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-AristocratLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+AristocratLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;
     int		valid_tip=0,
@@ -712,9 +712,9 @@ static int
 AristocratSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;
-    char	*c,
-		*p,
-		replacedCtSet[27],
+    const char	*c,
+		*p;
+    char	replacedCtSet[27],
 		*r;
     char	key_ct[26];
     char	key_pt[26];

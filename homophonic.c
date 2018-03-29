@@ -50,7 +50,7 @@ static int HomophonicUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int HomophonicSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int HomophonicLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char HomophonicCtToPt	_ANSI_ARGS_((int ct, char key));
 static char HomophonicPtToKey	_ANSI_ARGS_((char pt, int ct));
 static char *HomophonicGetFullKey _ANSI_ARGS_((CipherItem *itemPtr));
@@ -447,7 +447,7 @@ SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
     int		valid_tip=0,

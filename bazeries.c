@@ -48,7 +48,7 @@ static int BazeriesUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int BazeriesSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int BazeriesLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int BazeriesSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int BazeriesSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
@@ -399,7 +399,7 @@ SolveBazeries(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 }
 
 static int
-BazeriesLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+BazeriesLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for bazeries ciphers.",

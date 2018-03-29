@@ -46,7 +46,7 @@ static int AmscoUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int AmscoSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int AmscoLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static void AmscoInitKey	_ANSI_ARGS_((CipherItem *, int));
 int AmscoCheckSolutionValue  	_ANSI_ARGS_((Tcl_Interp *, ClientData,
 	    			int *, int));
@@ -644,7 +644,7 @@ AmscoInitKey(CipherItem *itemPtr, int period)
 }
 
 static int
-AmscoLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+AmscoLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for Amsco ciphers.",

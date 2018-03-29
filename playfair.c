@@ -62,7 +62,7 @@ static int PlayfairUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int PlayfairSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int PlayfairLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int PlayfairSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
 	    			int));
 static int PlayfairSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
@@ -589,7 +589,7 @@ SolvePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 }
 
 static int
-PlayfairLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+PlayfairLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_AppendResult(interp,
 	    "No locate tip function defined for ",

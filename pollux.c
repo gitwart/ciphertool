@@ -47,7 +47,7 @@ static int PolluxUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int PolluxSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int PolluxLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static char *PolluxToMorse 	_ANSI_ARGS_((CipherItem *itemPtr, const char *));
 static int RecSolvePollux	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			char *, int));
@@ -192,7 +192,7 @@ SetPollux(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
  */
 
 static int
-PolluxLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+PolluxLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for pollux ciphers.", TCL_VOLATILE);
     return TCL_ERROR;

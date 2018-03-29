@@ -114,7 +114,7 @@ static int BaconianUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int BaconianSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int BaconianLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int BaconianSingleSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 static int BaconianGroupSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
@@ -500,7 +500,7 @@ SetBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     int		valid_tip=0;

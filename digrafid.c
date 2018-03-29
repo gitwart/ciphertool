@@ -65,7 +65,7 @@ static int DigrafidUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int DigrafidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int DigrafidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int DigrafidKeyvalToDigram	_ANSI_ARGS_((CipherItem *, char *,
 				char *));
 static char *DigrafidLetterToKeyval _ANSI_ARGS_((CipherItem *, char, int));
@@ -524,7 +524,7 @@ SetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-DigrafidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+DigrafidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_AppendResult(interp,
 	    "No locate tip function defined for ",

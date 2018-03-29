@@ -54,7 +54,7 @@ static int TrifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int TrifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int TrifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int TrifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int));
 static char TrifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *));
@@ -405,7 +405,7 @@ SetTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-TrifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+TrifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for trifid ciphers.",

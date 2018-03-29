@@ -47,7 +47,7 @@ static int CadenusUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int CadenusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int CadenusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int CadenusRotate	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				int, int));
 static void CadenusInitKey	_ANSI_ARGS_((CipherItem *, int));
@@ -452,7 +452,7 @@ CadenusInitKey(CipherItem *itemPtr, int period)
  */
 
 static int
-CadenusLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+CadenusLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for cadenus ciphers.",
 	    TCL_VOLATILE);

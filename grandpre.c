@@ -44,7 +44,7 @@ static int GrandpreUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int GrandpreSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int GrandpreLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int EncodeGrandpre _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 
@@ -224,7 +224,7 @@ SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 }
 
 static int
-GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     int		valid_tip=0, valid_start=0, start_location=0,

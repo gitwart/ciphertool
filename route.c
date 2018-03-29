@@ -46,7 +46,7 @@ static int RouteSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static void RouteSetWidth	_ANSI_ARGS_((CipherItem *, int));
 static int RouteLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+				const char *, const char *));
 static int ApplyRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	    			int, int, int, const char *, char *));
 static void InitRouteCache	_ANSI_ARGS_((CipherItem *));
@@ -2550,7 +2550,7 @@ InitRouteCache(CipherItem *itemPtr) {
  */
 
 static int
-RouteLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *start)
+RouteLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for Route ciphers.",
 	    TCL_STATIC);
