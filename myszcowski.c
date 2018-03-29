@@ -267,7 +267,7 @@ MyszcowskiSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, co
     fflush(stdout);
     */
 
-    Tcl_SetResult(interp, ct, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(ct, -1));
     return TCL_OK;
 }
 
@@ -928,7 +928,7 @@ MyszcowskiCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 		}
 
 		MyszcowskiInitKey(itemPtr, period);
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-ciphertext", 10) == 0 ||
 		strncmp(*argv, "-ctext", 3) == 0) {
 		if (argc < 2) {

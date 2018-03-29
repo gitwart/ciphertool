@@ -148,7 +148,7 @@ AddTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, doubl
 
     tlPtr->value[element[0]-'a'][element[1]-'a'][element[2]-'a'] += value;
 
-    Tcl_SetResult(interp, element, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(element, -1));
     return TCL_OK;
 }
 

@@ -1141,7 +1141,7 @@ RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
 	}
     }
 
-    Tcl_SetResult(interp, pt, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(pt, -1));
     return TCL_OK;
 }
 

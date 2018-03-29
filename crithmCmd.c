@@ -209,7 +209,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    cInfo->iterationCmd = (char *)NULL;
 	}
 
-	Tcl_SetResult(interp, string, TCL_VOLATILE);
+	Tcl_SetObjResult(interp, Tcl_NewStringObj(string, -1));
 	return TCL_OK;
     } else if (*option == 's' && (strncmp(option, "stop", 4) == 0)) {
 	cInfo->runState = STOP_STATE;

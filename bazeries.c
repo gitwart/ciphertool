@@ -512,7 +512,7 @@ BazeriesInitSeq(Tcl_Interp *interp, CipherItem *itemPtr, const char *seqString)
     }
     bazPtr->keyNumber = seqNum;
 
-    Tcl_SetResult(interp, seqString, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(seqString, -1));
     return TCL_OK;
 }
 

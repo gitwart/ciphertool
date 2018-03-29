@@ -362,7 +362,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 		}
 
 		aristPtr->solKeyType = i;
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[0], -1));
 	    } else if (strncmp(*argv, "-solkeywordlength", 8) == 0) {
 		if (sscanf(argv[1], "%d", &i) != 1) {
 		    Tcl_SetResult(interp,
@@ -378,7 +378,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 		}
 
 		aristPtr->solKeywordLength = i;
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (argc < 2) {
 		    Tcl_AppendResult(interp, "Usage:  ", cmd, " configure -stepinterval val", (char *)NULL);

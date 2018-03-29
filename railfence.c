@@ -207,7 +207,7 @@ RailfenceSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, con
 
     RailfenceAdjustKey(itemPtr);
 
-    Tcl_SetResult(interp, ct, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(ct, -1));
     return TCL_OK;
 }
 
@@ -758,7 +758,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 		}
 
 		RailfenceInitKey(itemPtr, period);
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 
 		return TCL_OK;
 	    } else if (strncmp(*argv, "-ciphertext", 10) == 0 ||

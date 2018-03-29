@@ -131,7 +131,7 @@ AddDigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double
 
     dlPtr->value[element[0]][element[1]] += value;
 
-    Tcl_SetResult(interp, element, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(element, -1));
     return TCL_OK;
 }
 

@@ -584,7 +584,7 @@ RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, con
 	}
     }
 
-    Tcl_SetResult(interp, savedKey, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(savedKey, -1));
     return TCL_OK;
 }
 

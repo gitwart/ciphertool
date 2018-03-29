@@ -64,7 +64,7 @@ WordtreeCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	abort();
     }
 #endif
-	Tcl_SetResult(interp, argv[0], TCL_VOLATILE);
+	Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[0], -1));
 	return TCL_OK;
     } else if (*option == 'i' && (strncmp(option, "isvalid", 7) == 0)) {
 	char length[TCL_DOUBLE_SPACE];

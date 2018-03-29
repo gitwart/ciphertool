@@ -921,7 +921,7 @@ AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 		}
 
 		AmscoInitKey(itemPtr, period);
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-startcellsize", 13) == 0) {
 		int cellSize;
 		if (sscanf(argv[1], "%d", &cellSize) != 1) {
@@ -937,7 +937,7 @@ AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 
 		amscoPtr->firstCellSize = cellSize;
 		AmscoInitKey(itemPtr, itemPtr->period);
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (argc < 2) {
 		    Tcl_AppendResult(interp, "Usage:  ", cmd, " configure -stepinterval val", (char *)NULL);

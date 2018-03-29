@@ -262,8 +262,7 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		}
 
 		caesarPtr->shift = i;
-		Tcl_SetResult(interp, argv[1],
-			TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (argc < 2) {
 		    Tcl_AppendResult(interp, "Usage:  ", cmd, " configure -stepinterval val", (char *)NULL);

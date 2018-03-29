@@ -1081,7 +1081,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 			    (char *)NULL);
 		    return TCL_ERROR;
 		}
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	    } else if (strncmp(*argv, "-language", 8) == 0) {
 		itemPtr->language = cipherSelectLanguage(argv[1]);
 		Tcl_SetResult(interp, cipherGetLanguage(itemPtr->language),

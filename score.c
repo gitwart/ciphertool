@@ -291,7 +291,7 @@ ScoreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	    defaultScoreCommand = Tcl_NewStringObj(argv[1], strlen(argv[1]));
 	}
 
-	Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+	Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 	return TCL_OK;
     } else if (**argv == 'i' && (strncmp(*argv, "isinternal", 10) == 0)) {
 	Tcl_CmdInfo cmdInfo;
@@ -682,7 +682,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char *
 		}
 
 		itemPtr->elemSize = newSize;
-		Tcl_SetResult(interp, argv[1], TCL_VOLATILE);
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(argv[1], -1));
 		return TCL_OK;
 	    } else {
 		Tcl_SetResult(interp,

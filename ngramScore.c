@@ -121,7 +121,7 @@ AddNgram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double 
 
     addWordToTree(ngPtr->rootNode, (char *)element, (unsigned short int) value);
 
-    Tcl_SetResult(interp, element, TCL_VOLATILE);
+    Tcl_SetResult(interp, (char *)element, TCL_VOLATILE);
     return TCL_OK;
 }
 

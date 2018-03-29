@@ -327,7 +327,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 	return TCL_ERROR;
     }
 
-    Tcl_SetResult(interp, tip, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(tip, -1));
     return TCL_OK;
 }
 
