@@ -742,7 +742,7 @@ static int
 EncodePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

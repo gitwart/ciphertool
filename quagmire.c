@@ -906,7 +906,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     int count;
     char *vertical = part1;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, part2, &count, &argv) != TCL_OK) {
         return TCL_ERROR;
@@ -982,7 +982,7 @@ static int
 EncodeQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
 
     /*
      * TODO:  Implement this for quag ciphers

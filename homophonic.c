@@ -452,9 +452,9 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, co
     HomophonicItem *homoPtr = (HomophonicItem *)itemPtr;
     int		valid_tip=0,
     		i;
+    const char  *t = tip;
     char	*s,
     		*c,
-		*t = tip,
 		*ct;
     char	used_ct[256];
     char	used_pt[256];

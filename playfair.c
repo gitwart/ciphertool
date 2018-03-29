@@ -995,7 +995,7 @@ EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     char *ct = (char *)NULL;
     char *newPt = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

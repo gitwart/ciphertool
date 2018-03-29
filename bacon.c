@@ -1112,7 +1112,7 @@ EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     char *ct = (char *)NULL;
     int count;
     int i;
-    char **argv;
+    const char **argv;
     Tcl_Obj *wordlist;
 
     FILE *fptr;

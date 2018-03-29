@@ -939,7 +939,7 @@ EncodeGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char *ct = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

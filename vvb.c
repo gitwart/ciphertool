@@ -1755,7 +1755,7 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     char *ct = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

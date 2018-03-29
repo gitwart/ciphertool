@@ -1276,7 +1276,7 @@ EncodeBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char 
     char *ct = (char *)NULL;
     char *bifVal = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
     int i;
     char *keyPositions;
 

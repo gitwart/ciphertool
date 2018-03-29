@@ -767,7 +767,7 @@ static int
 EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
-    char **argv;
+    const char **argv;
     char *keyedAlphabet = (char *)NULL;
     char *keySeq = (char *)NULL;
     int seqValue;

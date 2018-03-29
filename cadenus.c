@@ -942,7 +942,7 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     int count;
     char *order = (char *)NULL;
     int orderFromMalloc = 0;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

@@ -860,7 +860,7 @@ EncodeTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const c
     char *tempCt = (char *)NULL;
     int count;
     int i;
-    char **argv;
+    const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;
