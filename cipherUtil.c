@@ -101,15 +101,18 @@ ExtractValidChars(CipherItem *itemPtr, const char *ct)
 char *
 ExtractValidCharsJtoI(CipherItem *itemPtr, const char *ct)
 {
-    char	*c;
+    char	*c,
+                *d;
 
-    for (c=ct; *c; c++) {
-        if (*c == 'j') {
-            *c = 'i';
+    c = ExtractValidChars(itemPtr, ct);
+
+    for (d=c; *d; d++) {
+        if (*d == 'j') {
+            *d = 'i';
         }
     }
 
-    return ExtractValidChars(itemPtr, ct);
+    return c;
 }
 
 /*
