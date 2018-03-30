@@ -2,17 +2,30 @@ Pre-release steps:
     Run the test suite through valgrind to catch any lingering
         memory leaks and failing tests.
 
+    Make sure all changes are being made to a properly named branch in git:
+
+        % git checkout 1.6.3
+        % git push -u origin 1.6.3
+        % git branch -u origin/1.6.3
+
 Release steps:
 
-    Change the version numbers in configure.in (1) and cipher.spec (2).
+    Change the version numbers in configure.in (1) and tcl-ciphertool.spec (2).
     Make sure that the configure script has been regenerated to reflect any
 	changes to configure.in.
     Double-check that modified files have been checked in.
     Double-check that the ChangeLog is up to date including a note about
 	the new release.
-    Tag the sources.
 
-	% cvs tag rel-1-5-0
+    Merge the branch back to the master:
+
+        % git checkout master
+        % git merge 1.6.3
+
+    TODO:
+
+    The remaining steps need to be updated after I validate a new
+    release workflow using git.
 
     Create a build subdirectory:
 
@@ -42,9 +55,9 @@ Release steps:
 
 	% alien -d ciphertool-1.5.3-1.i386.rpm
 
-    Copy the updated documentation to Sourceforge:
+    Copy the updated documentation to Github:
 
 	% make ; make doc
 	% tar czf doc.tgz ./doc
-	% scp doc.tgz shell.sourceforge.net:/home/groups/c/ci/ciphertool
+	% Upload documentation to Github
 
