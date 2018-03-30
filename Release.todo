@@ -4,9 +4,8 @@ Pre-release steps:
 
     Make sure all changes are being made to a properly named branch in git:
 
-        % git checkout 1.6.3
+        % git checkout -b 1.6.3
         % git push -u origin 1.6.3
-        % git branch -u origin/1.6.3
 
 Release steps:
 
