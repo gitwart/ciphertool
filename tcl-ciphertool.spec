@@ -1,3 +1,6 @@
+%{!?tcl_version: %global tcl_version %(echo 'puts $tcl_version' | tclsh)}
+%{!?tcl_sitearch: %global tcl_sitearch %{_libdir}/tcl%{tcl_version}}
+
 Name:           tcl-ciphertool
 Version:        1.6.3
 Release:        1%{?dist}
@@ -11,18 +14,20 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  tcl-devel
 BuildRequires:  desktop-file-utils
-Requires:       tcl tk tcllib
+Requires:       tk tcllib
+Requires:       tcl(abi) = 8.6
+Provides:       ciphertool = %{version}-%{release}
 
 %description
 This package contains tools for viewing, manipulating, analyzing, and solving
 simple cipher types in use by the American Cryptogram Association.
 
 %prep
-%setup -q
+%setup -q -n ciphertool-%{version}
 
 
 %build
-%configure
+%configure --libdir=%{tcl_sitearch}
 make %{?_smp_mflags}
 
 
@@ -55,7 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-%{_libdir}/cipher%{version}
+%{tcl_sitearch}/cipher%{version}
 %{_prefix}/share/doc/cipher-%{version}
 %{_prefix}/share/applications/*.desktop
 

@@ -17,43 +17,25 @@ Release steps:
     Double-check that the ChangeLog is up to date including a note about
 	the new release.
 
-    Merge the branch back to the master:
-
-        % git checkout master
-        % git merge 1.6.3
-
     TODO:
 
     The remaining steps need to be updated after I validate a new
     release workflow using git.
 
-    Create a build subdirectory:
+    Create a tarball from the branch to test the new release before it gets
+    merged/tagged back to the master.  Create a rpm and install on the dev
+    machine for testing.
 
-	% cd ~/src/ciphers/ciphertool
-	% mkdir build
-	% cd build
+        % git archive -o /path/to/rpmbuild/SOURCES/ciphertool-1.6.3.tar.gz --prefix ciphertool-1.6.3/ 1.6.3
+        % rpmbuild -ts /path/to/rpmbuild/SOURCES/ciphertool-1.6.3.tar.gz
+        % mock /path/to/rpmbuild/SOURCES/tcl-ciphertool-1.6.3-1.src.rpm
 
-    Run "configure" to generate the Makefile.  Nothing will get installed here,
-    so there's no need to specify --prefix.
+    After you are satisfied that the testing is successful, merge the
+    branch back into master and tag.
 
-	% ../configure
-
-    Run the "rpmall" Makefile target
-
-	% make rpmall
-
-    Copy the generated RPMs and source archives to their proper release
-    directories.
-
-	% cp dist/SOURCES/ciphertool-1.5.3.tar.gz ~/public_html/ciphertool
-	% cp dist/SRPMS/ciphertool-1.5.3-1.src.rpm ~/public_html/ciphertool
-	% cp dist/RPMS/i386/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
-	% cp dist/RPMS/i686/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
-	% cp dist/RPMS/athlon/ciphertool-1.5.3-1.i386.rpm ~/public_html/ciphertool
-
-    Create Debian .deb packages (run as root in a Debian distribution):
-
-	% alien -d ciphertool-1.5.3-1.i386.rpm
+        % git checkout master
+        % git merge 1.6.3
+        % git tag
 
     Copy the updated documentation to Github:
 
