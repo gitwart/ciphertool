@@ -28,7 +28,7 @@
 #include <wordtree.h>
 
 static int CreateNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
+static int AddNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
 void DeleteNgramScore _ANSI_ARGS_((ClientData));
 static int NormalizeNgramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
 static double NgramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
@@ -116,12 +116,12 @@ DeleteNgramScore(ClientData clientData) {
 }
 
 static int
-AddNgram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double value)  {
+AddNgram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *element, double value)  {
     NgramItem *ngPtr = (NgramItem *)itemPtr;
 
-    addWordToTree(ngPtr->rootNode, (char *)element, (unsigned short int) value);
+    addWordToTree(ngPtr->rootNode, element, (unsigned short int) value);
 
-    Tcl_SetResult(interp, (char *)element, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(element, -1));
     return TCL_OK;
 }
 

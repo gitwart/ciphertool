@@ -629,7 +629,7 @@ static int
 RailfenceMoveStart(Tcl_Interp *interp, CipherItem *itemPtr, int rail, int dir)
 {
     RailfenceItem *railPtr = (RailfenceItem *)itemPtr;
-    int i, offset;
+    int i;
 
     if (rail < 1 || rail > itemPtr->period) {
 	Tcl_SetResult(interp, "Bad rail", TCL_VOLATILE);
@@ -637,7 +637,6 @@ RailfenceMoveStart(Tcl_Interp *interp, CipherItem *itemPtr, int rail, int dir)
     }
 
     rail--;
-    offset = rail - railPtr->key[0];
 
     if (dir < 0) {
 	for(i=0; i < railPtr->numRails; i++) {
@@ -862,7 +861,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	    return TCL_OK;
 	}
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
-	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], (int) NULL);
+	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
 	Tcl_SetResult(interp, "", TCL_VOLATILE);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {

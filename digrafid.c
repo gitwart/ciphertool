@@ -898,7 +898,6 @@ EncodeDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     char *ct = (char *)NULL;
     int count;
     const char **argv;
-    int i;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

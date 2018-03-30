@@ -27,7 +27,7 @@
 #include <string.h>
 
 static int CreateDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
+static int AddDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
 static void DeleteDigram _ANSI_ARGS_((ClientData));
 static int NormalizeDigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
 static double DigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
@@ -126,10 +126,10 @@ DeleteDigram(ClientData clientData) {
 }
 
 static int
-AddDigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double value)  {
+AddDigram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *element, double value)  {
     DigramItem *dlPtr = (DigramItem *)itemPtr;
 
-    dlPtr->value[element[0]][element[1]] += value;
+    dlPtr->value[(unsigned char)element[0]][(unsigned char)element[1]] += value;
 
     Tcl_SetObjResult(interp, Tcl_NewStringObj(element, -1));
     return TCL_OK;

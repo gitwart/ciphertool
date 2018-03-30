@@ -280,7 +280,6 @@ GetMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr)
 static char *
 MyszcowskiTransform(CipherItem *itemPtr, const char *text, int mode) {
     MyszcowskiItem *myszPtr = (MyszcowskiItem *)itemPtr;
-    char	*c;
     int		i, col, pos;
     char	*result=(char *)ckalloc(sizeof(char) * itemPtr->length + 1);
     int		newCol, row, numCols;
@@ -318,8 +317,6 @@ MyszcowskiTransform(CipherItem *itemPtr, const char *text, int mode) {
 	}
 	pos = temp_pos;
     }
-
-    c = itemPtr->ciphertext;
 
     /*
      * Initialize the result.  Use a bogus character so that we can easily

@@ -156,8 +156,6 @@ SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     int		valid = TCL_OK,
     		length=0;
 
-    c = ctext;
-
     length = CountValidChars(itemPtr, ctext);
     c = ExtractValidChars(itemPtr, ctext);
     if (c == NULL) {

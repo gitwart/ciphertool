@@ -540,10 +540,10 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     int		valid_tip=0,
     		i;
-    char	*tipStart,
-    		*c,
-		*t = tip,
-		*ct;
+    char	*ct;
+    const char	*c,
+                *tipStart,
+                *t = tip;
     char	used_ct[256];
     char	used_pt[256];
     char	*temp;
@@ -675,9 +675,9 @@ static int
 GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
-    char	*c,
-		*p,
-		*q,
+    const char	*c,
+		*p;
+    char	*q,
 		*r;
     char	key_ct[26];
     char	key_pt[26];
@@ -790,11 +790,6 @@ static char *
 GetGromark(Tcl_Interp *interp, CipherItem *itemPtr)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
-    char	*c;
-    char	*pt=(char *)NULL;
-    int		i;
-
-    c = itemPtr->ciphertext;
 
     if (! gromPtr->offset) {
 	Tcl_SetResult(interp,
@@ -810,7 +805,6 @@ static char *
 GromarkTransform(CipherItem *itemPtr, const char *text, int mode)
 {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
-    char	*c;
     char	*pt=(char *)NULL;
     int		i;
 

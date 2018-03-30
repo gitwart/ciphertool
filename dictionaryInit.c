@@ -41,7 +41,9 @@ Dictionary *globalDictionary = (Dictionary *)NULL;
 int
 Dictionary_Init(Tcl_Interp *interp) {
     Dictionary *dict = (Dictionary *)NULL;
+#if defined(HAVE_GETENVIRONMENTVARIABLE)
     char dirBuf[1024];
+#endif
     Tcl_Obj *directoryObj;
     Tcl_Obj *cacheObj;
     Tcl_Obj *varNameObj;

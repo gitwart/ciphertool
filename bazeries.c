@@ -769,7 +769,7 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     int count;
     const char **argv;
     char *keyedAlphabet = (char *)NULL;
-    char *keySeq = (char *)NULL;
+    const char *keySeq = (char *)NULL;
     int seqValue;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
@@ -785,7 +785,7 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 
     if (count == 2) {
 	keySeq = argv[1];
-	keyedAlphabet = argv[0];
+        keyedAlphabet = argv[0];
     } else {
 	keySeq = argv[0];
     }
@@ -820,6 +820,7 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 	keyedAlphabet = (char *)ckalloc(sizeof(char) * (26 + 1));
 	if (KeyGenerateK1(interp, temp, keyedAlphabet) != TCL_OK) {
 	    ckfree(temp);
+	    ckfree(keyedAlphabet);
 	    ckfree((char *)argv);
 	    return TCL_ERROR;
 	}

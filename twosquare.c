@@ -814,8 +814,6 @@ EncodeFoursquareString(CipherItem *itemPtr, const char *pt) {
      */
 
     for(i=0; i < itemPtr->length; i += 2) {
-	char pt1 = pt[i];
-	char pt2 = pt[i+1];
 	/*
 	char *pt1cell = TwosquareLetterToKeyval(itemPtr, pt1, FIXEDSQUARE);
 	char *pt2cell = TwosquareLetterToKeyval(itemPtr, pt2, FIXEDSQUARE);

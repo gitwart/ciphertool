@@ -24,6 +24,7 @@
 #include <tcl.h>
 #include <string.h>
 #include <cipher.h>
+#include <keygen.h>
 
 #include <cipherDebug.h>
 
@@ -447,7 +448,7 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
  * ['a'..'z'], '-', everything else.
  */
 short *
-GetOffsets(char *text, int alphabetSize) {
+GetOffsets(const char *text, int alphabetSize) {
     int i;
     int n = strlen(text);
     int start = 1;	/* What offset should the next word start with? */
@@ -477,7 +478,6 @@ static int
 SetRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
-    int length = CountValidChars(itemPtr, ctext);
     char *c = ExtractValidChars(itemPtr, ctext);
 
     if (!c) {
@@ -714,7 +714,7 @@ static int
 EncodeRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     
     RagbabyItem *ragPtr = (RagbabyItem *)itemPtr;
-    int i, n, count, offset;
+    int i, n, count;
     char *translatedKeyword;
     char K1[27];
     char translatedK1[27];

@@ -230,7 +230,7 @@ int treeContainsWord(TreeNode *node, const char *word, unsigned short int *measu
     }
 
     for(i=0; node->next[i]; i++) {
-	if (node->next[i]->val == word[0] || (node->next[i]->val == NULL && length == 0)) {
+	if (node->next[i]->val == word[0] || (node->next[i]->val == '\0' && length == 0)) {
 	    if (word[0] == '\0' || length <= 0 ) {
 		*measure = node->measure;
 		return 1;

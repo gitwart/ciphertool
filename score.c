@@ -88,7 +88,7 @@ InitScoreTypes(Tcl_Interp *interp)
      */
 
     for(i =0 ; i < 256; i++) {
-	unsigned char temp_str[3];
+	char temp_str[3];
 	for(j=0; j < 256; j++) {
 	    temp_str[0] = i;
 	    temp_str[1] = j;
@@ -658,7 +658,7 @@ ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char *
          */
         itemPtr->initialized = 1;
 
-	return (itemPtr->typePtr->addProc(interp, itemPtr, (unsigned char *) argv[1], value));
+	return (itemPtr->typePtr->addProc(interp, itemPtr, argv[1], value));
     } else if (**argv == 'n' && (strncmp(*argv, "normalize", 9) == 0)) {
 	return (itemPtr->typePtr->normalProc(interp, itemPtr));
     } else if (**argv == 'e' && (strncmp(*argv, "elemsize", 8) == 0)) {

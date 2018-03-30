@@ -26,6 +26,9 @@
 #include <cipher.h>
 #include <score.h>
 #include <dictionaryCmds.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <cipherDebug.h>
 
@@ -217,7 +220,7 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
     BaconianItem *baconPtr = (BaconianItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     char	*tPtr1=(char *)NULL;
     int		i;
@@ -504,9 +507,9 @@ BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     int		valid_tip=0;
+    const char	*t = tip;
     char	*s,
     		*c,
-		*t = tip,
 		*ct;
     char	*temp;
     Tcl_DString	dsPtr;
@@ -617,7 +620,7 @@ BaconianCheckSub(CipherItem *itemPtr, const char *ct, const char *pt)
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
     char	key_pt[26];
     int		valid_sub = NEW_SUB;
-    char	*c,
+    const char	*c,
     		*p;
     int		i;
     char	c1,
@@ -670,9 +673,9 @@ static int
 BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
-    char	*c,
-		*p,
-		*q,
+    const char	*c,
+		*p;
+    char	*q,
 		*r;
     int		valid_sub = NEW_SUB;
     Tcl_DString	dsPtr;
@@ -732,9 +735,9 @@ static int
 BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt)
 {
     BaconianItem *baconPtr = (BaconianItem *)itemPtr;
-    char	*c,
-		*p,
-		*q,
+    const char	*c,
+		*p;
+    char	*q,
 		*r;
     int		valid_sub = NEW_SUB;
 
@@ -850,8 +853,8 @@ BaconianTranslate(Tcl_Interp *interp, CipherItem *itemPtr, char *btext, char *re
 static int
 RestoreBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
-    char *alphabet = part1;
-    char *btext = part2;
+    const char *alphabet = part1;
+    const char *btext = part2;
 
     if (part2 == NULL) {
 	alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -1115,11 +1118,7 @@ EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     const char **argv;
     Tcl_Obj *wordlist;
 
-    FILE *fptr;
     char c;
-    int index;
-    char errstr[1000];
-    char *word;
     int incomplete = 0;
     int num_5_letter_words;
     Tcl_Obj *wordListByLetter[26];
@@ -1185,7 +1184,7 @@ EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     }
 
     /* This should be in another file. */
-    srand(time(0));
+    srand48((long int) time(NULL));
 
     if (!incomplete) {
 	

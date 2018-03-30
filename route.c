@@ -2858,7 +2858,6 @@ EncodeRoute(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char 
     int encodeIn;
     int encodeOut;
     const char **argv;
-    Tcl_Obj *intObj = (Tcl_Obj *)NULL;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

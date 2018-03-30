@@ -24,6 +24,9 @@
 #include <tcl.h>
 #include <string.h>
 #include <cipher.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <cipherDebug.h>
 
@@ -138,14 +141,12 @@ static int
 SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
-    const char	*c=(char *)NULL;
+    char	*c=(char *)NULL;
     int		valid = TCL_OK,
     		length=0;
     int		count=0;
     int		i, j,
     		row, col;
-
-    c = ctext;
 
     /*
      * Count the number of valid characters
@@ -336,7 +337,7 @@ GrandpreSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, cons
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     char key[8][8];
-    char *p;
+    const char *p;
     int *c;
     int i, j;
     int count;
@@ -457,10 +458,8 @@ static char *
 GetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
-    int *c, i;
+    int i;
     char	*pt=(char *)ckalloc(sizeof(char) * grandPtr->int_ct_length + 1);
-
-    c = grandPtr->int_ct;
 
     for(i=0; i < grandPtr->int_ct_length; i++) {
 	int col, row;
@@ -496,27 +495,29 @@ GrandpreKeyToString(Tcl_Interp *interp, CipherItem *itemPtr)
 {
     GrandpreItem *grandPtr = (GrandpreItem *)itemPtr;
     int i, j;
+    /*
     Tcl_DString dsPtr;
+    */
     char *tPtr=(char *)NULL;
-    char temp_word[9];
+    //char temp_word[9];
     char temp_word2[65];
 
-    Tcl_DStringInit(&dsPtr);
     /*
+    Tcl_DStringInit(&dsPtr);
     Tcl_DStringStartSublist(&dsPtr);
     */
 
     for(i=0; i < 8; i++) {
 	for(j=0; j < 8; j++) {
 	    if (grandPtr->key[i][j]) {
-		temp_word[j] = grandPtr->key[i][j];
+		//temp_word[j] = grandPtr->key[i][j];
 		temp_word2[8*i+j] = grandPtr->key[i][j];
 	    } else {
-		temp_word[j] = ' ';
+		//temp_word[j] = ' ';
 		temp_word2[8*i+j] = ' ';
 	    }
 	}
-	temp_word[j] = '\0';
+	//temp_word[j] = '\0';
 	/*
 	Tcl_DStringAppendElement(&dsPtr, temp_word);
 	*/
@@ -641,7 +642,7 @@ EncodeGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     }
 
     /* Randomize the timer.  Maybe there's a better solution. */
-    srand(time(0));
+    srand48((long int) time(NULL));
 
     /* Convert the lowercase letters of the plaintext to ciphertext numbers. */
     ct = (char *) ckalloc(sizeof(char) * 2*n + 1);

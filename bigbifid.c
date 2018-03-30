@@ -178,7 +178,7 @@ BigBifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
     BigbifidItem *bifPtr = (BigbifidItem *)clientData;
     CipherItem	*itemPtr = (CipherItem *)clientData;
     char	temp_str[256];
-    char	*cmd;
+    const char	*cmd;
     char	*tPtr=(char *)NULL;
     int		i;
 
@@ -441,7 +441,7 @@ BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     BigbifidItem *bifPtr = (BigbifidItem *)itemPtr;
     int keyIndex;
-    char *c;
+    const char *c;
 
     for(c = ct; *c; c++) {
 	char ctConv = *c;

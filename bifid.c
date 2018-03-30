@@ -70,7 +70,7 @@ static int BifidIsCompleteKeyIndex	_ANSI_ARGS_((int));
 static int BifidMergeSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *, int));
 static int BifidIsValidTipPlacement _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
+				const char *, int));
 static int EncodeBifid		 _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 
@@ -504,12 +504,12 @@ SetBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 static int
 BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
-    char *tipStart = (char *)NULL;
-    char *ct = itemPtr->ciphertext;
-    char *c = (char *)NULL;
-    char *curTipLetter;
+    const char *tipStart = (char *)NULL;
+    const char *ct = itemPtr->ciphertext;
+    const char *c = (char *)NULL;
+    const char *curTipLetter;
     int valid_tip;
-    char *validTipLocation=(char *)NULL;
+    const char *validTipLocation=(char *)NULL;
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
@@ -530,7 +530,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const c
      */
 
     if (start) {
-	tipStart = strstr((const char *)ct, (const char *)start);
+	tipStart = strstr(ct, start);
     } else {
 	tipStart = ct;
     }
@@ -599,20 +599,20 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const c
 	BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, 0);
 	Tcl_SetResult(interp, "", TCL_VOLATILE);
     } else {
-	Tcl_SetResult(interp, validTipLocation, TCL_VOLATILE);
+	Tcl_SetObjResult(interp, Tcl_NewStringObj(validTipLocation, -1));
     }
 
     return TCL_OK;
 }
 
 static int
-BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int startPos)
+BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, int startPos)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     int sub_made = 1;
     int valid_sub = NEW_SUB;
     char *bifVal = (char *)NULL;
-    char *tipLetter;
+    const char *tipLetter;
     int loopCount=0;
 
     while (valid_sub == NEW_SUB && sub_made) {
@@ -641,9 +641,7 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int
 	    char tipKeyColChar;
 	    int tipKeyRow;
 	    int tipKeyCol;
-	    int rowLetterIndex;
 	    char rowLetter;
-	    int colLetterIndex;
 	    char colLetter;
 
 	    if (itemPtr->length*2 - blockStart < blockLength) {
@@ -697,8 +695,6 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int
 	     * key and perform merge substitutions on it.
 	     */
 
-	    rowLetterIndex =
-		    blockStart + ctOffset%itemPtr->period + 0*blockPeriod;
 
 	    rowLetter = itemPtr->ciphertext[(blockStart
 		    + ctOffset%itemPtr->period) / 2];
@@ -748,9 +744,6 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, int
 	     * Locate the ct letters touched by the second half of the
 	     * key and perform merge substitutions on it.
 	     */
-
-	    colLetterIndex =
-		    blockStart + ctOffset%itemPtr->period + 1*blockPeriod;
 
 	    colLetter = itemPtr->ciphertext[(blockStart
 		    + ctOffset%itemPtr->period + blockPeriod) / 2];
@@ -822,7 +815,7 @@ BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     BifidItem *bifPtr = (BifidItem *)itemPtr;
     int keyIndex;
-    char *c;
+    const char *c;
 
     for(c = ct; *c; c++) {
 	char ctConv = *c;
@@ -1274,11 +1267,10 @@ EncodeBifidString(CipherItem *itemPtr, char *pt) {
 static int
 EncodeBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    char *bifVal = (char *)NULL;
     int count;
     const char **argv;
     int i;
-    char *keyPositions;
+    const char *keyPositions;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
 	return TCL_ERROR;

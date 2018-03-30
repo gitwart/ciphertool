@@ -881,12 +881,8 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip)
     char	*varkey;
     char	*beakey;
     char	*prtkey;
-    char	*temp;
-    int		valid_sub=NEW_SUB;
     double	curkey, maxkey = 0.0;
     int		tipLen = strlen(tip);
-
-    temp = (char *)ckalloc(sizeof(char)*tipLen + 2);
 
     vigkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
     varkey = (char *)ckalloc(sizeof(char) * itemPtr->period);
@@ -905,7 +901,6 @@ FindBestTipLocation(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip)
     /*
      * Loop through every possible starting point.
      */
-    valid_sub = BAD_SUB;
     for(c=s; c < (ct + itemPtr->length - tipLen); c++) {
 	/*
 	 * Erase the current key for the next attempt

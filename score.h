@@ -39,7 +39,7 @@ typedef struct {
     struct ScoreType *typePtr;
 } ScoreItem;
 
-#define DigramSingleValue(a, b, c) ( c[a][b] )
+#define DigramSingleValue(a, b, c) ( c[(unsigned char)a][(unsigned char)b] )
 
 int ScoreMethodCmd	_ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
 
@@ -62,7 +62,7 @@ typedef int	ScoreCreateProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
 		int, const char **));
 typedef void	ScoreDeleteProc _ANSI_ARGS_((ClientData));
 typedef int	ScoreAddProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		unsigned char *, double));
+		const char *, double));
 typedef double	ScoreValueProc  _ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
 		const char *));
 typedef double	ScoreElementValueProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,

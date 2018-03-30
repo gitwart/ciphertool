@@ -30,7 +30,7 @@ double TrigramStringValue _ANSI_ARGS_((const char *, double ***));
 double TrigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, unsigned char, double ***));
 
 static int CreateTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, unsigned char *, double));
+static int AddTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
 static void DeleteTrigram _ANSI_ARGS_((ClientData));
 static int NormalizeTrigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
 static double TrigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
@@ -135,7 +135,7 @@ DeleteTrigram(ClientData clientData) {
 }
 
 static int
-AddTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, unsigned char *element, double value)  {
+AddTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *element, double value)  {
     TrigramItem *tlPtr = (TrigramItem *)itemPtr;
 
     if (element[0] < 'a' || element[0] > 'z'
@@ -218,7 +218,7 @@ DumpTrigram(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     Tcl_DString dsPtr;
     unsigned char i, j, k;
     int length;
-    unsigned char element[4];
+    char element[4];
     Tcl_Obj *valueObj = Tcl_NewDoubleObj(0.0);
 
     element[3] = '\0';

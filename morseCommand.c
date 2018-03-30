@@ -41,7 +41,6 @@ MorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     int         inputLength=0;
     int		convType = TOTEXT;
-    const char	*cmd;
     const char	*inputString;
     char	*result=(char *)NULL;
 
@@ -50,7 +49,6 @@ MorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	return TCL_ERROR;
     }
 
-    cmd = *argv;
     argv++, argc--;
     inputString = *argv;
     inputLength = (int)strlen(inputString);

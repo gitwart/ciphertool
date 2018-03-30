@@ -726,7 +726,7 @@ GetQuagmire(Tcl_Interp *interp, CipherItem *itemPtr)
 }
 
 static int
-QuagmireApplyKeywords(Tcl_Interp *interp, CipherItem *itemPtr, char *vertical, char *k1, char *k2)
+QuagmireApplyKeywords(Tcl_Interp *interp, CipherItem *itemPtr, const char *vertical, const char *k1, const char *k2)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     char k1FullKey[27];
@@ -905,7 +905,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
     int count;
-    char *vertical = part1;
+    const char *vertical = part1;
     const char **argv;
 
     if (Tcl_SplitList(interp, part2, &count, &argv) != TCL_OK) {
