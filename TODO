@@ -1,10 +1,10 @@
 Todo:
 -----
 
-1.6.3
+1.6.4
 =================
 
-Obey const of input args in SetAristocrat
+Clean up compiler warnings
 
 Implement lookupByPattern in C using CadenusGenerateKeyOrder as a template
 
@@ -33,8 +33,6 @@ Allow invalid words in new word splitter
 slidesolve does not convert all ciphertext to plaintext
     ma2008:e11 (period 7, type vigenere)
 
-(done) Remove references to obsolete 'CipherUtil::readSavedCipher' procedure
-
 Modify ptval to use score initialization code as found in csolve
 
 Fix the usage info for the "key" command
@@ -58,29 +56,33 @@ Some setProc and encodeProc functions have bugs that allows invalid characters.
 tkcrithm runs multiple times if the "solve" button is pressed while it
     is already solving.
 
-(done) hillclimb fails with fmorse due to key restore errors
+1.6.3
+=================
+Remove references to obsolete 'CipherUtil::readSavedCipher' procedure
 
-(done) CIPHERTOOL_DICTIONARY environment variable isn't being honored
+hillclimb fails with fmorse due to key restore errors
 
-(done) Remove old references to dictionaryDir and replace with
+CIPHERTOOL_DICTIONARY environment variable isn't being honored
+
+Remove old references to dictionaryDir and replace with
     Dictionary::directory.
     (grep for 'dictionaryDir' in progs/*)
 
-(done) Perform uppercase -> lowercase conversion of ciphertext when reading in
+Perform uppercase -> lowercase conversion of ciphertext when reading in
     from a file.
 
-(done) Add "save as" menu entry to ctool
+Add "save as" menu entry to ctool
 
-(done) More thorough word splitting by not stopping at the first solution,
+More thorough word splitting by not stopping at the first solution,
     but recursing through all solutions and maximizing the trie score of
     the result.
 
-(done) Add spaces to plaintext for all ciphers when saving via ctool
+Add spaces to plaintext for all ciphers when saving via ctool
 
-(done) csolve does not record the period (width) for a route transposition
+csolve does not record the period (width) for a route transposition
     cipher
 
-(done) Loading a baconian cipher generates an error (nd2000:solve.x09.sol)
+Loading a baconian cipher generates an error (nd2000:solve.x09.sol)
     Can't reproduce with the new cipher save format
 
 (done) tkcrithm needs a ^ operator for exponential expressions.

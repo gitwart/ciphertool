@@ -1,3 +1,12 @@
+Fri Mar  30 11:11:00 CDT 2018 wart@kobold.org
+    * Released 1.6.3
+    * Use new rules when linking with Tcl stubs and Tcl 8.6
+    * Ensure const qualifiers aren't disobeyed.
+    * Cleaned up lots of compiler warnings
+    * Fixed core dump when setting foursquare ciphers that include a 'j'
+    * Preparing for 1.6.3 release, the first one after moving the sources
+      to Github.
+
 Sun Apr  4 22:28:46 PDT 2010 wart@kobold.org
     * hillclimb.c: Add missing argument to Tcl_AppendResult()
     * Fix memory corruption due to premature freeing of memory.
