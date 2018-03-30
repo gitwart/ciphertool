@@ -1,6 +1,6 @@
-Name:           ciphertool
-Version:        1.6.2
-Release:        @RELEASE@%{?dist}
+Name:           tcl-ciphertool
+Version:        1.6.3
+Release:        1%{?dist}
 Summary: Tools for working with American Cryptogram Association ciphers
 
 Group: Applications/Text
@@ -60,16 +60,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/applications/*.desktop
 
 %changelog
+* Fri Mar 30 2018 <wart at kobold.org> - 1.6.3-1
+- Updated to build with Tcl 8.6
+- Cleaned up many compiler warnings
+
 * Tue Jan 17 2006 <wart at kobold.org> - 1.6.1-1
 - Updated to 1.6.1
+
 * Mon Jan 16 2006 <wart at kobold.org> - 1.6.0-7
 - Added desktop integration files.
 - Added TEA 3.4 support.
+
 * Tue Oct 18 2005 <wart at kobold.org> - 1.6.0-6
 - ??
+
 * Sun Mar  6 2005 <wart at kobold.org> - 1.6.0-5
 - progs/ctool:  Change interpreter from 'wish8.3' to 'wish'.
 - configure:
 - configure.in:  Bumped release from '4' to '5'.
+
 * Tue Sep  7 2004 <wart at kobold.org> - 1.6.0-4
 - Initial rpm release with a Fedora-compatible spec file.
