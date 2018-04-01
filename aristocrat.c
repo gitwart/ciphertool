@@ -510,7 +510,7 @@ AristocratCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 static int
 SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
-    char	*c;
+    const char	*c;
     char	*e;
     int		valid = TCL_OK,
     		length=0;
@@ -523,12 +523,8 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      */
     while(*c && valid == TCL_OK) {
 	e = itemPtr->typePtr->valid_chars;
-	if (*c == '\n' || *c == '\r') {
-	    *c = ' ';
-	}
-        *c = tolower(*c);
 
-	while(*e && (*e != *c)) {
+	while(*e && (*e != tolower(*c)) && (*c != '\n') && (*c != '\r')) {
 	    e++;
 	}
 	if (! *e) {
@@ -541,7 +537,6 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     }
 
     if (valid==TCL_OK) {
-        const char *iter;
 	itemPtr->length = length;
 	if (itemPtr->ciphertext) {
 	    ckfree(itemPtr->ciphertext);
@@ -555,10 +550,18 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	}
 	itemPtr->length = length;
 
-	iter = ctext;
+	c = ctext;
 	e = itemPtr->ciphertext;
 
-	while((*e++ = *iter++));
+        while (*c) {
+            if (*c == '\n' || *c == '\r') {
+                *e = ' ';
+            } else {
+                *e = tolower(*c);
+            }
+            e++, c++;
+        }
+        *e = '\0';
 	Tcl_SetResult(interp, itemPtr->ciphertext, TCL_STATIC);
     } else {
 	badchar[1] = '\0';

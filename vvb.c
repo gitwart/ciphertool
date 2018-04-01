@@ -1244,7 +1244,7 @@ SolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     char	*key=(char *)NULL;
     char	c,
     		p;
-    int		tally=0;
+    //int		tally=0;
     int		i;
 
     if (itemPtr->period < 1) {
@@ -1264,7 +1264,8 @@ SolveVigenere(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     vigPtr->maxSolVal = 0.0;
     itemPtr->curIteration = 0;
 
-    tally = RecSolveVigenere(interp, itemPtr, 0, key);
+    //tally = RecSolveVigenere(interp, itemPtr, 0, key);
+    RecSolveVigenere(interp, itemPtr, 0, key);
 
     for(i=0; i < itemPtr->period; i++) {
 

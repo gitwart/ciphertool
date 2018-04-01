@@ -737,7 +737,7 @@ QuagmireApplyKeywords(Tcl_Interp *interp, CipherItem *itemPtr, const char *verti
     int ctIndex;
     int vertKeyCol=0;
     int k1Length = 0;
-    int k2Length = 0;
+    //int k2Length = 0;
 
     if (strlen(vertical) != itemPtr->period) {
         Tcl_SetResult(interp,
@@ -750,7 +750,7 @@ QuagmireApplyKeywords(Tcl_Interp *interp, CipherItem *itemPtr, const char *verti
         k1Length = strlen(k1);
     }
     if (k2) {
-        k2Length = strlen(k2);
+        //k2Length = strlen(k2);
     }
 
     for (i=0; i < itemPtr->period; i++) {
@@ -915,15 +915,15 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
     if (count == 0) {
         Tcl_SetResult(interp, "Can't restore quagmire with an empty keyword.",
                 TCL_STATIC);
-        Tcl_Free((char *) argv);
+        ckfree((char *) argv);
         return TCL_ERROR;
     } else if (count == 1 && (itemPtr->typePtr->type[8] == '1' ||itemPtr->typePtr->type[8] == '2' || itemPtr->typePtr->type[8] == '3')) {
         int result = QuagmireApplyKeywords(interp, itemPtr, vertical, argv[0], (char *)NULL);
-        Tcl_Free((char *) argv);
+        ckfree((char *) argv);
         return result;
     } else if (count == 2 && itemPtr->typePtr->type[8] == '4') {
         int result = QuagmireApplyKeywords(interp, itemPtr, vertical, argv[0], argv[1]);
-        Tcl_Free((char *) argv);
+        ckfree((char *) argv);
         return result;
     } else if (count == itemPtr->period) {
         int keyRow;
@@ -932,7 +932,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
                     "Length of each key element in full key restore must be 26: ",
                         part1,
                     (char *)NULL);
-            Tcl_Free((char *) argv);
+            ckfree((char *) argv);
             return TCL_ERROR;
         }
 
@@ -942,7 +942,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
                         "Length of each key element in full key restore must be 26: ",
                         argv[keyRow],
                         (char *)NULL);
-                Tcl_Free((char *) argv);
+                ckfree((char *) argv);
                 return TCL_ERROR;
             }
         }
@@ -957,7 +957,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
                     Tcl_AppendResult(interp, "Invalid character found in restoration key: ",
                             argv[keyRow],
                             (char *)NULL);
-                    Tcl_Free((char *) argv);
+                    ckfree((char *) argv);
                     return TCL_ERROR;
                 }
                 ctIndex = argv[keyRow][i] - 'a';
@@ -967,14 +967,14 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
                 quagPtr->ctkey[keyRow][ptIndex] = argv[keyRow][i];
             }
         }
-        Tcl_Free((char *) argv);
+        ckfree((char *) argv);
         return TCL_OK;
     }
 
     Tcl_SetResult(interp,
             "Number of key blocks does not match the cipher period.",
             TCL_STATIC);
-    Tcl_Free((char *) argv);
+    ckfree((char *) argv);
     return TCL_ERROR;
 }
 

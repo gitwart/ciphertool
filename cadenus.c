@@ -938,8 +938,8 @@ static int
 EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
     int count;
-    char *order = (char *)NULL;
-    int orderFromMalloc = 0;
+    const char *order = (char *)NULL;
+    char *generatedOrder = (char *)NULL;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {
@@ -947,8 +947,8 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     }
 
     if (count == 1) {
-        order = CadenusGenerateKeyOrder(argv[0]);
-        orderFromMalloc = 1;
+        generatedOrder = CadenusGenerateKeyOrder(argv[0]);
+        order = generatedOrder;
     } else if (count == 2) {
         order = argv[1];
     } else if (count != 2) {
@@ -960,8 +960,8 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 
     if (strlen(argv[0]) != strlen(order)) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	Tcl_SetResult(interp, "Lengths of encoding key elements must match.",
 		TCL_STATIC);
@@ -971,8 +971,8 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, pt) != TCL_OK) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
@@ -986,46 +986,46 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 	Tcl_SetResult(interp,
 		"Length of key does not match the period.", TCL_STATIC);
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
 
     if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, argv[0], order) != TCL_OK) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
     ct = CadenusTransform(itemPtr, itemPtr->ciphertext, ENCODE);
     if (ct == (char *)NULL) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, ct) != TCL_OK) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, argv[0], order) != TCL_OK) {
 	ckfree((char *)argv);
-        if (orderFromMalloc) {
-            ckfree((char *)order);
+        if (generatedOrder) {
+            ckfree((char *)generatedOrder);
         }
 	return TCL_ERROR;
     }
 
     Tcl_SetResult(interp, ct, TCL_DYNAMIC);
     ckfree((char *)argv);
-    if (orderFromMalloc) {
-        ckfree((char *)order);
+    if (generatedOrder) {
+        ckfree((char *)generatedOrder);
     }
 
     return TCL_OK;

@@ -631,7 +631,7 @@ EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
      * Read the key into a palette for encryption.
      */
     for (i=0; i<10; i++) {
-	mark = trans[key[i]];
+	mark = trans[(unsigned)key[i]];
 	palette[mark][npalette[mark]++] = order[i] - '0';
     }
 
@@ -653,7 +653,7 @@ EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     ct = StringToMorse(pt);
     n = strlen(ct);
     for (i=0; i<n; i++) {
-	mark = trans[ct[i]];
+	mark = trans[(unsigned)ct[i]];
 	ct[i] = palette[mark][rand()%npalette[mark]] + '0';
     }
 

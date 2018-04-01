@@ -768,7 +768,8 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     char *ct = (char *)NULL;
     int count;
     const char **argv;
-    char *keyedAlphabet = (char *)NULL;
+    const char *keyedAlphabet = (char *)NULL;
+    char *generatedKey = (char *)NULL;
     const char *keySeq = (char *)NULL;
     int seqValue;
 
@@ -796,41 +797,45 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     }
 
     if (count == 1) {
-	char *temp = (char *)NULL;
+	char *temp1 = (char *)NULL;
 	char *curPos;
 	int i;
 
 	// Make sure to free this space later.
-	temp = KeyGenerateNum(interp, (long)seqValue);
-	if (temp == (char *)NULL) {
+	temp1 = KeyGenerateNum(interp, (long)seqValue);
+	if (temp1 == (char *)NULL) {
 	    ckfree((char *)argv);
 	    return TCL_ERROR;
 	}
 
-	for(curPos = temp, i=0; *curPos; curPos++) {
+	for(curPos = temp1, i=0; *curPos; curPos++) {
 	    if (*curPos == 'j') {
 		*curPos = 'i';
 	    }
 	    if (*curPos >= 'a' && *curPos <= 'z') {
-		temp[i++] = *curPos;
+		temp1[i++] = *curPos;
 	    }
 	}
-	temp[i] = '\0';
+	temp1[i] = '\0';
 
-	keyedAlphabet = (char *)ckalloc(sizeof(char) * (26 + 1));
-	if (KeyGenerateK1(interp, temp, keyedAlphabet) != TCL_OK) {
-	    ckfree(temp);
-	    ckfree(keyedAlphabet);
+	generatedKey = (char *)ckalloc(sizeof(char) * (26 + 1));
+	if (KeyGenerateK1(interp, temp1, generatedKey) != TCL_OK) {
+	    ckfree(temp1);
+	    ckfree(generatedKey);
 	    ckfree((char *)argv);
 	    return TCL_ERROR;
 	}
-        ckfree(temp);
+        ckfree(temp1);
 
 	// It is safe to assume that all 26 letters of the alphabet are
 	// present once and only once.
-	for(i=0; keyedAlphabet[i] != 'j' && i < 26; i++);
-	for(; (keyedAlphabet[i] = keyedAlphabet[i+1]) && i < 26; i++);
-	keyedAlphabet[26] = '\0';
+	for(i=0; generatedKey[i] != 'j' && i < 26; i++);
+	for(; (generatedKey[i] = generatedKey[i+1]) && i < 26; i++);
+	generatedKey[26] = '\0';
+
+        keyedAlphabet = generatedKey;
+    } else {
+        keyedAlphabet = argv[0];
     }
 
     if (strlen(keyedAlphabet) != 25) {
@@ -851,37 +856,37 @@ EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     }
     if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, keyedAlphabet, keySeq) != TCL_OK) {
 	ckfree((char *)argv);
-	if (count == 1) {
-	    ckfree((char *)keyedAlphabet);
+	if (generatedKey) {
+	    ckfree(generatedKey);
 	}
 	return TCL_ERROR;
     }
     ct = BazeriesTransform(itemPtr, itemPtr->ciphertext, ENCODE);
     if (ct == (char *)NULL) {
 	ckfree((char *)argv);
-	if (count == 1) {
-	    ckfree((char *)keyedAlphabet);
+	if (generatedKey) {
+	    ckfree(generatedKey);
 	}
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, ct) != TCL_OK) {
 	ckfree((char *)argv);
-	if (count == 1) {
-	    ckfree((char *)keyedAlphabet);
+	if (generatedKey) {
+	    ckfree(generatedKey);
 	}
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, keyedAlphabet, keySeq) != TCL_OK) {
 	ckfree((char *)argv);
-	if (count == 1) {
-	    ckfree((char *)keyedAlphabet);
+	if (generatedKey) {
+	    ckfree(generatedKey);
 	}
 	return TCL_ERROR;
     }
 
     Tcl_SetResult(interp, ct, TCL_DYNAMIC);
-    if (count == 1) {
-	ckfree((char *)keyedAlphabet);
+    if (generatedKey) {
+        ckfree(generatedKey);
     }
     ckfree((char *)argv);
 

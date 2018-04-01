@@ -367,8 +367,8 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 static int
 SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 {
-    char	*c,
-		*e;
+    const char	*c;
+    char	*e;
     int		valid = TCL_OK,
     		length=0;
     char	badchar[2];
@@ -380,12 +380,8 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      */
     while(*c && valid == TCL_OK) {
 	e = itemPtr->typePtr->valid_chars;
-	if (*c == '\n' || *c == '\r') {
-	    *c = ' ';
-	}
-        *c = tolower(*c);
 
-	while(*e && (*e != *c)) {
+	while(*e && (*e != tolower(*c)) && (*c != '\n') && (*c != '\r')) {
 	    e++;
 	}
 	if (! *e) {
@@ -414,7 +410,15 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	c = ctext;
 	e = itemPtr->ciphertext;
 
-	while((*e++ = *c++));
+        while (*c) {
+            if (*c == '\n' || *c == '\r') {
+                *e = ' ';
+            } else {
+                *e = tolower(*c);
+            }
+            e++, c++;
+        }
+        *e = '\0';
 	Tcl_SetResult(interp, itemPtr->ciphertext, TCL_STATIC);
     } else {
 	badchar[1] = '\0';
@@ -519,24 +523,16 @@ EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
     /*
      * This call has the side effect of setting the key for the
      * current cipher item  It will convert the key string into
-     * an integer and store the result in the cipher item.
+     * an integer and store the result in the cipher item.  It does
+     * not have any impact on the stored ciphertext (if any).
      */
     if (RestoreCaesar(interp, itemPtr, key, (char *) NULL) == TCL_ERROR) {
 	return TCL_ERROR;
     }
 
-    /*
-     * Modify the plaintext in-place.  This is much faster than
-     * setting the ciphertext to the plaintext, doing a reverse shift,
-     * resetting the ciphertext, then restoring the key.
-     */
-    ShiftString(pt, -caesarPtr->shift);
-
-    /*
-     * The plaintext pointer now contains the new ciphertext.
-     * Store it in the cipher item.
-     */
     (itemPtr->typePtr->setctProc)(interp, itemPtr, pt);
+
+    ShiftString(itemPtr->ciphertext, -caesarPtr->shift);
 
     Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 
