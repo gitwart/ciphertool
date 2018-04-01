@@ -194,6 +194,7 @@ test score-1.20 {score ngrams with string longer than the element size} {
 } {2.0}
 
 
+
 set typeData(digramlog,elemsize)		2
 set typeData(digramcount,elemsize)		2
 set typeData(trigramlog,elemsize)		3
@@ -381,6 +382,17 @@ Must be one of:  scorevar type
 
 	set result
     } [list [list $typeData($type,element,1.3) $typeData($type,value,1.3)]]
+
+    test $type-1.11 "$type dump with an invalid script" {
+	set s [createScore $type $typeData($type,elemsize)]
+
+	$s add $typeData($type,element,1.3) $typeData($type,value,1.3)
+        set result [list [catch {$s dump "idonotexist"} msg] $msg]
+
+        rename $s {}
+
+        set result
+    } {1 {invalid command name "idonotexist"}}
 }
 
 test score-2.1 {Delete score command} {deletedcommand} {

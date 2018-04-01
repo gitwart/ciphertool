@@ -193,7 +193,5 @@ DumpNgramScore(Tcl_Interp *interp, ScoreItem *itemPtr, const char *script) {
     Tcl_DStringAppend(&command, script, strlen(script));
 
     Tcl_ResetResult(interp);
-    DumpTreeNode(interp, ngPtr->rootNode, &command, &element, 0);
-
-    return TCL_OK;
+    return DumpTreeNode(interp, ngPtr->rootNode, &command, &element, 0);
 }

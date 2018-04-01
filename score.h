@@ -50,7 +50,7 @@ int	NullScoreNormalizer _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
 int	DumpScoreTable _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
 int	ScoreCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
 void	DeleteScore _ANSI_ARGS_((ClientData));
-void    DumpTreeNode _ANSI_ARGS_((Tcl_Interp *, TreeNode *, Tcl_DString *, Tcl_DString *, int));
+int     DumpTreeNode _ANSI_ARGS_((Tcl_Interp *, TreeNode *, Tcl_DString *, Tcl_DString *, int));
 double	DigramStringValue _ANSI_ARGS_((const char *, double **));
 double	DigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
 int  DefaultScoreValue _ANSI_ARGS_((Tcl_Interp *, const char *, double *));

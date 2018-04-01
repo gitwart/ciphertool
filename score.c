@@ -515,18 +515,18 @@ DumpScoreTable(Tcl_Interp *interp, ScoreItem *itemPtr, char *script) {
     return TCL_ERROR;
 }
 
-void
+int
 DumpTreeNode(Tcl_Interp *interp, TreeNode *rootNode, Tcl_DString *command, Tcl_DString *element, int index) {
     int count = 0;
+    int result = TCL_OK;
 
     if (rootNode == NULL) {
-	return;
+	return TCL_OK;
     }
 
     for (count=0; rootNode->next && rootNode->next[count]; count++) {
 	if (rootNode->next[count]->val == '\0' && rootNode->measure > 0) {
 	    int length = Tcl_DStringLength(command);
-	    int result = TCL_OK;
 	    Tcl_Obj *valueObj = Tcl_NewDoubleObj(0);
 
 	    Tcl_DStringStartSublist(command);
@@ -538,14 +538,21 @@ DumpTreeNode(Tcl_Interp *interp, TreeNode *rootNode, Tcl_DString *command, Tcl_D
 	    result = Tcl_EvalEx(interp, Tcl_DStringValue(command), Tcl_DStringLength(command), 0);
 
 	    Tcl_DecrRefCount(valueObj);
+
+            if (result != TCL_OK) {
+                return result;
+            }
+
 	    Tcl_DStringSetLength(command, length);
 	} else {
 	    Tcl_DStringAppend(element, &(rootNode->next[count]->val), 1);
-	    DumpTreeNode(interp, rootNode->next[count], command, element,
+	    result = DumpTreeNode(interp, rootNode->next[count], command, element,
 		    index+1);
 	    Tcl_DStringSetLength(element, index);
 	}
     }
+
+    return result;
 }
 
 int
