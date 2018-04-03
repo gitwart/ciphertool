@@ -26,6 +26,7 @@
 
 #include <dictionary.h>
 
+int LookupByPatternObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
 int LookupByLengthObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
 int AvailableLengthsObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
 int ClearCacheObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));

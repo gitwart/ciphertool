@@ -27,8 +27,10 @@
 #include <dictionaryCmds.h>
 #include <wordtree.h>
 
+static Tcl_Obj *lookupByPattern		_ANSI_ARGS_((Tcl_Interp *interp,
+					Tcl_Obj *wordList, const char *pattern));
 static Tcl_Obj *filterWordList		_ANSI_ARGS_((Tcl_Interp *interp,
-					Tcl_Obj *wordList, char *pattern));
+					Tcl_Obj *wordList, const char *pattern));
 static Tcl_Obj *readDictionaryFile	_ANSI_ARGS_((Tcl_Interp *interp,
 					Dictionary *dict, int length));
 static Tcl_Obj *getWordsMatchingLength	_ANSI_ARGS_((Tcl_Interp *interp,
@@ -180,6 +182,46 @@ int LookupByLengthObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tc
 
     Tcl_SetObjResult(interp, resultObj);
     Tcl_DecrRefCount(resultObj);
+    return TCL_OK;
+}
+
+/*
+ * Look up a list of words in the dictionary that match a given letter
+ * pattern.
+ */
+int LookupByPatternObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+    Dictionary *dict = (Dictionary *)clientData;
+    Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
+    Tcl_Obj *wordList = (Tcl_Obj *)NULL;
+    char *pattern = (char *)NULL;
+    int length = 0;
+
+    if (objc != 2) {
+	Tcl_SetResult(interp, "Usage: lookupByPattern pattern",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
+
+    pattern = Tcl_GetString(objv[1]);
+    length = strlen(pattern);
+
+    /*
+     * Start by getting a list of words that match the pattern length
+     */
+    wordList = lookupByLength(interp, dict, length, (char *)NULL);
+    if (wordList == NULL) {
+        Tcl_DecrRefCount(wordList);
+	return TCL_ERROR;
+    }
+
+    /*
+     * Now filter the list to find only the words that match the pattern
+     */
+
+    resultObj = lookupByPattern(interp, wordList, pattern);
+
+    Tcl_SetObjResult(interp, resultObj);
+    //Tcl_DecrRefCount(resultObj);
     return TCL_OK;
 }
 
@@ -471,7 +513,65 @@ int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
 }
 
 static Tcl_Obj *
-filterWordList(Tcl_Interp *interp, Tcl_Obj *wordList, char *pattern) {
+lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
+    int i, j;
+    int wordListLength = 0;
+    Tcl_Obj *filteredList;
+    Tcl_Obj **words = (Tcl_Obj **)NULL;
+    char letterMap[26];
+    char patternMap[26];
+
+
+    if (Tcl_ListObjGetElements(interp, wordList, &wordListLength, &words) != TCL_OK) {
+	return (Tcl_Obj *)NULL;
+    }
+
+    /*
+     * This is a redundant check.  The caller should have already validated
+     * that the pattern is a series of lowercase alphabetic characters.
+     */
+    for (int i=0; pattern[i]; i++) {
+        if (pattern[i] < 'a' || pattern[i] > 'z') {
+            return (Tcl_Obj *)NULL;
+        }
+    }
+
+    filteredList = Tcl_NewListObj(0, NULL);
+    for (i=0; i < wordListLength; i++) {
+	char *cword = Tcl_GetString(words[i]);
+        for (j=0; j < 26; j++) {
+            letterMap[j] = '\0';
+            patternMap[j] = '\0';
+        }
+
+        for (j=0; cword[j]; j++) {
+            if (cword[j] < 'a' || cword[j] > 'z') {
+                break;
+            } else if (! letterMap[j-'a'] && ! patternMap[cword[j]-'a']) {
+                letterMap[j-'a'] = cword[j];
+                patternMap[cword[j]-'a'] = j-'a';
+            } else if (! letterMap[j-'a'] && patternMap[cword[j] - 'a']) {
+                break;
+            } else if (letterMap[j-'a'] && ! patternMap[cword[j] - 'a']) {
+                break;
+            } else if (letterMap[j-'a'] != cword[j]) {
+                break;
+            }
+        }
+
+        /*
+         * If we reached the end of the word, then it was a match.
+         */
+        if (! cword[j]) {
+	    Tcl_ListObjAppendElement(interp, filteredList, words[i]);
+	}
+    }
+
+    return filteredList;
+}
+
+static Tcl_Obj *
+filterWordList(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
     int i;
     int wordListLength = 0;
     Tcl_Obj *filteredList;

@@ -42,7 +42,8 @@ If the <code>word</code> cache is enabled then this procedure will load the
 words from the appropriate dictionary file only once.  If the <code>pattern</code> cache is enabled then the result will be stored in the <code>pattern</code> cache."]
 
 [Description "Dictionary::lookupByPattern pattern" lookupByPattern \
-"Deprecated.  See <code>Dictionary::lookupByLength</code>"]
+"Returns a list of all words in the dictionary that match the letter
+pattern.  <code>pattern</code> should look like abcadb, with repeated letters as indicated.  For example, <code>abcadb</code> would match <code>people</code>."]
 
 [Description "Dictionary::clearCache cache1 ?cache2 ...?" clearCache \
 "Clear the specified caches.  This will free up the memory used by the

@@ -4,14 +4,20 @@ Todo:
 1.6.4
 =================
 
-Clean up compiler warnings
+(done) Clean up compiler warnings
+    Rewrote some subroutines to be better about obeying const-ness of
+    input parameters.
+    - Only unused functions (to be used at a later time) remain
 
 Implement lookupByPattern in C using CadenusGenerateKeyOrder as a template
 
 Fill out quagmire tests for more error conditions
 
-Check for result of Tcl_SplitList() not being freed
-    Tcl_Free((char *) argv);
+(done) Add test, return value check for wordtree dump script (score.c:538)
+    DumpTreeNode should return TCL_{OK,ERROR} and propagate back up
+
+(done) Check for result of Tcl_SplitList() not being freed
+    ckfree((char *) argv);
 
 quag2keysearch gives a confusing error if no solution is found (such as
     using a vertical keyword length that does not match the cipher period)
@@ -35,8 +41,8 @@ slidesolve does not convert all ciphertext to plaintext
 
 Modify ptval to use score initialization code as found in csolve
 
-Fix the usage info for the "key" command
-    [key foo] does not show all possible subcommands (convert)
+(done) Fix the usage info for the "key" command
+    [key foo] does not show all possible subcommands
 
 hillclimb:  add routines for generating neighbor keys from keywords,
     in contrast to generating neighbor keys by swapping letters in full
