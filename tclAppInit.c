@@ -23,7 +23,19 @@
  *
  */
 
+#undef BUILD_tcl
+#undef STATIC_BUILD
 #include "tcl.h"
+
+#ifdef TCL_TEST
+extern Tcl_PackageInitProc Tcltest_Init;
+extern Tcl_PackageInitProc Tcltest_SafeInit;
+#endif /* TCL_TEST */
+
+#ifdef TCL_XT_TEST
+extern void                XtToolkitInitialize(void);
+extern Tcl_PackageInitProc Tclxttest_Init;
+#endif /* TCL_XT_TEST */
 
 /*
  * The following variable is a special hack that is needed in order for
@@ -32,10 +44,24 @@
 
 extern int Cipher_Init(Tcl_Interp *);
 
-#ifdef TCL_TEST
-#include "tclInt.h"
-EXTERN int		Tcltest_Init _ANSI_ARGS_((Tcl_Interp *interp));
-#endif /* TCL_TEST */
+#ifndef TCL_LOCAL_APPINIT
+#define TCL_LOCAL_APPINIT Tcl_AppInit
+#endif
+#ifndef MODULE_SCOPE
+#   define MODULE_SCOPE extern
+#endif
+MODULE_SCOPE int TCL_LOCAL_APPINIT(Tcl_Interp *);
+MODULE_SCOPE int main(int, char **);
+
+/*
+ * The following #if block allows you to change how Tcl finds the startup
+ * script, prime the library or encoding paths, fiddle with the argv, etc.,
+ * without needing to rewrite Tcl_Main()
+ */
+
+#ifdef TCL_LOCAL_MAIN_HOOK
+MODULE_SCOPE int TCL_LOCAL_MAIN_HOOK(int *argc, char ***argv);
+#endif
 
 /*
  *----------------------------------------------------------------------
@@ -55,32 +81,10 @@ EXTERN int		Tcltest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main(
+    int argc,			/* Number of command-line arguments. */
+    char *argv[])		/* Values of command-line arguments. */
 {
-    /*
-     * The following #if block allows you to change the AppInit
-     * function by using a #define of TCL_LOCAL_APPINIT instead
-     * of rewriting this entire file.  The #if checks for that
-     * #define and uses Tcl_AppInit if it doesn't exist.
-     */
-
-#ifndef TCL_LOCAL_APPINIT
-#define TCL_LOCAL_APPINIT Tcl_AppInit    
-#endif
-    extern int TCL_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
-
-    /*
-     * The following #if block allows you to change how Tcl finds the startup
-     * script, prime the library or encoding paths, fiddle with the argv,
-     * etc., without needing to rewrite Tcl_Main()
-     */
-
-#ifdef TCL_LOCAL_MAIN_HOOK
-    extern int TCL_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
-#endif
-
 #ifdef TCL_XT_TEST
     XtToolkitInitialize();
 #endif
@@ -90,7 +94,6 @@ main(argc, argv)
 #endif
 
     Tcl_Main(argc, argv, TCL_LOCAL_APPINIT);
-
     return 0;			/* Needed only to prevent compiler warning. */
 }
 
@@ -114,12 +117,18 @@ main(argc, argv)
  */
 
 int
-Tcl_AppInit(interp)
-    Tcl_Interp *interp;		/* Interpreter for application. */
+Tcl_AppInit(
+    Tcl_Interp *interp)		/* Interpreter for application. */
 {
-    if (Tcl_Init(interp) == TCL_ERROR) {
+    if ((Tcl_Init)(interp) == TCL_ERROR) {
 	return TCL_ERROR;
     }
+
+#ifdef TCL_XT_TEST
+    if (Tclxttest_Init(interp) == TCL_ERROR) {
+	return TCL_ERROR;
+    }
+#endif
 
 #ifdef TCL_TEST
     if (Tcltest_Init(interp) == TCL_ERROR) {
@@ -130,8 +139,8 @@ Tcl_AppInit(interp)
 #endif /* TCL_TEST */
 
     /*
-     * Call the init procedures for included packages.  Each call should
-     * look like this:
+     * Call the init procedures for included packages. Each call should look
+     * like this:
      *
      * if (Mod_Init(interp) == TCL_ERROR) {
      *     return TCL_ERROR;
@@ -145,8 +154,8 @@ Tcl_AppInit(interp)
     }
 
     /*
-     * Call Tcl_CreateCommand for application-specific commands, if
-     * they weren't already created by the init procedures called above.
+     * Call Tcl_CreateCommand for application-specific commands, if they
+     * weren't already created by the init procedures called above.
      */
 
     /*
