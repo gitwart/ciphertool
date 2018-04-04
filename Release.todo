@@ -12,6 +12,8 @@ Release steps:
     Change the version numbers in configure.in (1) and tcl-ciphertool.spec (2).
     Make sure that the configure script has been regenerated to reflect any
 	changes to configure.in.
+    Make sure that any new packages (eg library files) are reflected in
+        the pkgIndex.tcl.in template
     Double-check that modified files have been checked in.
     Double-check that the ChangeLog is up to date including a note about
 	the new release.

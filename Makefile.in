@@ -282,10 +282,12 @@ install-libraries: libraries install-lib-binaries
 	@for i in $(script_PROGRAMS) ; do \
 	    $(INSTALL_SCRIPT) $$i $(DESTDIR)$(bindir) ; \
 	done;
-	cd $(DESTDIR)$(pkglibdir) && ( echo \
-	  pkg_mkIndex . \;\
-	  exit; ) | \
-	$(TCLSH_PROG)
+	sed -e 's#\@srcdir\@#$$\{dir\}#g' \
+	    -e "s#\@PACKAGE_NAME\@#cipher#" \
+	    -e "s#\@PACKAGE_VERSION\@#1.6.3#" \
+	    -e "s#\@RELPATH\@##" \
+	    -e "s#\@PKG_LIB_FILE\@#$(PKG_LIB_FILE)#" \
+	    $(srcdir)/pkgIndex.tcl.in > $(DESTDIR)/$(pkglibdir)/pkgIndex.tcl
 
 install-lib-binaries:
 	mkdir -p $(DESTDIR)$(pkglibdir) $(DESTDIR)$(bindir)
@@ -329,10 +331,12 @@ TESTFLAGS	=
 #	$(TCLSH) `@CYGPATH@ $(srcdir)/tests/all.tcl` $(TESTLOAD) $(TESTFLAGS) | cat
 
 pkgIndex.tcl: $(PKG_LIB_FILE)
-	( echo \
-	  pkg_mkIndex . $(PKG_LIB_FILE) $(srcdir)/library/*.tcl \;\
-	  exit; ) | \
-	$(TCLSH_PROG)
+	sed -e "s#\@srcdir\@#$(srcdir) library#g" \
+	    -e "s#\@PACKAGE_NAME\@#@PACKAGE_NAME@#" \
+	    -e "s#\@PACKAGE_VERSION\@#@PACKAGE_VERSION@#" \
+	    -e "s#\@RELPATH\@##" \
+	    -e "s#\@PKG_LIB_FILE\@#$(PKG_LIB_FILE)#" \
+	    $(srcdir)/pkgIndex.tcl.in > pkgIndex.tcl
 
 test: $(PKG_LIB_FILE) pkgIndex.tcl
 	TCL_LIBRARY=$(TCL_LIBRARY_DIR) \
