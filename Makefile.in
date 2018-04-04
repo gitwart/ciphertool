@@ -78,15 +78,17 @@ script_PROGRAMS=\
 	$(srcdir)/progs/k4search \
 	$(srcdir)/progs/keysearch \
 	$(srcdir)/progs/keysquaresearch \
-	$(srcdir)/progs/lethist \
 	$(srcdir)/progs/makedictionary \
 	$(srcdir)/progs/nicsolve \
 	$(srcdir)/progs/patsearch \
 	$(srcdir)/progs/rot \
-	$(srcdir)/progs/solvemysz \
 	$(srcdir)/progs/tkcrithm \
 	$(srcdir)/progs/trifidkeysearch \
 	$(srcdir)/progs/txt2crithm
+
+bin_PROGRAMS=\
+	lethist \
+	solvemysz \
 
 SCRIPT_FILES = $(srcdir)/library/aristocrat.tcl \
 	$(srcdir)/library/baconian.tcl \
@@ -164,6 +166,7 @@ prefix		= @prefix@
 exec_prefix	= @exec_prefix@
 
 bindir		= @bindir@
+datarootdir	= @datarootdir@
 datadir		= @datadir@
 libdir		= @libdir@
 docdir		= @datadir@/doc/@PACKAGE_NAME@-@PACKAGE_VERSION@

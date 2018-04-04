@@ -2985,8 +2985,7 @@ AC_DEFUN(TEA_PREFIX, [
 	    prefix=/usr/local
 	fi
     fi
-    if test "${exec_prefix}" = "NONE" -a x"${prefix_default}" = x"yes" \
-	-o x"${exec_prefix_default}" = x"yes" ; then
+    if test "${exec_prefix}" = "NONE" -a x"${prefix_default}" = x"yes" ; then
 	if test x"${TCL_EXEC_PREFIX}" != x; then
 	    AC_MSG_NOTICE([--exec-prefix defaulting to TCL_EXEC_PREFIX ${TCL_EXEC_PREFIX}])
 	    exec_prefix=${TCL_EXEC_PREFIX}
