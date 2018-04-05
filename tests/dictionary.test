@@ -139,27 +139,65 @@ test lookupByPattern-$state-1.5 {no match} {
     set result
 } {}
 
-test lookupByPattern-$state-1.6 {uppercase invalid} {
+test lookupByPattern-$state-1.6 {uppercase allowed} {
     createDictionary
     set pattern aB
-    set result [catch {Dictionary::lookupByPattern $pattern} msg]
-    lappend result $msg
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
     set result
-} {1 {Invalid pattern 'aB': Must contain only letters a-z}}
+} {ab ac bd}
 
-test lookupByPattern-$state-1.7 {numeric invalid} {
+test lookupByPattern-$state-1.7 {all uppercase allowed} {
+    createDictionary
+    set pattern AB
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {ab ac bd}
+
+test lookupByPattern-$state-1.8 {numeric allowed} {
     createDictionary
     set pattern a5
-    set result [catch {Dictionary::lookupByPattern $pattern} msg]
-    lappend result $msg
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
     set result
-} {1 {Invalid pattern 'a5': Must contain only letters a-z}}
+} {ab ac bd}
+
+test lookupByPattern-$state-1.9 {all numeric allowed} {
+    createDictionary
+    set pattern 32
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {ab ac bd}
+
+test lookupByPattern-$state-1.10 {non-alphanumeric allowed} {
+    createDictionary
+    set pattern .*
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {ab ac bd}
+
+test lookupByPattern-$state-1.11 {non-alphanumeric with duplicates allowed} {
+    createDictionary
+    set pattern !!
+    set result [Dictionary::lookupByPattern $pattern]
+    
+    eval ::Dictionary::clearCache $stateList
+
+    set result
+} {aa bb}
 
 test lookupByLength-$state-1.1 {no pattern} {
     createDictionary

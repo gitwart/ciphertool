@@ -26,6 +26,7 @@
 #include <dictionary.h>
 #include <dictionaryCmds.h>
 #include <wordtree.h>
+#include <limits.h>
 
 static Tcl_Obj *lookupByPattern		_ANSI_ARGS_((Tcl_Interp *interp,
 					Tcl_Obj *wordList, const char *pattern));
@@ -521,44 +522,31 @@ lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
     int wordListLength = 0;
     Tcl_Obj *filteredList;
     Tcl_Obj **words = (Tcl_Obj **)NULL;
-    char letterMap[26];
-    char patternMap[26];
+    unsigned char letterMap[UCHAR_MAX];
+    unsigned char patternMap[UCHAR_MAX];
 
 
     if (Tcl_ListObjGetElements(interp, wordList, &wordListLength, &words) != TCL_OK) {
 	return (Tcl_Obj *)NULL;
     }
 
-    /*
-     * This is a redundant check.  The caller should have already validated
-     * that the pattern is a series of lowercase alphabetic characters.
-     */
-    for (int i=0; pattern[i]; i++) {
-        if (pattern[i] < 'a' || pattern[i] > 'z') {
-            Tcl_AppendResult(interp, "Invalid pattern '", pattern, "': Must contain only letters a-z", (char *)NULL);
-            return (Tcl_Obj *)NULL;
-        }
-    }
-
     filteredList = Tcl_NewListObj(0, NULL);
     for (i=0; i < wordListLength; i++) {
-	const char *cword = Tcl_GetString(words[i]);
-        for (j=0; j < 26; j++) {
+	const unsigned char *cword = (unsigned char *)Tcl_GetString(words[i]);
+        for (j=0; j < UCHAR_MAX; j++) {
             letterMap[j] = '\0';
             patternMap[j] = '\0';
         }
 
         for (j=0; cword[j]; j++) {
-            if (cword[j] < 'a' || cword[j] > 'z') {
+            if (! letterMap[(unsigned char) pattern[j]] && ! patternMap[cword[j]]) {
+                letterMap[(unsigned char) pattern[j]] = cword[j];
+                patternMap[cword[j]] = (unsigned char) pattern[j];
+            } else if (! letterMap[(unsigned char) pattern[j]] && patternMap[cword[j]]) {
                 break;
-            } else if (! letterMap[pattern[j]-'a'] && ! patternMap[cword[j]-'a']) {
-                letterMap[pattern[j]-'a'] = cword[j];
-                patternMap[cword[j]-'a'] = pattern[j];
-            } else if (! letterMap[pattern[j]-'a'] && patternMap[cword[j] - 'a']) {
+            } else if (letterMap[(unsigned char) pattern[j]] && ! patternMap[cword[j]]) {
                 break;
-            } else if (letterMap[pattern[j]-'a'] && ! patternMap[cword[j] - 'a']) {
-                break;
-            } else if (letterMap[pattern[j]-'a'] != cword[j]) {
+            } else if (letterMap[(unsigned char) pattern[j]] != cword[j]) {
                 break;
             }
         }
