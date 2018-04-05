@@ -9,7 +9,7 @@ Todo:
     input parameters.
     - Only unused functions (to be used at a later time) remain
 
-Implement lookupByPattern in C using CadenusGenerateKeyOrder as a template
+(done) Implement lookupByPattern in C
 
 Fill out quagmire tests for more error conditions
 
