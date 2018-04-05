@@ -637,6 +637,14 @@ test bazeries-3.19 {set/get language} {monolingual} {
     set result
 } {german}
 
+test bazeries-3.20 {set ct returns ciphertext} {
+    set c [cipher create bazeries]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
+
 test bazeries-4.1 {single substitution} {
     set c [createValidCipher]
     $c substitute 1 1 a

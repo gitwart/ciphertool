@@ -671,6 +671,14 @@ test myszcowski-3.23 {Set the ciphertext after setting the period triggers a per
     set result [$c cget -period]
 } {0}
 
+test myszcowski-3.24 {set ct returns ciphertext} {
+    set c [cipher create myszcowski]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
+
 test myszcowski-4.1 {restore} {
     set c [createValidCipher]
     $c configure -period 6

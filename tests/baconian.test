@@ -539,6 +539,14 @@ test baconian-3.18 {set/get language} {monolingual} {
     set result
 } {german}
 
+test baconian-3.19 {set ct returns ciphertext} {
+    set c [cipher create baconian]
+    set result [$c configure -ct abcde]
+    rename $c {}
+
+    set result
+} {abcde}
+
 test baconian-4.1 {valid restore (with blanks)} {
     set c [createValidCipher]
 

@@ -763,7 +763,7 @@ SetVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      * First find out if every character is valid
      */
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
 	Tcl_SetResult(interp, "No valid characters found in ciphertext",
 		TCL_STATIC);
@@ -777,6 +777,8 @@ SetVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	ckfree(itemPtr->ciphertext);
     }
     itemPtr->ciphertext = c;
+
+    Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 
     return valid;
 }

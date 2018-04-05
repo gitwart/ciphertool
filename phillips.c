@@ -157,7 +157,7 @@ SetPhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     int		valid = TCL_OK,
     		length=0;
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     c = ExtractValidChars(itemPtr, ctext);
 
     if (!c) {

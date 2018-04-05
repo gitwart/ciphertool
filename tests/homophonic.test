@@ -365,6 +365,14 @@ test homophonic-3.13 {set/get language} {monolingual} {
     set result
 } {german}
 
+test homophonic-3.14 {set ct returns ciphertext} {
+    set c [cipher create homophonic]
+    set result [$c configure -ct 12345678]
+    rename $c {}
+
+    set result
+} {12345678}
+
 test homophonic-4.1 {single valid substitution} {
     set c [createValidCipher]
     $c substitute 01 a

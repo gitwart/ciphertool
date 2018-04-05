@@ -721,6 +721,14 @@ test amsco-3.27 {Set the ciphertext after setting the period triggers a period r
     set result [$c cget -period]
 } {0}
 
+test amsco-3.28 {set ct returns ciphertext} {
+    set c [cipher create amsco]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
+
 test amsco-4.1 {restore} {
     set c [createValidCipher]
     $c configure -period 5

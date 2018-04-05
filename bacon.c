@@ -469,7 +469,7 @@ SetBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      * First find out if every character is valid
      */
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
 	Tcl_SetResult(interp, "No valid characters found in ciphertext",
 		TCL_VOLATILE);
@@ -498,6 +498,8 @@ SetBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     }
     baconPtr->pt = (char *)ckalloc(sizeof(char) * length + 1);
     baconPtr->bt = (char *)ckalloc(sizeof(char) * length/5 + 1);
+
+    Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 
     return valid;
 }

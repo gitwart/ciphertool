@@ -442,6 +442,14 @@ test caesar-3.18 {set/get language} {monolingual} {
     set result
 } {german}
 
+test caesar-3.19 {set ct returns ciphertext} {
+    set c [cipher create caesar]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
+
 test caesar-4.1 {valid substitution} {
     set c [createValidCipher]
     $c substitute a b

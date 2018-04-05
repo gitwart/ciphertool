@@ -345,6 +345,14 @@ test grandpre-3.13 {set/get language} {monolingual} {
     set result
 } {german}
 
+test grandpre-3.14 {set ct returns ciphertext} {
+    set c [cipher create grandpre]
+    set result [$c configure -ct 12345678]
+    rename $c {}
+
+    set result
+} {12345678}
+
 test grandpre-4.1 {single valid substitution} {
     set c [createValidCipher]
     $c substitute 44 c

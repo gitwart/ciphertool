@@ -587,6 +587,14 @@ test cadenus-3.12 {set/get language} {monolingual} {
     set result
 } {german}
 
+test cadenus-3.29 {set ct returns ciphertext} {
+    set c [cipher create cadenus]
+    set result [$c configure -ct [string repeat a 25]]
+    rename $c {}
+
+    set result
+} {aaaaaaaaaaaaaaaaaaaaaaaaa}
+
 test cadenus-4.1 {short cipher set and get} {
     set c [cipher create cadenus -ct aaaaabbbbbcccccdddddeeeee]
     set result [list [$c cget -key] [$c cget -pt]]

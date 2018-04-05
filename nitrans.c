@@ -143,7 +143,7 @@ SetNitrans(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     		width = 0,
     		length=0;
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     c = ExtractValidChars(itemPtr, ctext);
 
     if (!c) {

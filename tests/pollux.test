@@ -461,6 +461,14 @@ test pollux-3.22 {set/get language} {monolingual} {
     set result
 } {german}
 
+test pollux-3.23 {set ct returns ciphertext} {
+    set c [cipher create pollux]
+    set result [$c configure -ct 12345678]
+    rename $c {}
+
+    set result
+} {12345678}
+
 test pollux-4.1 {single substitution} {
     set c [createValidCipher]
 

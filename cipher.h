@@ -148,7 +148,7 @@ typedef struct {
     struct CipherType *typePtr;
 } CipherItem;
 
-int	CountValidChars _ANSI_ARGS_((CipherItem *, const char *));
+int	CountValidChars _ANSI_ARGS_((CipherItem *, const char *, int *));
 char *	ExtractValidChars _ANSI_ARGS_((CipherItem *, const char *));
 char *	ExtractValidCharsJtoI _ANSI_ARGS_((CipherItem *, const char *));
 int *	TextToInt _ANSI_ARGS_((Tcl_Interp *, CipherItem *, const char *,

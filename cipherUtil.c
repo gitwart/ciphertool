@@ -35,15 +35,24 @@
  */
 
 int
-CountValidChars(CipherItem *itemPtr, const char *ct)
+CountValidChars(CipherItem *itemPtr, const char *ct, int *invalidCount)
 {
     int		count=0;
+    int		invalid=0;
     char	*c;
 
     while(*ct) {
 	for(c = itemPtr->typePtr->valid_chars; *c && *c != *ct && *c != tolower(*ct); c++);
-	if (*c) count++;
+	if (*c) {
+            count++;
+        } else {
+            invalid++;
+        }
 	ct++;
+    }
+
+    if (invalidCount) {
+        *invalidCount = invalid;
     }
 
     return count;
@@ -59,10 +68,11 @@ ExtractValidChars(CipherItem *itemPtr, const char *ct)
 {
     int		length=0;
     int		index=0;
+    int         invalid=0;
     char	*newct=(char *)NULL;
     char	*c;
 
-    length = CountValidChars(itemPtr, ct);
+    length = CountValidChars(itemPtr, ct, &invalid);
 
     /*
      * This is a holdover from the homophonic cipher.  This should really
@@ -132,7 +142,7 @@ TextToInt(Tcl_Interp *interp, CipherItem *itemPtr, const char *intstring, int *c
     char	*new_ct=(char *)NULL;
 
     *count=0;
-    length = CountValidChars(itemPtr, intstring);
+    length = CountValidChars(itemPtr, intstring, (int *)NULL);
 
     if (length % fmt_length != 0 || length == 0) {
 	Tcl_SetResult(interp, "Invalid number of valid characters (possibly none) found in text string", TCL_STATIC);

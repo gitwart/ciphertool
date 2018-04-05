@@ -196,7 +196,7 @@ SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 		period;
     Tcl_Obj *intObj;
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     c = ExtractValidChars(itemPtr, ctext);
 
     if (length == 0) {

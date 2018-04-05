@@ -142,7 +142,7 @@ SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      * Count the number of valid characters
      */
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
 	Tcl_SetResult(interp, "No valid characters found in ciphertext",
 		TCL_STATIC);
@@ -187,6 +187,8 @@ SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     }
 
     Tcl_ValidateAllMemory(__FILE__, __LINE__);
+
+    Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 
     return TCL_OK;
 }

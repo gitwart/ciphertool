@@ -301,21 +301,17 @@ Must be one of:  ciphervar cget ?option?
                  ciphervar undo ct
                  ciphervar encode pt key}}
 
-# This next test is extracting the valid cipher characters without
-# mentioning that there were bad characters in the input.  It's not
-# fatal that this test fails, but it should really inform the user.
-
 test vigenere-2.1 {invalid cipher characters} {
     set c [cipher create vigenere]
 
-    set result [catch {$c configure -ct foo1} msg]
+    set result [catch {$c configure -ct 1111} msg]
 
     regsub -all $c $msg ciphervar msg
     lappend result $msg
     rename $c {}
     
     set result
-} {1 {Bad character in ciphertext:  1}}
+} {1 {No valid characters found in ciphertext}}
 
 test vigenere-2.2 {invalid period value} {
     set c [createValidCipher vigenere]
@@ -1267,6 +1263,14 @@ test vigenere-3.66 {set/get language} {monolingual} {
     set result
 } {german}
 
+
+test vigenere-3.67 {set ct returns ciphertext} {
+    set c [cipher create vigenere]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
 #
 # To test the various substitution routines we need to construct
 # a giant 26x26 table for each cipher type and check all cells in the

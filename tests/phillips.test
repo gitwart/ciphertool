@@ -629,6 +629,14 @@ test phillips-3.21 {set/get language} {monolingual} {
     set result
 } {german}
 
+test phillips-3.22 {set ct returns ciphertext} {
+    set c [cipher create phillips]
+    set result [$c configure -ct abcdefgh]
+    rename $c {}
+
+    set result
+} {abcdefgh}
+
 test phillips-4.1 {single substitution} {
     set c [createValidCipher]
     $c substitute 1 1 a

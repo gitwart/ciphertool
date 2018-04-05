@@ -289,7 +289,7 @@ test quagmire-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {0 {} foo}
+} {0 foo foo}
 
 test quagmire-2.2 {invalid period value} {
     set c [createValidCipher quagmire1]
@@ -649,6 +649,14 @@ test quagmire-3.19 {set/get language} {monolingual} {
     
     set result
 } {german}
+
+test quagmire-3.20 {set ct returns ciphertext} {
+    set c [cipher create quagmire1]
+    set result [$c configure -ct abcdefg]
+    rename $c {}
+
+    set result
+} {abcdefg}
 
 test quagmire-4.1 {single valid substitution} {
     set c [createValidCipher quagmire1 6]

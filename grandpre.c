@@ -152,7 +152,7 @@ SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
      * Count the number of valid characters
      */
 
-    length = CountValidChars(itemPtr, ctext);
+    length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
 	Tcl_SetResult(interp, "No valid characters found in ciphertext", TCL_VOLATILE);
 	return TCL_ERROR;
@@ -220,6 +220,8 @@ SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     strcpy(c, ctext);
 
     itemPtr->ciphertext = c;
+
+    Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 
     return valid;
 }
