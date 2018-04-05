@@ -79,7 +79,7 @@ Dictionary_Init(Tcl_Interp *interp) {
     dict->cacheTypes = 0;
 
     Tcl_CreateObjCommand(interp, "Dictionary::availableLengths", AvailableLengthsObjCmd, (ClientData) dict, NULL);
-    Tcl_CreateObjCommand(interp, "Dictionary::lookupByPattern2", LookupByPatternObjCmd, (ClientData) dict, NULL);
+    Tcl_CreateObjCommand(interp, "Dictionary::lookupByPattern", LookupByPatternObjCmd, (ClientData) dict, NULL);
     Tcl_CreateObjCommand(interp, "Dictionary::lookupByLength", LookupByLengthObjCmd, (ClientData) dict, NULL);
     Tcl_CreateObjCommand(interp, "Dictionary::clearCache", ClearCacheObjCmd, (ClientData) dict, NULL);
     Tcl_CreateObjCommand(interp, "Dictionary::isWord", IsWordObjCmd, (ClientData) dict, NULL);

@@ -41,50 +41,50 @@ namespace eval Dictionary {
 # Result:
 #	A potentially very long list of words all of the same length.
 
-proc Dictionary::lookupByPattern {pattern} {
-    foreach letter [split $pattern {}] {
-	set fixedPatternArray($letter) {}
-	set patternArray($letter) {}
-    }
-
-    set wordList {}
-
-    foreach word [lookupByLength [string length $pattern]] {
-	# Match against the desired pattern
-	array set patternArray [array get fixedPatternArray]
-	array unset wordArray
-	
-	set isValidWord 1
-
-	foreach wordLetter [split $word {}] \
-		patternLetter [split $pattern {}] {
-	    if {$patternArray($patternLetter) != ""} {
-		if {$patternArray($patternLetter) != $wordLetter} {
-		    set isValidWord 0
-		} else {
-		    if {[info exists wordArray($wordLetter)] && $wordArray($wordLetter) != $patternLetter} {
-			set isValidWord 0
-		    }
-		}
-
-		set patternArray($patternLetter) $wordLetter
-		set wordArray($wordLetter) $patternLetter
-	    } else {
-		if {[info exists wordArray($wordLetter)] && $wordArray($wordLetter) != $patternLetter} {
-		    set isValidWord 0
-		}
-		set patternArray($patternLetter) $wordLetter
-		set wordArray($wordLetter) $patternLetter
-	    }
-	}
-
-	if {$isValidWord} {
-	    lappend wordList $word
-	}
-    }
-
-    return $wordList
-}
+#proc Dictionary::lookupByPattern {pattern} {
+#    foreach letter [split $pattern {}] {
+#	set fixedPatternArray($letter) {}
+#	set patternArray($letter) {}
+#    }
+#
+#    set wordList {}
+#
+#    foreach word [lookupByLength [string length $pattern]] {
+#	# Match against the desired pattern
+#	array set patternArray [array get fixedPatternArray]
+#	array unset wordArray
+#	
+#	set isValidWord 1
+#
+#	foreach wordLetter [split $word {}] \
+#		patternLetter [split $pattern {}] {
+#	    if {$patternArray($patternLetter) != ""} {
+#		if {$patternArray($patternLetter) != $wordLetter} {
+#		    set isValidWord 0
+#		} else {
+#		    if {[info exists wordArray($wordLetter)] && $wordArray($wordLetter) != $patternLetter} {
+#			set isValidWord 0
+#		    }
+#		}
+#
+#		set patternArray($patternLetter) $wordLetter
+#		set wordArray($wordLetter) $patternLetter
+#	    } else {
+#		if {[info exists wordArray($wordLetter)] && $wordArray($wordLetter) != $patternLetter} {
+#		    set isValidWord 0
+#		}
+#		set patternArray($patternLetter) $wordLetter
+#		set wordArray($wordLetter) $patternLetter
+#	    }
+#	}
+#
+#	if {$isValidWord} {
+#	    lappend wordList $word
+#	}
+#    }
+#
+#    return $wordList
+#}
 
 # Dictionary::findWords
 #

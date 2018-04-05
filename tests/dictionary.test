@@ -91,7 +91,7 @@ if {$state == "none"} {
 test lookupByPattern-$state-1.1 {single character word} {
     createDictionary
     set pattern a
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
@@ -101,7 +101,7 @@ test lookupByPattern-$state-1.1 {single character word} {
 test lookupByPattern-$state-1.2 {multi character word with no duplicates} {
     createDictionary
     set pattern ab
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
@@ -111,7 +111,7 @@ test lookupByPattern-$state-1.2 {multi character word with no duplicates} {
 test lookupByPattern-$state-1.3 {order doesn't matter} {
     createDictionary
     set pattern ba
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
@@ -121,7 +121,7 @@ test lookupByPattern-$state-1.3 {order doesn't matter} {
 test lookupByPattern-$state-1.4 {multi character word with duplicates} {
     createDictionary
     set pattern aa
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
@@ -132,7 +132,7 @@ test lookupByPattern-$state-1.5 {no match} {
     createDictionary
     set pattern abbbbba
 
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [Dictionary::lookupByPattern $pattern]
     
     eval ::Dictionary::clearCache $stateList
 
@@ -142,22 +142,24 @@ test lookupByPattern-$state-1.5 {no match} {
 test lookupByPattern-$state-1.6 {uppercase invalid} {
     createDictionary
     set pattern aB
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [catch {Dictionary::lookupByPattern $pattern} msg]
+    lappend result $msg
     
     eval ::Dictionary::clearCache $stateList
 
     set result
-} {}
+} {1 {Invalid pattern 'aB': Must contain only letters a-z}}
 
 test lookupByPattern-$state-1.7 {numeric invalid} {
     createDictionary
     set pattern a5
-    set result [Dictionary::lookupByPattern2 $pattern]
+    set result [catch {Dictionary::lookupByPattern $pattern} msg]
+    lappend result $msg
     
     eval ::Dictionary::clearCache $stateList
 
     set result
-} {}
+} {1 {Invalid pattern 'a5': Must contain only letters a-z}}
 
 test lookupByLength-$state-1.1 {no pattern} {
     createDictionary

@@ -219,6 +219,9 @@ int LookupByPatternObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, T
      */
 
     resultObj = lookupByPattern(interp, wordList, pattern);
+    if (resultObj == NULL) {
+        return TCL_ERROR;
+    }
 
     Tcl_SetObjResult(interp, resultObj);
     //Tcl_DecrRefCount(resultObj);
@@ -532,6 +535,7 @@ lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
      */
     for (int i=0; pattern[i]; i++) {
         if (pattern[i] < 'a' || pattern[i] > 'z') {
+            Tcl_AppendResult(interp, "Invalid pattern '", pattern, "': Must contain only letters a-z", (char *)NULL);
             return (Tcl_Obj *)NULL;
         }
     }
