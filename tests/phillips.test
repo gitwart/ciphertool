@@ -356,7 +356,7 @@ test phillips-2.10 {restore with invalid characters in key} {
     set result
 } {1 {Invalid character in key}}
 
-test phillips-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
+test phillips-2.11 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaaabbbbbcccccdddddeeeee} msg]
@@ -366,7 +366,7 @@ test phillips-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
     rename $c {}
     
     set result
-} {1 {duplicate key characters not allowed}}
+} {1 {Duplicate character in key: a}}
 
 test phillips-2.12 {substitute with invalid characters} {
     set c [createValidCipher]

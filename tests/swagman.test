@@ -407,7 +407,7 @@ test swagman-2.10 {restore with invalid characters in key} {
     set result
 } {1 {Invalid character in key}}
 
-test swagman-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
+test swagman-2.11 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -418,7 +418,7 @@ test swagman-2.11 {restore with invalid key (duplicate chars)} {knownBug} {
     rename $c {}
     
     set result
-} {1 {duplicate key characters not allowed}}
+} {1 {Duplicate character in key: 1}}
 
 test swagman-2.12 {substitute with invalid characters} {
     set c [createValidCipher]

@@ -538,6 +538,7 @@ RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
     int i;
     int row;
     int col;
+    char used[playPtr->alphabetLen];
 
     if (itemPtr->length <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
@@ -556,6 +557,7 @@ RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 
     for(i=0; i < playPtr->alphabetLen; i++) {
 	playPtr->keyValPos[i] = 0;
+        used[i] = '\0';
     }
 
     for(i=0; i < playPtr->keyPeriod*playPtr->keyPeriod; i++) {
@@ -573,6 +575,28 @@ RestorePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 	    playPtr->key[row][col] = key[i];
 	    playPtr->keyValPos[keyValIndex] = i+1;
 	}
+    }
+
+    /*
+     * Look for duplicates in the key
+     */
+    for(i=0; i < playPtr->keyLen; i++) {
+	int keyValIndex;
+
+	row = i / playPtr->keyPeriod;
+	col = i % playPtr->keyPeriod;
+        keyValIndex = PlayfairLetterToKeyIndex(playPtr, playPtr->key[row][col]);
+
+	if (playPtr->key[row][col] && used[keyValIndex]) {
+            char badChar[2];
+            badChar[0] = playPtr->key[row][col];
+            badChar[1] = '\0';
+
+            Tcl_ResetResult(interp);
+            Tcl_AppendResult(interp, "Duplicate character in key: ", badChar, (char *)NULL);
+            return TCL_ERROR;
+	}
+        used[keyValIndex] = 1;
     }
 
     return TCL_OK;

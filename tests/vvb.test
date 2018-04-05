@@ -305,7 +305,7 @@ Must be one of:  ciphervar cget ?option?
 # mentioning that there were bad characters in the input.  It's not
 # fatal that this test fails, but it should really inform the user.
 
-test vigenere-2.1 {invalid cipher characters} {knownBug} {
+test vigenere-2.1 {invalid cipher characters} {
     set c [cipher create vigenere]
 
     set result [catch {$c configure -ct foo1} msg]

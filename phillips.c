@@ -396,6 +396,7 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
     int i;
     int row;
     int col;
+    char used[26];
 
     if (itemPtr->length <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
@@ -410,6 +411,9 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 
     for(i=0; i < PERIOD*PERIOD; i++) {
 	philPtr->keyValPos[i] = 0;
+    }
+    for(i=0; i < 26; i++) {
+        used[i] = '\0';
     }
 
     for(i=0; i < PERIOD*PERIOD; i++) {
@@ -426,6 +430,25 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 	    philPtr->key[row][col] = key[i];
 	    philPtr->keyValPos[key[i]-'a'] = i+1;
 	}
+    }
+
+    /*
+     * Look for duplicates in the key
+     */
+    for(i=0; i < PERIOD*PERIOD; i++) {
+	row = i / PERIOD;
+	col = i % PERIOD;
+
+	if (philPtr->key[row][col] && used[philPtr->key[row][col]-'a']) {
+            char badChar[2];
+            badChar[0] = philPtr->key[row][col];
+            badChar[1] = '\0';
+
+            Tcl_ResetResult(interp);
+            Tcl_AppendResult(interp, "Duplicate character in key: ", badChar, (char *)NULL);
+            return TCL_ERROR;
+	}
+        used[philPtr->key[row][col]-'a'] = 1;
     }
 
     return TCL_OK;
