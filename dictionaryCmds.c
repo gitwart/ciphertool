@@ -542,7 +542,7 @@ lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
 
     filteredList = Tcl_NewListObj(0, NULL);
     for (i=0; i < wordListLength; i++) {
-	char *cword = Tcl_GetString(words[i]);
+	const char *cword = Tcl_GetString(words[i]);
         for (j=0; j < 26; j++) {
             letterMap[j] = '\0';
             patternMap[j] = '\0';
@@ -551,14 +551,14 @@ lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
         for (j=0; cword[j]; j++) {
             if (cword[j] < 'a' || cword[j] > 'z') {
                 break;
-            } else if (! letterMap[j-'a'] && ! patternMap[cword[j]-'a']) {
-                letterMap[j-'a'] = cword[j];
-                patternMap[cword[j]-'a'] = j-'a';
-            } else if (! letterMap[j-'a'] && patternMap[cword[j] - 'a']) {
+            } else if (! letterMap[pattern[j]-'a'] && ! patternMap[cword[j]-'a']) {
+                letterMap[pattern[j]-'a'] = cword[j];
+                patternMap[cword[j]-'a'] = pattern[j];
+            } else if (! letterMap[pattern[j]-'a'] && patternMap[cword[j] - 'a']) {
                 break;
-            } else if (letterMap[j-'a'] && ! patternMap[cword[j] - 'a']) {
+            } else if (letterMap[pattern[j]-'a'] && ! patternMap[cword[j] - 'a']) {
                 break;
-            } else if (letterMap[j-'a'] != cword[j]) {
+            } else if (letterMap[pattern[j]-'a'] != cword[j]) {
                 break;
             }
         }
