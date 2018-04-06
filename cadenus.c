@@ -270,6 +270,7 @@ RestoreCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
 {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
     int i;
+    char badChar[2] = {0};
 
     if (strlen(order) != cadPtr->header.period || strlen(key) != cadPtr->header.period) {
 	Tcl_SetResult(interp,
@@ -280,14 +281,27 @@ RestoreCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
 
     for(i=0; i < cadPtr->header.period; i++) {
 	if (order[i]-'0' < 1 || order[i]-'0' > cadPtr->header.period) {
-	    Tcl_SetResult(interp, "Invalid character in order", TCL_VOLATILE);
+            badChar[0] = order[i];
+
+            Tcl_ResetResult(interp);
+	    Tcl_AppendResult(interp, "Invalid character in key order: ", badChar, (char *)NULL);
 	    return TCL_ERROR;
 	}
 	if (key[i] < 'a' || key[i] > 'z') {
-	    Tcl_SetResult(interp, "Invalid character in key", TCL_VOLATILE);
+            badChar[0] = key[i];
+
+            Tcl_ResetResult(interp);
+	    Tcl_AppendResult(interp, "Invalid character in key: ", badChar, (char *)NULL);
 	    return TCL_ERROR;
 	}
     }
+    badChar[0] = FindFirstDuplicate(order, (const char *)NULL);
+    if (badChar[0]) {
+        Tcl_ResetResult(interp);
+        Tcl_AppendResult(interp, "Duplicate character in key order: ", badChar, (char *)NULL);
+        return TCL_ERROR;
+    }
+    
     for(i=0; i < cadPtr->header.period; i++) {
 	cadPtr->order[i] = order[i]-'1';
 	cadPtr->key[i] = key[i]-'a';

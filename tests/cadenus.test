@@ -866,7 +866,7 @@ test cadenus-7.2 {restore with bad arg values} {
     rename $c {}
     
     set result
-} {1 {Invalid character in order}}
+} {1 {Invalid character in key order: a}}
 
 test cadenus-7.3 {restore with bad arg values} {
     set c [createValidCipher]
@@ -875,7 +875,7 @@ test cadenus-7.3 {restore with bad arg values} {
     rename $c {}
     
     set result
-} {1 {Invalid character in key}}
+} {1 {Invalid character in key: 1}}
 
 test cadenus-7.4 {valid restore} {
     set c [createValidCipher]
@@ -916,3 +916,36 @@ test cadenus-8.2 {encode with order determined by keyword} {
 
     set result
 } {systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul aseverelimitationontheusefulnessofthecadenusisthateverymessagemustbeamultipleoftwentyfiveletterslong {easy 2134}}
+
+test cadenus-8.3 {encode with invalid order} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five letters long " 5asy} msg]
+    lappend result $msg
+
+    rename $c {}
+
+    set result
+} {1 {Invalid character in key: 5}}
+
+test cadenus-8.3 {encode with invalid order, duplicates} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five letters long " {easy 1123}} msg]
+    lappend result $msg
+
+    rename $c {}
+
+    set result
+} {1 {Duplicate character in key order: 1}}
+
+test cadenus-8.4 {encode with invalid order} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five letters long " {easy 1,23}} msg]
+    lappend result $msg
+
+    rename $c {}
+
+    set result
+} {1 {Invalid character in key order: ,}}
