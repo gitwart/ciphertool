@@ -415,10 +415,11 @@ test swagman-2.11 {restore with invalid key (duplicate chars)} {
 
     regsub -all $c $msg ciphervar msg
     lappend result $msg
+    lappend result [$c cget -key]
     rename $c {}
     
     set result
-} {1 {Duplicate character in key: 1}}
+} {1 {Duplicate key value in row 1: 1} {                         }}
 
 test swagman-2.12 {substitute with invalid characters} {
     set c [createValidCipher]

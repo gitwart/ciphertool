@@ -367,6 +367,7 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
     for(i=0; i < itemPtr->period*itemPtr->period; i++) {
 	if ( (key[i] < '0' || key[i] > '0' + itemPtr->period) &&
 		key[i] != ' ') {
+            SwagmanInitKey(itemPtr, itemPtr->period);
 	    Tcl_SetResult(interp, "Invalid character in key", TCL_VOLATILE);
 	    return TCL_ERROR;
 	}
@@ -378,6 +379,51 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
 	} else {
 	    swagPtr->key[row][col] = key[i] - '0';
 	}
+    }
+
+    /*
+     * We've already validated that the key contains valid characters.
+     * Use a bitmap shifted by the key amount to track which letters
+     * have been used.  Eg:
+     * for i in 1 to period: used = 1<<key[i]
+     * if used == 1|2|4|8.. then all are used
+     *
+     * This works fine if all elements of the key are set.  It fails
+     * if any are left empty.
+     */
+    if (itemPtr->period <= sizeof(unsigned int)*8) {
+
+        for (unsigned int i=0 ; i < itemPtr->period; i++) {
+            unsigned int rowMap = 0,
+                         colMap = 0;
+
+            for (unsigned int j=0 ; j < itemPtr->period; j++) {
+                if (rowMap & 1<<(swagPtr->key[j][i]-1)) {
+                    char temp_str[128];
+                    sprintf(temp_str, "Duplicate key value in row %d: %c",
+                            j, swagPtr->key[j][i]+'0');
+
+                    SwagmanInitKey(itemPtr, itemPtr->period);
+                    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
+                    return TCL_ERROR;
+                }
+                if (colMap & 1<<(swagPtr->key[i][j]-1)) {
+                    char temp_str[128];
+                    sprintf(temp_str, "Duplicate key value in row %d: %c",
+                            j, swagPtr->key[i][j]+'0');
+
+                    SwagmanInitKey(itemPtr, itemPtr->period);
+                    Tcl_SetResult(interp, temp_str, TCL_VOLATILE);
+                    return TCL_ERROR;
+                }
+                if (swagPtr->key[j][i]) {
+                    rowMap |= 1<<(swagPtr->key[j][i]-1);
+                }
+                if (swagPtr->key[i][j]) {
+                    colMap |= 1<<(swagPtr->key[i][j]-1);
+                }
+            }
+        }
     }
 
     return TCL_OK;
