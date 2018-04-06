@@ -214,6 +214,45 @@ IsValidChar(CipherItem *itemPtr, char ct)
     return *c;
 }
 
+/*
+ * Returns the first character in a string that is a duplicate, or
+ * the NULL character if no duplicates were found.
+ */
+
+char FindFirstDuplicate(const char *inputString, const char *ignoreVals) {
+    const char *indexPtr;
+    unsigned char ignoreMask[32] = {0};
+    unsigned char foundMask[32] = {0};
+
+    if (! inputString) {
+        return (char) '\0';
+    }
+    /*
+     * Intialize the ignore bitmask
+     */
+    indexPtr=ignoreVals;
+    while (indexPtr) {
+        ignoreMask[(*indexPtr)/8] |= 1<<((*indexPtr)%8);
+    }
+
+    indexPtr=inputString;
+    while (*indexPtr) {
+        /*
+         * Skip characters in the ignore list
+         */
+        if (! (ignoreMask[(*indexPtr)/8] & 1<<((*indexPtr)%8))) {
+            if (foundMask[(*indexPtr)/8] & 1<<((*indexPtr)%8)) {
+                return *indexPtr;
+            } else {
+                foundMask[(*indexPtr)/8] |= 1<<((*indexPtr)%8);
+            }
+        }
+        indexPtr++;
+    }
+
+    return *indexPtr;
+}
+
 int
 cipherSelectLanguage(const char *language)
 {

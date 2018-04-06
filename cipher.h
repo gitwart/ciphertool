@@ -154,6 +154,7 @@ char *	ExtractValidCharsJtoI _ANSI_ARGS_((CipherItem *, const char *));
 int *	TextToInt _ANSI_ARGS_((Tcl_Interp *, CipherItem *, const char *,
 	int *, const char *, int));
 int	IsValidChar _ANSI_ARGS_((CipherItem *, char));
+char    FindFirstDuplicate _ANSI_ARGS_((const char *inputString, const char *ignoreVals));
 int	cipherSelectLanguage _ANSI_ARGS_((const char *));
 char *	cipherGetLanguage _ANSI_ARGS_((int));
 int	CipherSetStepCmd _ANSI_ARGS_((CipherItem *, const char *));
