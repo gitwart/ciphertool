@@ -664,6 +664,23 @@ test pollux-8.6 {encode with invalid plaintext characters} {} {
     lappend result [$c cget -pt]
     rename $c {}
     set result
-} {50 xxx.-..x..-x-.-.x-.-xxx....x.x.-..x.--.x...x.-.-.- {   luck  helps?}}
+} {46 .-..x..-x-.-.x-.-xx....x.x.-..x.--.x...x.-.-.- {luck helps?}}
 
-    
+test pollux-8.7 {encode with consecutive spaces} {} {
+    set c [cipher create pollux]
+    set result [string length [$c encode "luck  helps" x-..x.--x.]]
+    lappend result [$c cget -morsetext]
+    lappend result [$c cget -pt]
+    rename $c {}
+    set result
+} {39 .-..x..-x-.-.x-.-xx....x.x.-..x.--.x... {luck helps}}
+
+test pollux-8.8 {encode with leading spaces} {} {
+    set c [cipher create pollux]
+    set result [string length [$c encode "    luck  helps" x-..x.--x.]]
+    lappend result [$c cget -morsetext]
+    lappend result [$c cget -pt]
+    rename $c {}
+    set result
+} {39 .-..x..-x-.-.x-.-xx....x.x.-..x.--.x... {luck helps}}
+

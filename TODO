@@ -22,9 +22,15 @@ Fill out quagmire tests for more error conditions
 quag2keysearch gives a confusing error if no solution is found (such as
     using a vertical keyword length that does not match the cipher period)
 
-Add tests for encoding bad input
+(done) Add tests for encoding bad input
 
-Validate cadenus key order for restore and encoding commands
+(done) Morse conversion strips invalid characters, collapses consecutive spaces
+
+Replace loop iterations to set to NULL with {0}
+
+Add tests for setting empty ciphertext
+
+(done) Validate cadenus key order for restore and encoding commands
 
 Add configure switch for setting default dictionary location
 

@@ -54,5 +54,17 @@ test morse-3.6 {Translate a string with uppercase letters.} {
 } {...x---x...}
 
 test morse-3.7 {Translate a string with punctuation} {
-    set result [morse "come at once!"]
-} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.x}
+    set result [morse "come at once."]
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.x.-.-.-}
+
+test morse-3.8 {Translate a string containing characters with no morse equivalent} {
+    set result [morse "!!come at once!"]
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.}
+
+test morse-3.9 {Translate a string containing consecutive spaces} {
+    set result [morse "  come  at   once"]
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.}
+
+test morse-3.9 {Translate a string containing a single leading space} {
+    set result [morse " come  at   once"]
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.}

@@ -357,12 +357,22 @@ StringToMorse(const char *text) {
     }
     mt = (char *)malloc(sizeof(char) * maxcount);
     for (i=0; i<n; i++) {
-	if (i > 0) {
-	    mt[index_out++] = SPACE;
-	}
 	ml = CharToMorse(text[i]);
-	strcpy(mt+index_out, ml);
-	index_out += strlen(ml);
+        /*
+         * Skip over characters with no morse equivalent, unless it's a space.
+         */
+        if (ml[0] || text[i] == ' ') {
+            if (index_out > 0) {
+                /*
+                 * Collapse consecutive spaces
+                 */
+                if (text[i] != ' ' || text[i-1] != ' ') {
+                    mt[index_out++] = SPACE;
+                }
+            }
+            strcpy(mt+index_out, ml);
+            index_out += strlen(ml);
+        }
     }
     mt[index_out] = '\0';
     return mt;
