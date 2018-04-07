@@ -673,7 +673,7 @@ EncodeMorbit (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 	return TCL_ERROR;
     }
     if (!strlen(pt)) {
-	Tcl_SetResult(interp, "Empty plaintext.", TCL_STATIC);
+	Tcl_SetResult(interp, "Can't encode empty plaintext.", TCL_STATIC);
 	return TCL_ERROR;
     }
     if (strlen(key) != 9) {

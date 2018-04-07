@@ -702,3 +702,13 @@ test phillips-7.1 {encode} {
 
     set result
 } {kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq squaresoneandfiveareactuallythesameasaresquarestwoandeightth diagocbslnefhkmutrqpvwxyz}
+
+test phillips-7.2 {encode with invalid plaintext characters} {
+    set c [cipher create phillips]
+
+    set result [list [$c encode "squares one (1) and five (5) are actually the same as are squares two and eight th" diagocbslnefhkmutrqpvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq kzwlytgedtqetarbtygtlfxwlppoxltykutkgkytkzwlytgxseqetirzqaaq squaresoneandfiveareactuallythesameasaresquarestwoandeightth diagocbslnefhkmutrqpvwxyz}

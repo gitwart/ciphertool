@@ -1019,6 +1019,7 @@ EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
         if (generatedOrder) {
             ckfree((char *)generatedOrder);
         }
+        Tcl_SetResult(interp, "Unknown error encoding the plaintext", TCL_STATIC);
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, ct) != TCL_OK) {

@@ -1038,39 +1038,47 @@ EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 	return TCL_ERROR;
     }
 
-    newPt = PlayfairAddNulls(pt, itemPtr->period);
+    newPt = ExtractValidChars(itemPtr, pt);
+    ct = PlayfairAddNulls(newPt, itemPtr->period);
 
-    if ((itemPtr->typePtr->setctProc)(interp, itemPtr, newPt) != TCL_OK) {
-	ckfree((char *)argv);
-	ckfree((char *)newPt);
-	return TCL_ERROR;
-    }
-    if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, argv[0], (char *)NULL) != TCL_OK) {
-	ckfree((char *)argv);
-	ckfree((char *)newPt);
-	return TCL_ERROR;
-    }
-    ct = DecodePlayfair(interp, itemPtr, newPt, ENCODE);
-    if (ct == (char *)NULL) {
-	ckfree((char *)argv);
-	ckfree((char *)newPt);
-	return TCL_ERROR;
-    }
     /*
-     * Free up the null-adjusted plaintext that is not needed anymore.
+     * Free up the pre-null-adjusted plaintext that is not needed anymore.
      */
-    ckfree((char *)newPt);
+    ckfree(newPt);
 
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, ct) != TCL_OK) {
 	ckfree((char *)argv);
+	ckfree((char *)ct);
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, argv[0], (char *)NULL) != TCL_OK) {
 	ckfree((char *)argv);
+	ckfree((char *)ct);
+	return TCL_ERROR;
+    }
+    newPt = DecodePlayfair(interp, itemPtr, ct, ENCODE);
+    /*
+     * Free up the null-adjusted plaintext that is not needed anymore.
+     */
+    ckfree(ct);
+
+    if (newPt == (char *)NULL) {
+	ckfree((char *)argv);
 	return TCL_ERROR;
     }
 
-    Tcl_SetResult(interp, ct, TCL_DYNAMIC);
+    if ((itemPtr->typePtr->setctProc)(interp, itemPtr, newPt) != TCL_OK) {
+	ckfree((char *)argv);
+	return TCL_ERROR;
+    }
+
+    if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, argv[0], (char *)NULL) != TCL_OK) {
+        ckfree((char *)newPt);
+	ckfree((char *)argv);
+	return TCL_ERROR;
+    }
+
+    Tcl_SetResult(interp, newPt, TCL_DYNAMIC);
     ckfree((char *)argv);
 
     return TCL_OK;

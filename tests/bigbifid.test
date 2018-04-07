@@ -698,3 +698,12 @@ test bigbifid-8.1 {encode} {
 
     set result
 } {v0eii64vfe4b95jjebv9 v0eii64vfe4b95jjebv9 oddperiodsarepopular e5xtra6g7h81fsuvjo3qzw0dcpmlk42byn9i}
+
+test bigbifid-8.2 {encode with bad characters} {
+    set c [cipher create bigbifid -period 7]
+    set result [list [$c encode "odd periods . are popular!" e5xtra6g7h81fsuvjo3qzw0dcpmlk42byn9i]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -keyword]
+    rename $c {}
+
+    set result
+} {v0eii64vfe4b95jjebv9 v0eii64vfe4b95jjebv9 oddperiodsarepopular e5xtra6g7h81fsuvjo3qzw0dcpmlk42byn9i}

@@ -436,7 +436,7 @@ test gromark-2.14 {encode with short key} {
     rename $c {}
     
     set result
-} {1 {Invalid length of key.}}
+} {1 {Invalid length of key. Should be 26 characters}}
 
 test gromark-2.15 {encode with no primer} {
     set c [cipher create gromark]
@@ -847,3 +847,14 @@ test gromark-8.2 {encode with chain} {
 
     set result
 } {rhnaaxnruzbniuarxcrtpatbrligdsvcircvoypvraazzmusreqyevmmurgw rhnaaxnruzbniuarxcrtpatbrligdsvcircvoypvraazzmusreqyevmmurgw wintryshowerswillcontinueforthenextfewdaysaccordingtothefore ajrxebksygfpvidoumhqwncltz}
+
+test gromark-8.3 {encode with bad characters} {
+    set c [cipher create gromark]
+    $c configure -primer 23452
+
+    set result [list [$c encode "there are up to ten (10) substitutes per letter" ajrxebksygfpvidoumhqwncltz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {nfyckbtijcnwzycacjnaynlqpwwstwpjqfl nfyckbtijcnwzycacjnaynlqpwwstwpjqfl thereareuptotensubstitutesperletter ajrxebksygfpvidoumhqwncltz}

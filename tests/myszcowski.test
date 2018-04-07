@@ -791,3 +791,14 @@ test myszcowski-7.1 {encode myszcowski} {
 
     set result
 } {nopeeounrihatrwrkynltesnesmnmetknfarsillwtoatderoocmtcmatpendederuraubaefcs nopeeounrihatrwrkynltesnesmnmetknfarsillwtoatderoocmtcmatpendederuraubaefcs incompletecolumnarwithpatternwordkeyandlettersundersamenumbertakenoffacross bacaca}
+
+test myszcowski-7.2 {encode myszcowski with invalid characters} {
+    set c [cipher create myszcowski -period 6]
+
+    set result [$c encode "incomplete columnar with pattern word key and 26 letters under same number (5) taken off across" [list bacaca]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {nopeeounrihatrwrkynltesnesmnmetknfarsillwtoatderoocmtcmatpendederuraubaefcs nopeeounrihatrwrkynltesnesmnmetknfarsillwtoatderoocmtcmatpendederuraubaefcs incompletecolumnarwithpatternwordkeyandlettersundersamenumbertakenoffacross bacaca}

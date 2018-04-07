@@ -448,19 +448,6 @@ test columnar-2.20 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key '1 2'.  Should have found 1.}}
 
-#test columnar-2.21 {encode with short key elements} {
-#    set c [cipher create columnar]
-#    $c configure -period 5
-#
-#    set result [catch {$c encode foobar "123"} msg]
-#
-#    regsub -all $c $msg ciphervar msg
-#    lappend result $msg
-#    rename $c {}
-#    
-#    set result
-#} {1 {Length of key does not match the period.}}
-
 test columnar-3.1 {successful use of cget -length} {
     set c [createValidCipher]
     set result [$c cget -length]
@@ -786,7 +773,18 @@ test columnar-7.1 {encode columnar} {
     set result
 } {nldoflbcuielk nldoflbcuielk unfilledblock cab 3}
 
-test columnar-7.2 {encode columnar reset key length} {
+test columnar-7.2 {encode columnar with bad characters} {
+    set c [cipher create columnar]
+
+    set result [$c encode "unfilled block (23)" [list cab]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key] [$c cget -period]
+    rename $c {}
+
+    set result
+} {nldoflbcuielk nldoflbcuielk unfilledblock cab 3}
+
+test columnar-7.3 {encode columnar reset key length} {
     set c [cipher create columnar -period 5]
 
     set result [$c encode "unfilled block" [list cab]]

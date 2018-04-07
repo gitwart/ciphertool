@@ -291,6 +291,7 @@ test morbit-2.10 {Solve with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
+
 test morbit-3.1 {use of cget -length} {
     set c [cipher create morbit]
     set result [list [$c cget -length]]
@@ -701,7 +702,7 @@ test morbit-8.7 {empty plaintext is not allowed} {} {
     lappend result $msg
     rename $c {}
     set result
-} {1 {Empty plaintext.}}
+} {1 {Can't encode empty plaintext.}}
 
 test morbit-8.8 {encode "once upon a time" using key 958427136} {} {
     set c [cipher create morbit]
@@ -721,3 +722,10 @@ test morbit-8.9 {make sure the padding works correctly} {} {
     rename $c {}
     set result
 } {27435881512827465679378 {once upon a time} 27435881512827465672721 {once upon a tome}}
+
+test morbit-8.10 {encode with invalid plaintext} {} {
+    set c [cipher create morbit]
+    set result [$c encode "once upon a time." 958427136]
+    rename $c {}
+    set result
+} {27435881512827465679378555}

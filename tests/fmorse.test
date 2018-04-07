@@ -677,3 +677,18 @@ test fmorse-8.5 {make sure the padding works correctly} {} {
     set result
 } {orfx {test e} orfxt {test ee} orfxtg {test eee }}
 
+test fmorse-8.6 {encode with punctuation} {} {
+    set c [cipher create fmorse]
+    set result [$c encode "come at once!" a]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {khooifrnvvli {come at once } abcdefghijklmnopqrstuvwxyz khooifrnvvli}
+
+test fmorse-8.7 {encode with period} {} {
+    set c [cipher create fmorse]
+    set result [$c encode "come at once." a]
+    lappend result [$c cget -pt] [$c cget -keyword] [$c cget -ct]
+    rename $c {}
+    set result
+} {khooifrnvvlgkf {come at once?} abcdefghijklmnopqrstuvwxyz khooifrnvvlgkf}

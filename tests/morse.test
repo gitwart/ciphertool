@@ -21,6 +21,10 @@ test morse-2.1 {simple morse -> text} {
     set result [morse ...x---x...]
 } {sos}
 
+test morse-2.2 {morse -> text with trailing null} {
+    set result [morse -.-.x---x--x.xx.-x-xx---x-.x-.-.x.xx]
+} {come at once }
+
 test morse-3.1 {simple text -> morse} {
     set result [morse sos]
 } {...x---x...}
@@ -48,3 +52,7 @@ test morse-3.5 {Translate an empty string.} {
 test morse-3.6 {Translate a string with uppercase letters.} {
     set result [morse SOS]
 } {...x---x...}
+
+test morse-3.7 {Translate a string with punctuation} {
+    set result [morse "come at once!"]
+} {-.-.x---x--x.xx.-x-xx---x-.x-.-.x.x}

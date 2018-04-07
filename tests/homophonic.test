@@ -516,3 +516,10 @@ test homophonic-8.5 {bad key character} {
     set result
 } {1 {The key should be four lowercase letters.}}
 
+test homophonic-8.6 {encode with invalid characters} {
+    set c [cipher create homophonic]
+    $c encode "this is a (12) test" golf
+    set result [list [$c cget -pt] [$c cget -key]]
+    rename $c {}
+    set result
+} {thisisatest {{01 26 51 76} golf}}

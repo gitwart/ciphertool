@@ -646,7 +646,7 @@ test pollux-8.4 {need 10 symbols in the key} {} {
     lappend result $msg
     rename $c {}
     set result
-} {1 {Plaintext and ciphertext must be the same length.}}
+} {1 {There should be 10 key elements.}}
 
 test pollux-8.5 {no unknown symbols allowed} {} {
     set c [cipher create pollux]
@@ -655,6 +655,15 @@ test pollux-8.5 {no unknown symbols allowed} {} {
     lappend result $msg
     rename $c {}
     set result
-} {1 {Bad character in substitution morsetext}}
+} {1 {Only morse code marks are allowed in the key.}}
+
+test pollux-8.6 {encode with invalid plaintext characters} {} {
+    set c [cipher create pollux]
+    set result [string length [$c encode "!!!luck! helps?" x-..x.--x.]]
+    lappend result [$c cget -morsetext]
+    lappend result [$c cget -pt]
+    rename $c {}
+    set result
+} {50 xxx.-..x..-x-.-.x-.-xxx....x.x.-..x.--.x...x.-.-.- {   luck  helps?}}
 
     

@@ -612,13 +612,11 @@ EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     /*
      * Set up the key and verify some conditions.
      */
-    if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, order, key) != TCL_OK) {
-	return TCL_ERROR;
-    }
     if (strlen(key) != 10) {
 	Tcl_SetResult(interp, "There should be 10 key elements.", TCL_STATIC);
 	return TCL_ERROR;
     }
+
     for (i=0; i<10; i++) {
 	switch (key[i]) {
 	case DOT: case DASH: case SPACE: break;
@@ -627,6 +625,10 @@ EncodePollux (Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 		"Only morse code marks are allowed in the key.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
+    }
+
+    if ((itemPtr->typePtr->restoreProc)(interp, itemPtr, order, key) != TCL_OK) {
+	return TCL_ERROR;
     }
 
     /*

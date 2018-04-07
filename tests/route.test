@@ -643,3 +643,14 @@ test route-8.1 {encode} {
 
     set result
 } {fcabdgjmpsvy#zxuroliehknqtw fcabdgjmpsvy#zxuroliehknqtw abcdefghijklmnopqrstuvwxyz# {12 25}}
+
+test route-8.2 {encode with invalid plaintext characters} {
+    set c [cipher create route]
+    $c configure -width 9
+
+    set result [list [$c encode "abcde fghij klmno pqrst (!!!) uvwxy z#" [list 12 25]]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {fcabdgjmpsvy#zxuroliehknqtw fcabdgjmpsvy#zxuroliehknqtw abcdefghijklmnopqrstuvwxyz# {12 25}}

@@ -621,18 +621,6 @@ test vigenere-2.27 {encode with mismatched key elements} {
     set result
 } {1 {Length of key elements must match.}}
 
-test vigenere-2.28 {encode gronsfeld with invalid pt character} {
-    set c [cipher create gronsfeld -period 3]
-
-    set result [catch {$c encode f?oobar {abc abc}} msg]
-
-    regsub -all $c $msg ciphervar msg
-    lappend result $msg
-    rename $c {}
-    
-    set result
-} {1 {Invalid character found in plaintext at position '?oobar'}}
-
 test vigenere-2.29 {encode gronsfeld with invalid key character} {
     set c [cipher create gronsfeld -period 3]
 
@@ -1447,7 +1435,17 @@ test vigenere-9.1 {encode vigenere} {
     set result
 } {pgtwfgqpvxfmzfgvwimquhvggitqdkmtlejnwuavjwvlwqnkuxvmbkcpsvvloqlgxkybmvqz pgtwfgqpvxfmzfgvwimquhvggitqdkmtlejnwuavjwvlwqnkuxvmbkcpsvvloqlgxkybmvqz accordingtoelcythevigenerecipherwasfirstusedinfifteenhundredandeightysix {periodic aaaaaaaa} 8}
 
-test vigenere-9.2 {encode variant} {
+test vigenere-9.2 {encode vigenere with invalid plaintext characters} {
+    set c [cipher create vigenere]
+
+    set result [$c encode "according to elcy the vigenere cipher was first used in fifteen-hundred and eighty-six (1586)" [list periodic aaaaaaaa]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key] [$c cget -period]
+    rename $c {}
+
+    set result
+} {pgtwfgqpvxfmzfgvwimquhvggitqdkmtlejnwuavjwvlwqnkuxvmbkcpsvvloqlgxkybmvqz pgtwfgqpvxfmzfgvwimquhvggitqdkmtlejnwuavjwvlwqnkuxvmbkcpsvvloqlgxkybmvqz accordingtoelcythevigenerecipherwasfirstusedinfifteenhundredandeightysix {periodic aaaaaaaa} 8}
+
+test vigenere-9.3 {encode variant} {
     set c [cipher create variant]
 
     set result [$c encode "cequalspminusk" [list aaaaa apple]]
@@ -1457,7 +1455,17 @@ test vigenere-9.2 {encode variant} {
     set result
 } {cpbjwldabenfdz cpbjwldabenfdz cequalspminusk {aaaaa apple}}
 
-test vigenere-9.3 {encode beaufort} {
+test vigenere-9.4 {encode variant with invalid plaintext characters} {
+    set c [cipher create variant]
+
+    set result [$c encode "c equals (=) p - minus k" [list aaaaa apple]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {cpbjwldabenfdz cpbjwldabenfdz cequalspminusk {aaaaa apple}}
+
+test vigenere-9.5 {encode beaufort} {
     set c [cipher create beaufort]
 
     set result [$c encode "inregardtosecretmessagesthereareallsortsofwaysofsendingthembutaprivatearrangementmustbepreviouslymadebetweenthesenderandthereceiver" [list aaaaaaaa previous]]
@@ -1467,7 +1475,17 @@ test vigenere-9.3 {encode beaufort} {
     set result
 } {henrcodpwdmrgxqzdnmdiiqawkaeeodopgtduxbabmivkwgnxnrsabozinsuovudyjjvpkubyrrpecqfwfkdpnqdynjnuuchrfesenqztnaiphqalebrrohpwkaeemqkunn henrcodpwdmrgxqzdnmdiiqawkaeeodopgtduxbabmivkwgnxnrsabozinsuovudyjjvpkubyrrpecqfwfkdpnqdynjnuuchrfesenqztnaiphqalebrrohpwkaeemqkunn inregardtosecretmessagesthereareallsortsofwaysofsendingthembutaprivatearrangementmustbepreviouslymadebetweenthesenderandthereceiver {aaaaaaaa previous}}
 
-test vigenere-9.4 {encode porta} {
+test vigenere-9.6 {encode beaufort with invalid plaintext characters} {
+    set c [cipher create beaufort]
+
+    set result [$c encode "in regard to secret messages there are all sorts ofwaysofsendingthembutapri (25!) vatearrangementmustbepreviouslymadebetweenthesenderandthereceiver" [list aaaaaaaa previous]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {henrcodpwdmrgxqzdnmdiiqawkaeeodopgtduxbabmivkwgnxnrsabozinsuovudyjjvpkubyrrpecqfwfkdpnqdynjnuuchrfesenqztnaiphqalebrrohpwkaeemqkunn henrcodpwdmrgxqzdnmdiiqawkaeeodopgtduxbabmivkwgnxnrsabozinsuovudyjjvpkubyrrpecqfwfkdpnqdynjnuuchrfesenqztnaiphqalebrrohpwkaeemqkunn inregardtosecretmessagesthereareallsortsofwaysofsendingthembutaprivatearrangementmustbepreviouslymadebetweenthesenderandthereceiver {aaaaaaaa previous}}
+
+test vigenere-9.7 {encode porta} {
     set c [cipher create porta]
 
     set result [$c encode "enciphermentisreciprocal" [list ygxrc encip]]
@@ -1478,10 +1496,32 @@ test vigenere-9.4 {encode porta} {
     set result
 } {ygxrcoyjvrgmqjeywqgehwvu ygxrcoyjvrgmqjeywqgehwvu enciphermentisreciprocal {ooqsa hhijn}}
 
-test vigenere-9.5 {encode gronsfeld} {
+test vigenere-9.8 {encode porta with invalid plaintext characters} {
+    set c [cipher create porta]
+
+    set result [$c encode "encipherment is (!!25) reciprocal" [list ygxrc encip]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {ygxrcoyjvrgmqjeywqgehwvu ygxrcoyjvrgmqjeywqgehwvu enciphermentisreciprocal {ooqsa hhijn}}
+
+test vigenere-9.9 {encode gronsfeld} {
     set c [cipher create gronsfeld]
 
     set result [$c encode "thisoneusestenofthetwentysixvigenerealphabets" [list jdcbejc aaaaaaa]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {ckktswgdvgtxnpxiviicynqvzwrzelifrntndnqljdnwu ckktswgdvgtxnpxiviicynqvzwrzelifrntndnqljdnwu thisoneusestenofthetwentysixvigenerealphabets {jdcbejc aaaaaaa}}
+
+test vigenere-9.10 {encode gronsfeld with invalid plaintext characters} {
+    set c [cipher create gronsfeld]
+
+    set result [$c encode "this one uses ten (10) of the twenty-six (26) vigenere alphabets" [list jdcbejc aaaaaaa]]
 
     lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
     rename $c {}

@@ -1804,9 +1804,12 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     if (vigPtr->type == GRN_TYPE) {
 	int i;
 	char keyLetter;
+        char *filteredPt;
 
-	ct = (char *)ckalloc(sizeof(char) * (strlen(pt) + 1));
-	for(i=0; i < strlen(pt); i++) {
+        filteredPt = ExtractValidChars(itemPtr, pt);
+	ct = (char *)ckalloc(sizeof(char) * (strlen(filteredPt) + 1));
+	for(i=0; i < strlen(filteredPt); i++) {
+            /*
 	    if (pt[i] < 'a' || pt[i] > 'z') {
 		ckfree(ct);
 		Tcl_AppendResult(interp,
@@ -1815,10 +1818,12 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 		ckfree((char *)argv);
 		return TCL_ERROR;
 	    }
+            */
 
 	    if (argv[0][i%itemPtr->period] < 'a'
 		    || argv[0][i%itemPtr->period] > 'z') {
 		ckfree(ct);
+		ckfree(filteredPt);
 		Tcl_AppendResult(interp, "Invalid character in key '",
 			argv[0], "'", (char *)NULL);
 		ckfree((char *)argv);
@@ -1828,6 +1833,7 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 	    if (argv[1][i%itemPtr->period] < 'a'
 		    || argv[1][i%itemPtr->period] > 'z') {
 		ckfree(ct);
+		ckfree(filteredPt);
 		Tcl_AppendResult(interp, "Invalid character in key '",
 			argv[1], "'", (char *)NULL);
 		ckfree((char *)argv);
@@ -1839,14 +1845,16 @@ EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 
 	    if (keyLetter > 'j' && keyLetter <= 'z') {
 		ckfree(ct);
+		ckfree(filteredPt);
 		Tcl_SetResult(interp, "Invalid gronsfeld substitution.",
 			TCL_STATIC);
 		ckfree((char *)argv);
 		return TCL_ERROR;
 	    }
 
-	    ct[i] = VigenereGetCt(keyLetter, pt[i]);
+	    ct[i] = VigenereGetCt(keyLetter, filteredPt[i]);
 	}
+        ckfree(filteredPt);
 	ct[i] = '\0';
     } else {
 	if ((itemPtr->typePtr->setctProc)(interp, itemPtr, pt) != TCL_OK) {

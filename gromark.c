@@ -955,7 +955,7 @@ EncodeGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
     }
 
     if (strlen(argv[0]) != 26) {
-	Tcl_SetResult(interp, "Invalid length of key.", TCL_STATIC);
+	Tcl_SetResult(interp, "Invalid length of key. Should be 26 characters", TCL_STATIC);
 	ckfree((char *)argv);
 	return TCL_ERROR;
     }

@@ -744,7 +744,17 @@ test playfair-7.1 {encode} {
     set result
 } {dlhfsncncrzxcqqgfeeqon dlhfsncncrzxcqqgfeeqon comequicklywenexedhelp logarithmbcdefknpqsuvwxyz}
 
-test playfair-7.2 {encode adds necessary nulls} {
+test playfair-7.2 {encode with invalid plaintext} {
+    set c [cipher create playfair]
+
+    set result [list [$c encode "come quickly !! we nexed help" logarithmbcdefknpqsuvwxyz]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {dlhfsncncrzxcqqgfeeqon dlhfsncncrzxcqqgfeeqon comequicklywenexedhelp logarithmbcdefknpqsuvwxyz}
+
+test playfair-7.3 {encode adds necessary nulls} {
     set c [cipher create playfair]
 
     set result [list [$c encode "comequicklyweneedheelp" logarithmbcdefknpqsuvwxyz]]
@@ -754,7 +764,7 @@ test playfair-7.2 {encode adds necessary nulls} {
     set result
 } {dlhfsncncrzxcqqgfeeqcgqw dlhfsncncrzxcqqgfeeqcgqw comequicklywenexedheelpx logarithmbcdefknpqsuvwxyz}
 
-test playfair-7.3 {encode seriated playfair} {
+test playfair-7.4 {encode seriated playfair} {
     set c [cipher create playfair]
     $c configure -period 6
 
@@ -765,7 +775,7 @@ test playfair-7.3 {encode seriated playfair} {
     set result
 } {nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgb nlbcspcdfgxzqqcdcmgcgqtbhcftrhfgwhgb comequicklyweneedhxelpimmediatelytom logarithmbcdefknpqsuvwxyz}
 
-test playfair-7.4 {encode seriated playfair adds necessary nulls} {
+test playfair-7.5 {encode seriated playfair adds necessary nulls} {
     set c [cipher create playfair]
     $c configure -period 6
 

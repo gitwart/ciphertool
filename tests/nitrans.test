@@ -829,6 +829,17 @@ test nitrans-7.1 {encode} {
     set result
 } {eqdersehnuereade eqdersehnuereade squareneededhere bacd}
 
+test nitrans-7.2 {encode with invalid plaintext characters} {
+    set c [cipher create nitrans]
+
+    set result [$c encode "square (!!) needed here" [list bacd]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {eqdersehnuereade eqdersehnuereade squareneededhere bacd}
+
 test nitrans-8.1 {solve} {
     set c [createValidCipher]
     # This variable will end up holding the total number of possible solutions

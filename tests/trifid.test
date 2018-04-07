@@ -547,3 +547,12 @@ test trifid-9.1 {encode} {
 
     set result
 } {eymxvucryyyyeayvyovvxitdpathe eymxvucryyyyeayvyovvxitdpathe trifidsarefractionatedciphers extraodinybcfghjklmpqsuvwz#}
+
+test trifid-9.2 {encode with invalid plaintext characters} {
+    set c [cipher create trifid -period 10]
+    set result [list [$c encode "trifids are (25) fractionated ! ciphers" extraodinybcfghjklmpqsuvwz#]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -keyword]
+    rename $c {}
+
+    set result
+} {eymxvucryyyyeayvyovvxitdpathe eymxvucryyyyeayvyovvxitdpathe trifidsarefractionatedciphers extraodinybcfghjklmpqsuvwz#}

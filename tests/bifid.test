@@ -1156,3 +1156,12 @@ test bifid-9.1 {encode} {
 
     set result
 } {mweingimgeoyyrlveywy mweingimgeoyyrlveywy oddperiodsarepopular extraklmpohwzqdgvusifcbyn}
+
+test bifid-9.2 {encode with bad characters} {
+    set c [cipher create bifid -period 7]
+    set result [list [$c encode "odd periods . are popular!" extraklmpohwzqdgvusifcbyn]]
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -keyword]
+    rename $c {}
+
+    set result
+} {mweingimgeoyyrlveywy mweingimgeoyyrlveywy oddperiodsarepopular extraklmpohwzqdgvusifcbyn}

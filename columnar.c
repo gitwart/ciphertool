@@ -968,15 +968,6 @@ EncodeColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
 
     ColumnarInitKey(itemPtr, strlen(key));
 
-    /*
-    if (strlen(argv[0]) != itemPtr->period) {
-	Tcl_SetResult(interp,
-		"Length of key does not match the period.", TCL_STATIC);
-	ckfree((char *)argv);
-	return TCL_ERROR;
-    }
-    */
-
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, pt) != TCL_OK) {
 	ckfree((char *)argv);
 	return TCL_ERROR;
@@ -988,6 +979,7 @@ EncodeColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     ct = ColumnarTransform(itemPtr, itemPtr->ciphertext, ENCODE);
     if (ct == (char *)NULL) {
 	ckfree((char *)argv);
+        Tcl_SetResult(interp, "Unknown error encoding the plaintext", TCL_STATIC);
 	return TCL_ERROR;
     }
     if ((itemPtr->typePtr->setctProc)(interp, itemPtr, ct) != TCL_OK) {

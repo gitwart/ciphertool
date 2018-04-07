@@ -949,3 +949,14 @@ test cadenus-8.4 {encode with invalid order} {
 
     set result
 } {1 {Invalid character in key order: ,}}
+
+test cadenus-8.5 {encode with bad characters} {
+    set c [cipher create cadenus]
+
+    set result [$c encode "a severe limitation on the usefulness of the cadenus is that every message must be a multiple of twenty five (25) letters long " [list easy 2134]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul systretomtattlusoatleeesfiyheasdfnmschbhneuvsnpmtofarenuseieeieltarlmentieetogevesitfaisltngeeuvowul aseverelimitationontheusefulnessofthecadenusisthateverymessagemustbeamultipleoftwentyfiveletterslong {easy 2134}}

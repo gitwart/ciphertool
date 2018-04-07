@@ -733,3 +733,14 @@ test bazeries-6.2 {encode} {
 
     set result
 } {acyyuxymrqkxkckgcrqiyitnkyxkcygqgci acyyuxymrqkxkckgcrqiyitnkyxkcygqgci simplesubstitutionplustransposition {threousandvfiywbcgklmpqxz 3752}}
+
+test bazeries-6.3 {encode drops punctuation and other invalid characters} {
+    set c [cipher create bazeries]
+
+    set result [list [$c encode "simple 1 substitution + transposition!" 3752]]
+
+    lappend result [$c cget -ct] [$c cget -pt] [$c cget -key]
+    rename $c {}
+
+    set result
+} {acyyuxymrqkxkckgcnkicygqyitigck acyyuxymrqkxkckgcnkicygqyitigck simplesubstitutiontransposition {threousandvfiywbcgklmpqxz 3752}}
