@@ -61,9 +61,8 @@ Replace all calls to Tcl_CreateCommand with Tcl_CreateObjCommand
 Implement Hillclimb::start and many of the Hillclimb::* support methods in
     C for faster operation.
 
-Some setProc and encodeProc functions have bugs that allows invalid characters.
+(done) Some setProc and encodeProc functions have bugs that allows invalid characters.
     Model new ciphers after twosquare.c
-    How to handle 'j' in ciphers that use keysquares?
 
 tkcrithm runs multiple times if the "solve" button is pressed while it
     is already solving.
