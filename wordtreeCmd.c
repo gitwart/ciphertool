@@ -241,29 +241,53 @@ static Tcl_Obj *findBestSplit(Tcl_Interp *interp, TreeNode *rootNode, const char
     }
 
     longestMatch = treeMatchString(rootNode, text, &localWordValue);
-    for (testLength=longestMatch; testLength > 0; testLength--) {
+    if (longestMatch == -1) {
         int downstreamValue = 0;
-        if (treeContainsWord(rootNode, text, &localWordValue, testLength)) {
-            if (testLength > 2) {
-                localWordValue = testLength * testLength;
+        /*
+         * No word match was found.  Advance to the next character.
+         */
+        localBestMatch = findBestSplit(interp, rootNode, text+1, &downstreamValue, bestTextAtPosition, bestValueAtPosition);
+        if (downstreamValue + localWordValue > bestValue) {
+            Tcl_Obj *wordObj = Tcl_NewStringObj(text, 1);
+            bestValue = downstreamValue + localWordValue;
+            bestValueAtPosition[textLength] = bestValue;
+
+            if (localBestMatch == (Tcl_Obj *)NULL) {
+                Tcl_ListObjAppendElement(interp, bestTextAtPosition[textLength], wordObj);
             } else {
-                localWordValue = 0;
+                int objc;
+                Tcl_Obj **objv;
+                Tcl_ListObjGetElements(interp, localBestMatch, &objc, &objv);
+                Tcl_SetListObj(bestTextAtPosition[textLength], objc, objv);
+
+                Tcl_ListObjReplace(interp, bestTextAtPosition[textLength], 0, 0, 1, &wordObj);
             }
-            localBestMatch = findBestSplit(interp, rootNode, text+testLength, &downstreamValue, bestTextAtPosition, bestValueAtPosition);
-            if (downstreamValue + localWordValue > bestValue) {
-                Tcl_Obj *wordObj = Tcl_NewStringObj(text, testLength);
-                bestValue = downstreamValue + localWordValue;
-                bestValueAtPosition[textLength] = bestValue;
-
-                if (localBestMatch == (Tcl_Obj *)NULL) {
-                    Tcl_ListObjAppendElement(interp, bestTextAtPosition[textLength], wordObj);
+        }
+    } else {
+        for (testLength=longestMatch; testLength > 0; testLength--) {
+            int downstreamValue = 0;
+            if (treeContainsWord(rootNode, text, &localWordValue, testLength)) {
+                if (testLength > 2) {
+                    localWordValue = testLength * testLength;
                 } else {
-                    int objc;
-                    Tcl_Obj **objv;
-                    Tcl_ListObjGetElements(interp, localBestMatch, &objc, &objv);
-                    Tcl_SetListObj(bestTextAtPosition[textLength], objc, objv);
+                    localWordValue = 0;
+                }
+                localBestMatch = findBestSplit(interp, rootNode, text+testLength, &downstreamValue, bestTextAtPosition, bestValueAtPosition);
+                if (downstreamValue + localWordValue > bestValue) {
+                    Tcl_Obj *wordObj = Tcl_NewStringObj(text, testLength);
+                    bestValue = downstreamValue + localWordValue;
+                    bestValueAtPosition[textLength] = bestValue;
 
-                    Tcl_ListObjReplace(interp, bestTextAtPosition[textLength], 0, 0, 1, &wordObj);
+                    if (localBestMatch == (Tcl_Obj *)NULL) {
+                        Tcl_ListObjAppendElement(interp, bestTextAtPosition[textLength], wordObj);
+                    } else {
+                        int objc;
+                        Tcl_Obj **objv;
+                        Tcl_ListObjGetElements(interp, localBestMatch, &objc, &objv);
+                        Tcl_SetListObj(bestTextAtPosition[textLength], objc, objv);
+
+                        Tcl_ListObjReplace(interp, bestTextAtPosition[textLength], 0, 0, 1, &wordObj);
+                    }
                 }
             }
         }

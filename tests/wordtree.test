@@ -252,6 +252,23 @@ test wordtree-4.5 {Find the best word splitting, some words not valid} {
     set result
 } {the q brown fox}
 
+test wordtree-4.6 {Find the best word splitting, no words valid} {
+    set result [wordtree splitbest "the"]
+
+    wordtree delete
+
+    set result
+} {t h e}
+
+test wordtree-4.7 {Find the best word splitting, no words valid} {
+    set result [wordtree splitbest "theqbrownfox"]
+
+    wordtree delete
+
+    set result
+} {t h e q b r o w n f o x}
+
+
 test wordtree-5.1 {Test for empty tree} {
     set result [wordtree isempty]
 } {1}

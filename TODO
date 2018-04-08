@@ -39,7 +39,7 @@ tkcrithm should have a "clear" button for erasing the current equations
 
 Modify new word splitter to ignore numbers
 
-Allow invalid words in new word splitter
+(done) Allow invalid words in new word splitter
     see test wordtree-4.5
 
 slidesolve does not convert all ciphertext to plaintext
