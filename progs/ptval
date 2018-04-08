@@ -35,6 +35,7 @@ set options [list \
     [list pt.arg {} "The plaintext to measure."] \
     [list file.arg {} "The plaintext stored in the cipher savefile will be measured."] \
     [list scoretype.arg digramlog "The statistical method used to calculate the goodness of fit.  Allowed values are any of the valud 'score types' types."] \
+    [list language.arg {} "The foreign language used in this cipher.  This determines which language-specific scoring table to load."] \
     [list dictionary.arg {} "The directory containing the presorted dictionary files."] \
 ]
 
@@ -51,10 +52,24 @@ if {$dictionary != ""} {
     set Dictionary::directory $dictionary
 }
 
+if {$scoretype == "" && $language != ""} {
+    set scoretype digramlog
+}
+set elemsize {}
+if {[regexp {(^[0-9]+)(gram.*)} $scoretype null elemsize scoretype]} {
+    set scoretype n${scoretype}
+}
 if {$scoretype != ""} {
-    set defaultScore [score create $scoretype]
-    Scoredata::loadData $defaultScore
+    if {[lsearch [score types] $scoretype] == -1} {
+        set defaultScore $scoretype
+    } else {
+        set defaultScore [score create $scoretype]
 
+        if {$elemsize != ""} {
+            $defaultScore elemsize $elemsize
+        }
+        Scoredata::loadData $defaultScore $language
+    }
     score default $defaultScore
 }
 

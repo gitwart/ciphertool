@@ -45,7 +45,7 @@ tkcrithm should have a "clear" button for erasing the current equations
 slidesolve does not convert all ciphertext to plaintext
     ma2008:e11 (period 7, type vigenere)
 
-Modify ptval to use score initialization code as found in csolve
+(done) Modify ptval to use score initialization code as found in csolve
 
 (done) Fix the usage info for the "key" command
     [key foo] does not show all possible subcommands
