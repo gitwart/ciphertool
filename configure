@@ -621,6 +621,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 CONFIGURE_OUTPUTS
+DEFAULT_DICTIONARY_LOCATION
 RELPATH
 MAKE_DLL
 MAKE_SHELL
@@ -753,6 +754,7 @@ enable_load
 enable_symbols
 enable_compat
 enable_dmalloc
+with_dictionary
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1381,7 +1383,7 @@ Optional Features:
                           (default: enabled)
   --enable-symbols        build with debugging symbols (default: off)
   --enable-compat        enable compatibility options
-  --enable-dmalloc          Use the dmalloc memory debugging library
+  --enable-dmalloc        Use the dmalloc memory debugging library
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1390,6 +1392,7 @@ Optional Packages:
                           (tclConfig.sh)
   --with-tclinclude       directory containing the public Tcl header files
   --with-celib=DIR        use Windows/CE support library from DIR
+  --with-dictionary       The location of the dictionary files
 
 Some influential environment variables:
   CC          C compiler command
@@ -9886,6 +9889,21 @@ esac
 
 
 
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking default dictionary location" >&5
+$as_echo_n "checking default dictionary location... " >&6; }
+
+# Check whether --with-dictionary was given.
+if test "${with_dictionary+set}" = set; then :
+  withval=$with_dictionary; dict_dir=${withval}
+else
+  dict_dir="${datadir}/dict"
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${dict_dir}" >&5
+$as_echo "${dict_dir}" >&6; }
+DEFAULT_DICTIONARY_LOCATION="${dict_dir}"
 
 
 CONFIGURE_OUTPUTS="Makefile config.cache config.log config.status"

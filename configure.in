@@ -91,7 +91,7 @@ TEA_MAKE_LIB
 # Check if we should use dmalloc for memory debugging.
 #--------------------------------------------------------------------
 
-AC_ARG_ENABLE(dmalloc, [  --enable-dmalloc          Use the dmalloc memory debugging library], enable_dmalloc=${enableval}, enable_dmalloc=no)
+AC_ARG_ENABLE(dmalloc, [  --enable-dmalloc        Use the dmalloc memory debugging library], enable_dmalloc=${enableval}, enable_dmalloc=no)
 AC_MSG_CHECKING([if we are using dmalloc])
 if test x"${enable_dmalloc}" = x"no" ; then
     USE_DMALLOC=0
@@ -145,6 +145,12 @@ esac
 AC_SUBST(MAKE_SHELL)
 AC_SUBST(MAKE_DLL)
 AC_SUBST(RELPATH)
+
+AC_MSG_CHECKING([default dictionary location])
+AC_ARG_WITH(dictionary, [  --with-dictionary       The location of the dictionary files], dict_dir=${withval}, dict_dir="${datadir}/dict")
+AC_MSG_RESULT([${dict_dir}])
+DEFAULT_DICTIONARY_LOCATION="${dict_dir}"
+AC_SUBST(DEFAULT_DICTIONARY_LOCATION)
 
 CONFIGURE_OUTPUTS="Makefile config.cache config.log config.status"
 AC_SUBST(CONFIGURE_OUTPUTS)

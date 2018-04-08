@@ -74,7 +74,12 @@ Dictionary_Init(Tcl_Interp *interp) {
     }
 #endif
     if (dict->directory == NULL) {
-	dict->directory = strdup("/usr/share/dict");
+        /*
+         * This value may be set by the Makefile that compiled
+         * the program.
+         */
+
+	dict->directory = strdup(DEFAULT_DICTIONARY_LOCATION);
     }
     dict->cacheTypes = 0;
 

@@ -32,7 +32,7 @@ quag2keysearch gives a confusing error if no solution is found (such as
 
 (done) Validate cadenus key order for restore and encoding commands
 
-Add configure switch for setting default dictionary location
+(done) Add configure switch for setting default dictionary location
 
 tkcrithm should have a "clear" button for erasing the current equations
     and solution(s).
