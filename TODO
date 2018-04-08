@@ -37,7 +37,7 @@ Add configure switch for setting default dictionary location
 tkcrithm should have a "clear" button for erasing the current equations
     and solution(s).
 
-Modify new word splitter to ignore numbers
+(done) Modify new word splitter to ignore numbers
 
 (done) Allow invalid words in new word splitter
     see test wordtree-4.5
