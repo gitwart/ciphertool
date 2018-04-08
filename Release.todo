@@ -20,14 +20,9 @@ Release steps:
 	changes to configure.in.
     Make sure that any new packages (eg library files) are reflected in
         the pkgIndex.tcl.in template
-    Double-check that modified files have been checked in.
     Double-check that the ChangeLog is up to date including a note about
 	the new release.
-
-    TODO:
-
-    The remaining steps need to be updated after I validate a new
-    release workflow using git.
+    Double-check that modified files have been checked in.
 
     Create a tarball from the branch to test the new release before it gets
     merged/tagged back to the master.  Create a rpm and install on the dev

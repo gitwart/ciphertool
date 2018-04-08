@@ -1,4 +1,20 @@
-Fri Mar  30 11:11:00 CDT 2018 wart@kobold.org
+Sun Apr  8 18:37:00 CDT 2018 wart@kobold.org
+    * Add --with-dictionary configure option to specify the default
+      dictionary location (defaults to /usr/share/dict)
+    * Allow invalid words in new word splitter, if no other matches found
+    * Set proper freeProc when using Tcl_SetResult with static strings
+    * Add 'memtest' Makefile target to run test suite through valgrind
+    * Add more encoding/restoring tests, and cleaned up lots of bugs found
+      with the new tests.
+    * Reimplement lookupByPattern in C for speed
+    * Better pkgIndex.tcl management at configure, build, test, and install
+      time.
+      Rebase tclAppInit.c to prevent core dump on startup of the tcipher shell
+    * Install binary programs.  Default exec_prefix to prefix.
+    * Propagate error back to the caller if a scoring tree dump script throws
+      an error
+
+Fri Mar 30 11:11:00 CDT 2018 wart@kobold.org
     * Released 1.6.3
     * Use new rules when linking with Tcl stubs and Tcl 8.6
     * Ensure const qualifiers aren't disobeyed.

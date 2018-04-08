@@ -1,54 +1,19 @@
 Todo:
 -----
 
-1.6.4
+1.6.5
 =================
 
-(done) Change Tcl_SetResult for static strings to TCL_STATIC
-
-(done) Clean up compiler warnings
-    Rewrote some subroutines to be better about obeying const-ness of
-    input parameters.
-    - Only unused functions (to be used at a later time) remain
-
-(done) Implement lookupByPattern in C
-
 Fill out quagmire tests for more error conditions
-
-(done) Add test, return value check for wordtree dump script (score.c:538)
-    DumpTreeNode should return TCL_{OK,ERROR} and propagate back up
-
-(done) Check for result of Tcl_SplitList() not being freed
-    ckfree((char *) argv);
 
 quag2keysearch gives a confusing error if no solution is found (such as
     using a vertical keyword length that does not match the cipher period)
 
-(done) Add tests for encoding bad input
-
-(done) Morse conversion strips invalid characters, collapses consecutive spaces
-
-(done) Add tests for setting empty ciphertext
-
-(done) Validate cadenus key order for restore and encoding commands
-
-(done) Add configure switch for setting default dictionary location
-
 tkcrithm should have a "clear" button for erasing the current equations
     and solution(s).
 
-(done) Modify new word splitter to ignore numbers
-
-(done) Allow invalid words in new word splitter
-    see test wordtree-4.5
-
 slidesolve does not convert all ciphertext to plaintext
     ma2008:e11 (period 7, type vigenere)
-
-(done) Modify ptval to use score initialization code as found in csolve
-
-(done) Fix the usage info for the "key" command
-    [key foo] does not show all possible subcommands
 
 hillclimb:  add routines for generating neighbor keys from keywords,
     in contrast to generating neighbor keys by swapping letters in full
@@ -61,11 +26,49 @@ Replace all calls to Tcl_CreateCommand with Tcl_CreateObjCommand
 Implement Hillclimb::start and many of the Hillclimb::* support methods in
     C for faster operation.
 
-(done) Some setProc and encodeProc functions have bugs that allows invalid characters.
-    Model new ciphers after twosquare.c
-
 tkcrithm runs multiple times if the "solve" button is pressed while it
     is already solving.
+
+1.6.4
+=================
+
+Change Tcl_SetResult for static strings to TCL_STATIC
+
+Clean up compiler warnings
+    Rewrote some subroutines to be better about obeying const-ness of
+    input parameters.
+    - Only unused functions (to be used at a later time) remain
+
+Implement lookupByPattern in C
+
+Add test, return value check for wordtree dump script (score.c:538)
+    DumpTreeNode should return TCL_{OK,ERROR} and propagate back up
+
+Check for result of Tcl_SplitList() not being freed
+    ckfree((char *) argv);
+
+Add tests for encoding bad input
+
+Morse conversion strips invalid characters, collapses consecutive spaces
+
+Add tests for setting empty ciphertext
+
+Validate cadenus key order for restore and encoding commands
+
+Add configure switch for setting default dictionary location
+
+Modify new word splitter to ignore numbers
+
+Allow invalid words in new word splitter
+    see test wordtree-4.5
+
+Modify ptval to use score initialization code as found in csolve
+
+Fix the usage info for the "key" command
+    [key foo] does not show all possible subcommands
+
+Some setProc and encodeProc functions have bugs that allows invalid characters.
+    Model new ciphers after twosquare.c
 
 1.6.3
 =================
@@ -173,9 +176,6 @@ Add tests for setting ciphertext when ciphertext is already set
 Allocate memory for the plaintext when the ciphertext is configured.  This
     should help reduce the cost of getting the plaintext since we won't
     have to constantly allocate/free memory all the time.
-
-Use TCL_STATIC with Tcl_SetResult() when possible.  Should make interp result
-    storage more efficient and reduce the number of calls to malloc().
 
 Add support for gromark tip location
 The chain for a periodic gromark should be part of the key.  What key
