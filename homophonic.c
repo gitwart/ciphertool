@@ -186,7 +186,7 @@ HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!homoPtr->prv_ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, homoPtr->prv_ciphertext, TCL_VOLATILE);
 	    }
@@ -336,7 +336,7 @@ HomophonicCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **
 	    return TCL_ERROR;
 	}
 	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	if (argc < 2 || argc > 3) {
@@ -395,7 +395,7 @@ SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	return TCL_ERROR;
     }
     if (length%2) {
-	Tcl_SetResult(interp, "Odd number of valid characters found in ciphertext.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Odd number of valid characters found in ciphertext.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -462,7 +462,7 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, co
     char	used_pt[256];
     char	*temp;
 
-    Tcl_SetResult(interp, "locate procedure not yet available for homophonic ciphers", TCL_VOLATILE);
+    Tcl_SetResult(interp, "locate procedure not yet available for homophonic ciphers", TCL_STATIC);
     return TCL_ERROR;
 
     temp = (char *)ckalloc(sizeof(char)*strlen(tip) + 2);
@@ -479,7 +479,7 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, co
 	s = ct;
 
     if (!s) {
-	Tcl_SetResult(interp, "Starting location not found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -519,7 +519,7 @@ HomophonicLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, co
 	return TCL_OK;
     }
 
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+    Tcl_SetResult(interp, "", TCL_STATIC);
     return TCL_OK;
 }
 

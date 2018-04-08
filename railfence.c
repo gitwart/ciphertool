@@ -146,7 +146,7 @@ SetRailfence(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     if (!c) {
 	Tcl_SetResult(interp, "No valid characters found in ciphertext",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -159,7 +159,7 @@ SetRailfence(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -194,12 +194,12 @@ RailfenceSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, con
     col--;
 
     if (col < 0 || col > itemPtr->period) {
-	Tcl_SetResult(interp, "Bad column.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad column.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (*offset < '1' || (*offset-'1') > itemPtr->period) {
-	Tcl_SetResult(interp, "Bad value for column.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad value for column.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -364,7 +364,7 @@ RestoreRailfence(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const
 
     for(i=0; i < railPtr->header.period; i++) {
 	if (key[i] < 1 || key[i] > railPtr->header.period) {
-	    Tcl_SetResult(interp, "Invalid character in order", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid character in order", TCL_STATIC);
 	    return TCL_ERROR;
 	}
     }
@@ -387,14 +387,14 @@ SolveRailfence(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     if (railPtr->numRails == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the number of rails has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -559,7 +559,7 @@ static int
 RailfenceLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for Railfence ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -576,7 +576,7 @@ RailfenceSwapRails(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
 	col2 > itemPtr->period ||
 	col1 == col2) {
 
-	Tcl_SetResult(interp, "Bad column index", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad column index", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -593,7 +593,7 @@ RailfenceSwapRails(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
     }
 
     if (!found_col1 || !found_col2) {
-	Tcl_SetResult(interp, "Invalid column", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid column", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -632,7 +632,7 @@ RailfenceMoveStart(Tcl_Interp *interp, CipherItem *itemPtr, int rail, int dir)
     int i;
 
     if (rail < 1 || rail > itemPtr->period) {
-	Tcl_SetResult(interp, "Bad rail", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad rail", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -688,7 +688,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!railPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, railPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -742,7 +742,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 		}
 
 		if (sscanf(argv[1], "%d", &period) != 1) {
-		    Tcl_SetResult(interp, "Invalid period setting.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid period setting.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 		/*
@@ -752,7 +752,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 		period = period * 2 - 2;
 
 		if (period < 0 || period > itemPtr->length) {
-		    Tcl_SetResult(interp, "Invalid period setting.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid period setting.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -842,11 +842,11 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	}
 
 	if (sscanf(argv[1], "%d", &col1) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (sscanf(argv[2], "%d", &col2) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -862,7 +862,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	}
     } else if (**argv == 'u' && (strncmp(*argv, "undo", 1) == 0)) {
 	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	if (argc < 2 || argc > 3) {

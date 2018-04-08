@@ -116,18 +116,18 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    return TCL_OK;
 	} else if (*type == '-' && (strncmp(type, "-k2list", 7) == 0)) {
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else if (*type == '-' && (strncmp(type, "-k2", 3) == 0)) {
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else if (*type == '-' && (strncmp(type, "-k3list", 7) == 0)) {
 	    char fixedKey[26];
 	    int j;
 
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 
 	    if (argc != 1) {
@@ -152,15 +152,15 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    return TCL_OK;
 	} else if (*type == '-' && (strncmp(type, "-k3", 3) == 0)) {
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else if (*type == '-' && (strncmp(type, "-k4list", 7) == 0)) {
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else if (*type == '-' && (strncmp(type, "-k4", 3) == 0)) {
 	    Tcl_SetResult(interp, "This function is not yet written",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else {
 	    Tcl_AppendResult(interp, "Unknown option ", type,
@@ -231,7 +231,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	}
 
 	if (sscanf(argv[0], "%ld", &number) != 1) {
-	    Tcl_SetResult(interp, "Argument must be a number", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Argument must be a number", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 

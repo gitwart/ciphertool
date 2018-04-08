@@ -217,7 +217,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!bifPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, bifPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -237,7 +237,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	    tPtr = GetBifidText(itemPtr, ' ');
 
 	    if (!tPtr) {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, tPtr, TCL_VOLATILE);
 		ckfree(tPtr);
@@ -310,7 +310,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 
 		if (sscanf(argv[1], "%d", &period) != 1) {
 		    Tcl_SetResult(interp, "Invalid period setting.",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -355,17 +355,17 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	if (*argv[1] < '0' || *argv[1] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid row value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (*argv[2] < '0' || *argv[2] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid column value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (! IsValidChar(itemPtr, *argv[3])) {
-	    Tcl_SetResult(interp, "Invalid letter value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid letter value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -387,17 +387,17 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	if (*argv[1] < '0' || *argv[1] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid row value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (*argv[2] < '0' || *argv[2] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid column value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (! IsValidChar(itemPtr, *argv[3])) {
-	    Tcl_SetResult(interp, "Invalid letter value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid letter value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -423,7 +423,7 @@ BifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -495,7 +495,7 @@ SetBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -520,14 +520,14 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const c
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the period has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -542,7 +542,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const c
     }
 
     if (!tipStart) {
-	Tcl_SetResult(interp, "Starting location not found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -603,7 +603,7 @@ BifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const c
 
     if (! valid_tip) {
 	BifidUndo(interp, itemPtr, itemPtr->typePtr->valid_chars, 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
     } else {
 	Tcl_SetObjResult(interp, Tcl_NewStringObj(validTipLocation, -1));
     }
@@ -828,7 +828,7 @@ BifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 
 	if (! IsValidChar(itemPtr, ctConv)) {
 	    Tcl_SetResult(interp, "Attempt to undo invalid character.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	} else {
 	    int ctConvIndex = BifidKeycharToInt(ctConv);
@@ -927,7 +927,7 @@ BifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const 
     if (valid_sub == ALT_SUB) {
 	Tcl_SetResult(interp, altLetter, TCL_VOLATILE);
     } else {
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
     }
 
     return valid_sub;
@@ -1010,13 +1010,13 @@ GetBifid(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a period has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -1109,14 +1109,14 @@ RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
     int i;
 
     if (strlen(pt) != KEYLEN || strlen(position) != KEYLEN * 2) {
-	Tcl_SetResult(interp, "Invalid length for key.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid length for key.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     for(i=0; i < KEYLEN; i++) {
 	if (! IsValidChar(itemPtr, pt[i])) {
 	    Tcl_SetResult(interp, "Invalid character found in key",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
     }
@@ -1134,7 +1134,7 @@ RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
 	if (result != NEW_SUB) {
 	    if (result == ALT_SUB) {
 		Tcl_SetResult(interp, "Duplicate letter/position in key",
-			TCL_VOLATILE);
+			TCL_STATIC);
 	    }
 	    return TCL_ERROR;
 	}
@@ -1147,7 +1147,7 @@ RestoreBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
 static int
 SolveBifid(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 

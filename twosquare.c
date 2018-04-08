@@ -311,7 +311,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 		return TCL_ERROR;
 	    }
 
-	    Tcl_SetResult(interp, tPtr, TCL_STATIC);
+	    Tcl_SetResult(interp, tPtr, TCL_VOLATILE);
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-length", 6) == 0) {
 	    sprintf(temp_str, "%d", twoPtr->header.length);
@@ -324,7 +324,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!twoPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, twoPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -432,17 +432,17 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	if (*argv[1] < '0' || *argv[1] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid row value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (*argv[2] < '0' || *argv[2] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid column value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (! IsValidChar(itemPtr, *argv[3])) {
-	    Tcl_SetResult(interp, "Invalid letter value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid letter value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -468,7 +468,7 @@ TwosquareCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -539,7 +539,7 @@ SetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -621,7 +621,7 @@ GetTwosquare(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -666,7 +666,7 @@ GetFoursquare(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -727,12 +727,12 @@ RestoreTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, c
 
 	if (! IsValidChar(itemPtr, square1[i]) && square1[i] != ' ') {
 	    Tcl_SetResult(interp, "Invalid character found in key",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (! IsValidChar(itemPtr, square2[i]) && square2[i] != ' ') {
 	    Tcl_SetResult(interp, "Invalid character found in key",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -751,14 +751,14 @@ RestoreTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, c
 
     }
 
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+    Tcl_SetResult(interp, "", TCL_STATIC);
     return TCL_OK;
 }
 
 static int
 SolveTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 

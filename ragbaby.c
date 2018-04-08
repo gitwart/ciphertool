@@ -207,7 +207,7 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!ragPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, ragPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -250,14 +250,14 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-type", 5) == 0) {
@@ -292,12 +292,12 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -356,7 +356,7 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	if (strlen(argv[1]) != strlen(argv[2])) {
 	    Tcl_SetResult(interp,
 		    "ciphertext and plaintext must be the same length",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (sscanf(argv[3], "%d", &offset) != 1) {
@@ -385,14 +385,14 @@ RagbabyCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	}
 	if (argc == 1) {
 	    if ((itemPtr->typePtr->undoProc)(interp, itemPtr, (char *)NULL, 0) == TCL_OK) {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 		return TCL_OK;
 	    } else {
 		return TCL_ERROR;
 	    }
 	} else {
 	    if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 		return TCL_OK;
 	    } else {
 		return TCL_ERROR;
@@ -525,7 +525,7 @@ RagbabyLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for ragbaby ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -534,7 +534,7 @@ RagbabyUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_SetResult(interp,
 	    "No undo function defined for ragbaby ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -542,7 +542,7 @@ static int
 RagbabySubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     Tcl_SetResult(interp, "Substitution is not yet defined for ragbaby ciphers",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return BAD_SUB;
 }
 
@@ -642,7 +642,7 @@ RestoreRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, co
     char invalidChar[] = "?";
 
     if (strlen(savedKey) != ragPtr->keylen) {
-	Tcl_SetResult(interp, "Invalid length for key.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid length for key.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -687,7 +687,7 @@ RestoreRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, co
 static int
 SolveRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -831,6 +831,3 @@ EncodeRagbaby(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const cha
 
     return TCL_OK;
 }
-
-
-

@@ -62,7 +62,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (cInfo->base == 0) {
 	    Tcl_SetResult(interp,
 		    "cryptarithm state not initialized",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -78,14 +78,14 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (string[i] < 'a' || string[i] > 'z') {
 		Tcl_SetResult(interp,
 			"Letter must be between a-z",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
 	    if (cInfo->letterList[string[i] - 'a'] == UNUSED_LETTER) {
 		Tcl_SetResult(interp,
 			"Letter is not used in this cipher",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
@@ -104,7 +104,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (cInfo->base == 0) {
 	    Tcl_SetResult(interp,
 		    "cryptarithm state not initialized",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -119,14 +119,14 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (letter < 'a' || letter > 'z') {
 	    Tcl_SetResult(interp,
 		    "Letter must be between a-z",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
 	if (cInfo->letterList[letter - 'a'] == UNUSED_LETTER) {
 	    Tcl_SetResult(interp,
 		    "Letter is not used in this cipher",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -161,7 +161,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (cInfo->base) {
 	    Tcl_SetResult(interp,
 		    "crithm init called before deleting old state",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -173,14 +173,14 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (string[i] < 'a' || string[i] > 'z') {
 		Tcl_SetResult(interp,
 			"Invalid character found in init string",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
 	    if (cInfo->letterList[string[i] - 'a'] != UNUSED_LETTER) {
 		Tcl_SetResult(interp,
 			"Duplicate character found in init string",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
@@ -238,13 +238,13 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 
 	cInfo->base = 0;
 
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (*option == 'p' && (strncmp(option, "perm", 4) == 0)) {
 	if (cInfo->base == 0) {
 	    Tcl_SetResult(interp,
 		    "cryptarithm state not initialized",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -256,7 +256,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	cInfo->runState = RUN_STATE;
 
 	if (_internalDoPermCmd((ClientData) cInfo, interp, cInfo->base, CrithmPermCmd) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -274,7 +274,7 @@ CrithmCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (cInfo->base == 0) {
 	    Tcl_SetResult(interp,
 		    "cryptarithm state not initialized",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -342,7 +342,7 @@ CrithmPermCmd(Tcl_Interp *interp, ClientData clientData, int *values, int length
     }
 
     if (cInfo->runState == STOP_STATE) {
-	Tcl_SetResult(interp, "stopped", TCL_VOLATILE);
+	Tcl_SetResult(interp, "stopped", TCL_STATIC);
 	return TCL_ERROR;
     }
 

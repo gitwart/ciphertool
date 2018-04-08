@@ -286,14 +286,14 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-alphabet", 6) == 0) {
@@ -309,7 +309,7 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!baconPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, baconPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -348,12 +348,12 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	while(argc > 0) {
 	    if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -423,7 +423,7 @@ BaconianCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    return TCL_ERROR;
 	}
 	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	if (argc < 2 || argc > 3) {
@@ -553,7 +553,7 @@ BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 	s = ct;
 
     if (!s) {
-	Tcl_SetResult(interp, "Starting location not found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
 	Tcl_DStringFree(&dsPtr);
 	ckfree(temp);
 	return TCL_ERROR;
@@ -582,7 +582,7 @@ BaconianLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 	return TCL_OK;
     }
 
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+    Tcl_SetResult(interp, "", TCL_STATIC);
     Tcl_DStringFree(&dsPtr);
     ckfree(temp);
     return TCL_OK;
@@ -612,7 +612,7 @@ BaconianSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, cons
 	return BaconianSingleSub(interp, itemPtr, ct, pt);
     }
 
-    Tcl_SetResult(interp, "Ciphertext and plaintext lengths don't match up", TCL_VOLATILE);
+    Tcl_SetResult(interp, "Ciphertext and plaintext lengths don't match up", TCL_STATIC);
     return BAD_SUB;
 }
 
@@ -703,7 +703,7 @@ BaconianGroupSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     valid_sub = BaconianCheckSub(itemPtr, ct, Tcl_DStringValue(&dsPtr));
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad substitution", TCL_STATIC);
 	Tcl_DStringFree(&dsPtr);
 	ckfree(q);
 	return BAD_SUB;
@@ -746,14 +746,14 @@ BaconianSingleSub(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const
     if (strlen(ct) != strlen(pt)) {
 	Tcl_SetResult(interp,
 		"Ciphertext and plaintext are not the same length",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return BAD_SUB;
     }
 
     valid_sub = BaconianCheckSub(itemPtr, ct, pt);
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad substitution", TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -1222,7 +1222,7 @@ EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     if (incomplete) {
 	ckfree((char *)argv);
 	ckfree(ct);
-	Tcl_SetResult(interp, "Not all letters have corresponding words.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Not all letters have corresponding words.", TCL_STATIC);
 	return TCL_ERROR;
     }
 

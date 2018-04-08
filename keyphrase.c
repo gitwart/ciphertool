@@ -139,7 +139,7 @@ KeyphraseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!kpPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, kpPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -204,7 +204,7 @@ KeyphraseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
 	}
 	if (strlen(argv[1]) != strlen(argv[2])) {
-	    Tcl_SetResult(interp, "ciphertext and plaintext must be the same length", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "ciphertext and plaintext must be the same length", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->subProc)(interp, itemPtr, argv[1], argv[2], 0) == BAD_SUB) {
@@ -225,7 +225,7 @@ KeyphraseCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 	    return TCL_ERROR;
 	}
 	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	if (argc < 2 || argc > 3) {
@@ -287,7 +287,7 @@ SetKeyphrase(Tcl_Interp *interp, CipherItem *itemPtr, char *ctext)
 
 	itemPtr->ciphertext = (char *)ckalloc(sizeof(char)*length + 2);
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	itemPtr->length = length;
@@ -333,7 +333,7 @@ KeyphraseLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *sta
 	s = ct;
 
     if (!s) {
-	Tcl_SetResult(interp, "Starting location not found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -375,7 +375,7 @@ KeyphraseLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, char *tip, char *sta
 	return TCL_OK;
     }
 
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+    Tcl_SetResult(interp, "", TCL_STATIC);
     return TCL_OK;
 }
 
@@ -470,7 +470,7 @@ KeyphraseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char *ct, char *pt,
     *r = (char)NULL;
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad Substitution", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -521,6 +521,6 @@ RestoreKeyphrase(Tcl_Interp *interp, CipherItem *itemPtr, char *part1, char *par
 static int
 SolveKeyphrase(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }

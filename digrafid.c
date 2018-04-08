@@ -281,7 +281,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!digPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, digPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -371,7 +371,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 
 		if (sscanf(argv[1], "%d", &period) != 1) {
 		    Tcl_SetResult(interp, "Invalid period setting.",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -419,17 +419,17 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	if (*argv[1] < '0' || *argv[1] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid row value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (*argv[2] < '0' || *argv[2] > '5') {
 	    Tcl_SetResult(interp,
 		    "Invalid column value.  Value must be between 0 and 5.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (! IsValidChar(itemPtr, *argv[3])) {
-	    Tcl_SetResult(interp, "Invalid letter value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid letter value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -455,7 +455,7 @@ DigrafidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -517,7 +517,7 @@ SetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -641,13 +641,13 @@ GetDigrafid(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a period has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -722,7 +722,7 @@ RestoreDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *square1, co
 
 	if (! IsValidChar(itemPtr, square1[i]) || ! IsValidChar(itemPtr, square2[i])) {
 	    Tcl_SetResult(interp, "Invalid character found in key",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 

@@ -196,7 +196,7 @@ SetPollux(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 static int
 PolluxLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
-    Tcl_SetResult(interp, "No locate tip function defined for pollux ciphers.", TCL_VOLATILE);
+    Tcl_SetResult(interp, "No locate tip function defined for pollux ciphers.", TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -241,7 +241,7 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     int		index_used[10];
 
     if (strlen(pt) != strlen(ct)) {
-	Tcl_SetResult(interp, "Plaintext and ciphertext must be the same length.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Plaintext and ciphertext must be the same length.", TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -258,14 +258,14 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     for(p=pt; *p; p++) {
 	if (*p != SPACE && *p != DASH && *p != DOT && *p != BLANK) {
 	    Tcl_SetResult(interp, "Bad character in substitution morsetext",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return BAD_SUB;
 	}
     }
     for(p=ct; *p; p++) {
 	if ((*p < '0' || *p > '9') && *p != ' ') {
 	    Tcl_SetResult(interp, "Bad character in substitution ciphertext",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return BAD_SUB;
 	}
     }
@@ -288,7 +288,7 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad substitution", TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -322,7 +322,7 @@ PolluxSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad Substitution", TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -712,7 +712,7 @@ PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->ciphertext) {
 		Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-plaintext", 9) == 0 ||
@@ -770,14 +770,14 @@ PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-type", 5) == 0) {
@@ -809,12 +809,12 @@ PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -884,7 +884,7 @@ PolluxCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    (itemPtr->typePtr->undoProc)(interp, itemPtr, (char *)NULL, 0);
 	} else if (argc == 2) {
 	    (itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " undo ?ct?", (char *)NULL);

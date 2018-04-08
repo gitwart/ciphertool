@@ -200,7 +200,7 @@ CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
     char	temp_str[128];
 
     if (argc < 2) {
-	Tcl_SetResult(interp, "Usage:  cipher ?option? ?args?", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Usage:  cipher ?option? ?args?", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -210,7 +210,7 @@ CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	     * Error:  wrong # args
 	     */
 	    Tcl_SetResult(interp, "Usage:  cipher create type ?args?",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -255,7 +255,7 @@ CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (argc > 2) {
 	    Tcl_SetResult(interp,
 		    "Wrong number of args.  Should be:  cipher types",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -264,7 +264,7 @@ CipherCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 
 	return TCL_OK;
     } else {
-	Tcl_SetResult(interp, "Usage:  cipher ?option? ?args?", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Usage:  cipher ?option? ?args?", TCL_STATIC);
 	return TCL_ERROR;
     }
 

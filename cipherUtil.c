@@ -183,7 +183,7 @@ TextToInt(Tcl_Interp *interp, CipherItem *itemPtr, const char *intstring, int *c
 
 	if (*count > length/2) {
 	    Tcl_SetResult(interp, "Error converting text to integer array",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    ckfree((char *)newarr);
 	    ckfree((char *)new_ct);
 	    return (int *)NULL;

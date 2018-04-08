@@ -211,7 +211,7 @@ SetSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -254,17 +254,17 @@ SwagmanSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const
     col = *pt - '1';
 
     if (row < 0 || row >= itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid row specification", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid row specification", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (col < 0 || col >= itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid column specification", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid column specification", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (offset < 0 || offset > itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid value specification", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid value specification", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -290,13 +290,13 @@ GetSwagman(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a block width has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -352,13 +352,13 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
 
     if (itemPtr->length <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a block width has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -374,7 +374,7 @@ RestoreSwagman(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
 	if ( (key[i] < '0' || key[i] > '0' + itemPtr->period) &&
 		key[i] != ' ') {
             SwagmanInitKey(itemPtr, itemPtr->period);
-	    Tcl_SetResult(interp, "Invalid character in key", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid character in key", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	row = i / itemPtr->period;
@@ -443,13 +443,13 @@ SolveSwagman(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 
     if (itemPtr->length <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a block width has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -640,7 +640,7 @@ SwagmanLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for Swagman ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -653,7 +653,7 @@ SwagmanCtToBlock(Tcl_Interp *interp, CipherItem *itemPtr)
 
     word = (char *)ckalloc(sizeof(char) * (itemPtr->period+1));
     if (!word) {
-	Tcl_SetResult(interp, "Error mallocing space for blocks\n", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Error mallocing space for blocks", TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -698,8 +698,8 @@ SwagmanPtToBlock(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (!word) {
 	Tcl_SetResult(interp,
-		"Error mallocing space for blocks\n",
-		TCL_VOLATILE);
+		"Error mallocing space for blocks",
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -740,12 +740,12 @@ SwagmanSwapRows	(Tcl_Interp *interp, CipherItem *itemPtr, int row1, int row2)
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a block width has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (row1 < 1 || row2 < 1 || row1 > itemPtr->period || row2 > itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid row in swagman swap", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid row in swagman swap", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -795,7 +795,7 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-ctblock", 8) == 0) {
 	    if (!swagPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		char *t = SwagmanCtToBlock(interp, itemPtr);
 		if (t) {
@@ -815,14 +815,14 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 		    Tcl_SetResult(interp, t, TCL_VOLATILE);
 		    ckfree(t);
 		} else {
-		    Tcl_SetResult(interp, "", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "", TCL_STATIC);
 		}
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!swagPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, swagPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -878,14 +878,14 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-language", 8) == 0) {
@@ -907,12 +907,12 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	while(argc > 0) {
 	    if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -930,12 +930,12 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 
 		if (sscanf(argv[1], "%d", &period) != 1) {
 		    Tcl_SetResult(interp, "Invalid width setting.",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 		if (period < 0 || period > itemPtr->length || (itemPtr->length && itemPtr->length%period != 0)) {
 		    Tcl_SetResult(interp, "Invalid width setting.",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -969,13 +969,13 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    if (sscanf(argv[1], "%d", &row1) != 1) {
 		Tcl_SetResult(interp,
 			"Invalid row value.  Value must be between 1 and block width.",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	    if (sscanf(argv[2], "%d", &row2) != 1) {
 		Tcl_SetResult(interp,
 			"Invalid row value.  Value must be between 1 and block width.",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	}
@@ -984,7 +984,7 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 3) == 0)) {
 	Tcl_SetResult(interp,
 		"No locate tip function defined for swagman ciphers.",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     } else if (**argv == 's' && (strncmp(*argv, "substitute", 3) == 0)) {
 	int offset;
@@ -999,7 +999,7 @@ SwagmanCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    if (sscanf(argv[3], "%d", &offset) != 1) {
 		Tcl_SetResult(interp,
 			"Invalid key value.  Value must be between 1 and block width.",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	}

@@ -118,7 +118,7 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	}
 
 	if (count1 != count2) {
-	    Tcl_SetResult(interp, "Number of elements in the histograms do not match.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Number of elements in the histograms do not match.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -244,17 +244,17 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	if (argc == 3) {
 	    if ( (sscanf(argv[1], "%d", &minp) != 1) ||
 		    (sscanf(argv[2], "%d", &maxp) != 1) ) {
-		Tcl_SetResult(interp, "minperiod and maxperiod options must be integers", TCL_VOLATILE);
+		Tcl_SetResult(interp, "minperiod and maxperiod options must be integers", TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
 	    if (minp >= maxp) {
-		Tcl_SetResult(interp, "minperiod must be smaller than max period", TCL_VOLATILE);
+		Tcl_SetResult(interp, "minperiod must be smaller than max period", TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
 	    if (minp <= 0 || maxp <= 0) {
-		Tcl_SetResult(interp, "minperiod and max period must be positive integers", TCL_VOLATILE);
+		Tcl_SetResult(interp, "minperiod and max period must be positive integers", TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	}
@@ -265,7 +265,7 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	ckfree(result);
 	return TCL_OK;
     } else {
-	Tcl_SetResult(interp, "Usage:  stat histogram|ioc|digram|trigram|alphfit|kasiski string", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Usage:  stat histogram|ioc|digram|trigram|alphfit|kasiski string", TCL_STATIC);
 	return TCL_ERROR;
     }
 }

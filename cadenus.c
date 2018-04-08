@@ -186,7 +186,7 @@ SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	if (itemPtr->length % 25 != 0) {
 	    Tcl_SetResult(interp,
 		    "Cipher format error:  Cadenus ciphers must have a length which is a multiple of 25.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -219,7 +219,7 @@ static int
 CadenusSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int offset)
 {
     Tcl_SetResult(interp, "No substitute command for cadenus ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -280,7 +280,7 @@ RestoreCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const c
     if (strlen(order) != cadPtr->header.period || strlen(key) != cadPtr->header.period) {
 	Tcl_SetResult(interp,
 		"Key and order must be the same length as the cipher period",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -472,7 +472,7 @@ static int
 CadenusLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for cadenus ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -484,17 +484,17 @@ CadenusRotate(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amt)
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (col < 1 || col > itemPtr->period) {
-	Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (amt < -25 || amt > 25) {
-	Tcl_SetResult(interp, "Bad rotation amount.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad rotation amount.", TCL_STATIC);
 	return TCL_ERROR;
     }
     col--;
@@ -518,12 +518,12 @@ CadenusFitColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (col1 < 1 || col2 < 1 || col1 == col2 || col1 > itemPtr->period || col2 > itemPtr->period) {
-	Tcl_SetResult(interp, "Bad column value", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad column value", TCL_STATIC);
 	return TCL_ERROR;
     }
     col1--, col2--;
@@ -571,7 +571,7 @@ CadenusSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -581,7 +581,7 @@ CadenusSwapColumns(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
 	col2 > itemPtr->period ||
 	col1 == col2) {
 
-	Tcl_SetResult(interp, "Bad column index", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad column index", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -661,7 +661,7 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!cadPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, cadPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -737,7 +737,7 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 		 * Ignore attempts to set the period.
 		 */
 
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 		return TCL_OK;
 	    } else if (strncmp(*argv, "-language", 8) == 0) {
 		itemPtr->language = cipherSelectLanguage(argv[1]);
@@ -788,12 +788,12 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	} else if (strcmp(argv[1], "key") == 0) {
 	    col = KEY_ROTATE;
 	} else if (sscanf(argv[1], "%d", &col) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
 	if (sscanf(argv[2], "%d", &amt) != 1) {
-	    Tcl_SetResult(interp, "Bad rotation amount.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad rotation amount.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -845,11 +845,11 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	}
 
 	if (sscanf(argv[1], "%d", &col1) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (sscanf(argv[2], "%d", &col2) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -867,11 +867,11 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	}
 
 	if (sscanf(argv[1], "%d", &col1) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if (sscanf(argv[2], "%d", &col2) != 1) {
-	    Tcl_SetResult(interp, "Bad column value.", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Bad column value.", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -905,12 +905,12 @@ CadenusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    abort();
 	    return TCL_ERROR;
 	}
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	Tcl_SetResult(interp,
 		"No locate tip function defined for cadenus ciphers.",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     } else {
 	Tcl_AppendResult(interp, "Unknown option ", *argv, (char *)NULL);

@@ -1031,14 +1031,14 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-language", 8) == 0) {
@@ -1100,12 +1100,12 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 

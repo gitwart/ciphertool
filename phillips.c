@@ -188,7 +188,7 @@ SetPhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
 	if (itemPtr->ciphertext == NULL || philPtr->pt == NULL) {
 	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", 
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -220,7 +220,7 @@ PhillipsUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int offset
 	    int keyVal;
 
 	    if (*ct < 'a' || *ct > 'z') {
-		Tcl_SetResult(interp, "Invalid key value", TCL_VOLATILE);
+		Tcl_SetResult(interp, "Invalid key value", TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
@@ -254,17 +254,17 @@ PhillipsSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, cons
     col = *pt - '1';
 
     if (row < 0 || row >= PERIOD) {
-	Tcl_SetResult(interp, "Invalid row specification", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid row specification", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (col < 0 || col >= PERIOD) {
-	Tcl_SetResult(interp, "Invalid column specification", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid column specification", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (offset < 'a' || offset > 'z') {
-	Tcl_SetResult(interp, "Invalid key value", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid key value", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -406,12 +406,12 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 
     if (itemPtr->length <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (strlen(key) != PERIOD * PERIOD) {
-	Tcl_SetResult(interp, "Invalid key length.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid key length.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -424,7 +424,7 @@ RestorePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const 
 
     for(i=0; i < PERIOD*PERIOD; i++) {
 	if ( (key[i] < 'a' || key[i] > 'z') && (key[i] != ' ')) {
-	    Tcl_SetResult(interp, "Invalid character in key", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid character in key", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	row = i / PERIOD;
@@ -464,7 +464,7 @@ static int
 SolvePhillips(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 {
     Tcl_SetResult(interp, "Solving phillips ciphers is not yet implemented.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -473,7 +473,7 @@ PhillipsLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for phillips ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -484,7 +484,7 @@ PhillipsSwapCols(Tcl_Interp *interp, CipherItem *itemPtr, int col1, int col2)
     int i, tempCol, row, col;
 
     if (col1 < 1 || col2 < 1 || col1 > PERIOD || col2 > PERIOD) {
-	Tcl_SetResult(interp, "Invalid column in phillips swap", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid column in phillips swap", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -553,7 +553,7 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!philPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, philPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -594,14 +594,14 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-language", 8) == 0) {
@@ -623,12 +623,12 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	while(argc > 0) {
 	    if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -691,13 +691,13 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    if (sscanf(argv[1], "%d", &col1) != 1) {
 		Tcl_SetResult(interp,
 			"Invalid column value.  Value must be between 1 and 5.",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	    if (sscanf(argv[2], "%d", &col2) != 1) {
 		Tcl_SetResult(interp,
 			"Invalid column value.  Value must be between 1 and 5.",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 	}
@@ -706,7 +706,7 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 3) == 0)) {
 	Tcl_SetResult(interp,
 		"No locate tip function defined for phillips ciphers.",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     } else if (**argv == 's' && (strncmp(*argv, "substitute", 3) == 0)) {
 	if (argc != 4) {

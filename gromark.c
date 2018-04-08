@@ -205,7 +205,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!gromPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, gromPtr->header.ciphertext,
 			TCL_VOLATILE);
@@ -267,14 +267,14 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-type", 5) == 0) {
@@ -309,7 +309,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    } else if (strncmp(*argv, "-primer", 7) == 0) {
 		int primer;
 		if (sscanf(argv[1], "%d", &primer) != 1) {
-		    Tcl_SetResult(interp, "Invalid primer.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid primer.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 		gromPtr->primer = primer;
@@ -352,7 +352,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 		    ckfree(gromPtr->chain);
 		}
 		if (sscanf(argv[1], "%d", &period) != 1) {
-		    Tcl_SetResult(interp, "Invalid period.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid period.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 		gromPtr->chain = (char *)ckalloc(sizeof(char)*period);
@@ -369,12 +369,12 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -423,7 +423,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	if (strlen(argv[1]) != strlen(argv[2])) {
 	    Tcl_SetResult(interp,
 		    "ciphertext and plaintext must be the same length",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->subProc)(interp, itemPtr, argv[1], argv[2], 0)
@@ -459,7 +459,7 @@ GromarkCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -556,7 +556,7 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -577,7 +577,7 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
     }
 
     if (!tipStart) {
-	Tcl_SetResult(interp, "Starting location not found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Starting location not found.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -635,7 +635,7 @@ GromarkLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const
 	return TCL_OK;
     }
 
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+    Tcl_SetResult(interp, "", TCL_STATIC);
 
     Tcl_ValidateAllMemory(__FILE__, __LINE__);
 
@@ -651,7 +651,7 @@ GromarkUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -693,7 +693,7 @@ GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -772,7 +772,7 @@ GromarkSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const
     *r = '\0';
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad Substitution", TCL_STATIC);
 	ckfree(q);
 	return BAD_SUB;
     }
@@ -863,12 +863,12 @@ GromarkChainSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, char value, int 
     }
 
     if (position < 1 || position > itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid chain position", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid chain position", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (! IsValidChar(itemPtr, value) && value != '\0') {
-	Tcl_SetResult(interp, "Invalid chain character", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid chain character", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -904,7 +904,7 @@ RestoreGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const
 static int
 SolveGromark(Tcl_Interp *interp, CipherItem *itemPtr, char *junk)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 

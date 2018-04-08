@@ -154,11 +154,11 @@ SetGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
-	Tcl_SetResult(interp, "No valid characters found in the ciphertext", TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext", TCL_STATIC);
 	return TCL_ERROR;
     }
     if (length%2) {
-	Tcl_SetResult(interp, "Odd number of valid characters found in ciphertext.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Odd number of valid characters found in ciphertext.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -265,7 +265,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 	    ckfree((char *)startPtr);
 	}
 	if (!valid_start) {
-	    Tcl_SetResult(interp, "Invalid starting position", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Invalid starting position", TCL_STATIC);
 	    return TCL_ERROR;
 	}
     } else {
@@ -326,7 +326,7 @@ GrandpreLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, cons
 	    }
 	}
     } else {
-	Tcl_SetResult(interp, "No valid tip locations found.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid tip locations found.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -488,7 +488,7 @@ static int
 SolveGrandpre(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 {
     Tcl_SetResult(interp, "No solve method defined for grandpre types",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -710,7 +710,7 @@ GrandpreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!grandPtr->prv_ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, grandPtr->prv_ciphertext, TCL_VOLATILE);
 	    }
@@ -820,7 +820,7 @@ GrandpreCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 	    return TCL_ERROR;
 	}
 	(itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	Tcl_SetResult(interp, "", TCL_VOLATILE);
+	Tcl_SetResult(interp, "", TCL_STATIC);
 	return TCL_OK;
     } else if (**argv == 'l' && (strncmp(*argv, "locate", 1) == 0)) {
 	if (argc < 2 || argc > 3) {

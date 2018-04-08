@@ -208,14 +208,14 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-type", 5) == 0) {
@@ -251,13 +251,13 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		if (sscanf(argv[1], "%d", &i) != 1) {
 		    Tcl_SetResult(interp,
 			    "Invalid shift value.  Must be from 0 to 26",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 		if (i < 0 || i > 26) {
 		    Tcl_SetResult(interp,
 			    "Invalid shift value.  Must be from 0 to 26",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -270,12 +270,12 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -331,7 +331,7 @@ CaesarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, (char *)NULL, 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -408,7 +408,7 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = (char *)ckalloc(sizeof(char)*length + 2);
 	if (itemPtr->ciphertext == NULL) {
 	    Tcl_SetResult(interp, "Error mallocing memory for new cipher",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	itemPtr->length = length;
@@ -455,7 +455,7 @@ CaesarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -503,7 +503,7 @@ GetCaesar(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 

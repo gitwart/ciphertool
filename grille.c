@@ -156,7 +156,7 @@ GrilleInitKey(Tcl_Interp *interp, CipherItem *itemPtr, int period)
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -237,7 +237,7 @@ SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    itemPtr->length = 0;
 	    return TCL_ERROR;
 	}
@@ -282,7 +282,7 @@ GrilleSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until the ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -328,17 +328,17 @@ GrilleIntSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, int rowVal, int col
     int		tempVal;
 
     if (rowVal < 0 || rowVal >= itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid row setting", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid row setting", TCL_STATIC);
 	return BAD_SUB;
     }
 
     if (colVal < 0 || colVal >= itemPtr->period) {
-	Tcl_SetResult(interp, "Invalid column setting", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid column setting", TCL_STATIC);
 	return BAD_SUB;
     }
 
     if (orientation < 0 || orientation > 3) {
-	Tcl_SetResult(interp, "Invalid orientation setting", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid orientation setting", TCL_STATIC);
 	return BAD_SUB;
     }
 
@@ -453,14 +453,14 @@ RestoreGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const ch
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp,
 		"Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (strlen(key) != itemPtr->period*itemPtr->period) {
 	Tcl_SetResult(interp,
 		"Key length must match the ciphertext length",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -472,7 +472,7 @@ RestoreGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const ch
 		key[i]-'0' != GRILLE_FOURTH) {
 	    Tcl_SetResult(interp,
 		    "Invalid character found in key",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
     }
@@ -499,7 +499,7 @@ RestoreGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *key, const ch
 	    if (keyVal == 1) {
 		if (GrilleIntSubstitute(interp, itemPtr, i, j, 0) == BAD_SUB) {
 		    Tcl_SetResult(interp, "Bad key detected during restore",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 	    }
@@ -745,7 +745,7 @@ static int
 GrilleLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const char *start)
 {
     Tcl_SetResult(interp, "No locate tip function defined for Grille ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -784,7 +784,7 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!grilPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, grilPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -797,7 +797,7 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->length == 0) {
 		Tcl_SetResult(interp,
 			"Can't do anything until ciphertext has been set",
-			TCL_VOLATILE);
+			TCL_STATIC);
 		return TCL_ERROR;
 	    }
 
@@ -866,14 +866,14 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-language", 8) == 0) {
@@ -898,7 +898,7 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		 * Silently ignore any attempts to set the period
 		 */
 
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 		return TCL_OK;
 	    } else if (strncmp(*argv, "-ciphertext", 10) == 0 ||
 		strncmp(*argv, "-ctext", 3) == 0) {
@@ -907,12 +907,12 @@ GrilleCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		}
 	    } else if (strncmp(*argv, "-stepinterval", 12) == 0) {
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 

@@ -84,7 +84,7 @@ _internalDoPermCmd(ClientData clientData, Tcl_Interp *interp, int n, int (*testF
     int i, result;
 
     if (n <= 1) {
-	Tcl_SetResult(interp, "Length of permuted array must be > 1\n", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Length of permuted array must be > 1\n", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -172,12 +172,12 @@ PermCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
     PermInfo pInfo;
 
     if (argc != 3) {
-	Tcl_SetResult(interp, "Usage:  permute n cmd", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Usage:  permute n cmd", TCL_STATIC);
 	return TCL_ERROR;
     }
 
     if (sscanf(argv[1], "%d", &n) != 1) {
-	Tcl_SetResult(interp, "n must be an integer\n", TCL_VOLATILE);
+	Tcl_SetResult(interp, "n must be an integer\n", TCL_STATIC);
 	return TCL_ERROR;
     }
 

@@ -201,7 +201,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	} else if (strncmp(argv[1], "-ciphertext", 10) == 0 ||
 		   strncmp(argv[1], "-ctext", 3) == 0) {
 	    if (!trifPtr->header.ciphertext) {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, trifPtr->header.ciphertext, TCL_VOLATILE);
 	    }
@@ -221,7 +221,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    tPtr = GetTrifidText(itemPtr, ' ');
 
 	    if (!tPtr) {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    } else {
 		Tcl_SetResult(interp, tPtr, TCL_VOLATILE);
 		ckfree(tPtr);
@@ -264,7 +264,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 
 		if (sscanf(argv[1], "%d", &period) != 1) {
 		    Tcl_SetResult(interp, "Invalid period setting.",
-			    TCL_VOLATILE);
+			    TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -309,7 +309,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	if (strlen(argv[1]) != strlen(argv[2])) {
 	    Tcl_SetResult(interp,
 		    "ciphertext and plaintext must be the same length",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->subProc)(interp, itemPtr, argv[1], argv[2], 0) == BAD_SUB) {
@@ -330,7 +330,7 @@ TrifidCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    return TCL_ERROR;
 	}
 	if ((itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0) == TCL_OK) {
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    return TCL_ERROR;
@@ -398,7 +398,7 @@ SetTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	itemPtr->ciphertext = c;
 
 	if (itemPtr->ciphertext == NULL) {
-	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "Error mallocing memory for new cipher", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 
@@ -415,7 +415,7 @@ TrifidLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const 
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for trifid ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -424,7 +424,7 @@ TrifidUndo(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, int dummy)
 {
     Tcl_SetResult(interp,
 	    "No undo function defined for trifid ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -432,7 +432,7 @@ static int
 TrifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const char *pt, int dummy)
 {
     Tcl_SetResult(interp, "Substitution is not yet defined for trifid ciphers",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return BAD_SUB;
 }
 
@@ -445,13 +445,13 @@ GetTrifid(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
     if (itemPtr->period <= 0) {
 	Tcl_SetResult(interp, "Can't do anything until a period has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -565,7 +565,7 @@ RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, con
     }
 
     if (!validKey) {
-	Tcl_SetResult(interp, "Invalid key.", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Invalid key.", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -597,7 +597,7 @@ RestoreTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *savedKey, con
 static int
 SolveTrifid(Tcl_Interp *interp, CipherItem *itemPtr, char *result)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 

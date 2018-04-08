@@ -156,7 +156,7 @@ SetFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
-	Tcl_SetResult(interp, "No valid characters found in the ciphertext", TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -177,7 +177,7 @@ SetFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     c = ExtractValidChars(itemPtr, ctext);
 
     if (!c) {
-	Tcl_SetResult(interp, "Bad ciphertext", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad ciphertext", TCL_STATIC);
 	return TCL_ERROR;
     }
 
@@ -218,7 +218,7 @@ FmorseLocateTip(Tcl_Interp *interp, CipherItem *itemPtr, const char *tip, const 
 {
     Tcl_SetResult(interp,
 	    "No locate tip function defined for fmorse ciphers.",
-	    TCL_VOLATILE);
+	    TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -285,7 +285,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
     if (strlen(pt) %3 != 0) {
 	Tcl_SetResult(interp,
-		"Plaintext length must be a multiple of three", TCL_VOLATILE);
+		"Plaintext length must be a multiple of three", TCL_STATIC);
 	return BAD_SUB;
     }
     if (strlen(pt) /3 != strlen(ct)) {
@@ -331,7 +331,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad Substitution", TCL_STATIC);
 	ckfree((char *)index_used);
 	return BAD_SUB;
     }
@@ -365,7 +365,7 @@ FmorseSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     }
 
     if (valid_sub == BAD_SUB) {
-	Tcl_SetResult(interp, "Bad Substitution", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Bad Substitution", TCL_STATIC);
 	ckfree((char *)index_used);
 	return BAD_SUB;
     }
@@ -432,7 +432,7 @@ GetFmorse(Tcl_Interp *interp, CipherItem *itemPtr)
 
     if (itemPtr->length == 0) {
 	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
-		TCL_VOLATILE);
+		TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -449,7 +449,7 @@ GetFmorse(Tcl_Interp *interp, CipherItem *itemPtr)
     if (MorseStringToString(mt, pt) == NULL) {
 	ckfree(pt);
 	ckfree(mt);
-	Tcl_SetResult(interp, "Error converting morse string", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Error converting morse string", TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -474,7 +474,7 @@ GetSpaceyFmorse(Tcl_Interp *interp, CipherItem *itemPtr)
     if (MorseStringToSpaceyString(mt, pt) == NULL) {
 	ckfree(pt);
 	ckfree(mt);
-	Tcl_SetResult(interp, "Error converting morse string", TCL_VOLATILE);
+	Tcl_SetResult(interp, "Error converting morse string", TCL_STATIC);
 	return (char *)NULL;
     }
 
@@ -501,7 +501,7 @@ RestoreFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const 
     } else {
 	if (strlen(part1) != KEY_LENGTH) {
 	    Tcl_SetResult(interp, "Invalid length of restore key.",
-		    TCL_VOLATILE);
+		    TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	if( (itemPtr->typePtr->subProc)(interp, itemPtr, part1, ".....-..x.-..--.-x.x..x-.xx-..-.--.x--.-----x-x.-x--xxx..x.-x.xx-.x--x-xxx.xx-", 0) == BAD_SUB) {
@@ -515,7 +515,7 @@ RestoreFmorse(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const 
 static int
 SolveFmorse(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
 {
-    Tcl_SetResult(interp, "You cheat!", TCL_VOLATILE);
+    Tcl_SetResult(interp, "You cheat!", TCL_STATIC);
     return TCL_ERROR;
 }
 
@@ -595,7 +595,7 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->ciphertext) {
 		Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "{}", TCL_VOLATILE);
+		Tcl_SetResult(interp, "{}", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-plaintext", 9) == 0 ||
@@ -665,14 +665,14 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    if (itemPtr->stepCommand) {
 		Tcl_SetResult(interp, itemPtr->stepCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-bestfitcommand", 6) == 0) {
 	    if (itemPtr->bestFitCommand) {
 		Tcl_SetResult(interp, itemPtr->bestFitCommand, TCL_VOLATILE);
 	    } else {
-		Tcl_SetResult(interp, "", TCL_VOLATILE);
+		Tcl_SetResult(interp, "", TCL_STATIC);
 	    }
 	    return TCL_OK;
 	} else if (strncmp(argv[1], "-type", 5) == 0) {
@@ -704,12 +704,12 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 		}
 
 		if (sscanf(argv[1], "%d", &i) != 1) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
 		if (i < 0 ) {
-		    Tcl_SetResult(interp, "Invalid interval.", TCL_VOLATILE);
+		    Tcl_SetResult(interp, "Invalid interval.", TCL_STATIC);
 		    return TCL_ERROR;
 		}
 
@@ -786,7 +786,7 @@ FmorseCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 	    (itemPtr->typePtr->undoProc)(interp, itemPtr, (char *)NULL, 0);
 	} else if (argc == 2) {
 	    (itemPtr->typePtr->undoProc)(interp, itemPtr, argv[1], 0);
-	    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	    Tcl_SetResult(interp, "", TCL_STATIC);
 	    return TCL_OK;
 	} else {
 	    Tcl_AppendResult(interp, "Usage:  ", cmd, " undo ?ct?", (char *)NULL);
