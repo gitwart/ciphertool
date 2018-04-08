@@ -4,6 +4,8 @@ Todo:
 1.6.4
 =================
 
+Change Tcl_SetResult for static strings to TCL_STATIC
+
 (done) Clean up compiler warnings
     Rewrote some subroutines to be better about obeying const-ness of
     input parameters.
@@ -26,9 +28,7 @@ quag2keysearch gives a confusing error if no solution is found (such as
 
 (done) Morse conversion strips invalid characters, collapses consecutive spaces
 
-Replace loop iterations to set to NULL with {0}
-
-Add tests for setting empty ciphertext
+(done) Add tests for setting empty ciphertext
 
 (done) Validate cadenus key order for restore and encoding commands
 
