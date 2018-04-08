@@ -1,6 +1,12 @@
 Pre-release steps:
-    Run the test suite through valgrind to catch any lingering
-        memory leaks and failing tests.
+    Run 'make memtest' to run the test suite through valgrind to detect
+        definite and possible memory leaks
+
+    Run 'configure --enable-symbols=mem' to enable the Tcl memory debugger.
+        Run the test suite again to identify any potential issues.
+
+    Run 'export LD_PRELOAD=/usr/lib64/libefence.so.0.0' and then run
+        the test suite to detect possible memory overruns
 
     Make sure all changes are being made to a properly named branch in git:
 

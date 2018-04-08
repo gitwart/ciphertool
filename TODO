@@ -4,7 +4,7 @@ Todo:
 1.6.4
 =================
 
-Change Tcl_SetResult for static strings to TCL_STATIC
+(done) Change Tcl_SetResult for static strings to TCL_STATIC
 
 (done) Clean up compiler warnings
     Rewrote some subroutines to be better about obeying const-ness of
