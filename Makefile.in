@@ -345,6 +345,13 @@ test: $(PKG_LIB_FILE) pkgIndex.tcl
 	PATH="$(BUILD_DIR)":"$(TCL_BIN_DIR)/../bin":"$(TCL_BIN_DIR)":"$(PATH)" \
 	$(TCLSH_PROG) `@CYGPATH@ $(srcdir)/tests/all.tcl` $(TESTFLAGS)
 
+memtest: $(PKG_LIB_FILE) pkgIndex.tcl
+	TCL_LIBRARY=$(TCL_LIBRARY_DIR) \
+	LD_LIBRARY_PATH=$(BUILD_DIR):$(TCL_BIN_DIR):$(LD_LIBRARY_PATH) \
+	TCLLIBPATH=. \
+	PATH="$(BUILD_DIR)":"$(TCL_BIN_DIR)/../bin":"$(TCL_BIN_DIR)":"$(PATH)" \
+	valgrind --leak-check=full --show-leak-kinds=all $(TCLSH_PROG) `@CYGPATH@ $(srcdir)/tests/all.tcl` $(TESTFLAGS)
+
 doc: $(PKG_LIB_FILE) pkgIndex.tcl
 	mkdir -p doc
 	TCL_LIBRARY=$(TCL_LIBRARY_DIR) \
