@@ -509,11 +509,16 @@ SetGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
-	Tcl_SetResult(interp, "No valid characters found in ciphertext",
-		TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
+		TCL_STATIC);
 	return TCL_ERROR;
     }
     c = ExtractValidChars(itemPtr, ctext);
+    if (!c) {
+	Tcl_SetResult(interp, "Could not extract ciphertext from string",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
     itemPtr->length = strlen(c);
 
     itemPtr->length = length;

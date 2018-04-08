@@ -197,11 +197,18 @@ SetGrille(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     Tcl_Obj *intObj;
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
-    c = ExtractValidChars(itemPtr, ctext);
 
     if (length == 0) {
-	Tcl_SetResult(interp, "No valid characters found in ciphertext",
-		TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
+
+    c = ExtractValidChars(itemPtr, ctext);
+
+    if (!c) {
+	Tcl_SetResult(interp, "Could not extract ciphertext from string",
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 

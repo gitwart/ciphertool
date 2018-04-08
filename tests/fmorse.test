@@ -179,9 +179,21 @@ test fmorse-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test fmorse-2.2 {invalid length of restore key} {
+test fmorse-2.2 {set empty ciphertext} {
+    set c [cipher create fmorse]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test fmorse-2.3 {invalid length of restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc} msg]
@@ -193,7 +205,7 @@ test fmorse-2.2 {invalid length of restore key} {
     set result
 } {1 {Invalid length of restore key.}}
 
-test fmorse-2.3 {invalid character in restore key} {
+test fmorse-2.4 {invalid character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore a1cdefghijklmnopqrstuvwxyz} msg]
@@ -205,7 +217,7 @@ test fmorse-2.3 {invalid character in restore key} {
     set result
 } {1 {Bad character in substitution ciphertext}}
 
-test fmorse-2.4 {duplicate character in restore key} {
+test fmorse-2.5 {duplicate character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aacdefghijklmnopqrstuvwxyz} msg]
@@ -217,7 +229,7 @@ test fmorse-2.4 {duplicate character in restore key} {
     set result
 } {1 {Bad Substitution}}
 
-test fmorse-2.5 {Attempt to locate tip} {
+test fmorse-2.6 {Attempt to locate tip} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -229,7 +241,7 @@ test fmorse-2.5 {Attempt to locate tip} {
     set result
 } {1 {No locate tip function defined for fmorse ciphers.}}
 
-test fmorse-2.6 {attempt to use solve proc} {
+test fmorse-2.7 {attempt to use solve proc} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -241,7 +253,7 @@ test fmorse-2.6 {attempt to use solve proc} {
     set result
 } {1 {You cheat!}}
 
-test fmorse-2.7 {Attempt to substitute with bad morsetext character} {
+test fmorse-2.8 {Attempt to substitute with bad morsetext character} {
     set c [cipher create fmorse]
 
     set result [catch {$c substitute a q--} msg]
@@ -253,7 +265,7 @@ test fmorse-2.7 {Attempt to substitute with bad morsetext character} {
     set result
 } {1 {Bad character in substitution morsetext}}
 
-test fmorse-2.8 {Attempt to substitute with bad ciphertext character} {
+test fmorse-2.9 {Attempt to substitute with bad ciphertext character} {
     set c [cipher create fmorse]
 
     set result [catch {$c substitute 1 ---} msg]
@@ -265,7 +277,7 @@ test fmorse-2.8 {Attempt to substitute with bad ciphertext character} {
     set result
 } {1 {Bad character in substitution ciphertext}}
 
-test fmorse-2.9 {Attempt to substitute with bad morsetext length} {
+test fmorse-2.10 {Attempt to substitute with bad morsetext length} {
     set c [cipher create fmorse]
 
     set result [catch {$c substitute a --} msg]
@@ -277,7 +289,7 @@ test fmorse-2.9 {Attempt to substitute with bad morsetext length} {
     set result
 } {1 {Plaintext length must be a multiple of three}}
 
-test fmorse-2.10 {Attempt to substitute with mismatched ciphertext/morsetext length} {
+test fmorse-2.11 {Attempt to substitute with mismatched ciphertext/morsetext length} {
     set c [cipher create fmorse]
 
     set result [catch {$c substitute aa ---} msg]
@@ -289,7 +301,7 @@ test fmorse-2.10 {Attempt to substitute with mismatched ciphertext/morsetext len
     set result
 } {1 {Plaintext and ciphertext don't match in length (3 * 2 != 3)}}
 
-test fmorse-2.11 {Get plaintext with no ciphertext} {
+test fmorse-2.12 {Get plaintext with no ciphertext} {
     set c [cipher create fmorse]
 
     set result [catch {$c cget -pt} msg]

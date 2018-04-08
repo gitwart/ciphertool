@@ -395,6 +395,30 @@ test route-2.8 {solve before setting width} {
     set result
 } {1 {Can't solve route ciphers until a width or height has been set}}
 
+test route-2.9 {set ciphertext with invalid characters} {
+    set c [cipher create route]
+
+    set result [catch {$c configure -ct "!!!!"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test route-2.10 {set empty ciphertext} {
+    set c [cipher create route]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
 test route-3.1 {Get default width} {
     set c [cipher create route]
     set result [list [$c cget -width] [$c cget -height] [$c cget -period]]

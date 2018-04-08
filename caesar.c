@@ -393,6 +393,12 @@ SetCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	c++;
     }
 
+    if (!length) {
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
+
     if (valid==TCL_OK) {
 	itemPtr->length = length;
 	if (itemPtr->ciphertext) {
@@ -493,7 +499,15 @@ static char *
 GetCaesar(Tcl_Interp *interp, CipherItem *itemPtr)
 {
     CaesarItem *caesarPtr = (CaesarItem *)itemPtr;
-    char	*pt=(char *)ckalloc(sizeof(char)*strlen(itemPtr->ciphertext)+1);
+    char	*pt=(char *)NULL;
+
+    if (itemPtr->length == 0) {
+	Tcl_SetResult(interp, "Can't do anything until ciphertext has been set",
+		TCL_VOLATILE);
+	return (char *)NULL;
+    }
+
+    pt=(char *)ckalloc(sizeof(char)*strlen(itemPtr->ciphertext)+1);
 
     /* Set the newly created plaintext to be a clone of the ciphertext. */
     strcpy(pt, itemPtr->ciphertext);
@@ -517,6 +531,11 @@ EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
     /* Make sure the plaintext is reasonable. */
     if (!pt) {
 	Tcl_SetResult(interp, "Plaintext for encoding is not reasonable.", TCL_STATIC);
+	return TCL_ERROR;
+    }
+
+    if (!strlen(pt)) {
+	Tcl_SetResult(interp, "Can't encode an empty string", TCL_STATIC);
 	return TCL_ERROR;
     }
 

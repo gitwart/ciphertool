@@ -192,9 +192,21 @@ test grandpre-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test grandpre-2.2 {invalid characters in ciphertext} {
+test grandpre-2.2 {set empty ciphertext} {
+    set c [cipher create grandpre]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test grandpre-2.3 {invalid characters in ciphertext} {
     set c [cipher create grandpre]
 
     set result [catch {$c configure -ct 212} msg]
@@ -206,7 +218,7 @@ test grandpre-2.2 {invalid characters in ciphertext} {
     set result
 } {1 {Odd number of valid characters found in ciphertext.}}
 
-test grandpre-2.3 {invalid key length during restore} {
+test grandpre-2.4 {invalid key length during restore} {
     set c [cipher create grandpre]
 
     set result [catch {$c restore abcd} msg]

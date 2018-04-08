@@ -536,6 +536,12 @@ SetAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 	c++;
     }
 
+    if (!length) {
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
+
     if (valid==TCL_OK) {
 	itemPtr->length = length;
 	if (itemPtr->ciphertext) {

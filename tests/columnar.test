@@ -259,9 +259,21 @@ test columnar-2.5 {no valid characters in ciphertext} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test columnar-2.6 {restore with no period set} {
+test columnar-2.6 {set empty ciphertext} {
+    set c [cipher create columnar]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test columnar-2.7 {restore with no period set} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaa} msg]
@@ -273,7 +285,7 @@ test columnar-2.6 {restore with no period set} {
     set result
 } {1 {Can't do anything until period has been set}}
 
-test columnar-2.7 {restore with invalid characters} {
+test columnar-2.8 {restore with invalid characters} {
     set c [createValidCipher]
 
     $c configure -period 3
@@ -286,7 +298,7 @@ test columnar-2.7 {restore with invalid characters} {
     set result
 } {1 {Invalid character in key}}
 
-test columnar-2.8 {restore with characters out of range} {
+test columnar-2.9 {restore with characters out of range} {
     set c [createValidCipher]
 
     $c configure -period 3
@@ -299,7 +311,7 @@ test columnar-2.8 {restore with characters out of range} {
     set result
 } {1 {key character out of range}}
 
-test columnar-2.9 {restore with no ciphertext} {
+test columnar-2.10 {restore with no ciphertext} {
     set c [cipher create columnar]
 
     set result [catch {$c restore abc} msg]
@@ -311,7 +323,7 @@ test columnar-2.9 {restore with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test columnar-2.10 {restore with invalid key length} {
+test columnar-2.11 {restore with invalid key length} {
     set c [createValidCipher]
 
     $c configure -period 2
@@ -324,7 +336,7 @@ test columnar-2.10 {restore with invalid key length} {
     set result
 } {1 {Length of key does not match period}}
 
-test columnar-2.11 {restore with invalid key (duplicate chars)} {
+test columnar-2.12 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     $c configure -period 3
@@ -337,7 +349,7 @@ test columnar-2.11 {restore with invalid key (duplicate chars)} {
     set result
 } {1 {duplicate key characters not allowed}}
 
-test columnar-2.12 {solve with no ciphertext} {
+test columnar-2.13 {solve with no ciphertext} {
     set c [cipher create columnar]
 
     set result [catch {$c solve} msg]
@@ -349,7 +361,7 @@ test columnar-2.12 {solve with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test columnar-2.13 {solve with no period} {
+test columnar-2.14 {solve with no period} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -361,7 +373,7 @@ test columnar-2.13 {solve with no period} {
     set result
 } {1 {Can't do anything until period has been set}}
 
-test columnar-2.14 {shift with no ciphertext} {
+test columnar-2.15 {shift with no ciphertext} {
     set c [cipher create columnar]
 
     set result [catch {$c shift a 1} msg]
@@ -373,7 +385,7 @@ test columnar-2.14 {shift with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test columnar-2.15 {shift with no period} {
+test columnar-2.16 {shift with no period} {
     set c [createValidCipher]
 
     set result [catch {$c shift a 1} msg]
@@ -385,7 +397,7 @@ test columnar-2.15 {shift with no period} {
     set result
 } {1 {Can't do anything until period has been set}}
 
-test columnar-2.16 {shift an invalid column} {
+test columnar-2.17 {shift an invalid column} {
     set c [createValidCipher]
     $c configure -period 3
 
@@ -398,7 +410,7 @@ test columnar-2.16 {shift an invalid column} {
     set result
 } {1 {Bad column index}}
 
-test columnar-2.17 {shift first column backwards} {
+test columnar-2.18 {shift first column backwards} {
     set c [createValidCipher]
     $c configure -period 3
 
@@ -411,7 +423,7 @@ test columnar-2.17 {shift first column backwards} {
     set result
 } {1 {Can't shift backwards past the first column.}}
 
-test columnar-2.18 {shift last column backwards too far} {
+test columnar-2.19 {shift last column backwards too far} {
     set c [createValidCipher]
     $c configure -period 3
 
@@ -424,7 +436,7 @@ test columnar-2.18 {shift last column backwards too far} {
     set result
 } {1 {Can't shift backwards past the first column.}}
 
-test columnar-2.19 {encode with non-listified key} {
+test columnar-2.20 {encode with non-listified key} {
     set c [cipher create columnar]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -436,7 +448,7 @@ test columnar-2.19 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test columnar-2.20 {encode with too many key elements} {
+test columnar-2.21 {encode with too many key elements} {
     set c [cipher create columnar]
 
     set result [catch {$c encode foobar "1 2"} msg]

@@ -260,9 +260,21 @@ test baconian-2.2 {invalid cipher length} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test baconian-2.3 {bad substitution, invalid pt} {
+test baconian-2.3 {set empty ciphertext} {
+    set c [cipher create baconian]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test baconian-2.4 {bad substitution, invalid pt} {
     set c [createValidCipher]
 
     set result [catch {$c substitute lists ccccc} msg]
@@ -274,7 +286,7 @@ test baconian-2.3 {bad substitution, invalid pt} {
     set result
 } {1 {Bad substitution}}
 
-test baconian-2.4 {bad substitution, double b's at word start} {
+test baconian-2.5 {bad substitution, double b's at word start} {
     set c [createValidCipher]
 
     set result [catch {$c substitute lists bbbbb} msg]
@@ -286,7 +298,7 @@ test baconian-2.4 {bad substitution, double b's at word start} {
     set result
 } {1 {Bad substitution}}
 
-test baconian-2.5 {bad substitution, double b's at word start} {
+test baconian-2.6 {bad substitution, double b's at word start} {
     set c [createValidCipher]
 
     set result [catch {$c substitute listsa bbbbb} msg]
@@ -298,7 +310,7 @@ test baconian-2.5 {bad substitution, double b's at word start} {
     set result
 } {1 {Ciphertext and plaintext lengths don't match up}}
 
-test baconian-2.6 {bad restore (double b's)} {
+test baconian-2.7 {bad restore (double b's)} {
     set c [createValidCipher]
 
     set result [catch {$c restore lists bbbbb} msg]
@@ -310,7 +322,7 @@ test baconian-2.6 {bad restore (double b's)} {
     set result
 } {1 {Bad substitution}}
 
-test baconian-2.7 {bad restore (invalid pt)} {
+test baconian-2.8 {bad restore (invalid pt)} {
     set c [createValidCipher]
 
     set result [catch {$c restore abcdef caaaaa} msg]
@@ -322,7 +334,7 @@ test baconian-2.7 {bad restore (invalid pt)} {
     set result
 } {1 {Bad substitution}}
 
-test baconian-2.8 {bad restore (invalid pt)} {
+test baconian-2.9 {bad restore (invalid pt)} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabcde aaaaa} msg]
@@ -334,7 +346,7 @@ test baconian-2.8 {bad restore (invalid pt)} {
     set result
 } {1 {Ciphertext and plaintext are not the same length}}
 
-test baconian-2.11 {encode with non-listified key} {
+test baconian-2.10 {encode with non-listified key} {
     set c [cipher create baconian]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -346,7 +358,7 @@ test baconian-2.11 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test baconian-2.12 {encode with too many key elements} {
+test baconian-2.11 {encode with too many key elements} {
     set c [cipher create baconian]
 
     set result [catch {$c encode foobar "a b"} msg]
@@ -358,7 +370,7 @@ test baconian-2.12 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
 
-test baconian-2.13 {encode with short key elements} {
+test baconian-2.12 {encode with short key elements} {
     set c [cipher create baconian]
 
     set result [catch {$c encode foobar "aab"} msg]

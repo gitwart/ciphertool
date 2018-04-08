@@ -318,9 +318,21 @@ test nitrans-2.9 {no valid characters in ciphertext} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test nitrans-2.10 {restore with no ciphertext set} {
+test nitrans-2.10 {set empty ciphertext} {
+    set c [cipher create nitrans]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test nitrans-2.11 {restore with no ciphertext set} {
     set c [cipher create nitrans]
 
     set result [catch {$c restore abcd} msg]
@@ -332,7 +344,7 @@ test nitrans-2.10 {restore with no ciphertext set} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test nitrans-2.11 {restore with invalid characters} {
+test nitrans-2.12 {restore with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c restore 1111} msg]
@@ -344,7 +356,7 @@ test nitrans-2.11 {restore with invalid characters} {
     set result
 } {1 {Invalid character in key}}
 
-test nitrans-2.12 {restore with invalid key length} {
+test nitrans-2.13 {restore with invalid key length} {
     set c [createValidCipher]
 
     set result [catch {$c restore abcde} msg]
@@ -356,7 +368,7 @@ test nitrans-2.12 {restore with invalid key length} {
     set result
 } {1 {Length of key does not match period}}
 
-test nitrans-2.13 {restore with characters out of range} {
+test nitrans-2.14 {restore with characters out of range} {
     set c [createValidCipher]
 
     set result [catch {$c restore abce} msg]
@@ -368,7 +380,7 @@ test nitrans-2.13 {restore with characters out of range} {
     set result
 } {1 {key character out of range}}
 
-test nitrans-2.14 {restore with invalid key (duplicate chars)} {
+test nitrans-2.15 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     set result [catch {$c restore aacc} msg]
@@ -380,7 +392,7 @@ test nitrans-2.14 {restore with invalid key (duplicate chars)} {
     set result
 } {1 {duplicate key characters not allowed}}
 
-test nitrans-2.15 {solve with no ciphertext} {
+test nitrans-2.16 {solve with no ciphertext} {
     set c [cipher create nitrans]
 
     set result [catch {$c solve} msg]
@@ -392,7 +404,7 @@ test nitrans-2.15 {solve with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test nitrans-2.16 {shift with no ciphertext} {
+test nitrans-2.17 {shift with no ciphertext} {
     set c [cipher create nitrans]
 
     set result [catch {$c shift a 1} msg]
@@ -404,7 +416,7 @@ test nitrans-2.16 {shift with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test nitrans-2.17 {shift an invalid column} {
+test nitrans-2.18 {shift an invalid column} {
     set c [createValidCipher]
 
     set result [catch {$c shift z 1} msg]
@@ -416,7 +428,7 @@ test nitrans-2.17 {shift an invalid column} {
     set result
 } {1 {Bad column index}}
 
-test nitrans-2.18 {shift first column backwards} {
+test nitrans-2.19 {shift first column backwards} {
     set c [createValidCipher]
 
     set result [catch {$c shift a -1} msg]
@@ -428,7 +440,7 @@ test nitrans-2.18 {shift first column backwards} {
     set result
 } {1 {Can't shift backwards past the first column.}}
 
-test nitrans-2.19 {shift last column backwards too far} {
+test nitrans-2.20 {shift last column backwards too far} {
     set c [createValidCipher]
 
     set result [catch {$c shift d -4} msg]
@@ -440,7 +452,7 @@ test nitrans-2.19 {shift last column backwards too far} {
     set result
 } {1 {Can't shift backwards past the first column.}}
 
-test nitrans-2.20 {shift an invalid amount} {
+test nitrans-2.21 {shift an invalid amount} {
     set c [createValidCipher]
 
     set result [catch {$c shift d foobar} msg]
@@ -452,7 +464,7 @@ test nitrans-2.20 {shift an invalid amount} {
     set result
 } {1 {Invalid shift value foobar}}
 
-test nitrans-2.21 {encode with non-listified key} {
+test nitrans-2.22 {encode with non-listified key} {
     set c [cipher create nitrans]
 
     set result [catch {$c encode abcdefghijklmnop "abc \{bc"} msg]
@@ -464,7 +476,7 @@ test nitrans-2.21 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test nitrans-2.22 {encode with too many key elements} {
+test nitrans-2.23 {encode with too many key elements} {
     set c [cipher create nitrans]
 
     set result [catch {$c encode abcdefghijklmnop "1 2"} msg]
@@ -476,7 +488,7 @@ test nitrans-2.22 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key '1 2'.  Should have found 1.}}
 
-test nitrans-2.23 {encode with short key elements} {
+test nitrans-2.24 {encode with short key elements} {
     set c [cipher create nitrans]
 
     set result [catch {$c encode abcdefghijklmnop "123"} msg]
@@ -488,7 +500,7 @@ test nitrans-2.23 {encode with short key elements} {
     set result
 } {1 {Length of key does not match the period.}}
 
-test nitrans-2.24 {encode with invalid plaintext length} {
+test nitrans-2.25 {encode with invalid plaintext length} {
     set c [cipher create nitrans]
 
     set result [catch {$c encode foobar "123"} msg]

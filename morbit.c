@@ -144,7 +144,7 @@ SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
-	Tcl_SetResult(interp, "No valid characters found in ciphertext",
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
 		TCL_STATIC);
 	return TCL_ERROR;
     }
@@ -166,7 +166,8 @@ SetMorbit(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     c = ExtractValidChars(itemPtr, ctext);
 
     if (!c) {
-	Tcl_SetResult(interp, "Bad ciphertext", TCL_STATIC);
+	Tcl_SetResult(interp, "Could not extract ciphertext from string",
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 

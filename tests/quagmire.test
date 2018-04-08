@@ -114,7 +114,7 @@ test quagmire-1.1 {error when creating cipher} {
     set result [list [catch {cipher create quagmire1 -ct "12345"} msg] $msg]
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
 test quagmire-1.2 {invalid use of options} {
     set c [createValidCipher quagmire1]
@@ -479,6 +479,30 @@ test quagmire-2.17 {restore with empty k1 keyword} {
     
     set result
 } {1 {Can't restore quagmire with an empty keyword.}}
+
+test quagmire-2.18 {no valid ciphertext characters} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c configure -ct "11111"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test quagmire-2.19 {set empty ciphertext} {
+    set c [cipher create quagmire1]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
 
 test quagmire-3.1 {use of cget -length} {
     set c [cipher create quagmire1]

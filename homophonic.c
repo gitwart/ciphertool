@@ -391,7 +391,7 @@ SetHomophonic(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
     if (!length) {
-	Tcl_SetResult(interp, "No valid characters found in ciphertext", TCL_VOLATILE);
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext", TCL_STATIC);
 	return TCL_ERROR;
     }
     if (length%2) {

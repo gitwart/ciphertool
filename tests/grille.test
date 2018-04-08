@@ -231,9 +231,21 @@ test grille-2.1 {no valid characters in ciphertext} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test grille-2.2 {invalid ciphertext length} {
+test grille-2.2 {set empty ciphertext} {
+    set c [cipher create grille]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test grille-2.3 {invalid ciphertext length} {
     set c [cipher create grille]
 
     set result [catch {$c configure -ct abc} msg]
@@ -245,7 +257,7 @@ test grille-2.2 {invalid ciphertext length} {
     set result
 } {1 {Invalid cipher length '3'.  Length must be a perfect square.}}
 
-test grille-2.3 {restore with no ciphertext set} {
+test grille-2.4 {restore with no ciphertext set} {
     set c [cipher create grille]
 
     set result [catch {$c restore aaaa} msg]
@@ -257,7 +269,7 @@ test grille-2.3 {restore with no ciphertext set} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test grille-2.4 {restore with invalid characters} {
+test grille-2.5 {restore with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaaaaaaaaaaaaaa} msg]
@@ -269,7 +281,7 @@ test grille-2.4 {restore with invalid characters} {
     set result
 } {1 {Invalid character found in key}}
 
-test grille-2.5 {restore with characters out of range} {
+test grille-2.6 {restore with characters out of range} {
     set c [createValidCipher]
 
     $c configure -period 3
@@ -282,7 +294,7 @@ test grille-2.5 {restore with characters out of range} {
     set result
 } {1 {Invalid character found in key}}
 
-test grille-2.6 {restore with invalid key length} {
+test grille-2.7 {restore with invalid key length} {
     set c [createValidCipher]
 
     $c configure -period 2
@@ -295,7 +307,7 @@ test grille-2.6 {restore with invalid key length} {
     set result
 } {1 {Key length must match the ciphertext length}}
 
-test grille-2.7 {solve with no ciphertext} {
+test grille-2.8 {solve with no ciphertext} {
     set c [cipher create grille]
 
     set result [catch {$c solve} msg]
@@ -307,7 +319,7 @@ test grille-2.7 {solve with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test grille-2.8 {substitute with invalid row} {
+test grille-2.9 {substitute with invalid row} {
     set c [createValidCipher]
 
     set result [catch {$c substitute a 1} msg]
@@ -319,7 +331,7 @@ test grille-2.8 {substitute with invalid row} {
     set result
 } {1 {Invalid row (a) in substitution.}}
 
-test grille-2.9 {substitute with invalid column} {
+test grille-2.10 {substitute with invalid column} {
     set c [createValidCipher]
 
     set result [catch {$c substitute 1 a} msg]
@@ -331,7 +343,7 @@ test grille-2.9 {substitute with invalid column} {
     set result
 } {1 {Invalid column (a) in substitution.}}
 
-test grille-2.10 {substitute with invalid orientation} {
+test grille-2.11 {substitute with invalid orientation} {
     set c [createValidCipher]
 
     set result [catch {$c substitute 1 1 a} msg]
@@ -343,7 +355,7 @@ test grille-2.10 {substitute with invalid orientation} {
     set result
 } {1 {Invalid orientation a}}
 
-test grille-2.11 {substitute with row out of range} {
+test grille-2.12 {substitute with row out of range} {
     set c [createValidCipher]
 
     set result [catch {$c substitute 15 1} msg]
@@ -355,7 +367,7 @@ test grille-2.11 {substitute with row out of range} {
     set result
 } {1 {Invalid row setting}}
 
-test grille-2.12 {substitute with column out of range} {
+test grille-2.13 {substitute with column out of range} {
     set c [createValidCipher]
 
     set result [catch {$c substitute 1 15} msg]
@@ -367,7 +379,7 @@ test grille-2.12 {substitute with column out of range} {
     set result
 } {1 {Invalid column setting}}
 
-test grille-2.13 {substitute with orientation out of range} {
+test grille-2.14 {substitute with orientation out of range} {
     set c [createValidCipher]
 
     set result [catch {$c substitute 1 1 15} msg]
@@ -379,7 +391,7 @@ test grille-2.13 {substitute with orientation out of range} {
     set result
 } {1 {Invalid orientation setting}}
 
-test grille-2.14 {substitute center of an odd-width grille} {
+test grille-2.15 {substitute center of an odd-width grille} {
     set c [cipher create grille -ct abcdefghi]
 
     set result [catch {$c substitute 2 2} msg]

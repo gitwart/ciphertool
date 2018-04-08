@@ -187,9 +187,21 @@ test trifid-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test trifid-2.2 {invalid length of restore key} {
+test trifid-2.2 {set empty ciphertext} {
+    set c [cipher create trifid]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test trifid-2.3 {invalid length of restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc} msg]
@@ -201,7 +213,7 @@ test trifid-2.2 {invalid length of restore key} {
     set result
 } {1 {Invalid length for key:  4.  Should be 27}}
 
-test trifid-2.3 {invalid character in restore key} {
+test trifid-2.4 {invalid character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore 1bcdefghijklmnopqrstuvwxyz#} msg]
@@ -213,7 +225,7 @@ test trifid-2.3 {invalid character in restore key} {
     set result
 } {1 {Invalid key.}}
 
-test trifid-2.4 {duplicate character in restore key} {
+test trifid-2.5 {duplicate character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aacdefghijklmnopqrstuvwxyz#} msg]
@@ -225,7 +237,7 @@ test trifid-2.4 {duplicate character in restore key} {
     set result
 } {1 {Invalid key.}}
 
-test trifid-2.5 {Attempt to locate tip} {
+test trifid-2.6 {Attempt to locate tip} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -237,7 +249,7 @@ test trifid-2.5 {Attempt to locate tip} {
     set result
 } {1 {No locate tip function defined for trifid ciphers.}}
 
-test trifid-2.6 {attempt to use solve proc} {
+test trifid-2.7 {attempt to use solve proc} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -249,7 +261,7 @@ test trifid-2.6 {attempt to use solve proc} {
     set result
 } {1 {You cheat!}}
 
-test trifid-2.7 {Attempt to undo} {
+test trifid-2.8 {Attempt to undo} {
     set c [createValidCipher]
 
     set result [catch {$c undo #} msg]
@@ -261,7 +273,7 @@ test trifid-2.7 {Attempt to undo} {
     set result
 } {1 {No undo function defined for trifid ciphers.}}
 
-test trifid-2.8 {Attempt to substitute} {
+test trifid-2.9 {Attempt to substitute} {
     set c [cipher create trifid]
 
     set result [catch {$c substitute a b} msg]
@@ -273,7 +285,7 @@ test trifid-2.8 {Attempt to substitute} {
     set result
 } {1 {Substitution is not yet defined for trifid ciphers}}
 
-test trifid-2.9 {Get plaintext with no ciphertext} {
+test trifid-2.10 {Get plaintext with no ciphertext} {
     set c [cipher create trifid]
 
     set result [catch {$c cget -pt} msg]
@@ -285,7 +297,7 @@ test trifid-2.9 {Get plaintext with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test trifid-2.10 {Get plaintext with no period} {
+test trifid-2.11 {Get plaintext with no period} {
     set c [createValidCipher]
 
     set result [catch {$c cget -pt} msg]
@@ -297,7 +309,7 @@ test trifid-2.10 {Get plaintext with no period} {
     set result
 } {1 {Can't do anything until a period has been set}}
 
-test trifid-2.11 {encode with non-listified key} {
+test trifid-2.12 {encode with non-listified key} {
     set c [cipher create trifid]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -309,7 +321,7 @@ test trifid-2.11 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test trifid-2.12 {Encode with no period} {
+test trifid-2.13 {Encode with no period} {
     set c [createValidCipher]
 
     set result [catch {$c encode foobar {abcdefghiklmnopqrstuvwxyz}} msg]
@@ -321,7 +333,7 @@ test trifid-2.12 {Encode with no period} {
     set result
 } {1 {Can not encode trifid until a period has been set.}}
 
-test trifid-2.13 {Encode invalid number of key elements} {
+test trifid-2.14 {Encode invalid number of key elements} {
     set c [createValidCipher]
     $c configure -period 5
 
@@ -334,7 +346,7 @@ test trifid-2.13 {Encode invalid number of key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
 
-test trifid-2.14 {Encode with invalid key length} {
+test trifid-2.15 {Encode with invalid key length} {
     set c [createValidCipher]
     $c configure -period 5
 

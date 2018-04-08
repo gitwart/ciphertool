@@ -259,9 +259,21 @@ test bazeries-2.2 {set bad ciphertext} {
     lappend result $msg
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test bazeries-2.3 {bad swap columns} {
+test bazeries-2.3 {set empty ciphertext} {
+    set c [cipher create bazeries]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test bazeries-2.4 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap col 0 1} msg]
@@ -273,7 +285,7 @@ test bazeries-2.3 {bad swap columns} {
     set result
 } {1 {Invalid column in bazeries swap}}
 
-test bazeries-2.4 {bad swap columns} {
+test bazeries-2.5 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap col 6 1} msg]
@@ -285,7 +297,7 @@ test bazeries-2.4 {bad swap columns} {
     set result
 } {1 {Invalid column in bazeries swap}}
 
-test bazeries-2.5 {bad swap type} {
+test bazeries-2.6 {bad swap type} {
     set c [createValidCipher]
 
     set result [catch {$c swap foo 1 2} msg]
@@ -297,7 +309,7 @@ test bazeries-2.5 {bad swap type} {
     set result
 } {1 {Invalid parameter.  Must be 'row' or 'col'}}
 
-test bazeries-2.6 {restore with no ciphertext} {
+test bazeries-2.7 {restore with no ciphertext} {
     set c [cipher create bazeries]
 
     set result [catch {$c restore abc 123} msg]
@@ -309,7 +321,7 @@ test bazeries-2.6 {restore with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test bazeries-2.7 {restore with invalid key length} {
+test bazeries-2.8 {restore with invalid key length} {
     set c [createValidCipher]
 
     set result [catch {$c restore abc 123} msg]
@@ -321,7 +333,7 @@ test bazeries-2.7 {restore with invalid key length} {
     set result
 } {1 {Invalid key length.}}
 
-test bazeries-2.8 {restore with invalid characters in key} {
+test bazeries-2.9 {restore with invalid characters in key} {
     set c [createValidCipher]
 
     set result [catch {$c restore 1234512345123451234512345 3124} msg]
@@ -333,7 +345,7 @@ test bazeries-2.8 {restore with invalid characters in key} {
     set result
 } {1 {Invalid character in key}}
 
-test bazeries-2.9 {use of bad key sequence} {
+test bazeries-2.10 {use of bad key sequence} {
     set c [createValidCipher]
 
     set result [catch {$c configure -keyseq foo} msg]
@@ -345,7 +357,7 @@ test bazeries-2.9 {use of bad key sequence} {
     set result
 } {1 {Invalid transposition sequence 'foo'}}
 
-test bazeries-2.10 {use of invalid large key sequence} {
+test bazeries-2.11 {use of invalid large key sequence} {
     set c [createValidCipher]
 
     set result [catch {$c configure -keyseq 1000000} msg]
@@ -357,7 +369,7 @@ test bazeries-2.10 {use of invalid large key sequence} {
     set result
 } {1 {Sequence value is too large.}}
 
-test bazeries-2.11 {use of invalid zero key sequence} {
+test bazeries-2.12 {use of invalid zero key sequence} {
     set c [createValidCipher]
 
     set result [catch {$c configure -keyseq 0} msg]
@@ -369,7 +381,7 @@ test bazeries-2.11 {use of invalid zero key sequence} {
     set result
 } {1 {Sequence value must be greater than zero.}}
 
-test bazeries-2.12 {substitute with invalid characters} {
+test bazeries-2.13 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 0 1 a} msg]
@@ -381,7 +393,7 @@ test bazeries-2.12 {substitute with invalid characters} {
     set result
 } {1 {Invalid row specification}}
 
-test bazeries-2.13 {substitute with invalid characters} {
+test bazeries-2.15 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 1 0 a} msg]
@@ -393,7 +405,7 @@ test bazeries-2.13 {substitute with invalid characters} {
     set result
 } {1 {Invalid column specification}}
 
-test bazeries-2.14 {substitute with invalid characters} {
+test bazeries-2.15 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 1 1 #} msg]
@@ -405,7 +417,7 @@ test bazeries-2.14 {substitute with invalid characters} {
     set result
 } {1 {Invalid key value}}
 
-test bazeries-2.11 {encode with non-listified key} {
+test bazeries-2.16 {encode with non-listified key} {
     set c [cipher create bazeries]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -417,7 +429,7 @@ test bazeries-2.11 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test bazeries-2.12 {encode with too many key elements} {
+test bazeries-2.17 {encode with too many key elements} {
     set c [cipher create bazeries]
 
     set result [catch {$c encode foobar "a b c"} msg]
@@ -429,7 +441,7 @@ test bazeries-2.12 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 1 or 2.}}
 
-test bazeries-2.13 {encode with non-integer tranposition} {
+test bazeries-2.18 {encode with non-integer tranposition} {
     set c [cipher create bazeries]
 
     set result [catch {$c encode foobar "abcdefghiklmnopqrstuvwxyz bad"} msg]
@@ -441,7 +453,7 @@ test bazeries-2.13 {encode with non-integer tranposition} {
     set result
 } {1 {expected integer but got "bad"}}
 
-test bazeries-2.14 {encode with non-integer tranposition} {
+test bazeries-2.19 {encode with non-integer tranposition} {
     set c [cipher create bazeries]
 
     set result [catch {$c encode foobar "bad"} msg]
@@ -453,7 +465,7 @@ test bazeries-2.14 {encode with non-integer tranposition} {
     set result
 } {1 {expected integer but got "bad"}}
 
-test bazeries-2.15 {encode with short key elements} {
+test bazeries-2.20 {encode with short key elements} {
     set c [cipher create bazeries]
 
     set result [catch {$c encode foobar "a 10"} msg]

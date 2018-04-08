@@ -184,9 +184,21 @@ test digrafid-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test digrafid-2.2 {invalid length of restore key} {
+test digrafid-2.2 {set empty ciphertext} {
+    set c [cipher create digrafid]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test digrafid-2.3 {invalid length of restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc 12345} msg]
@@ -198,7 +210,7 @@ test digrafid-2.2 {invalid length of restore key} {
     set result
 } {1 {Key 'aabc' has invalid length 4}}
 
-test digrafid-2.3 {invalid character in restore key} {
+test digrafid-2.4 {invalid character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore 1abcdefghijklmnopqrstuvwxyz 1abcdefghijklmnopqrstuvwxyz} msg]
@@ -210,7 +222,7 @@ test digrafid-2.3 {invalid character in restore key} {
     set result
 } {1 {Invalid character found in key}}
 
-test digrafid-2.4 {attempt to use solve proc} {
+test digrafid-2.5 {attempt to use solve proc} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -222,7 +234,7 @@ test digrafid-2.4 {attempt to use solve proc} {
     set result
 } {1 {You cheat!}}
 
-test digrafid-2.5 {Get plaintext with no ciphertext} {
+test digrafid-2.6 {Get plaintext with no ciphertext} {
     set c [cipher create digrafid]
 
     set result [catch {$c cget -pt} msg]
@@ -234,7 +246,7 @@ test digrafid-2.5 {Get plaintext with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test digrafid-2.6 {Get plaintext with no period} {
+test digrafid-2.7 {Get plaintext with no period} {
     set c [createValidCipher]
 
     set result [catch {$c cget -pt} msg]
@@ -246,7 +258,7 @@ test digrafid-2.6 {Get plaintext with no period} {
     set result
 } {1 {Can't do anything until a period has been set}}
 
-test digrafid-2.7 {encode with non-listified key} {
+test digrafid-2.8 {encode with non-listified key} {
     set c [cipher create digrafid]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -258,7 +270,7 @@ test digrafid-2.7 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test digrafid-2.8 {Encode with no period} {
+test digrafid-2.9 {Encode with no period} {
     set c [createValidCipher]
 
     set result [catch {$c encode foobar {abcdefghijklmnopqrstuvwxyz# abcdefghijklmnopqrstuvwxyz#}} msg]
@@ -270,7 +282,7 @@ test digrafid-2.8 {Encode with no period} {
     set result
 } {1 {Can not encode digrafid until a period has been set.}}
 
-test digrafid-2.9 {Encode invalid number of key elements} {
+test digrafid-2.10 {Encode invalid number of key elements} {
     set c [createValidCipher]
     $c configure -period 5
 
@@ -283,7 +295,7 @@ test digrafid-2.9 {Encode invalid number of key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
 
-test digrafid-2.10 {Encode with invalid key length} {
+test digrafid-2.11 {Encode with invalid key length} {
     set c [createValidCipher]
     $c configure -period 5
 
@@ -296,7 +308,7 @@ test digrafid-2.10 {Encode with invalid key length} {
     set result
 } {1 {Invalid length of key elements.}}
 
-test digrafid-2.11 {Encode with invalid key length} {
+test digrafid-2.12 {Encode with invalid key length} {
     set c [createValidCipher]
     $c configure -period 5
 

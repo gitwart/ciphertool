@@ -176,9 +176,21 @@ test twosquare-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test twosquare-2.2 {invalid length of first restore key alphabet} {
+test twosquare-2.2 {set empty ciphertext} {
+    set c [cipher create twosquare]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test twosquare-2.3 {invalid length of first restore key alphabet} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc aabc} msg]
@@ -190,7 +202,7 @@ test twosquare-2.2 {invalid length of first restore key alphabet} {
     set result
 } {1 {Key 'aabc' has invalid length 4}}
 
-test twosquare-2.3 {invalid length of second restore key alphabet} {
+test twosquare-2.4 {invalid length of second restore key alphabet} {
     set c [createValidCipher]
 
     set result [catch {$c restore abcdefghiklmnopqrstuvwxyz bbcd} msg]
@@ -202,8 +214,7 @@ test twosquare-2.3 {invalid length of second restore key alphabet} {
     set result
 } {1 {Key 'bbcd' has invalid length 4}}
 
-
-test twosquare-2.4 {invalid character in restore key} {
+test twosquare-2.5 {invalid character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore 1bcdefghiklmnopqrstuvwxyz [string repeat a 25]} msg]
@@ -215,7 +226,7 @@ test twosquare-2.4 {invalid character in restore key} {
     set result
 } {1 {Invalid character found in key}}
 
-test twosquare-2.5 {duplicate character in restore key} {unimplemented} {
+test twosquare-2.6 {duplicate character in restore key} {unimplemented} {
     set c [createValidCipher]
 
     set result [catch {$c restore abcdefghiklmnopqrstuvwxya} msg]
@@ -227,7 +238,7 @@ test twosquare-2.5 {duplicate character in restore key} {unimplemented} {
     set result
 } {1 {Duplicate letter/position in key}}
 
-test twosquare-2.6 {Attempt to locate tip with no ciphertext} {unimplemented} {
+test twosquare-2.7 {Attempt to locate tip with no ciphertext} {unimplemented} {
     set c [cipher create twosquare]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -239,7 +250,7 @@ test twosquare-2.6 {Attempt to locate tip with no ciphertext} {unimplemented} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test twosquare-2.7 {Attempt to locate tip} {
+test twosquare-2.8 {Attempt to locate tip} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -251,7 +262,7 @@ test twosquare-2.7 {Attempt to locate tip} {
     set result
 } {1 {No locate tip function defined for twosquare ciphers}}
 
-test twosquare-2.8 {attempt to use solve proc} {
+test twosquare-2.9 {attempt to use solve proc} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -263,7 +274,7 @@ test twosquare-2.8 {attempt to use solve proc} {
     set result
 } {1 {You cheat!}}
 
-test twosquare-2.9 {Attempt to undo} {
+test twosquare-2.10 {Attempt to undo} {
     set c [createValidCipher]
 
     set result [catch {$c undo #} msg]
@@ -275,7 +286,7 @@ test twosquare-2.9 {Attempt to undo} {
     set result
 } {1 {No undo function defined for twosquare ciphers}}
 
-test twosquare-2.10 {Attempt to substitute} {
+test twosquare-2.11 {Attempt to substitute} {
     set c [cipher create twosquare]
 
     set result [catch {$c substitute 3 2 a} msg]
@@ -287,7 +298,7 @@ test twosquare-2.10 {Attempt to substitute} {
     set result
 } {1 {No substitute function defined for twosquare ciphers}}
 
-test twosquare-2.11 {Get plaintext with no ciphertext} {
+test twosquare-2.12 {Get plaintext with no ciphertext} {
     set c [cipher create twosquare]
 
     set result [catch {$c cget -pt} msg]
@@ -299,7 +310,7 @@ test twosquare-2.11 {Get plaintext with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test twosquare-2.12 {encode with non-listified key} {
+test twosquare-2.13 {encode with non-listified key} {
     set c [cipher create twosquare]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -311,7 +322,7 @@ test twosquare-2.12 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test twosquare-2.13 {encode with too many key elements} {
+test twosquare-2.14 {encode with too many key elements} {
     set c [cipher create twosquare]
 
     set result [catch {$c encode foobar "a b c"} msg]
@@ -323,7 +334,7 @@ test twosquare-2.13 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
 
-test twosquare-2.14 {encode with short key elements} {
+test twosquare-2.15 {encode with short key elements} {
     set c [cipher create twosquare]
 
     set result [catch {$c encode foobar "a b"} msg]

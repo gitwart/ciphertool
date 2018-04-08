@@ -181,9 +181,21 @@ test morbit-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test morbit-2.2 {Attempt to locate tip} {
+test morbit-2.2 {set empty ciphertext} {
+    set c [cipher create morbit]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test morbit-2.3 {Attempt to locate tip} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -195,7 +207,7 @@ test morbit-2.2 {Attempt to locate tip} {
     set result
 } {1 {No locate tip function defined for morbit ciphers.}}
 
-test morbit-2.3 {Attempt to substitute with bad morsetext character} {
+test morbit-2.4 {Attempt to substitute with bad morsetext character} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute 1 q-} msg]
@@ -207,7 +219,7 @@ test morbit-2.3 {Attempt to substitute with bad morsetext character} {
     set result
 } {1 {Bad character in substitution morsetext}}
 
-test morbit-2.4 {Attempt to substitute with bad ciphertext character} {
+test morbit-2.5 {Attempt to substitute with bad ciphertext character} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute a --} msg]
@@ -219,7 +231,7 @@ test morbit-2.4 {Attempt to substitute with bad ciphertext character} {
     set result
 } {1 {Bad character in substitution ciphertext}}
 
-test morbit-2.5 {Attempt to substitute with bad morsetext length} {
+test morbit-2.6 {Attempt to substitute with bad morsetext length} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute 1 ---} msg]
@@ -231,7 +243,7 @@ test morbit-2.5 {Attempt to substitute with bad morsetext length} {
     set result
 } {1 {Plaintext length must be an even number of characters}}
 
-test morbit-2.6 {Attempt to substitute with mismatched ciphertext/morsetext length} {
+test morbit-2.7 {Attempt to substitute with mismatched ciphertext/morsetext length} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute 12 ...---} msg]
@@ -243,7 +255,7 @@ test morbit-2.6 {Attempt to substitute with mismatched ciphertext/morsetext leng
     set result
 } {1 {Plaintext and ciphertext don't match in length (pt = 2 * ct)}}
 
-test morbit-2.7 {Attempt to substitute same morse pattern twice} {
+test morbit-2.8 {Attempt to substitute same morse pattern twice} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute 12 ....} msg]
@@ -255,7 +267,7 @@ test morbit-2.7 {Attempt to substitute same morse pattern twice} {
     set result
 } {1 {Bad substitution}}
 
-test morbit-2.8 {Attempt to substitute same ciphertext character twice} {
+test morbit-2.9 {Attempt to substitute same ciphertext character twice} {
     set c [cipher create morbit]
 
     set result [catch {$c substitute 11 ...-} msg]
@@ -267,7 +279,7 @@ test morbit-2.8 {Attempt to substitute same ciphertext character twice} {
     set result
 } {1 {Bad substitution}}
 
-test morbit-2.9 {Get plaintext with no ciphertext} {
+test morbit-2.10 {Get plaintext with no ciphertext} {
     set c [cipher create morbit]
 
     set result [catch {$c cget -pt} msg]
@@ -279,7 +291,7 @@ test morbit-2.9 {Get plaintext with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test morbit-2.10 {Solve with no ciphertext} {
+test morbit-2.11 {Solve with no ciphertext} {
     set c [cipher create morbit]
 
     set result [catch {$c cget -pt} msg]

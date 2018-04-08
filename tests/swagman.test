@@ -317,9 +317,21 @@ test swagman-2.3 {set bad ciphertext} {
     lappend result $msg
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test swagman-2.4 {bad swap rows} {
+test swagman-2.4 {set empty ciphertext} {
+    set c [cipher create swagman]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test swagman-2.5 {bad swap rows} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -332,7 +344,7 @@ test swagman-2.4 {bad swap rows} {
     set result
 } {1 {Invalid row in swagman swap}}
 
-test swagman-2.5 {bad swap rows} {
+test swagman-2.6 {bad swap rows} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -345,7 +357,7 @@ test swagman-2.5 {bad swap rows} {
     set result
 } {1 {Invalid row in swagman swap}}
 
-test swagman-2.6 {swap with no period set} {
+test swagman-2.7 {swap with no period set} {
     set c [createValidCipher]
 
     set result [catch {$c swap 1 2} msg]
@@ -357,7 +369,7 @@ test swagman-2.6 {swap with no period set} {
     set result
 } {1 {Can't do anything until a block width has been set}}
 
-test swagman-2.7 {restore with no period set} {
+test swagman-2.8 {restore with no period set} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaa} msg]
@@ -369,7 +381,7 @@ test swagman-2.7 {restore with no period set} {
     set result
 } {1 {Can't do anything until a block width has been set}}
 
-test swagman-2.8 {restore with no ciphertext} {
+test swagman-2.9 {restore with no ciphertext} {
     set c [cipher create swagman]
 
     set result [catch {$c restore abc} msg]
@@ -381,7 +393,7 @@ test swagman-2.8 {restore with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test swagman-2.9 {restore with invalid key length} {
+test swagman-2.10 {restore with invalid key length} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -394,7 +406,7 @@ test swagman-2.9 {restore with invalid key length} {
     set result
 } {1 {Invalid key length:  4 should be 25.  Invalid key was:  1234}}
 
-test swagman-2.10 {restore with invalid characters in key} {
+test swagman-2.11 {restore with invalid characters in key} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -407,7 +419,7 @@ test swagman-2.10 {restore with invalid characters in key} {
     set result
 } {1 {Invalid character in key}}
 
-test swagman-2.11 {restore with invalid key (duplicate chars)} {
+test swagman-2.12 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -421,7 +433,7 @@ test swagman-2.11 {restore with invalid key (duplicate chars)} {
     set result
 } {1 {Duplicate key value in row 1: 1} {                         }}
 
-test swagman-2.12 {substitute with invalid characters} {
+test swagman-2.13 {substitute with invalid characters} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -434,7 +446,7 @@ test swagman-2.12 {substitute with invalid characters} {
     set result
 } {1 {Invalid row specification}}
 
-test swagman-2.13 {substitute with invalid characters} {
+test swagman-2.14 {substitute with invalid characters} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -447,7 +459,7 @@ test swagman-2.13 {substitute with invalid characters} {
     set result
 } {1 {Invalid column specification}}
 
-test swagman-2.14 {substitute with invalid characters} {
+test swagman-2.15 {substitute with invalid characters} {
     set c [createValidCipher]
 
     $c configure -period 5
@@ -460,7 +472,7 @@ test swagman-2.14 {substitute with invalid characters} {
     set result
 } {1 {Invalid value specification}}
 
-test swagman-2.15 {solve with no ciphertext} {
+test swagman-2.16 {solve with no ciphertext} {
     set c [cipher create swagman]
 
     set result [catch {$c solve} msg]
@@ -472,7 +484,7 @@ test swagman-2.15 {solve with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test swagman-2.16 {solve with no period} {
+test swagman-2.17 {solve with no period} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]

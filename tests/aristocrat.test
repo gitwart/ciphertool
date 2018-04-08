@@ -262,7 +262,19 @@ test aristocrat-2.1 {invalid cipher characters} {
     set result
 } {1 {Bad character in ciphertext:  1}}
 
-test aristocrat-2.2 {key conflicts during restore} {
+test aristocrat-2.2 {set empty ciphertext} {
+    set c [cipher create aristocrat]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test aristocrat-2.3 {key conflicts during restore} {
     set c [createValidCipher]
 
     set result [catch {$c restore abcd aabc} msg]
@@ -274,7 +286,7 @@ test aristocrat-2.2 {key conflicts during restore} {
     set result
 } {1 {Bad Substitution}}
 
-test aristocrat-2.3 {key conflicts during substitute} {
+test aristocrat-2.4 {key conflicts during substitute} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc zbcd} msg]
@@ -286,7 +298,7 @@ test aristocrat-2.3 {key conflicts during substitute} {
     set result
 } {1 {Bad Substitution}}
 
-test aristocrat-2.4 {locate with null cipher} {
+test aristocrat-2.5 {locate with null cipher} {
     set c [cipher create aristocrat]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -298,7 +310,7 @@ test aristocrat-2.4 {locate with null cipher} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test aristocrat-2.5 {locate with invalid starting position} {
+test aristocrat-2.6 {locate with invalid starting position} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -310,7 +322,7 @@ test aristocrat-2.5 {locate with invalid starting position} {
     set result
 } {1 {Starting location not found.}}
 
-test aristocrat-2.6 {attempt to use solve proc} {timeIntensive} {
+test aristocrat-2.7 {attempt to use solve proc} {timeIntensive} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -322,7 +334,7 @@ test aristocrat-2.6 {attempt to use solve proc} {timeIntensive} {
     set result
 } {1 {You cheat!}}
 
-test aristocrat-2.7 {undo invalid character} {
+test aristocrat-2.8 {undo invalid character} {
     set c [createValidCipher]
 
     set result [catch {$c undo #} msg]
@@ -334,7 +346,7 @@ test aristocrat-2.7 {undo invalid character} {
     set result
 } {0 {}}
 
-test aristocrat-2.8 {substitute with null cipher} {
+test aristocrat-2.9 {substitute with null cipher} {
     set c [cipher create aristocrat]
 
     set result [catch {$c substitute a b} msg]
@@ -346,7 +358,7 @@ test aristocrat-2.8 {substitute with null cipher} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test aristocrat-2.9 {undo with null cipher} {
+test aristocrat-2.10 {undo with null cipher} {
     set c [cipher create aristocrat]
 
     set result [catch {$c undo a} msg]
@@ -358,7 +370,7 @@ test aristocrat-2.9 {undo with null cipher} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test aristocrat-2.10 {set strictness to an invalid value} {
+test aristocrat-2.11 {set strictness to an invalid value} {
     set c [cipher create aristocrat]
 
     set result [catch {$c configure -strict foobar} msg]
@@ -370,7 +382,7 @@ test aristocrat-2.10 {set strictness to an invalid value} {
     set result
 } {1 {expected boolean value but got "foobar"}}
 
-test aristocrat-2.11 {encode with non-listified key} {
+test aristocrat-2.12 {encode with non-listified key} {
     set c [cipher create aristocrat]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -382,7 +394,7 @@ test aristocrat-2.11 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test aristocrat-2.12 {encode with too many key elements} {
+test aristocrat-2.13 {encode with too many key elements} {
     set c [cipher create aristocrat]
 
     set result [catch {$c encode foobar "a b c"} msg]
@@ -394,7 +406,7 @@ test aristocrat-2.12 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
 
-test aristocrat-2.13 {encode with short key elements} {
+test aristocrat-2.14 {encode with short key elements} {
     set c [cipher create aristocrat]
 
     set result [catch {$c encode foobar "a b"} msg]

@@ -190,9 +190,21 @@ test bigbifid-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test bigbifid-2.2 {invalid length of restore key} {
+test bigbifid-2.2 {set empty ciphertext} {
+    set c [cipher create bigbifid]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test bigbifid-2.3 {invalid length of restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aabc} msg]
@@ -204,7 +216,7 @@ test bigbifid-2.2 {invalid length of restore key} {
     set result
 } {1 {Invalid length for key.}}
 
-test bigbifid-2.3 {invalid character in restore key} {
+test bigbifid-2.4 {invalid character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore #bcdefghijklmnopqrstuvwxyz0123456789} msg]
@@ -216,7 +228,7 @@ test bigbifid-2.3 {invalid character in restore key} {
     set result
 } {1 {Invalid key.}}
 
-test bigbifid-2.4 {duplicate character in restore key} {
+test bigbifid-2.5 {duplicate character in restore key} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} msg]
@@ -228,7 +240,7 @@ test bigbifid-2.4 {duplicate character in restore key} {
     set result
 } {1 {Invalid key.}}
 
-test bigbifid-2.5 {Attempt to locate tip} {
+test bigbifid-2.6 {Attempt to locate tip} {
     set c [createValidCipher]
 
     set result [catch {$c locate ttt zzz} msg]
@@ -240,7 +252,7 @@ test bigbifid-2.5 {Attempt to locate tip} {
     set result
 } {1 {No locate tip function defined for bigbifid ciphers.}}
 
-test bigbifid-2.6 {attempt to use solve proc} {
+test bigbifid-2.7 {attempt to use solve proc} {
     set c [createValidCipher]
 
     set result [catch {$c solve} msg]
@@ -252,7 +264,7 @@ test bigbifid-2.6 {attempt to use solve proc} {
     set result
 } {1 {You cheat!}}
 
-test bigbifid-2.7 {Attempt to undo invalid character} {
+test bigbifid-2.8 {Attempt to undo invalid character} {
     set c [createValidCipher]
 
     set result [catch {$c undo #} msg]
@@ -264,7 +276,7 @@ test bigbifid-2.7 {Attempt to undo invalid character} {
     set result
 } {1 {Attempt to undo invalid character.}}
 
-test bigbifid-2.8 {Substitute with invalid row} {
+test bigbifid-2.9 {Substitute with invalid row} {
     set c [cipher create bigbifid]
 
     set result [catch {$c substitute 0 2 a} msg]
@@ -276,7 +288,7 @@ test bigbifid-2.8 {Substitute with invalid row} {
     set result
 } {1 {Invalid row value.  Value must be between 1 and 6.}}
 
-test bigbifid-2.9 {Substitute with invalid column} {
+test bigbifid-2.10 {Substitute with invalid column} {
     set c [cipher create bigbifid]
 
     set result [catch {$c substitute 2 0 a} msg]
@@ -288,7 +300,7 @@ test bigbifid-2.9 {Substitute with invalid column} {
     set result
 } {1 {Invalid column value.  Value must be between 1 and 6.}}
 
-test bigbifid-2.10 {Substitute with invalid letter} {
+test bigbifid-2.11 {Substitute with invalid letter} {
     set c [cipher create bigbifid]
 
     set result [catch {$c substitute 1 2 #} msg]
@@ -300,7 +312,7 @@ test bigbifid-2.10 {Substitute with invalid letter} {
     set result
 } {1 {Invalid letter value.}}
 
-test bigbifid-2.11 {Get plaintext with no ciphertext} {
+test bigbifid-2.12 {Get plaintext with no ciphertext} {
     set c [cipher create bigbifid]
 
     set result [catch {$c cget -pt} msg]
@@ -312,7 +324,7 @@ test bigbifid-2.11 {Get plaintext with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test bigbifid-2.12 {Get plaintext with no period} {
+test bigbifid-2.13 {Get plaintext with no period} {
     set c [createValidCipher]
 
     set result [catch {$c cget -pt} msg]
@@ -324,7 +336,7 @@ test bigbifid-2.12 {Get plaintext with no period} {
     set result
 } {1 {Can't do anything until a period has been set}}
 
-test bigbifid-2.13 {encode with non-listified key} {
+test bigbifid-2.14 {encode with non-listified key} {
     set c [cipher create bigbifid]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -336,7 +348,7 @@ test bigbifid-2.13 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test bigbifid-2.14 {Encode with no period} {
+test bigbifid-2.15 {Encode with no period} {
     set c [createValidCipher]
 
     set result [catch {$c encode foobar {abcdefghiklmnopqrstuvwxyz}} msg]
@@ -348,7 +360,7 @@ test bigbifid-2.14 {Encode with no period} {
     set result
 } {1 {Can not encode bifid until a period has been set.}}
 
-test bigbifid-2.15 {Encode invalid number of key elements} {
+test bigbifid-2.16 {Encode invalid number of key elements} {
     set c [createValidCipher]
     $c configure -period 5
 
@@ -361,7 +373,7 @@ test bigbifid-2.15 {Encode invalid number of key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 1.}}
 
-test bigbifid-2.16 {Encode with invalid key length} {
+test bigbifid-2.17 {Encode with invalid key length} {
     set c [createValidCipher]
     $c configure -period 5
 

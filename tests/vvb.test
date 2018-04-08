@@ -311,9 +311,21 @@ test vigenere-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test vigenere-2.2 {invalid period value} {
+test vigenere-2.2 {set empty ciphertext} {
+    set c [cipher create vigenere]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test vigenere-2.3 {invalid period value} {
     set c [createValidCipher vigenere]
     set result [catch {$c configure -period a} msg]
 
@@ -324,7 +336,7 @@ test vigenere-2.2 {invalid period value} {
     set result
 } {1 {Bad period.  Integer expected:  a}}
 
-test vigenere-2.3 {invalid period value} {
+test vigenere-2.4 {invalid period value} {
     set c [createValidCipher vigenere]
     set result [catch {$c configure -period 0} msg]
 
@@ -335,7 +347,7 @@ test vigenere-2.3 {invalid period value} {
     set result
 } {1 {Bad period for cipher:  0}}
 
-test vigenere-2.4 {substitution with no period set} {
+test vigenere-2.5 {substitution with no period set} {
     set c [createValidCipher vigenere]
     set result [catch {$c substitute a a 1} msg]
 
@@ -346,7 +358,7 @@ test vigenere-2.4 {substitution with no period set} {
     set result
 } {1 {Period must be set before performing substitutions}}
 
-test vigenere-2.5 {bad vigenere substitution} {
+test vigenere-2.6 {bad vigenere substitution} {
     set c [createValidCipher vigenere]
     $c configure -period 4
     set result [catch {$c substitute aaaaa aaaab 1} msg]
@@ -358,7 +370,7 @@ test vigenere-2.5 {bad vigenere substitution} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.6 {bad variant substitution} {
+test vigenere-2.7 {bad variant substitution} {
     set c [createValidCipher variant]
     $c configure -period 4
     set result [catch {$c substitute aaaaa aaaab 1} msg]
@@ -370,7 +382,7 @@ test vigenere-2.6 {bad variant substitution} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.7 {bad beaufort substitution} {
+test vigenere-2.8 {bad beaufort substitution} {
     set c [createValidCipher beaufort]
     $c configure -period 4
     set result [catch {$c substitute aaaaa aaaab 1} msg]
@@ -382,7 +394,7 @@ test vigenere-2.7 {bad beaufort substitution} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.8 {bad porta substitution} {
+test vigenere-2.9 {bad porta substitution} {
     set c [createValidCipher porta]
     $c configure -period 4
     set result [catch {$c substitute aaaaa aaaab 1} msg]
@@ -394,7 +406,7 @@ test vigenere-2.8 {bad porta substitution} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.9 {bad substitution offset} {
+test vigenere-2.10 {bad substitution offset} {
     set c [createValidCipher porta]
     $c configure -period 4
     set result [catch {$c substitute aaaa aaaa 0} msg]
@@ -406,7 +418,7 @@ test vigenere-2.9 {bad substitution offset} {
     set result
 } {1 {Invalid offset.  Must be from 1 to period}}
 
-test vigenere-2.10 {bad substitution offset} {
+test vigenere-2.11 {bad substitution offset} {
     set c [createValidCipher porta]
     $c configure -period 4
     set result [catch {$c substitute aaaa aaaa 8} msg]
@@ -418,7 +430,7 @@ test vigenere-2.10 {bad substitution offset} {
     set result
 } {1 {Invalid offset.  Must be from 1 to period}}
 
-test vigenere-2.11 {bad gronsfeld substitution} {
+test vigenere-2.12 {bad gronsfeld substitution} {
     set c [createValidCipher gronsfeld]
     $c configure -period 4
     set result [catch {$c substitute aaaaa aaaab 1} msg]
@@ -430,7 +442,7 @@ test vigenere-2.11 {bad gronsfeld substitution} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.12 {bad vigenere restore} {
+test vigenere-2.13 {bad vigenere restore} {
     set c [createValidCipher vigenere]
     $c configure -period 4
     set result [catch {$c restore aaaaa aaaab} msg]
@@ -442,7 +454,7 @@ test vigenere-2.12 {bad vigenere restore} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.13 {bad variant restore} {
+test vigenere-2.14 {bad variant restore} {
     set c [createValidCipher variant]
     $c configure -period 4
     set result [catch {$c restore aaaaa aaaab} msg]
@@ -454,7 +466,7 @@ test vigenere-2.13 {bad variant restore} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.14 {bad beaufort restore} {
+test vigenere-2.15 {bad beaufort restore} {
     set c [createValidCipher beaufort]
     $c configure -period 4
     set result [catch {$c restore aaaaa aaaab} msg]
@@ -466,7 +478,7 @@ test vigenere-2.14 {bad beaufort restore} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.15 {bad porta restore} {
+test vigenere-2.16 {bad porta restore} {
     set c [createValidCipher porta]
     $c configure -period 4
     set result [catch {$c restore aaaaa aaaab} msg]
@@ -478,7 +490,7 @@ test vigenere-2.15 {bad porta restore} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.16 {bad gronsfeld restore} {
+test vigenere-2.17 {bad gronsfeld restore} {
     set c [createValidCipher gronsfeld]
     $c configure -period 4
     set result [catch {$c restore aaaaa aaaab} msg]
@@ -490,7 +502,7 @@ test vigenere-2.16 {bad gronsfeld restore} {
     set result
 } {1 {Bad substitution}}
 
-test vigenere-2.17 {bad solve} {
+test vigenere-2.18 {bad solve} {
     set c [createValidCipher vigenere]
     set result [catch {$c solve} msg]
 
@@ -501,7 +513,7 @@ test vigenere-2.17 {bad solve} {
     set result
 } {1 {Can't solve this cipher until a period has been set}}
 
-test vigenere-2.18 {get plaintext with no period} {
+test vigenere-2.19 {get plaintext with no period} {
     set c [createValidCipher vigenere]
     set result [catch {$c cget -pt} msg]
 
@@ -512,7 +524,7 @@ test vigenere-2.18 {get plaintext with no period} {
     set result
 } {1 {Can't produce plaintext without a period}}
 
-test vigenere-2.19 {bad solve method} {
+test vigenere-2.20 {bad solve method} {
     set c [createValidCipher vigenere]
     set result [catch {$c configure -solvemethod foo} msg]
 
@@ -523,7 +535,7 @@ test vigenere-2.19 {bad solve method} {
     set result
 } {1 {Invalid solve algorithm.  Must be one of 'fast' or 'thorough'}}
 
-test vigenere-2.20 {invalid use of fit} {
+test vigenere-2.21 {invalid use of fit} {
     set c [createValidCipher vigenere]
     $c configure -period 4
 
@@ -536,7 +548,7 @@ test vigenere-2.20 {invalid use of fit} {
     set result
 } {1 {Bad column index}}
 
-test vigenere-2.21 {invalid use of fit} {
+test vigenere-2.22 {invalid use of fit} {
     set c [createValidCipher vigenere]
     $c configure -period 4
 
@@ -549,7 +561,7 @@ test vigenere-2.21 {invalid use of fit} {
     set result
 } {1 {Bad column index}}
 
-test vigenere-2.22 {invalid use of fit, no period} {
+test vigenere-2.23 {invalid use of fit, no period} {
     set c [createValidCipher vigenere]
 
     set result [catch {$c fit 5} msg]
@@ -561,7 +573,7 @@ test vigenere-2.22 {invalid use of fit, no period} {
     set result
 } {1 {Can't fit columns until a period has been set}}
 
-test vigenere-2.23 {invalid use of fit, no ciphertext} {
+test vigenere-2.24 {invalid use of fit, no ciphertext} {
     set c [cipher create vigenere -period 5]
 
     set result [catch {$c fit 5} msg]
@@ -573,7 +585,7 @@ test vigenere-2.23 {invalid use of fit, no ciphertext} {
     set result
 } {1 {Can't fit columns until ciphertext has been set}}
 
-test vigenere-2.24 {encode with non-listified key} {
+test vigenere-2.25 {encode with non-listified key} {
     set c [cipher create vigenere]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -585,7 +597,7 @@ test vigenere-2.24 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test vigenere-2.25 {encode with too many key elements} {
+test vigenere-2.26 {encode with too many key elements} {
     set c [cipher create vigenere]
 
     set result [catch {$c encode foobar "a b c"} msg]
@@ -597,7 +609,7 @@ test vigenere-2.25 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b c'.  Should have found 2.}}
 
-test vigenere-2.26 {encode with short key elements} {
+test vigenere-2.27 {encode with short key elements} {
     set c [cipher create vigenere]
 
     set result [catch {$c encode foobar {"" ""}} msg]
@@ -609,7 +621,7 @@ test vigenere-2.26 {encode with short key elements} {
     set result
 } {1 {Length of key elements can not be zero.}}
 
-test vigenere-2.27 {encode with mismatched key elements} {
+test vigenere-2.28 {encode with mismatched key elements} {
     set c [cipher create vigenere]
 
     set result [catch {$c encode foobar {abc ab}} msg]

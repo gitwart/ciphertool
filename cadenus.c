@@ -157,14 +157,19 @@ SetCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *ctext)
     		length=0;
 
     length = CountValidChars(itemPtr, ctext, (int *)NULL);
-    c = ExtractValidChars(itemPtr, ctext);
-    if (c == NULL) {
-	Tcl_SetResult(interp, "Error mallocing memory for new cipher",
-		TCL_VOLATILE);
+
+    if (!length) {
+	Tcl_SetResult(interp, "No valid characters found in the ciphertext",
+		TCL_STATIC);
 	return TCL_ERROR;
     }
 
-    valid = TCL_OK;
+    c = ExtractValidChars(itemPtr, ctext);
+    if (!c) {
+	Tcl_SetResult(interp, "Could not extract ciphertext from string",
+		TCL_STATIC);
+	return TCL_ERROR;
+    }
 
     if (valid==TCL_OK) {
 	itemPtr->length = length;

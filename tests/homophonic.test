@@ -192,9 +192,21 @@ test homophonic-2.1 {invalid cipher characters} {
     rename $c {}
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
-test homophonic-2.2 {invalid characters in ciphertext} {
+test homophonic-2.2 {set empty ciphertext} {
+    set c [cipher create homophonic]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test homophonic-2.3 {invalid characters in ciphertext} {
     set c [cipher create homophonic]
 
     set result [catch {$c configure -ct 010} msg]
@@ -206,7 +218,7 @@ test homophonic-2.2 {invalid characters in ciphertext} {
     set result
 } {1 {Odd number of valid characters found in ciphertext.}}
 
-test homophonic-2.3 {key conflicts during restore} {
+test homophonic-2.4 {key conflicts during restore} {
     set c [cipher create homophonic]
 
     set result [catch {$c restore 01010101 abcd} msg]
@@ -218,7 +230,7 @@ test homophonic-2.3 {key conflicts during restore} {
     set result
 } {1 {Bad Substitution}}
 
-test homophonic-2.4 {key conflicts during substitute} {
+test homophonic-2.5 {key conflicts during substitute} {
     set c [cipher create homophonic]
 
     set result [catch {$c restore 0102 aa} msg]
@@ -230,7 +242,7 @@ test homophonic-2.4 {key conflicts during substitute} {
     set result
 } {1 {Bad Substitution}}
 
-test homophonic-2.5 {attempt to use locate procedure} {
+test homophonic-2.6 {attempt to use locate procedure} {
     set c [cipher create homophonic]
 
     set result [catch {$c locate 0101 aa} msg]
@@ -242,7 +254,7 @@ test homophonic-2.5 {attempt to use locate procedure} {
     set result
 } {1 {locate procedure not yet available for homophonic ciphers}}
 
-test homophonic-2.6 {bad solve method} {
+test homophonic-2.7 {bad solve method} {
     set c [createValidCipher]
     set result [catch {$c configure -solvemethod foo} msg]
 

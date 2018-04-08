@@ -311,6 +311,18 @@ test ragbaby-2.10 {Substitute with invalid offset} {
     set result
 } {1 {Invalid offset '#' in substitution.}}
 
+test ragbaby-2.11 {set empty ciphertext} {
+    set c [cipher create ragbaby]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
 test ragbaby-3.1 {invalid cipher characters} {
     set c [cipher create ragbaby]
 

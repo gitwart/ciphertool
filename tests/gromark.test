@@ -462,6 +462,30 @@ test gromark-2.16 {restore with empty key component} {
     set result
 } {1 {Restoration key components are not the same length:  (0) vs. abc (3)}}
 
+test gromark-2.17 {no valid ciphertext characters} {
+    set c [cipher create gromark]
+
+    set result [catch {$c configure -ct "1111"} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test gromark-2.18 {set empty ciphertext} {
+    set c [cipher create gromark]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
 test gromark-3.1 {invalid cipher characters} {
     set c [cipher create gromark]
 

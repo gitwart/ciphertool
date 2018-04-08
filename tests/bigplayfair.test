@@ -276,7 +276,7 @@ test bigplayfair-2.2 {set bad ciphertext} {
     lappend result $msg
     
     set result
-} {1 {No valid characters found in ciphertext}}
+} {1 {No valid characters found in the ciphertext}}
 
 test bigplayfair-2.3 {set bad ciphertext} {
     set cipher [cipher create bigplayfair -ct aa]
@@ -296,7 +296,19 @@ test bigplayfair-2.4 {set bad ciphertext} {
     set result
 } {1 {bigplayfair ciphers must contain an even number of characters}}
 
-test bigplayfair-2.5 {bad swap columns} {
+test bigplayfair-2.5 {set empty ciphertext} {
+    set c [cipher create bigplayfair]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test bigplayfair-2.6 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap col 0 1} msg]
@@ -308,7 +320,7 @@ test bigplayfair-2.5 {bad swap columns} {
     set result
 } {1 {Invalid column in bigplayfair swap}}
 
-test bigplayfair-2.6 {bad swap columns} {
+test bigplayfair-2.7 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap col 7 1} msg]
@@ -320,7 +332,7 @@ test bigplayfair-2.6 {bad swap columns} {
     set result
 } {1 {Invalid column in bigplayfair swap}}
 
-test bigplayfair-2.7 {bad swap row} {
+test bigplayfair-2.8 {bad swap row} {
     set c [createValidCipher]
 
     set result [catch {$c swap row 1 0} msg]
@@ -332,7 +344,7 @@ test bigplayfair-2.7 {bad swap row} {
     set result
 } {1 {Invalid row in bigplayfair swap}}
 
-test bigplayfair-2.8 {bad swap row} {
+test bigplayfair-2.9 {bad swap row} {
     set c [createValidCipher]
 
     set result [catch {$c swap row 1 7} msg]
@@ -344,7 +356,7 @@ test bigplayfair-2.8 {bad swap row} {
     set result
 } {1 {Invalid row in bigplayfair swap}}
 
-test bigplayfair-2.9 {bad swap type} {
+test bigplayfair-2.10 {bad swap type} {
     set c [createValidCipher]
 
     set result [catch {$c swap foo 1 2} msg]
@@ -356,7 +368,7 @@ test bigplayfair-2.9 {bad swap type} {
     set result
 } {1 {Invalid parameter.  Must be 'row' or 'col'}}
 
-test bigplayfair-2.10 {restore with no ciphertext} {
+test bigplayfair-2.11 {restore with no ciphertext} {
     set c [cipher create bigplayfair]
 
     set result [catch {$c restore abc} msg]
@@ -368,7 +380,7 @@ test bigplayfair-2.10 {restore with no ciphertext} {
     set result
 } {1 {Can't do anything until ciphertext has been set}}
 
-test bigplayfair-2.11 {restore with invalid key length} {
+test bigplayfair-2.12 {restore with invalid key length} {
     set c [createValidCipher]
 
     set result [catch {$c restore abc} msg]
@@ -380,7 +392,7 @@ test bigplayfair-2.11 {restore with invalid key length} {
     set result
 } {1 {Invalid key length 3}}
 
-test bigplayfair-2.12 {restore with invalid characters in key} {
+test bigplayfair-2.13 {restore with invalid characters in key} {
     set c [createValidCipher]
 
     set result [catch {$c restore -23456-23456-23456-23456-23456-23456} msg]
@@ -392,7 +404,7 @@ test bigplayfair-2.12 {restore with invalid characters in key} {
     set result
 } {1 {Invalid character in key}}
 
-test bigplayfair-2.13 {restore with invalid key (duplicate chars)} {
+test bigplayfair-2.14 {restore with invalid key (duplicate chars)} {
     set c [createValidCipher]
 
     set result [catch {$c restore aaaaaabbbbbbccccccddddddeeeeeeffffff} msg]
@@ -404,7 +416,7 @@ test bigplayfair-2.13 {restore with invalid key (duplicate chars)} {
     set result
 } {1 {Duplicate character in key: a}}
 
-test bigplayfair-2.14 {substitute with invalid characters} {
+test bigplayfair-2.15 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 0 1 a} msg]
@@ -416,7 +428,7 @@ test bigplayfair-2.14 {substitute with invalid characters} {
     set result
 } {1 {Invalid row specification}}
 
-test bigplayfair-2.15 {substitute with invalid characters} {
+test bigplayfair-2.16 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 1 0 a} msg]
@@ -428,7 +440,7 @@ test bigplayfair-2.15 {substitute with invalid characters} {
     set result
 } {1 {Invalid column specification}}
 
-test bigplayfair-2.16 {substitute with invalid characters} {
+test bigplayfair-2.17 {substitute with invalid characters} {
     set c [createValidCipher]
 
     set result [catch {$c sub 1 1 #} msg]
@@ -440,7 +452,7 @@ test bigplayfair-2.16 {substitute with invalid characters} {
     set result
 } {1 {Invalid key value}}
 
-test bigplayfair-2.17 {encode with non-listified key} {
+test bigplayfair-2.18 {encode with non-listified key} {
     set c [cipher create bigplayfair]
 
     set result [catch {$c encode foobar "abc \{bc"} msg]
@@ -452,7 +464,7 @@ test bigplayfair-2.17 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test bigplayfair-2.18 {encode with too many key elements} {
+test bigplayfair-2.19 {encode with too many key elements} {
     set c [cipher create bigplayfair]
 
     set result [catch {$c encode foobar "a b"} msg]
@@ -464,7 +476,7 @@ test bigplayfair-2.18 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key 'a b'.  Should have found 1.}}
 
-test bigplayfair-2.19 {encode with short key} {
+test bigplayfair-2.20 {encode with short key} {
     set c [cipher create bigplayfair]
 
     set result [catch {$c encode foobar "abc"} msg]

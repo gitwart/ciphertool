@@ -313,7 +313,19 @@ test cadenus-2.1 {invalid cipher length} {
     set result
 } {1 {Cipher format error:  Cadenus ciphers must have a length which is a multiple of 25.}}
 
-test cadenus-2.2 {bad rotation column} {
+test cadenus-2.2 {set empty ciphertext} {
+    set c [cipher create cadenus]
+
+    set result [catch {$c configure -ct ""} msg]
+
+    regsub -all $c $msg ciphervar msg
+    lappend result $msg
+    rename $c {}
+    
+    set result
+} {1 {No valid characters found in the ciphertext}}
+
+test cadenus-2.3 {bad rotation column} {
     set c [createValidCipher]
 
     set result [catch {$c rotate 0 1} msg]
@@ -325,7 +337,7 @@ test cadenus-2.2 {bad rotation column} {
     set result
 } {1 {Bad column value.}}
 
-test cadenus-2.3 {bad rotation amount} {
+test cadenus-2.4 {bad rotation amount} {
     set c [createValidCipher]
 
     set result [catch {$c rotate 1 26} msg]
@@ -337,7 +349,7 @@ test cadenus-2.3 {bad rotation amount} {
     set result
 } {1 {Bad rotation amount.}}
 
-test cadenus-2.4 {bad fit columns} {
+test cadenus-2.5 {bad fit columns} {
     set c [createValidCipher]
 
     set result [catch {$c fit 0 0} msg]
@@ -349,7 +361,7 @@ test cadenus-2.4 {bad fit columns} {
     set result
 } {1 {Bad column value}}
 
-test cadenus-2.5 {bad fit columns} {
+test cadenus-2.6 {bad fit columns} {
     set c [createValidCipher]
 
     set result [catch {$c fit 5 0} msg]
@@ -361,7 +373,7 @@ test cadenus-2.5 {bad fit columns} {
     set result
 } {1 {Bad column value}}
 
-test cadenus-2.6 {bad swap columns} {
+test cadenus-2.7 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap 5 0} msg]
@@ -373,7 +385,7 @@ test cadenus-2.6 {bad swap columns} {
     set result
 } {1 {Bad column index}}
 
-test cadenus-2.7 {bad swap columns} {
+test cadenus-2.8 {bad swap columns} {
     set c [createValidCipher]
 
     set result [catch {$c swap 0 5} msg]
@@ -385,7 +397,7 @@ test cadenus-2.7 {bad swap columns} {
     set result
 } {1 {Bad column index}}
 
-test cadenus-2.8 {swap with no cipher set} {
+test cadenus-2.9 {swap with no cipher set} {
     set c [cipher create cadenus]
 
     set result [catch {$c swap 1 2} msg]
@@ -397,7 +409,7 @@ test cadenus-2.8 {swap with no cipher set} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test cadenus-2.9 {rotate with no cipher set} {
+test cadenus-2.10 {rotate with no cipher set} {
     set c [cipher create cadenus]
 
     set result [catch {$c rotate 1 2} msg]
@@ -409,7 +421,7 @@ test cadenus-2.9 {rotate with no cipher set} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test cadenus-2.10 {fit with no cipher set} {
+test cadenus-2.11 {fit with no cipher set} {
     set c [cipher create cadenus]
 
     set result [catch {$c fit 1 2} msg]
@@ -421,7 +433,7 @@ test cadenus-2.10 {fit with no cipher set} {
     set result
 } {1 {Can't do anything until the ciphertext has been set}}
 
-test cadenus-2.11 {encode with non-listified key} {
+test cadenus-2.12 {encode with non-listified key} {
     set c [cipher create cadenus]
 
     set result [catch {$c encode abcdefghijklmnopqrstuvwxy "abc \{bc"} msg]
@@ -433,7 +445,7 @@ test cadenus-2.11 {encode with non-listified key} {
     set result
 } {1 {unmatched open brace in list}}
 
-test cadenus-2.12 {encode with too many key elements} {
+test cadenus-2.13 {encode with too many key elements} {
     set c [cipher create cadenus]
 
     set result [catch {$c encode abcdefghijklmnopqrstuvwxy "1 2 3"} msg]
@@ -445,7 +457,7 @@ test cadenus-2.12 {encode with too many key elements} {
     set result
 } {1 {Invalid number of items in encoding key '1 2 3'.  Should have found 1 or 2.}}
 
-test cadenus-2.13 {encode with key lengths that don't match} {
+test cadenus-2.14 {encode with key lengths that don't match} {
     set c [cipher create cadenus]
 
     set result [catch {$c encode abcdefghijklmnopqrstuvwxy "ab 1"} msg]
@@ -457,7 +469,7 @@ test cadenus-2.13 {encode with key lengths that don't match} {
     set result
 } {1 {Lengths of encoding key elements must match.}}
 
-test cadenus-2.14 {encode with short key elements} {
+test cadenus-2.15 {encode with short key elements} {
     set c [cipher create cadenus]
 
     set result [catch {$c encode abcdefghijklmnopqrstuvwxy "ab 12"} msg]
@@ -469,7 +481,7 @@ test cadenus-2.14 {encode with short key elements} {
     set result
 } {1 {Length of key does not match the period.}}
 
-test cadenus-2.15 {encode with invalid plaintext length} {
+test cadenus-2.16 {encode with invalid plaintext length} {
     set c [cipher create cadenus]
 
     set result [catch {$c encode foobar "abc 123"} msg]
