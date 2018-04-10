@@ -37,11 +37,7 @@ Release steps:
 
         % git checkout master
         % git merge 1.6.3
-        % git tag
+        % git tag -a 1.6.3
 
-    Copy the updated documentation to Github:
-
-	% make ; make doc
-	% tar czf doc.tgz ./doc
-	% Upload documentation to Github
+    Log into github and add any files (eg src.rpm, binary rpm) to the release
 
