@@ -286,7 +286,7 @@ install-libraries: libraries install-lib-binaries
 	done;
 	sed -e 's#\@srcdir\@#$$\{dir\}#g' \
 	    -e "s#\@PACKAGE_NAME\@#cipher#" \
-	    -e "s#\@PACKAGE_VERSION\@#1.6.3#" \
+	    -e "s#\@PACKAGE_VERSION\@#@PACKAGE_VERSION@#" \
 	    -e "s#\@RELPATH\@##" \
 	    -e "s#\@PKG_LIB_FILE\@#$(PKG_LIB_FILE)#" \
 	    $(srcdir)/pkgIndex.tcl.in > $(DESTDIR)/$(pkglibdir)/pkgIndex.tcl
