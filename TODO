@@ -12,8 +12,8 @@ quag2keysearch gives a confusing error if no solution is found (such as
 tkcrithm should have a "clear" button for erasing the current equations
     and solution(s).
 
-slidesolve does not convert all ciphertext to plaintext
-    ma2008:e11 (period 7, type vigenere)
+(done) slidesolve does not convert all ciphertext to plaintext
+    ma2008:e11 (period 7, key 'academy', type vigenere)
 
 hillclimb:  add routines for generating neighbor keys from keywords,
     in contrast to generating neighbor keys by swapping letters in full

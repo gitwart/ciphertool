@@ -156,11 +156,11 @@ proc decodeSlidefair {ciphertext type key period} {
 	    set pt2 " "
 	}
 	if {$pt1 == $ct1} {
-	    set pt1 " "
-	    set pt2 " "
+	    set pt1 [key caesarshift $ct1 -1]
+	    set pt2 [key caesarshift $ct2 -1]
 	}
 
-	#puts "$keyLetter: $ct1$ct2 -> $pt1$pt2"
+	puts "$keyLetter: $ct1$ct2 -> $pt1$pt2"
 	append pt $pt1$pt2
 
 	incr currentColumn
