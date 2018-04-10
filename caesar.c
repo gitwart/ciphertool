@@ -53,9 +53,6 @@ static int CaesarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 static int EncodeCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 				const char *, const char *));
 
-/* Helper function? */
-static void ShiftString		(char *s, int shift);
-
 /*
  * This structure contains the data associated with a single Caesar cipher.
  */
@@ -471,30 +468,6 @@ CaesarSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *ct, const 
     return NEW_SUB;
 }
 
-/*
-Shifts all of the lowercase characters in a string by a given amount.
-It is called by both the encoding and decoding functions.
-*/
-static void
-ShiftString(char *s, int shift)
-{
-    char c;
-    /* Handle negative numbers correctly. */
-    if (shift < 0) {
-	shift = -shift;
-	shift %= 26;
-	shift = 26 - shift;
-    }
-    /* Modify the string. */
-    while(s && *s) {
-	if ('a' <= *s && *s <= 'z') {
-	    c = (*s - 'a') + shift;
-	    *s = (c % 26) + 'a';
-	}
-	s++;
-    }
-}
-
 static char *
 GetCaesar(Tcl_Interp *interp, CipherItem *itemPtr)
 {
@@ -513,7 +486,7 @@ GetCaesar(Tcl_Interp *interp, CipherItem *itemPtr)
     strcpy(pt, itemPtr->ciphertext);
 
     /* Shift the plaintext forward by the amount specified in the item information. */
-    ShiftString(pt, caesarPtr->shift);
+    CaesarShift(pt, caesarPtr->shift);
 
     return pt;
 }
@@ -551,7 +524,7 @@ EncodeCaesar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char
 
     (itemPtr->typePtr->setctProc)(interp, itemPtr, pt);
 
-    ShiftString(itemPtr->ciphertext, -caesarPtr->shift);
+    CaesarShift(itemPtr->ciphertext, -caesarPtr->shift);
 
     Tcl_SetResult(interp, itemPtr->ciphertext, TCL_VOLATILE);
 

@@ -24,6 +24,7 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 #	14.x	Variant key conversions
 #	15.x	Beaufort key conversions
 #	16.x	Portax ct/pt conversions
+#	17.x	Caesar shifts
 
 test keygen-1.1 {Bad number of arguments} {
     set result [list [catch {key} msg] $msg]
@@ -37,7 +38,8 @@ Must be one of:  key generate string
                  key match key1 key2
                  key ordervalue string
                  key numtostring int
-                 key convert type char1 char2}}
+                 key convert type char1 char2
+                 key caesarshift string amount}}
 
 test keygen-1.3 {Bad number of arguments} {
     set result [list [catch {key generate} msg] $msg]
@@ -59,41 +61,49 @@ test keygen-1.7 {Bad number of arguments} {
     set result [list [catch {key match} msg] $msg]
 } {1 {Usage:  key match key1 key2}}
 
-test keygen-1.8 {Unwritten function} {
+test keygen-1.8 {Bad arguments} {
+    set result [list [catch {key caesarshift} msg] $msg]
+} {1 {Usage:  key caesarshift string amount}}
+
+test keygen-1.9 {Unwritten function} {
     set result [list [catch {key generate -k2 foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.9 {Unwritten function} {
+test keygen-1.10 {Unwritten function} {
     set result [list [catch {key generate -k2list foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.10 {Unwritten function} {
+test keygen-1.11 {Unwritten function} {
     set result [list [catch {key generate -k3 foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.11 {Unwritten function} {
+test keygen-1.12 {Unwritten function} {
     set result [list [catch {key generate -k3list foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.12 {Unwritten function} {
+test keygen-1.13 {Unwritten function} {
     set result [list [catch {key generate -k4 foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.13 {Unwritten function} {
+test keygen-1.14 {Unwritten function} {
     set result [list [catch {key generate -k4list foo} msg] $msg]
 } {1 {This function is not yet written}}
 
-test keygen-1.14 {number to convert not given} {
+test keygen-1.15 {number to convert not given} {
     set result [list [catch {key numtostring} msg] $msg]
 } {1 {Usage:  key numtostring number}}
 
-test keygen-1.15 {"number" to convert not a number} {
+test keygen-1.16 {"number" to convert not a number} {
     set result [list [catch {key numtostring foo} msg] $msg]
 } {1 {Argument must be a number}}
 
-test keygen-1.16 {number to convert is too large} {
+test keygen-1.17 {number to convert is too large} {
     set result [list [catch {key numtostring 1000000000} msg] $msg]
 } {1 {Value too large.  Must be less than one billion}}
+
+test keygen-1.18 {number to shift not a number} {
+    set result [list [catch {key caesarshift foobar abc} msg] $msg]
+} {1 {caesar shift amount must be a number}}
 
 test keygen-2.1 {k1 simple key} {
     set result [key generate -k1 abcdef]
@@ -700,3 +710,27 @@ test keygen-16.2 {Portax ct generation} {
 
     set result
 } {nm qh um ip cq jb wj ka ag ke yt jl ua db}
+
+test keygen-17.1 {simple caesar shift} {
+    set result [key caesarshift abcdefghijklmnopqrstuvwxyz 1]
+
+    set result
+} {bcdefghijklmnopqrstuvwxyza}
+
+test keygen-17.2 {caesar shift backwards} {
+    set result [key caesarshift abcdefghijklmnopqrstuvwxyz -1]
+
+    set result
+} {zabcdefghijklmnopqrstuvwxy}
+
+test keygen-17.3 {simple caesar shift uppercase} {
+    set result [key caesarshift ABCDEFGHIJKLMNOPQRSTUVWXYZ 1]
+
+    set result
+} {BCDEFGHIJKLMNOPQRSTUVWXYZA}
+
+test keygen-17.4 {caesar shift non-alpha characters} {
+    set result [key caesarshift "123456789.!@#%" 1]
+
+    set result
+} {123456789.!@#%}

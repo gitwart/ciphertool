@@ -252,6 +252,32 @@ char FindFirstDuplicate(const char *inputString, const char *ignoreVals) {
 
     return *indexPtr;
 }
+/*
+Caesar shifts all of the lowercase characters in a string by a given amount.
+*/
+void
+CaesarShift(char *s, int shift)
+{
+    char c;
+    /* Handle negative numbers correctly. */
+    if (shift < 0) {
+	shift = -shift;
+	shift %= 26;
+	shift = 26 - shift;
+    }
+    /* Modify the string. */
+    while(s && *s) {
+	if ('a' <= *s && *s <= 'z') {
+	    c = (*s - 'a') + shift;
+	    *s = (c % 26) + 'a';
+	}
+	if ('A' <= *s && *s <= 'Z') {
+	    c = (*s - 'A') + shift;
+	    *s = (c % 26) + 'A';
+	}
+	s++;
+    }
+}
 
 int
 cipherSelectLanguage(const char *language)

@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <keygen.h>
 #include <vigTypes.h>
+#include <cipher.h>
 
 #include <cipherDebug.h>
 
@@ -43,6 +44,7 @@
  *          key convert ?type? char1 char2
  *          key ordervalue  key
  *          key numtostring number
+ *          key caesarshift string number
  */
 
 int
@@ -171,7 +173,7 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 
 	Tcl_SetResult(interp, temp, TCL_VOLATILE);
 	return TCL_OK;
-    } else if (*option == 'c' && (strncmp(option, "convert", 1) == 0)) {
+    } else if (*option == 'c' && (strncmp(option, "convert", 2) == 0)) {
 	const char *subcommand;
 	temp[1] = '\0';
 
@@ -319,6 +321,29 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 
 	Tcl_SetBooleanObj(resultPtr, match);
 	return TCL_OK;
+    } else if (*option == 'c' && (strncmp(option, "caesarshift", 2) == 0)) {
+        int shift = 0;
+        char *shiftedString = (char *)NULL;
+
+	if (argc != 2) {
+	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,
+		    " string amount", (char *)NULL);
+	    return TCL_ERROR;
+	}
+
+	resultPtr = Tcl_GetObjResult(interp);
+
+        if (sscanf(argv[1], "%d", &shift) != 1) {
+            Tcl_SetStringObj(resultPtr, "caesar shift amount must be a number", -1);
+            return TCL_ERROR;
+        }
+
+        shiftedString = strdup(argv[0]);
+
+        CaesarShift(shiftedString, shift);
+
+        Tcl_SetStringObj(resultPtr, shiftedString, -1);
+        return TCL_OK;
     } else {
 	Tcl_AppendResult(interp, "Unknown option ", option, (char *)NULL);
 	Tcl_AppendResult(interp, "\nMust be one of:  ", cmd,
@@ -331,6 +356,8 @@ KeygenCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
 			" numtostring int", (char *)NULL);
 	Tcl_AppendResult(interp, "\n                 ", cmd,
 			" convert type char1 char2", (char *)NULL);
+	Tcl_AppendResult(interp, "\n                 ", cmd,
+			" caesarshift string amount", (char *)NULL);
 	return TCL_ERROR;
     }
 }
