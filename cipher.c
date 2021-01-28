@@ -67,6 +67,7 @@ extern CipherType TrifidType;
 extern CipherType TwosquareType;
 extern CipherType VariantType;
 extern CipherType VigenereType;
+int cipherid = 0;
 
 void
 InitCiphertypes(void)

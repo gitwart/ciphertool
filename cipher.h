@@ -127,7 +127,7 @@ typedef long long Tcl_WideInt;
 #define SE_COL_X_I_COL 48 /* COL by COL, bottom to top then top to bottom */
 
 int CipherCmd(ClientData, Tcl_Interp *, int , const char **);
-int cipherid;
+extern int cipherid;
 
 typedef struct {
     char *ciphertext;

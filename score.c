@@ -44,6 +44,8 @@ extern ScoreType NgramLogType;
 extern ScoreType NgramCountType;
 extern ScoreType WordtreeType;
 
+int scoreid = 0;
+
 int
 InitScoreTypes(Tcl_Interp *interp)
 {

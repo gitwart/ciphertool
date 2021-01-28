@@ -31,7 +31,7 @@
 /*
  * A counter used to generate unique score command names.
  */
-int scoreid;
+extern int scoreid;
 
 typedef struct {
     int elemSize;
