@@ -3,7 +3,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Ciphertool"
-!define PRODUCT_VERSION "1.6.4"
+!define PRODUCT_VERSION "1.6.5"
 !define PRODUCT_PUBLISHER "Ciphertool Devleopment Group"
 !define PRODUCT_WEB_SITE "http://ciphertool.sourceforge.net"
 ;!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\AppMainExe.exe"
@@ -117,7 +117,7 @@ FunctionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Ciphertool_1.6.4_Setup.exe"
+OutFile "Ciphertool_1.6.5_Setup.exe"
 InstallDir "$PROGRAMFILES\Ciphertool"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
