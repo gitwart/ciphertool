@@ -599,7 +599,11 @@ GetDigrafidText(Tcl_Interp *interp, CipherItem *itemPtr) {
 	return (char *)NULL;
     }
 
-    dt=(char *)ckalloc(sizeof(char) * itemPtr->length / 2 * 3 + 1);
+    dt = SafeCkalloc(sizeof(char), (itemPtr->length / 2) * 3, 1);
+    if (!dt) {
+        Tcl_SetResult(interp, "Memory allocation failed - cipher text too large", TCL_STATIC);
+        return (char *)NULL;
+    }
 
     for(i=0, dtIndex=0; i < itemPtr->length; i += 2) {
 	char *ct1cell = DigrafidLetterToKeyval(itemPtr,

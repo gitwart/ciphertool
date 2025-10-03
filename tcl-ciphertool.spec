@@ -3,7 +3,7 @@
 
 Name:           tcl-ciphertool
 Version:        1.6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary: Tools for working with American Cryptogram Association ciphers
 
 Group: Applications/Text
@@ -12,7 +12,7 @@ URL:            http://ciphertool.sourceforge.net/
 Source0:        http://dl.sf.net/ciphertool/ciphertool-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  tcl-devel
+BuildRequires:  tcl-devel gcc
 BuildRequires:  desktop-file-utils
 Requires:       tk tcllib
 Requires:       tcl(abi) = 8.6
@@ -65,6 +65,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/applications/*.desktop
 
 %changelog
+* Thu Oct 2 2025 <wart at kobold.org> - 1.6.4-2
+- Code cleanup
+
 * Sun Apr 8 2018 <wart at kobold.org> - 1.6.4-1
 - Update to 1.6.4
 - Code cleanup, with more unit tests and minor bug fixes

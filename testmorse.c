@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <morse.h>
 
 int
@@ -33,7 +34,12 @@ main(int argc, char **argv)
     char *c;
 
     while(1) {
-	gets(tempStr);
+	if (!fgets(tempStr, sizeof(tempStr), stdin))
+	    exit(0);
+
+	/* Remove trailing newline if present */
+	c = strchr(tempStr, '\n');
+	if (c) *c = '\0';
 
 	if (tempStr[0] == (char)NULL)
 	    exit(0);

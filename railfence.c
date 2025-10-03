@@ -891,7 +891,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
     return TCL_OK;
 }
 
-static int
+static int __attribute__((unused))
 EncodeMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
     char *ct = (char *)NULL;
     int count;

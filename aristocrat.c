@@ -1126,7 +1126,7 @@ AristocratRecSwap(Tcl_Interp *interp, CipherItem *itemPtr)
     return TCL_OK;
 }
 
-static int
+static int __attribute__((unused))
 AristocratRecKeygen(Tcl_Interp *interp, CipherItem *itemPtr, int period, int depth)
 {
     AristocratItem *aristPtr = (AristocratItem *)itemPtr;

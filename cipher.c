@@ -23,7 +23,13 @@
 
 #include <tcl.h>
 #include <string.h>
+#include <limits.h>
+#include <stdint.h>
 #include "cipher.h"
+
+#ifndef SIZE_MAX
+#define SIZE_MAX ((size_t)-1)
+#endif
 
 #include <cipherDebug.h>
 
@@ -190,6 +196,42 @@ DeleteCipher(ClientData clientData)
     }
 
     ckfree((char *) clientData);
+}
+
+/*
+ * SafeCkalloc --
+ *
+ *	Safely allocate memory with overflow checking
+ *	Calculates size * multiplier + additional and checks for integer overflow
+ *
+ * Results:
+ *	Pointer to allocated memory, or NULL if overflow detected or allocation failed
+ */
+char *
+SafeCkalloc(size_t size, size_t multiplier, size_t additional)
+{
+    size_t total;
+
+    /* Check for multiplication overflow */
+    if (multiplier > 0 && size > SIZE_MAX / multiplier) {
+        return NULL;  /* Would overflow */
+    }
+
+    total = size * multiplier;
+
+    /* Check for addition overflow */
+    if (additional > SIZE_MAX - total) {
+        return NULL;  /* Would overflow */
+    }
+
+    total += additional;
+
+    /* Additional safety check for very large allocations */
+    if (total > (SIZE_MAX / 2)) {
+        return NULL;  /* Suspiciously large allocation */
+    }
+
+    return (char *)ckalloc(total);
 }
 
 int

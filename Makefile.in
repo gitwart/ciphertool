@@ -286,7 +286,7 @@ install-libraries: libraries install-lib-binaries
 	done;
 	sed -e 's#\@srcdir\@#$$\{dir\}#g' \
 	    -e "s#\@PACKAGE_NAME\@#cipher#" \
-	    -e "s#\@PACKAGE_VERSION\@#1.6.3#" \
+	    -e "s#\@PACKAGE_VERSION\@#$(PACKAGE_VERSION)#" \
 	    -e "s#\@RELPATH\@##" \
 	    -e "s#\@PKG_LIB_FILE\@#$(PKG_LIB_FILE)#" \
 	    $(srcdir)/pkgIndex.tcl.in > $(DESTDIR)/$(pkglibdir)/pkgIndex.tcl
@@ -418,8 +418,8 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 dist:
-	@if test -z "$(CVSROOT)" ; then \
-	    echo "CVSROOT must be set to the CVS repository before making a source archive." ; \
+	@if ! git rev-parse --git-dir > /dev/null 2>&1 ; then \
+	    echo "Error: Not in a git repository." ; \
 	    exit 1 ; \
 	fi
 	rm -rf dist
@@ -428,9 +428,24 @@ dist:
 	mkdir -p dist/RPMS
 	mkdir -p dist/SOURCES
 	mkdir -p dist/BUILD
-	(cd dist && cvs export $(RELEASETAG) -d $(CVSPACKAGE_NAME)-$(PACKAGE_VERSION) $(CVSPACKAGE_NAME))
+	@if ! command -v autoconf >/dev/null 2>&1 ; then \
+	    echo "Error: autoconf is required to create distribution tarball." ; \
+	    echo "Please install autoconf and try again." ; \
+	    exit 1 ; \
+	fi
+	@if test -n "$(TAG)" ; then \
+	    echo "Creating distribution tarball from git tag $(TAG)..." ; \
+	    git archive --format=tar --prefix=$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION)/ $(TAG) | tar -x -C dist ; \
+	elif git rev-parse --verify master > /dev/null 2>&1 ; then \
+	    echo "Creating distribution tarball from master branch HEAD..." ; \
+	    git archive --format=tar --prefix=$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION)/ master | tar -x -C dist ; \
+	else \
+	    echo "Creating distribution tarball from current HEAD..." ; \
+	    git archive --format=tar --prefix=$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION)/ HEAD | tar -x -C dist ; \
+	fi
 	(cd dist/$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION) && autoconf)
 	(cd dist && tar czf SOURCES/$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION).tar.gz ./$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION))
+	@echo "Distribution tarball created: dist/SOURCES/$(CVSPACKAGE_NAME)-$(PACKAGE_VERSION).tar.gz"
 
 wininstaller:
 	C:/Progra~1/NSIS/makensis install.nsi

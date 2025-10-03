@@ -394,9 +394,16 @@ proc create_histogram {} {
     }
 }
 
-::tcl::OptProc set_cipher_type {
-    {-type -string {} "Type of new cipher"}
-} {
+proc set_cipher_type {args} {
+    # Parse optional -type argument
+    set type {}
+    if {[llength $args] == 2 && [lindex $args 0] eq "-type"} {
+        set type [lindex $args 1]
+    } elseif {[llength $args] == 1} {
+        set type [lindex $args 0]
+    } elseif {[llength $args] > 0} {
+        error "Usage: set_cipher_type ?-type? <type>"
+    }
     Set_cipher_type $type
 }
 

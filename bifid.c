@@ -24,6 +24,7 @@
 
 #include <tcl.h>
 #include <string.h>
+#include <limits.h>
 #include <cipher.h>
 
 #include <cipherDebug.h>
@@ -685,7 +686,7 @@ BifidIsValidTipPlacement(Tcl_Interp *interp, CipherItem *itemPtr, const char *ti
 
 	    tipKeyRowChar=bifPtr->keyConv[(int)(bifPtr->ctkey[keyCharVal])][0];
 	    tipKeyColChar=bifPtr->keyConv[(int)(bifPtr->ctkey[keyCharVal])][1];
-	    
+
 	    /*
 	     * Was a substitution made?  That is, did the key value for
 	     * the pt letter change?
@@ -861,7 +862,7 @@ BifidSubstitute(Tcl_Interp *interp, CipherItem *itemPtr, const char *row, const 
     ptLetterIndex = BifidKeycharToInt(ptLetter);
 
     keyIndex = BifidKeyPairToIndex(iRow, iCol);
-    
+
     /*
      * Before making any changes to the key, check that we're not trying
      * to put too many letters in a single row/column.
@@ -1066,7 +1067,14 @@ static char *
 GetBifidText(CipherItem *itemPtr, char emptyChar) {
     int i;
     char *c = itemPtr->ciphertext;
-    char *bifVal=(char *)ckalloc(sizeof(char) * itemPtr->length * 2 + 1);
+    char *bifVal;
+
+    /* Check for integer overflow before allocation */
+    if (itemPtr->length > INT_MAX / 2) {
+        return (char *)NULL;
+    }
+
+    bifVal = (char *)ckalloc(sizeof(char) * itemPtr->length * 2 + 1);
 
     if (!c) {
 	return (char *)NULL;
@@ -1228,7 +1236,7 @@ EncodeBifidString(CipherItem *itemPtr, char *pt) {
     int i;
 
     /*
-     * Generate the bifid text  
+     * Generate the bifid text
      */
 
     bifVal=(char *)ckalloc(sizeof(char) * (strlen(pt) + 1) * 2);

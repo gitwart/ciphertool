@@ -375,7 +375,11 @@ DecodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *text, int mo
     int		i;
     char	pt1 = '\0';
     char	pt2 = '\0';
-    char	*result=(char *)ckalloc(sizeof(char) * itemPtr->length * 2 + 1);
+    char	*result = SafeCkalloc(sizeof(char), itemPtr->length * 2, 1);
+    if (!result) {
+        Tcl_SetResult(interp, "Memory allocation failed - cipher text too large", TCL_STATIC);
+        return (char *)NULL;
+    }
     char	ct1 = '\0';
     char	ct2 = '\0';
     int         numNulls = 0;

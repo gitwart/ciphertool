@@ -162,6 +162,7 @@ int	CipherSetBestFitCmd _ANSI_ARGS_((CipherItem *, const char *));
 void	DeleteCipher _ANSI_ARGS_((ClientData));
 int 	CipherNullEncoder _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 	char *, char *));
+char *	SafeCkalloc _ANSI_ARGS_((size_t size, size_t multiplier, size_t additional));
 
 typedef int	CipherCreateProc _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
 		int, const char **));

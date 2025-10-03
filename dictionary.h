@@ -60,6 +60,8 @@ Dictionary *createDictionary(void);
 void deleteDictionary(Tcl_Interp *interp, Dictionary *dict);
 void clearDictionary(Tcl_Interp *interp, Dictionary *dict, int cacheTypes);
 int loadAvailableLengths(Tcl_Interp *interp, Dictionary *dict);
+int IsValidDirectoryPath(const char *path);
+int IsValidFilePath(const char *path);
 
 #define _DICTIONARY_INCLUDED
 #endif

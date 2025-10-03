@@ -33,7 +33,8 @@ option add *Text*background	white
 option add *Menu.selectColor	green
 option add *Text.font		-adobe-courier-bold-r-normal--14-140-75-75-m-90-iso8859-1
 
-package require opt
+# opt package is deprecated and no longer required (replaced in ctool.tcl)
+# package require opt
 package require cipher
 package require ciphertool
 

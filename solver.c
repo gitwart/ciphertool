@@ -39,6 +39,27 @@
 #include <ctype.h>
 #include <solver.h>
 
+/*
+ * Simple file path validation for solver.c
+ * Returns 1 if safe, 0 if potentially dangerous
+ */
+int
+isValidFilePath(const char *path) {
+    if (!path || strlen(path) == 0) return 0;
+
+    /* Check for path traversal sequences */
+    if (strstr(path, "../") != NULL || strstr(path, "..\\") != NULL) {
+        return 0;
+    }
+
+    /* Restrict to reasonable filename length */
+    if (strlen(path) > 255) {
+        return 0;
+    }
+
+    return 1;
+}
+
 #define DICT_DIR   "/home/wart/share/dict"
 
 /* Global variables */
@@ -205,7 +226,16 @@ main(int argc, char **argv)
     if(!(*filename)){
 	if(!aflag && !dflag && !qflag && !kflag){
 	    printf("What file would you like to use? ");
-	    scanf("%s", filename);
+	    if (scanf("%79s", filename) != 1) {
+		fprintf(stderr, "Error reading filename.\n");
+		exit(1);
+	    }
+
+	    /* Validate the filename for security */
+	    if (!isValidFilePath(filename)) {
+		fprintf(stderr, "Invalid filename: %s\n", filename);
+		exit(1);
+	    }
 	}
 	else{
 	    /* Exit silently...
@@ -819,7 +849,7 @@ update_key(Key *key, char *ct, char *pt)
 void
 locate_keyword(char *word){
     register int i, j, pos, wordlen;
-    char *c=word, *d, filename[10], tmp_word[MAXWORDLEN];
+    char *c=word, *d, filename[10], tmp_word[MAXLENGTH];
     FILE *dfptr;
     int let_used[26], valid;
 

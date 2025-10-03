@@ -561,7 +561,7 @@ int
 ScoreMethodCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
     ScoreItem *itemPtr = (ScoreItem *)clientData;
     const char *cmd;
-    char temp_str[TCL_DOUBLE_SPACE];
+    char temp_str[64]; /* Increased buffer size to safely hold format strings */
 
     cmd = *argv;
     argv++, argc--;

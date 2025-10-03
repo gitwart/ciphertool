@@ -28,6 +28,7 @@
 #include <dictionary.h>
 #include <dictionaryCmds.h>
 
+
 #undef TCL_STORAGE_CLASS
 #define TCL_STORAGE_CLASS DLLEXPORT
 
@@ -55,7 +56,13 @@ Dictionary_Init(Tcl_Interp *interp) {
     // environment variable, and in $HOME/share/dict
 #if defined(HAVE_GETENV)
     if (getenv("CIPHERTOOL_DICTIONARY") != NULL) {
-	dict->directory = strdup(getenv("CIPHERTOOL_DICTIONARY"));
+	const char *envPath = getenv("CIPHERTOOL_DICTIONARY");
+	if (IsValidDirectoryPath(envPath)) {
+	    dict->directory = strdup(envPath);
+	} else {
+	    /* Log warning but continue with default path */
+	    fprintf(stderr, "Warning: Invalid CIPHERTOOL_DICTIONARY path, using default\n");
+	}
     } else if (getenv("HOME") != NULL) {
 	dict->directory = malloc(sizeof(char) * (strlen(getenv("HOME")) + 12));
 	sprintf(dict->directory, "%s/share/dict", getenv("HOME"));
@@ -63,7 +70,12 @@ Dictionary_Init(Tcl_Interp *interp) {
 #elif defined(HAVE_GETENVIRONMENTVARIABLE)
     GetEnvironmentVariableA("CIPHERTOOL_DICTIONARY", dirBuf, 1024);
     if (strlen(dirBuf) != 0) {
-	dict->directory = strdup(dirBuf);
+	if (IsValidDirectoryPath(dirBuf)) {
+	    dict->directory = strdup(dirBuf);
+	} else {
+	    /* Log warning but continue with default path */
+	    fprintf(stderr, "Warning: Invalid CIPHERTOOL_DICTIONARY path, using default\n");
+	}
     } else {
 	GetEnvironmentVariableA("HOME", dirBuf, 1024);
 	if (strlen(dirBuf) != 0) {

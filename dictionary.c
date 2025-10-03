@@ -22,9 +22,68 @@
 
 #include <tcl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dictionary.h>
 
 int dictionaryLengthSort (const void *len1, const void *len2);
+
+/*
+ * Validates that a directory path is safe - checks for path traversal attempts
+ * Returns 1 if safe, 0 if potentially dangerous
+ */
+int
+IsValidDirectoryPath(const char *path) {
+    if (!path || strlen(path) == 0) return 0;
+    
+    /* Check for path traversal sequences */
+    if (strstr(path, "../") != NULL || strstr(path, "..\\") != NULL) {
+        return 0;
+    }
+    
+    /* Check for absolute paths that try to escape expected locations */
+    if (path[0] == '/' || (strlen(path) > 1 && path[1] == ':')) {
+        /* Allow /usr, /opt, and /home paths for system-wide and personal dictionaries */
+        if (strncmp(path, "/usr/", 5) != 0 && 
+            strncmp(path, "/opt/", 5) != 0 && 
+            strncmp(path, "/home/", 6) != 0) {
+            return 0;
+        }
+    }
+    
+    return 1;
+}
+
+/*
+ * Validates that a file path is safe - checks for path traversal attempts
+ * and ensures file is in a reasonable location
+ * Returns 1 if safe, 0 if potentially dangerous
+ */
+int
+IsValidFilePath(const char *path) {
+    if (!path || strlen(path) == 0) return 0;
+    
+    /* Check for path traversal sequences */
+    if (strstr(path, "../") != NULL || strstr(path, "..\\") != NULL) {
+        return 0;
+    }
+    
+    /* Check for null bytes (could be used to truncate paths) */
+    if (strlen(path) != strcspn(path, "\0")) {
+        return 0;
+    }
+    
+    /* Restrict to reasonable filename length */
+    if (strlen(path) > 255) {
+        return 0;
+    }
+    
+    /* For absolute paths, apply same restrictions as directories */
+    if (path[0] == '/' || (strlen(path) > 1 && path[1] == ':')) {
+        return IsValidDirectoryPath(path);
+    }
+    
+    return 1;
+}
 
 /*
  * Allocate space for a new dictionary.

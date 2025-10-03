@@ -25,6 +25,7 @@
 #include <string.h>
 #include <cipher.h>
 #include <score.h>
+#include <dictionary.h>
 #include <dictionaryCmds.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -1060,14 +1061,20 @@ FILE *
 GetWordFilePtr() {
 
     char s[1000];
-    char filename[1000];
-    char *dirname = 0;
+    char filename[1024]; /* Increased buffer size to safely hold path + filename */
+    const char *dirname = 0;
     char share[] = "/usr/local/share/dict";
     FILE *result = 0;
 
     /* Get the directory. */
     if (!dirname) {
-	dirname = getenv("CIPHERTOOL_DICTIONARY");
+	const char *envPath = getenv("CIPHERTOOL_DICTIONARY");
+	if (envPath && IsValidDirectoryPath(envPath)) {
+	    dirname = envPath;
+	} else if (envPath) {
+	    /* Log warning but continue with default path */
+	    fprintf(stderr, "Warning: Invalid CIPHERTOOL_DICTIONARY path, using default\n");
+	}
     }
     if (!dirname && getenv("HOME")) {
 	sprintf(s, "%s/share/dict", getenv("HOME"));
@@ -1078,7 +1085,7 @@ GetWordFilePtr() {
     }
 
     /* Get the filename using the directory. */
-    sprintf(filename, "%s/LEN05", dirname);
+    snprintf(filename, sizeof(filename), "%s/LEN05", dirname);
 
     /* Try to open the file. */
     result = fopen(filename, "rt");

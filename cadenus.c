@@ -364,7 +364,7 @@ SolveCadenus(Tcl_Interp *interp, CipherItem *itemPtr, char *maxkey)
     return TCL_OK;
 }
 
-static void
+static void __attribute__((unused))
 RecSolveCadenus(Tcl_Interp *interp, CipherItem *itemPtr, int depth, char *curKey) {
     CadenusItem *cadPtr = (CadenusItem *)itemPtr;
     int i;
