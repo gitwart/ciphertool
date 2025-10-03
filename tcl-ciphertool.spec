@@ -2,8 +2,8 @@
 %{!?tcl_sitearch: %global tcl_sitearch %{_libdir}/tcl%{tcl_version}}
 
 Name:           tcl-ciphertool
-Version:        1.6.4
-Release:        2%{?dist}
+Version:        1.6.5
+Release:        1%{?dist}
 Summary: Tools for working with American Cryptogram Association ciphers
 
 Group: Applications/Text
@@ -65,7 +65,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/applications/*.desktop
 
 %changelog
-* Thu Oct 2 2025 <wart at kobold.org> - 1.6.4-2
+* Thu Oct 2 2025 <wart at kobold.org> - 1.6.5-1
 - Code cleanup
 
 * Sun Apr 8 2018 <wart at kobold.org> - 1.6.4-1
