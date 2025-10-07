@@ -8,7 +8,7 @@ Ciphertool is a Tcl extension for working with classical cryptographic ciphers. 
 
 ## Code Branching
 
-IMPORTANT: Before you make any change, create and checkout a feature branch named "feature_some_short_name" based off of the master branch.  Make and then commit your changes in this branch.
+IMPORTANT: Before you make any change, create and checkout a feature branch named "feature_some_short_name" based off of the master branch.  Make and then commit your changes in this branch.  Only newly created or modified files should be committed.  Do not commit any build artifacts (object files, shared libraries, compiled binaries) to git.
 
 ## Build System
 
