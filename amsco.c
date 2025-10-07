@@ -29,34 +29,34 @@
 
 #include <cipherDebug.h>
 
-static int  CreateAmsco		_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteAmsco		_ANSI_ARGS_((ClientData));
-static char *GetAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreAmsco	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int AmscoCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int AmscoUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int AmscoSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int AmscoLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void AmscoInitKey	_ANSI_ARGS_((CipherItem *, int));
-int AmscoCheckSolutionValue  	_ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int AmscoSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int AmscoShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int EncodeAmsco		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *AmscoTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+static int  CreateAmsco (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteAmsco (ClientData);
+static char *GetAmsco (Tcl_Interp *, CipherItem *);
+static int  SetAmsco (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreAmsco (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveAmsco (Tcl_Interp *, CipherItem *,
+				char *);
+int AmscoCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int AmscoUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int AmscoSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int AmscoLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void AmscoInitKey (CipherItem *, int);
+int AmscoCheckSolutionValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int AmscoSwapColumns (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int AmscoShiftColumn (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int EncodeAmsco (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *AmscoTransform (CipherItem *, char *, int);
 
 typedef struct AmscoItem {
     CipherItem header;
@@ -1093,7 +1093,7 @@ AmscoCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 static int
 EncodeAmsco(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

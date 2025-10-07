@@ -27,8 +27,8 @@
 
 #include <cipherDebug.h>
 
-int TrifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+int TrifidCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 #define KEY1	'1'
 #define KEY2	'2'
@@ -40,29 +40,29 @@ int TrifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateTrifid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreTrifid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveTrifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int TrifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int TrifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int TrifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int TrifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int));
-static char TrifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *));
-static char *TrifidLetterToKeyval _ANSI_ARGS_((CipherItem *, char));
-static char *GetTrifidText	_ANSI_ARGS_((CipherItem *, char));
-static int EncodeTrifid		 _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *EncodeTrifidString	 _ANSI_ARGS_((CipherItem *, char *));
+static int  CreateTrifid (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetTrifid (Tcl_Interp *, CipherItem *);
+static int  SetTrifid (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreTrifid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveTrifid (Tcl_Interp *, CipherItem *,
+				char *);
+static int TrifidUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int TrifidSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int TrifidLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int TrifidSetPeriod (Tcl_Interp *, CipherItem *,
+	    			int);
+static char TrifidKeyvalToLetter (CipherItem *, const char *);
+static char *TrifidLetterToKeyval (CipherItem *, char);
+static char *GetTrifidText (CipherItem *, char);
+static int EncodeTrifid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *EncodeTrifidString	 (CipherItem *, char *);
 
 static char *trifidKeyConv[27] = {
 	"111", "112", "113", "121", "122", "123", "131", "132", "133",
@@ -729,7 +729,7 @@ EncodeTrifidString(CipherItem *itemPtr, char *pt) {
 static int
 EncodeTrifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

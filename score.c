@@ -29,7 +29,7 @@
 
 #include <cipherDebug.h>
 
-static int IsInternalScore _ANSI_ARGS_((ScoreItem *));
+static int IsInternalScore (ScoreItem *);
 
 ScoreItem *initialScoreItem = (ScoreItem *)NULL;
 ScoreItem *defaultScoreItem = (ScoreItem *)NULL;

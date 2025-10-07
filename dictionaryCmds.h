@@ -26,20 +26,20 @@
 
 #include <dictionary.h>
 
-int LookupByPatternObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int LookupByLengthObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int AvailableLengthsObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int ClearCacheObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int IsWordObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int IsNumberObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int AddWordObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int IsIllegalTrigramObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int ContainsIllegalTrigramObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int DumpDictionaryCacheObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int AllWordsMatchingObjCmd _ANSI_ARGS_((ClientData , Tcl_Interp *, int, Tcl_Obj *CONST[]));
-Tcl_Obj *lookupByLength	_ANSI_ARGS_((Tcl_Interp *interp, Dictionary *dict, int length, char *pattern));
+int LookupByPatternObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int LookupByLengthObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int AvailableLengthsObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int ClearCacheObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int IsWordObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int IsNumberObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int AddWordObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int IsIllegalTrigramObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int ContainsIllegalTrigramObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int DumpDictionaryCacheObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+int AllWordsMatchingObjCmd (ClientData , Tcl_Interp *, int, Tcl_Obj * const[]);
+Tcl_Obj *lookupByLength	(Tcl_Interp *interp, Dictionary *dict, int length, char *pattern);
 
-char *DictionaryDirectoryTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, const char *, const char *, int));
-char *DictionaryCacheTraceProc _ANSI_ARGS_((ClientData clientData, Tcl_Interp *, const char *, const char *, int));
+char *DictionaryDirectoryTraceProc (ClientData clientData, Tcl_Interp *, const char *, const char *, int);
+char *DictionaryCacheTraceProc (ClientData clientData, Tcl_Interp *, const char *, const char *, int);
 
 #endif

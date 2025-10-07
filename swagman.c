@@ -29,32 +29,32 @@
 
 #include <cipherDebug.h>
 
-static int  CreateSwagman	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteSwagman		_ANSI_ARGS_((ClientData));
-static char *GetSwagman		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetSwagman		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreSwagman	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveSwagman	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int SwagmanCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int SwagmanUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int SwagmanSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int SwagmanLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void SwagmanInitKey	_ANSI_ARGS_((CipherItem *, int));
-static char *SwagmanCtToBlock	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static char *SwagmanPtToBlock	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int SwagmanSolveValue	_ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int RecSolveSwagman	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
-static int SwagmanSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
+static int  CreateSwagman (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteSwagman (ClientData);
+static char *GetSwagman (Tcl_Interp *, CipherItem *);
+static int  SetSwagman (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreSwagman (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveSwagman (Tcl_Interp *, CipherItem *,
+				char *);
+int SwagmanCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int SwagmanUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int SwagmanSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int SwagmanLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void SwagmanInitKey (CipherItem *, int);
+static char *SwagmanCtToBlock (Tcl_Interp *, CipherItem *);
+static char *SwagmanPtToBlock (Tcl_Interp *, CipherItem *);
+static int SwagmanSolveValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int RecSolveSwagman (Tcl_Interp *, CipherItem *, int);
+static int SwagmanSwapRows (Tcl_Interp *, CipherItem *, int,
+	    			int);
 
 typedef struct SwagmanItem {
     CipherItem header;

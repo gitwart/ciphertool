@@ -33,36 +33,36 @@
 
 #include <cipherDebug.h>
 
-void DeleteAristocrat		_ANSI_ARGS_((ClientData));
-int AristocratCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+void DeleteAristocrat (ClientData);
+int AristocratCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateAristocrat	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveSwapAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int AristocratUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int AristocratSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int AristocratLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int AristocratRecKeygen	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-static int AristocratApplyBlankKeyword _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int));
-static int AristocratRecSwap	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int EncodeAristocrat	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateAristocrat (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetAristocrat (Tcl_Interp *, CipherItem *);
+static int  SetAristocrat (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreAristocrat (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveSwapAristocrat (Tcl_Interp *, CipherItem *,
+				char *);
+static int AristocratUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int AristocratSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int AristocratLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int AristocratRecKeygen (Tcl_Interp *, CipherItem *,
+	    			int, int);
+static int AristocratApplyBlankKeyword (Tcl_Interp *, CipherItem *,
+				int);
+static int AristocratRecSwap (Tcl_Interp *, CipherItem *);
+static int EncodeAristocrat (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 /*
  * This structure contains the data associated with a single aristocrat cipher.
@@ -1342,7 +1342,7 @@ AristocratApplyBlankKeyword(Tcl_Interp *interp, CipherItem *itemPtr, int period)
 static int
 EncodeAristocrat(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

@@ -26,6 +26,6 @@
 #define	MAX_NUM_STRING_LENGTH 128
 
 int		KeygenCmd(ClientData, Tcl_Interp *, int , const char **);
-char *		KeyTripletToString _ANSI_ARGS_((int));
-char *		KeyGenerateNum _ANSI_ARGS_((Tcl_Interp *, long));
-int		KeyGenerateK1 _ANSI_ARGS_((Tcl_Interp *, const char *, char *));
+char *		KeyTripletToString (int);
+char *		KeyGenerateNum (Tcl_Interp *, long);
+int		KeyGenerateK1 (Tcl_Interp *, const char *, char *);

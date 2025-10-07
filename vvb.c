@@ -40,42 +40,42 @@
 #define SOLVE_FAST	0
 #define SOLVE_THOROUGH	1
 
-static int  CreateVigenere	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteVigenere		_ANSI_ARGS_((ClientData));
-static char *GetVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetVigenere		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int  QuickSolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int VigenereCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int VigenereUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int VigenereSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int VigenereLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int VigenereSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int));
-static void VigenereInitKey	_ANSI_ARGS_((CipherItem *, int));
-static int RecSolveVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, char *));
-static int RecQuickSolveVigenere _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, char *));
-static int FindBestTipLocation	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			const char *));
-static char PortaCtPtToKey	_ANSI_ARGS_((char, char));
-static char PortaCtKeyToPt	_ANSI_ARGS_((char, char));
-static char *GetKeyedVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int VigenereFitColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
-static int EncodeVigenere	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateVigenere (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteVigenere (ClientData);
+static char *GetVigenere (Tcl_Interp *, CipherItem *);
+static int  SetVigenere (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreVigenere (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveVigenere (Tcl_Interp *, CipherItem *,
+				char *);
+static int  QuickSolveVigenere (Tcl_Interp *, CipherItem *,
+				char *);
+int VigenereCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int VigenereUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int VigenereSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int VigenereLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int VigenereSetPeriod (Tcl_Interp *, CipherItem *,
+				int);
+static void VigenereInitKey (CipherItem *, int);
+static int RecSolveVigenere (Tcl_Interp *, CipherItem *,
+				int, char *);
+static int RecQuickSolveVigenere (Tcl_Interp *, CipherItem *,
+				int, char *);
+static int FindBestTipLocation (Tcl_Interp *, CipherItem *,
+	    			const char *);
+static char PortaCtPtToKey (char, char);
+static char PortaCtKeyToPt (char, char);
+static char *GetKeyedVigenere (Tcl_Interp *, CipherItem *,
+				const char *);
+static int VigenereFitColumn (Tcl_Interp *, CipherItem *, int);
+static int EncodeVigenere (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 static char _portaCtPt[26][26] = {
     { "\000\000\000\000\000\000\000\000\000\000\000\000\000acegikmoqsuwy" },
@@ -1756,7 +1756,7 @@ static int
 EncodeVigenere(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     VigenereItem *vigPtr = (VigenereItem *)itemPtr;
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

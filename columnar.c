@@ -29,34 +29,34 @@
 
 #include <cipherDebug.h>
 
-static int  CreateColumnar	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteColumnar		_ANSI_ARGS_((ClientData));
-static char *GetColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetColumnar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int ColumnarCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int ColumnarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int ColumnarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int ColumnarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void ColumnarInitKey	_ANSI_ARGS_((CipherItem *, int));
-int ColumnarCheckSolutionValue  _ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int ColumnarSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int ColumnarShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int EncodeColumnar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *ColumnarTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreateColumnar (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteColumnar (ClientData);
+static char *GetColumnar (Tcl_Interp *, CipherItem *);
+static int  SetColumnar (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreColumnar (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveColumnar (Tcl_Interp *, CipherItem *,
+				char *);
+int ColumnarCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int ColumnarUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int ColumnarSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int ColumnarLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void ColumnarInitKey (CipherItem *, int);
+int ColumnarCheckSolutionValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int ColumnarSwapColumns (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int ColumnarShiftColumn (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int EncodeColumnar (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *ColumnarTransform (CipherItem *, const char *, int);
 
 typedef struct ColumnarItem {
     CipherItem header;
@@ -958,7 +958,7 @@ ColumnarCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 static int
 EncodeColumnar(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

@@ -33,29 +33,29 @@
 #define SOLVE_FAST	0
 #define SOLVE_THOROUGH	1
 
-static int  CreateHomophonic	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteHomophonic		_ANSI_ARGS_((ClientData));
-static char *GetHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int HomophonicCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int HomophonicUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int HomophonicSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int HomophonicLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char HomophonicCtToPt	_ANSI_ARGS_((int ct, char key));
-static char HomophonicPtToKey	_ANSI_ARGS_((char pt, int ct));
-static char *HomophonicGetFullKey _ANSI_ARGS_((CipherItem *itemPtr));
-static int EncodeHomophonic	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateHomophonic (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteHomophonic (ClientData);
+static char *GetHomophonic (Tcl_Interp *, CipherItem *);
+static int  SetHomophonic (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreHomophonic (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveHomophonic (Tcl_Interp *, CipherItem *,
+				char *);
+int HomophonicCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int HomophonicUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int HomophonicSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int HomophonicLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char HomophonicCtToPt (int ct, char key);
+static char HomophonicPtToKey (char pt, int ct);
+static char *HomophonicGetFullKey (CipherItem *itemPtr);
+static int EncodeHomophonic (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 
 typedef struct HomophonicItem {

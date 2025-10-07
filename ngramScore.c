@@ -27,16 +27,16 @@
 #include <string.h>
 #include <wordtree.h>
 
-static int CreateNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddNgram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
-void DeleteNgramScore _ANSI_ARGS_((ClientData));
-static int NormalizeNgramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double NgramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static double NgramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-double  NgramStringValue _ANSI_ARGS_((const char *, double **));
-double  NgramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
-static void NormalizeTreeNodeLog _ANSI_ARGS_((TreeNode *));
-static int DumpNgramScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static int CreateNgram (Tcl_Interp *, ScoreItem *, int, const char **);
+static int AddNgram (Tcl_Interp *, ScoreItem *, const char *, double);
+void DeleteNgramScore (ClientData);
+static int NormalizeNgramLog (Tcl_Interp *, ScoreItem *);
+static double NgramValue (Tcl_Interp *, ScoreItem *, const char *);
+static double NgramElementValue (Tcl_Interp *, ScoreItem *, const char *);
+double  NgramStringValue (const char *, double **);
+double  NgramSingleValue (unsigned char, unsigned char, double **);
+static void NormalizeTreeNodeLog (TreeNode *);
+static int DumpNgramScore (Tcl_Interp *, ScoreItem *, const char *);
 
 typedef struct NgramItem {
     ScoreItem header;

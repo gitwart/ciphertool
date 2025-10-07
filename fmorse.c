@@ -35,30 +35,30 @@
 
 #define KEY_LENGTH 26
 
-static int  CreateFmorse	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreFmorse	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int FmorseCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int FmorseUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int FmorseSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int FmorseLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *FmorseToMorse 	_ANSI_ARGS_((CipherItem *, const char *));
-static int FmorseStringToKeyElem _ANSI_ARGS_((const char *));
-static char *FmorseKeyElemToString _ANSI_ARGS_((int));
-int FmorseSolveValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int EncodeFmorse		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateFmorse (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetFmorse (Tcl_Interp *, CipherItem *);
+static int  SetFmorse (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreFmorse (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveFmorse (Tcl_Interp *, CipherItem *,
+				char *);
+int FmorseCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int FmorseUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int FmorseSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int FmorseLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *FmorseToMorse (CipherItem *, const char *);
+static int FmorseStringToKeyElem (const char *);
+static char *FmorseKeyElemToString (int);
+int FmorseSolveValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int EncodeFmorse (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 static char fmorse_key_elems[28][4] = {"   ",
 	"...", "..-", "..x",

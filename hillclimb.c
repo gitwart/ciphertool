@@ -30,7 +30,7 @@
 #include "keygen.h"
 
 int
-HillclimbRandomizeListObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+HillclimbRandomizeListObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
 
@@ -49,7 +49,7 @@ HillclimbRandomizeListObjCmd(ClientData clientData, Tcl_Interp *interp, int objc
 }
 
 int
-HillclimbKeysquareSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+HillclimbKeysquareSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
 
@@ -72,7 +72,7 @@ HillclimbKeysquareSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *inte
 }
 
 int
-HillclimbGenerateSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+HillclimbGenerateSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
 
@@ -95,7 +95,7 @@ HillclimbGenerateSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *inter
 }
 
 int
-HillclimbAristocratSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+HillclimbAristocratSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
     Tcl_Obj *alphabetObj = (Tcl_Obj *)NULL;
@@ -103,8 +103,8 @@ HillclimbAristocratSwapNeighborKeysObjCmd(ClientData clientData, Tcl_Interp *int
     Tcl_Obj *tempObjList[2];
     Tcl_Obj *k2KeyObj = (Tcl_Obj *)NULL;
     char fullKey[27];
-    int i;
-    int resultLength;
+    Tcl_Size i;
+    Tcl_Size resultLength;
 
     if (objc != 2 && objc != 3) {
         Tcl_AppendResult(interp, "Usage:  ", Tcl_GetString(objv[0]), " key ?fixedIndices?", (char *)NULL);
@@ -277,8 +277,8 @@ HillclimbKeysquareSwapNeighborKeys(Tcl_Interp *interp, char *fixedKey, char *fix
 
 Tcl_Obj *
 HillclimbRandomizeList(Tcl_Interp *interp, Tcl_Obj *listObj) {
-    int listLength;
-    int i;
+    Tcl_Size listLength;
+    Tcl_Size i;
     double randomValue;
     long int randomIndex;
     Tcl_Obj *tempObj;

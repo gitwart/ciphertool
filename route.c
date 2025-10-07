@@ -28,30 +28,30 @@
 
 #include <cipherDebug.h>
 
-static int  CreateRoute		_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void  DeleteRoute		_ANSI_ARGS_((ClientData));
-static char *GetRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreRoute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int RouteCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int RouteUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int RouteSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static void RouteSetWidth	_ANSI_ARGS_((CipherItem *, int));
-static int RouteLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int ApplyRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int, int, const char *, char *));
-static void InitRouteCache	_ANSI_ARGS_((CipherItem *));
-static int EncodeRoute		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateRoute (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void  DeleteRoute (ClientData);
+static char *GetRoute (Tcl_Interp *, CipherItem *);
+static int  SetRoute (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreRoute (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveRoute (Tcl_Interp *, CipherItem *,
+				char *);
+int RouteCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int RouteUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int RouteSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static void RouteSetWidth (CipherItem *, int);
+static int RouteLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int ApplyRoute (Tcl_Interp *, CipherItem *,
+	    			int, int, int, const char *, char *);
+static void InitRouteCache (CipherItem *);
+static int EncodeRoute (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 #define WRITE	1
 #define READ	2
@@ -2860,7 +2860,7 @@ static int
 EncodeRoute(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     RouteItem *routePtr = (RouteItem *)itemPtr;
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     int encodeIn;
     int encodeOut;
     const char **argv;

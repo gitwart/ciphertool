@@ -203,11 +203,11 @@ int loadAvailableLengths(Tcl_Interp *interp, Dictionary *dict) {
 	Tcl_Obj *filename = NULL;
 	Tcl_DString globPattern;
 	char *pathParts[2];
-	int numFiles = 0;
-	int filenameLength = 0;
+	Tcl_Size numFiles = 0;
+	Tcl_Size filenameLength = 0;
 	int dictFileLength = 0;
 	int fileLengthIndex = 0;
-	int i;
+	Tcl_Size i;
 	Tcl_Obj *command[2];
 
 	if (dict->wordLengths != NULL) {

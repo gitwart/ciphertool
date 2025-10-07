@@ -31,28 +31,28 @@
 
 #include <cipherDebug.h>
 
-static int  CreatePollux	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetPollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetPollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestorePollux	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolvePollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int PolluxCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int PolluxUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int PolluxSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int PolluxLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *PolluxToMorse 	_ANSI_ARGS_((CipherItem *itemPtr, const char *));
-static int RecSolvePollux	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			char *, int));
-static int EncodePollux		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreatePollux (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetPollux (Tcl_Interp *, CipherItem *);
+static int  SetPollux (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestorePollux (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolvePollux (Tcl_Interp *, CipherItem *,
+				char *);
+int PolluxCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int PolluxUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int PolluxSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int PolluxLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *PolluxToMorse (CipherItem *itemPtr, const char *);
+static int RecSolvePollux (Tcl_Interp *, CipherItem *,
+	    			char *, int);
+static int EncodePollux (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 
 typedef struct PolluxItem {

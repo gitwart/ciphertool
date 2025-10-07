@@ -27,8 +27,8 @@
 
 #include <cipherDebug.h>
 
-int BigBifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+int BigBifidCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 #define KEY1	'1'
 #define KEY2	'2'
@@ -43,29 +43,29 @@ int BigBifidCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateBifid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreBifid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveBifid		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int BifidUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int BifidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int BifidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int BifidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int));
-static int BifidKeyvalToLetter	_ANSI_ARGS_((CipherItem *, char *));
-static char *BifidLetterToKeyval _ANSI_ARGS_((CipherItem *, char));
-static char *GetBifidText	_ANSI_ARGS_((CipherItem *, char));
-static int BifidKeycharToInt	_ANSI_ARGS_((char));
-static int EncodeBifid		 _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateBifid (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetBifid (Tcl_Interp *, CipherItem *);
+static int  SetBifid (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreBifid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveBifid (Tcl_Interp *, CipherItem *,
+				char *);
+static int BifidUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int BifidSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int BifidLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int BifidSetPeriod (Tcl_Interp *, CipherItem *,
+	    			int);
+static int BifidKeyvalToLetter (CipherItem *, char *);
+static char *BifidLetterToKeyval (CipherItem *, char);
+static char *GetBifidText (CipherItem *, char);
+static int BifidKeycharToInt (char);
+static int EncodeBifid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 static char *bifidKeyConv[37] = {   "11", "12", "13", "14", "15", "16",
 				    "21", "22", "23", "24", "25", "26",
@@ -795,7 +795,7 @@ EncodeBifidString(CipherItem *itemPtr, char *pt) {
 static int
 EncodeBifid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

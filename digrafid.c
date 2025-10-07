@@ -28,8 +28,8 @@
 
 #include <cipherDebug.h>
 
-int DigrafidCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+int DigrafidCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 #define KEY0	'0'
 #define KEY1	'1'
@@ -51,30 +51,30 @@ int DigrafidCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateDigrafid	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int DigrafidUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int DigrafidSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int DigrafidLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int DigrafidKeyvalToDigram	_ANSI_ARGS_((CipherItem *, char *,
-				char *));
-static char *DigrafidLetterToKeyval _ANSI_ARGS_((CipherItem *, char, int));
-static int DigrafidKeycharToInt	_ANSI_ARGS_((char));
-static int DigrafidKeyPairToIndex	_ANSI_ARGS_((int, int));
-static int DigrafidSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
-static char *GetDigrafidText	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int EncodeDigrafid	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateDigrafid (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetDigrafid (Tcl_Interp *, CipherItem *);
+static int  SetDigrafid (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreDigrafid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveDigrafid (Tcl_Interp *, CipherItem *,
+				char *);
+static int DigrafidUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int DigrafidSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int DigrafidLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int DigrafidKeyvalToDigram (CipherItem *, char *,
+				char *);
+static char *DigrafidLetterToKeyval (CipherItem *, char, int);
+static int DigrafidKeycharToInt (char);
+static int DigrafidKeyPairToIndex (int, int);
+static int DigrafidSetPeriod (Tcl_Interp *, CipherItem *, int);
+static char *GetDigrafidText (Tcl_Interp *, CipherItem *);
+static int EncodeDigrafid (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 /*
  * This structure contains the data associated with a single digrafid cipher.
@@ -906,7 +906,7 @@ EncodeDigrafidString(CipherItem *itemPtr, char *text) {
 static int
 EncodeDigrafid(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

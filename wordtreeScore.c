@@ -26,16 +26,16 @@
 #include <score.h>
 #include <wordtree.h>
 
-static int CreateWordtree _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddWordtreeWord _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
-void DeleteWordtreeScore _ANSI_ARGS_((ClientData));
-static double WordtreeValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static double WordtreeElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static int NormalizeWordtreeScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static int DumpWordtreeScore _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static void NormalizeTreeNodeSquare _ANSI_ARGS_((TreeNode *, int));
-double  WordtreeStringValue _ANSI_ARGS_((const char *, double **));
-double  WordtreeSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
+static int CreateWordtree (Tcl_Interp *, ScoreItem *, int, const char **);
+static int AddWordtreeWord (Tcl_Interp *, ScoreItem *, const char *, double);
+void DeleteWordtreeScore (ClientData);
+static double WordtreeValue (Tcl_Interp *, ScoreItem *, const char *);
+static double WordtreeElementValue (Tcl_Interp *, ScoreItem *, const char *);
+static int NormalizeWordtreeScore (Tcl_Interp *, ScoreItem *);
+static int DumpWordtreeScore (Tcl_Interp *, ScoreItem *, const char *);
+static void NormalizeTreeNodeSquare (TreeNode *, int);
+double  WordtreeStringValue (const char *, double **);
+double  WordtreeSingleValue (unsigned char, unsigned char, double **);
 
 typedef struct WordtreeItem {
     ScoreItem header;

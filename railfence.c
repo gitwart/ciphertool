@@ -28,32 +28,32 @@
 
 #include <cipherDebug.h>
 
-static int  CreateRailfence	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteRailfence		_ANSI_ARGS_((ClientData));
-static char *GetRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveRailfence	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int RailfenceCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int RailfenceUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int RailfenceSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int RailfenceLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void RailfenceInitKey	_ANSI_ARGS_((CipherItem *, int));
-static void RailfenceAdjustKey	_ANSI_ARGS_((CipherItem *));
-static int RailfenceSwapRails	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-static int RailfenceMoveStart	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-static void RailfenceSetKey	_ANSI_ARGS_((CipherItem *, int, int));
-static char *RailfenceTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreateRailfence (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteRailfence (ClientData);
+static char *GetRailfence (Tcl_Interp *, CipherItem *);
+static int  SetRailfence (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreRailfence (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveRailfence (Tcl_Interp *, CipherItem *,
+				char *);
+int RailfenceCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int RailfenceUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int RailfenceSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int RailfenceLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void RailfenceInitKey (CipherItem *, int);
+static void RailfenceAdjustKey (CipherItem *);
+static int RailfenceSwapRails (Tcl_Interp *, CipherItem *,
+	    			int, int);
+static int RailfenceMoveStart (Tcl_Interp *, CipherItem *,
+	    			int, int);
+static void RailfenceSetKey (CipherItem *, int, int);
+static char *RailfenceTransform (CipherItem *, const char *, int);
 
 typedef struct RailfenceItem {
     CipherItem header;
@@ -894,7 +894,7 @@ RailfenceCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 static int __attribute__((unused))
 EncodeMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, char *pt, char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

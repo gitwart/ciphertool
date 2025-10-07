@@ -28,8 +28,8 @@
 
 #include <cipherDebug.h>
 
-int TwosquareCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+int TwosquareCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 #define KEY0	'0'
 #define KEY1	'1'
@@ -48,31 +48,31 @@ int TwosquareCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateTwosquare	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void	DeleteTwosquare		_ANSI_ARGS_((ClientData));
-static char *GetTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static char *GetFoursquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int TwosquareUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int TwosquareSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int TwosquareLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int TwosquareKeyvalToLetter	_ANSI_ARGS_((CipherItem *, const char *,
-				int));
-static char *TwosquareLetterToKeyval _ANSI_ARGS_((CipherItem *, char, int));
-static int TwosquareKeycharToInt	_ANSI_ARGS_((char));
-static int TwosquareKeyPairToIndex	_ANSI_ARGS_((int, int));
-static int EncodeTwosquare	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *EncodeFoursquareString	_ANSI_ARGS_((CipherItem *, const char *));
+static int  CreateTwosquare (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void	DeleteTwosquare (ClientData);
+static char *GetTwosquare (Tcl_Interp *, CipherItem *);
+static char *GetFoursquare (Tcl_Interp *, CipherItem *);
+static int  SetTwosquare (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreTwosquare (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveTwosquare (Tcl_Interp *, CipherItem *,
+				char *);
+static int TwosquareUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int TwosquareSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int TwosquareLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int TwosquareKeyvalToLetter (CipherItem *, const char *,
+				int);
+static char *TwosquareLetterToKeyval (CipherItem *, char, int);
+static int TwosquareKeycharToInt (char);
+static int TwosquareKeyPairToIndex (int, int);
+static int EncodeTwosquare (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *EncodeFoursquareString (CipherItem *, const char *);
 
 char *twosquareKeyConv[36] = {"00", "01", "02", "03", "04", "05",
 			      "10", "11", "12", "13", "14", "15",
@@ -862,7 +862,7 @@ EncodeTwosquare(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const c
     char *ct = (char *)NULL;
     char *newPt = (char *)NULL;
     char *tempCt = (char *)NULL;
-    int count;
+    Tcl_Size count;
     int i;
     const char **argv;
 

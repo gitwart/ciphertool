@@ -28,23 +28,23 @@
 #include <wordtree.h>
 #include <limits.h>
 
-static Tcl_Obj *lookupByPattern		_ANSI_ARGS_((Tcl_Interp *interp,
-					Tcl_Obj *wordList, const char *pattern));
-static Tcl_Obj *filterWordList		_ANSI_ARGS_((Tcl_Interp *interp,
-					Tcl_Obj *wordList, const char *pattern));
-static Tcl_Obj *readDictionaryFile	_ANSI_ARGS_((Tcl_Interp *interp,
-					Dictionary *dict, int length));
-static Tcl_Obj *getWordsMatchingLength	_ANSI_ARGS_((Tcl_Interp *interp,
-					Dictionary *dict, int length));
-static int writeDictionaryFile		_ANSI_ARGS_((Tcl_Interp *interp,
+static Tcl_Obj *lookupByPattern (Tcl_Interp *interp,
+					Tcl_Obj *wordList, const char *pattern);
+static Tcl_Obj *filterWordList (Tcl_Interp *interp,
+					Tcl_Obj *wordList, const char *pattern);
+static Tcl_Obj *readDictionaryFile (Tcl_Interp *interp,
+					Dictionary *dict, int length);
+static Tcl_Obj *getWordsMatchingLength (Tcl_Interp *interp,
+					Dictionary *dict, int length);
+static int writeDictionaryFile (Tcl_Interp *interp,
 					Dictionary *dict, int length,
-					Tcl_Obj *wordList));
-static int addWordToDictionary		_ANSI_ARGS_((Tcl_Interp *interp,
-					Dictionary *dict, char *word));
-static int wordIndexInList		_ANSI_ARGS_((Tcl_Interp *interp,
-					Tcl_Obj *wordList, char *word));
-static int isIllegalTrigram		_ANSI_ARGS_((Tcl_Interp *interp,
-					Dictionary *dict, char *trigram));
+					Tcl_Obj *wordList);
+static int addWordToDictionary (Tcl_Interp *interp,
+					Dictionary *dict, char *word);
+static int wordIndexInList (Tcl_Interp *interp,
+					Tcl_Obj *wordList, char *word);
+static int isIllegalTrigram (Tcl_Interp *interp,
+					Dictionary *dict, char *trigram);
 
 /*
  * Trap any attempts to change the dictionary directory and update the
@@ -75,7 +75,7 @@ char *DictionaryCacheTraceProc(ClientData clientData, Tcl_Interp *interp, const 
     if (flags | TCL_TRACE_WRITES) {
 	Tcl_Obj *value = (Tcl_Obj *)NULL;
 	Tcl_Obj **cacheVals = (Tcl_Obj **)NULL;
-	int valueElemCount = 0;
+	Tcl_Size valueElemCount = 0;
 	int i;
 	int internalVal = 0;
 
@@ -112,7 +112,7 @@ char *DictionaryCacheTraceProc(ClientData clientData, Tcl_Interp *interp, const 
  * Determine all of the possible valid word lengths from the dictionary
  * filenames.
  */
-int AvailableLengthsObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int AvailableLengthsObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     int min = 0;
     int max = 0;
@@ -156,7 +156,7 @@ int AvailableLengthsObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
  * Look up a list of words in the dictionary that are all of the same
  * length, and that match an optional pattern.
  */
-int LookupByLengthObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int LookupByLengthObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
     char *pattern = (char *)NULL;
@@ -190,7 +190,7 @@ int LookupByLengthObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tc
  * Look up a list of words in the dictionary that match a given letter
  * pattern.
  */
-int LookupByPatternObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int LookupByPatternObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_Obj *resultObj = (Tcl_Obj *)NULL;
     Tcl_Obj *wordList = (Tcl_Obj *)NULL;
@@ -229,7 +229,7 @@ int LookupByPatternObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, T
     return TCL_OK;
 }
 
-int IsWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int IsWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_Obj *wordObj = (Tcl_Obj *)NULL;
     Tcl_Obj *wordList = (Tcl_Obj *)NULL;
@@ -257,7 +257,7 @@ int IsWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *C
     return TCL_OK;
 }
 
-int IsNumberObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int IsNumberObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     char *wordString = (char *)NULL;
 
     if (objc != 2) {
@@ -289,7 +289,7 @@ int IsNumberObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj 
  * Add a word t the dictionary.  If the word is already in the dictionary
  * then it is moved to the front.
  */
-int AddWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int AddWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_Obj *wordObj = (Tcl_Obj *)NULL;
 
@@ -305,7 +305,7 @@ int AddWordObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *
 /*
  * Clear the cache of words.
  */
-int ClearCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int ClearCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     int mask = 0;
     int i;
@@ -331,7 +331,7 @@ int ClearCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Ob
     return TCL_OK;
 }
 
-int IsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int IsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
 
     if (objc != 2) {
@@ -342,12 +342,12 @@ int IsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
     return isIllegalTrigram(interp, dict, Tcl_GetString(objv[1]));
 }
 
-int DumpDictionaryCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int DumpDictionaryCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     Tcl_HashEntry *hashEntry;
     Tcl_HashSearch tableSearch;
     Tcl_Obj *listObj = (Tcl_Obj *)NULL;
-    int listLength = 0;
+    Tcl_Size listLength = 0;
 
     if (objc != 1) {
 	Tcl_SetResult(interp, "Usage: dump", TCL_STATIC);
@@ -373,9 +373,9 @@ int DumpDictionaryCacheObjCmd(ClientData clientData, Tcl_Interp *interp, int obj
     return TCL_OK;
 }
 
-int ContainsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int ContainsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
-    int stringLength = 0;
+    Tcl_Size stringLength = 0;
     int i;
     char *string = (char *)NULL;
     int isIllegal = 0;
@@ -414,10 +414,10 @@ int ContainsIllegalTrigramObjCmd(ClientData clientData, Tcl_Interp *interp, int 
     return TCL_OK;
 }
 
-int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
     Dictionary *dict = (Dictionary *)clientData;
     int firstWildIndex = 0;
-    int patternLength = 0;
+    Tcl_Size patternLength = 0;
     char *pattern;
     char *tempPattern;
     int *lengthPtr;
@@ -519,7 +519,7 @@ int AllWordsMatchingObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, 
 static Tcl_Obj *
 lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
     int i, j;
-    int wordListLength = 0;
+    Tcl_Size wordListLength = 0;
     Tcl_Obj *filteredList;
     Tcl_Obj **words = (Tcl_Obj **)NULL;
     unsigned char letterMap[UCHAR_MAX];
@@ -565,7 +565,7 @@ lookupByPattern(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
 static Tcl_Obj *
 filterWordList(Tcl_Interp *interp, Tcl_Obj *wordList, const char *pattern) {
     int i;
-    int wordListLength = 0;
+    Tcl_Size wordListLength = 0;
     Tcl_Obj *filteredList;
     Tcl_Obj **words = (Tcl_Obj **)NULL;
 
@@ -656,7 +656,7 @@ writeDictionaryFile(Tcl_Interp *interp, Dictionary *dict, int length, Tcl_Obj *w
     char fileTail[TCL_DOUBLE_SPACE];
     char *pathParts[2];
     Tcl_Channel fileChannel;
-    int wordListLength = 0;
+    Tcl_Size wordListLength = 0;
     int i;
     Tcl_Obj **words;
 
@@ -775,7 +775,7 @@ addWordToDictionary(Tcl_Interp *interp, Dictionary *dict, char *word) {
 
 static int
 wordIndexInList(Tcl_Interp *interp, Tcl_Obj *wordList, char *word) {
-    int wordListLength = 0;
+    Tcl_Size wordListLength = 0;
     Tcl_Obj **words;
     int i;
 
@@ -798,7 +798,7 @@ lookupByLength(Tcl_Interp *interp, Dictionary *dict, int length, char *pattern) 
     Tcl_Obj *wordList = (Tcl_Obj *)NULL;
     Tcl_Obj *filteredWordList = (Tcl_Obj *)NULL;
     Tcl_HashEntry *hashEntry = (Tcl_HashEntry *)NULL;
-    int patternLength = 0;
+    Tcl_Size patternLength = 0;
 
     if (pattern != NULL) {
 	patternLength = strlen(pattern);
@@ -835,7 +835,7 @@ lookupByLength(Tcl_Interp *interp, Dictionary *dict, int length, char *pattern) 
 		Tcl_IncrRefCount(wordList);
 
 		if ((dict->cacheTypes & DICTIONARY_PATTERN_CACHE) && pattern != NULL) {
-		    int wordListLength = 0;
+		    Tcl_Size wordListLength = 0;
 		    int dummy;
 		    Tcl_ListObjLength(interp, wordList, &wordListLength);
 		    /*
@@ -871,7 +871,7 @@ isIllegalTrigram(Tcl_Interp *interp, Dictionary *dict, char *trigram) {
     Tcl_Obj *wordList = (Tcl_Obj *)NULL;
     int *lengthPtr = (int *)NULL;
     char pattern[6];
-    int wordListLength = 0;
+    Tcl_Size wordListLength = 0;
     Tcl_HashEntry *hashEntry = (Tcl_HashEntry *)NULL;
     int isNewEntry = 0;
     Tcl_Obj *resultPtr = Tcl_GetObjResult(interp);

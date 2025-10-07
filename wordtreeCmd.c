@@ -26,7 +26,7 @@
 #include <wordtree.h>
 #include <cipherDebug.h>
 
-static Tcl_Obj *findBestSplit _ANSI_ARGS_((Tcl_Interp *, TreeNode *root, const char *, int *, Tcl_Obj **, int *));
+static Tcl_Obj *findBestSplit (Tcl_Interp *, TreeNode *root, const char *, int *, Tcl_Obj **, int *);
 
 int
 WordtreeCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
@@ -255,7 +255,7 @@ static Tcl_Obj *findBestSplit(Tcl_Interp *interp, TreeNode *rootNode, const char
             if (localBestMatch == (Tcl_Obj *)NULL) {
                 Tcl_ListObjAppendElement(interp, bestTextAtPosition[textLength], wordObj);
             } else {
-                int objc;
+                Tcl_Size objc;
                 Tcl_Obj **objv;
                 Tcl_ListObjGetElements(interp, localBestMatch, &objc, &objv);
                 Tcl_SetListObj(bestTextAtPosition[textLength], objc, objv);
@@ -281,7 +281,7 @@ static Tcl_Obj *findBestSplit(Tcl_Interp *interp, TreeNode *rootNode, const char
                     if (localBestMatch == (Tcl_Obj *)NULL) {
                         Tcl_ListObjAppendElement(interp, bestTextAtPosition[textLength], wordObj);
                     } else {
-                        int objc;
+                        Tcl_Size objc;
                         Tcl_Obj **objv;
                         Tcl_ListObjGetElements(interp, localBestMatch, &objc, &objv);
                         Tcl_SetListObj(bestTextAtPosition[textLength], objc, objv);

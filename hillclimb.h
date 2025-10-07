@@ -24,13 +24,13 @@
 #ifndef _HILLCLIMB_H_INCLUDED
 #define _HILLCLIMB_H_INCLUDED
 
-int	HillclimbGenerateSwapNeighborKeysObjCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int	HillclimbAristocratSwapNeighborKeysObjCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int	HillclimbKeysquareSwapNeighborKeysObjCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, Tcl_Obj *CONST[]));
-int	HillclimbRandomizeListObjCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, Tcl_Obj *CONST[]));
+int	HillclimbGenerateSwapNeighborKeysObjCmd (ClientData, Tcl_Interp *, int, Tcl_Obj * const[]);
+int	HillclimbAristocratSwapNeighborKeysObjCmd (ClientData, Tcl_Interp *, int, Tcl_Obj * const[]);
+int	HillclimbKeysquareSwapNeighborKeysObjCmd (ClientData, Tcl_Interp *, int, Tcl_Obj * const[]);
+int	HillclimbRandomizeListObjCmd (ClientData, Tcl_Interp *, int, Tcl_Obj * const[]);
 
-Tcl_Obj *HillclimbGenerateSwapNeighborKeys _ANSI_ARGS_((Tcl_Interp *, char *, char *));
-Tcl_Obj *HillclimbKeysquareSwapNeighborKeys _ANSI_ARGS_((Tcl_Interp *, char *, char *));
-Tcl_Obj *HillclimbRandomizeList _ANSI_ARGS_((Tcl_Interp *, Tcl_Obj *));
+Tcl_Obj *HillclimbGenerateSwapNeighborKeys (Tcl_Interp *, char *, char *);
+Tcl_Obj *HillclimbKeysquareSwapNeighborKeys (Tcl_Interp *, char *, char *);
+Tcl_Obj *HillclimbRandomizeList (Tcl_Interp *, Tcl_Obj *);
 
 #endif /* _HILLCLIMB_H_INCLUDED */

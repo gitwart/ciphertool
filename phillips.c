@@ -31,29 +31,29 @@
 #define DEFAULT_NUM_BLOCKS 8
 #define MAX_NUM_BLOCKS 20
 
-static int  CreatePhillips	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeletePhillips		_ANSI_ARGS_((ClientData));
-static char *GetPhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetPhillips		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestorePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolvePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int PhillipsCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int PhillipsUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int PhillipsSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int PhillipsLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int PhillipsSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int EncodePhillips	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *PhillipsTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreatePhillips (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeletePhillips (ClientData);
+static char *GetPhillips (Tcl_Interp *, CipherItem *);
+static int  SetPhillips (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestorePhillips (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolvePhillips (Tcl_Interp *, CipherItem *,
+				char *);
+int PhillipsCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int PhillipsUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int PhillipsSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int PhillipsLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int PhillipsSwapCols (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int EncodePhillips (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *PhillipsTransform (CipherItem *, const char *, int);
 
 typedef struct PhillipsItem {
     CipherItem header;
@@ -770,7 +770,7 @@ PhillipsCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 static int
 EncodePhillips(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

@@ -31,30 +31,30 @@
 
 #include <cipherDebug.h>
 
-static int  CreateMorbit	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreMorbit	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int MorbitCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int MorbitUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int MorbitSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int MorbitLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *MorbitToMorse 	_ANSI_ARGS_((CipherItem *, const char *));
-static int MorbitStringToKeyElem _ANSI_ARGS_((const char *));
-static char *MorbitKeyElemToString _ANSI_ARGS_((int));
-int MorbitSolveValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int EncodeMorbit		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateMorbit (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetMorbit (Tcl_Interp *, CipherItem *);
+static int  SetMorbit (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreMorbit (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveMorbit (Tcl_Interp *, CipherItem *,
+				char *);
+int MorbitCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int MorbitUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int MorbitSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int MorbitLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *MorbitToMorse (CipherItem *, const char *);
+static int MorbitStringToKeyElem (const char *);
+static char *MorbitKeyElemToString (int);
+int MorbitSolveValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int EncodeMorbit (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 static char morbit_key_elems[10][3] = {"  ", "..", ".-", ".x", "-.", "--", "-x", "x.", "x-", "xx"};
 

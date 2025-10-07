@@ -26,13 +26,13 @@
 #include <math.h>
 #include <string.h>
 
-static int CreateDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
-static void DeleteDigram _ANSI_ARGS_((ClientData));
-static int NormalizeDigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double DigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static double DigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static int DumpDigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static int CreateDigram (Tcl_Interp *, ScoreItem *, int, const char **);
+static int AddDigram (Tcl_Interp *, ScoreItem *, const char *, double);
+static void DeleteDigram (ClientData);
+static int NormalizeDigramLog (Tcl_Interp *, ScoreItem *);
+static double DigramValue (Tcl_Interp *, ScoreItem *, const char *);
+static double DigramElementValue (Tcl_Interp *, ScoreItem *, const char *);
+static int DumpDigram (Tcl_Interp *, ScoreItem *, const char *);
 
 typedef struct DigramItem {
     ScoreItem header;

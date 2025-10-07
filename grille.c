@@ -29,31 +29,31 @@
 
 #include <cipherDebug.h>
 
-static int  CreateGrille	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteGrille		_ANSI_ARGS_((ClientData));
-static char *GetGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static char *GetStaticGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int  SetGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveGrille		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int GrilleCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int GrilleUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int GrilleSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int GrilleIntSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, int, int));
-static int GrilleLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int GrilleInitKey	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
-static int RecSolveGrille	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
+static int  CreateGrille (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteGrille (ClientData);
+static char *GetGrille (Tcl_Interp *, CipherItem *);
+static char *GetStaticGrille (Tcl_Interp *, CipherItem *,
+				char *);
+static int  SetGrille (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreGrille (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveGrille (Tcl_Interp *, CipherItem *,
+				char *);
+int GrilleCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int GrilleUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int GrilleSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int GrilleIntSubstitute (Tcl_Interp *, CipherItem *,
+				int, int, int);
+static int GrilleLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int GrilleInitKey (Tcl_Interp *, CipherItem *, int);
+static int RecSolveGrille (Tcl_Interp *, CipherItem *,
+				char *, char *, int);
 
 #define STANDARD	1
 #define INVERSE		2

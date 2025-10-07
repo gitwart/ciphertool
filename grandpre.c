@@ -30,26 +30,26 @@
 
 #include <cipherDebug.h>
 
-static int  CreateGrandpre	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteGrandpre		_ANSI_ARGS_((ClientData));
-static char *GetGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveGrandpre	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int GrandpreCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int GrandpreUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int GrandpreSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int GrandpreLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int EncodeGrandpre _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateGrandpre (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteGrandpre (ClientData);
+static char *GetGrandpre (Tcl_Interp *, CipherItem *);
+static int  SetGrandpre (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreGrandpre (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveGrandpre (Tcl_Interp *, CipherItem *,
+				char *);
+int GrandpreCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int GrandpreUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int GrandpreSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int GrandpreLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int EncodeGrandpre (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 typedef struct GrandpreItem {
     CipherItem header;

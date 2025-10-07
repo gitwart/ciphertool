@@ -26,16 +26,16 @@
 #include <math.h>
 #include <string.h>
 
-double TrigramStringValue _ANSI_ARGS_((const char *, double ***));
-double TrigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, unsigned char, double ***));
+double TrigramStringValue (const char *, double ***);
+double TrigramSingleValue (unsigned char, unsigned char, unsigned char, double ***);
 
-static int CreateTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, int, const char **));
-static int AddTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *, double));
-static void DeleteTrigram _ANSI_ARGS_((ClientData));
-static int NormalizeTrigramLog _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-static double TrigramValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static double TrigramElementValue _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
-static int DumpTrigram _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, const char *));
+static int CreateTrigram (Tcl_Interp *, ScoreItem *, int, const char **);
+static int AddTrigram (Tcl_Interp *, ScoreItem *, const char *, double);
+static void DeleteTrigram (ClientData);
+static int NormalizeTrigramLog (Tcl_Interp *, ScoreItem *);
+static double TrigramValue (Tcl_Interp *, ScoreItem *, const char *);
+static double TrigramElementValue (Tcl_Interp *, ScoreItem *, const char *);
+static int DumpTrigram (Tcl_Interp *, ScoreItem *, const char *);
 
 typedef struct TrigramItem {
     ScoreItem header;

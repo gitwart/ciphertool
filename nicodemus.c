@@ -37,34 +37,34 @@
 #define GRN_TYPE 3
 #define PRT_TYPE 4
 
-static int  CreateNicodemus	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteNicodemus		_ANSI_ARGS_((ClientData));
-static char *GetNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int NicodemusCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int NicodemusUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int NicodemusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int NicodemusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void NicodemusInitKey	_ANSI_ARGS_((CipherItem *, int));
-static int NicodemusSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-static int NicodemusFitColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int));
-int NicodemusCheckValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
-				int *, int));
-static int EncodeNicodemus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *NicodemusTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreateNicodemus (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteNicodemus (ClientData);
+static char *GetNicodemus (Tcl_Interp *, CipherItem *);
+static int  SetNicodemus (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreNicodemus (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveNicodemus (Tcl_Interp *, CipherItem *,
+				char *);
+int NicodemusCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int NicodemusUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int NicodemusSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int NicodemusLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void NicodemusInitKey (CipherItem *, int);
+static int NicodemusSwapColumns (Tcl_Interp *, CipherItem *,
+	    			int, int);
+static int NicodemusFitColumn (Tcl_Interp *, CipherItem *,
+	    			int);
+int NicodemusCheckValue (Tcl_Interp *, ClientData,
+				int *, int);
+static int EncodeNicodemus (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *NicodemusTransform (CipherItem *, const char *, int);
 
 typedef struct NicodemusItem {
     CipherItem header;
@@ -1267,7 +1267,7 @@ NicodemusCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **a
 static int
 EncodeNicodemus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

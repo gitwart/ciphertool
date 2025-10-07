@@ -28,9 +28,9 @@
 
 #include <cipherDebug.h>
 
-void DeleteRagbaby		_ANSI_ARGS_((ClientData));
-int RagbabyCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+void DeleteRagbaby (ClientData);
+int RagbabyCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 #define MAXKEYLEN	24
 #define EMPTY		-1
@@ -39,24 +39,24 @@ int RagbabyCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateRagbaby	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetRagbaby		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetRagbaby		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int RagbabyUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int RagbabySubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int RagbabyLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *GetRagbabyOffsets	_ANSI_ARGS_((CipherItem *, char));
-static int EncodeRagbaby	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateRagbaby (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetRagbaby (Tcl_Interp *, CipherItem *);
+static int  SetRagbaby (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreRagbaby (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveRagbaby (Tcl_Interp *, CipherItem *,
+				char *);
+static int RagbabyUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int RagbabySubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int RagbabyLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *GetRagbabyOffsets (CipherItem *, char);
+static int EncodeRagbaby (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 /*
  * This structure contains the data associated with a single ragbaby cipher.

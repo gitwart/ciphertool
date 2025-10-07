@@ -39,8 +39,8 @@
 #undef TCL_STORAGE_CLASS
 #define TCL_STORAGE_CLASS DLLEXPORT
 
-EXTERN int Cipher_Init _ANSI_ARGS_((Tcl_Interp *interp));
-EXTERN int Dictionary_Init _ANSI_ARGS_((Tcl_Interp *interp));
+EXTERN int Cipher_Init (Tcl_Interp *interp);
+EXTERN int Dictionary_Init (Tcl_Interp *interp);
 
 #undef TCL_STORAGE_CLASS
 #define TCL_STORAGE_CLASS DLLIMPORT

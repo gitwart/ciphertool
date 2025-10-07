@@ -93,8 +93,8 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 
     } else if (*option == 'h' && (strncmp(option, "histfit", 7) == 0)) {
 	int bestFit = 0;
-	int count1 = 0;
-	int count2 = 0;
+	Tcl_Size count1 = 0;
+	Tcl_Size count2 = 0;
 	int *hist1 = (int *)NULL;
 	int *hist2 = (int *)NULL;
 	Tcl_Obj *hist1Obj = (Tcl_Obj *)NULL;
@@ -148,8 +148,8 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	return TCL_OK;
     } else if (*option == 'h' && (strncmp(option, "histvals", 8) == 0)) {
 	int fit = 0;
-	int count1 = 0;
-	int count2 = 0;
+	Tcl_Size count1 = 0;
+	Tcl_Size count2 = 0;
 	int *hist1 = (int *)NULL;
 	int *hist2 = (int *)NULL;
 	Tcl_Obj *hist1Obj = (Tcl_Obj *)NULL;
@@ -173,7 +173,7 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	}
 
 	if (count1 != count2) {
-	    sprintf(temp, "%d vs. %d", count1, count2);
+	    sprintf(temp, "%ld vs. %ld", (long)count1, (long)count2);
 	    Tcl_AppendResult(interp, "Number of elements in the histograms do not match:  ", temp, (char *)NULL);
 	    return TCL_ERROR;
 	}

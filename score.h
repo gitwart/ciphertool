@@ -41,36 +41,36 @@ typedef struct {
 
 #define DigramSingleValue(a, b, c) ( c[(unsigned char)a][(unsigned char)b] )
 
-int ScoreMethodCmd	_ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
+int ScoreMethodCmd	(ClientData, Tcl_Interp *, int, const char **);
 
-void	AddInternalScore _ANSI_ARGS_((ScoreItem *));
-void	DeleteScoreCommand _ANSI_ARGS_((ClientData));
-int	InitScoreTypes _ANSI_ARGS_((Tcl_Interp *));
-int	NullScoreNormalizer _ANSI_ARGS_((Tcl_Interp *, ScoreItem *));
-int	DumpScoreTable _ANSI_ARGS_((Tcl_Interp *, ScoreItem *, char *));
-int	ScoreCmd _ANSI_ARGS_((ClientData, Tcl_Interp *, int, const char **));
-void	DeleteScore _ANSI_ARGS_((ClientData));
-int     DumpTreeNode _ANSI_ARGS_((Tcl_Interp *, TreeNode *, Tcl_DString *, Tcl_DString *, int));
-double	DigramStringValue _ANSI_ARGS_((const char *, double **));
-double	DigramSingleValue _ANSI_ARGS_((unsigned char, unsigned char, double **));
-int  DefaultScoreValue _ANSI_ARGS_((Tcl_Interp *, const char *, double *));
-int  DefaultScoreElementValue _ANSI_ARGS_((Tcl_Interp *, const char *, double *));
+void	AddInternalScore (ScoreItem *);
+void	DeleteScoreCommand (ClientData);
+int	InitScoreTypes (Tcl_Interp *);
+int	NullScoreNormalizer (Tcl_Interp *, ScoreItem *);
+int	DumpScoreTable (Tcl_Interp *, ScoreItem *, char *);
+int	ScoreCmd (ClientData, Tcl_Interp *, int, const char **);
+void	DeleteScore (ClientData);
+int     DumpTreeNode (Tcl_Interp *, TreeNode *, Tcl_DString *, Tcl_DString *, int);
+double	DigramStringValue (const char *, double **);
+/* double	DigramSingleValue (unsigned char, unsigned char, double **); */
+int  DefaultScoreValue (Tcl_Interp *, const char *, double *);
+int  DefaultScoreElementValue (Tcl_Interp *, const char *, double *);
 
-typedef int	ScoreCommandProc _ANSI_ARGS_((ClientData, Tcl_Interp *,
-		int, const char **));
-typedef int	ScoreCreateProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		int, const char **));
-typedef void	ScoreDeleteProc _ANSI_ARGS_((ClientData));
-typedef int	ScoreAddProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		const char *, double));
-typedef double	ScoreValueProc  _ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		const char *));
-typedef double	ScoreElementValueProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		const char *));
-typedef int	ScoreNormalizeProc	_ANSI_ARGS_((Tcl_Interp *,
-		ScoreItem *));
-typedef int	ScoreDumpProc	_ANSI_ARGS_((Tcl_Interp *, ScoreItem *,
-		const char *));
+typedef int	ScoreCommandProc (ClientData, Tcl_Interp *,
+		int, const char **);
+typedef int	ScoreCreateProc	(Tcl_Interp *, ScoreItem *,
+		int, const char **);
+typedef void	ScoreDeleteProc (ClientData);
+typedef int	ScoreAddProc	(Tcl_Interp *, ScoreItem *,
+		const char *, double);
+typedef double	ScoreValueProc  (Tcl_Interp *, ScoreItem *,
+		const char *);
+typedef double	ScoreElementValueProc	(Tcl_Interp *, ScoreItem *,
+		const char *);
+typedef int	ScoreNormalizeProc	(Tcl_Interp *,
+		ScoreItem *);
+typedef int	ScoreDumpProc	(Tcl_Interp *, ScoreItem *,
+		const char *);
 
 typedef struct ScoreType {
     char *type;				/* Name of scoring type */

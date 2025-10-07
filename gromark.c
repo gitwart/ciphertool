@@ -27,35 +27,35 @@
 
 #include <cipherDebug.h>
 
-void DeleteGromark	_ANSI_ARGS_((ClientData));
-int GromarkCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+void DeleteGromark (ClientData);
+int GromarkCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateGromark	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetGromark		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetGromark		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int GromarkUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int GromarkSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int GromarkLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void GromarkInitOffset	_ANSI_ARGS_((CipherItem *, int));
-static int GromarkChainSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char, int));
-static int EncodeGromark	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *GromarkTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreateGromark (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetGromark (Tcl_Interp *, CipherItem *);
+static int  SetGromark (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreGromark (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveGromark (Tcl_Interp *, CipherItem *,
+				char *);
+static int GromarkUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int GromarkSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int GromarkLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void GromarkInitOffset (CipherItem *, int);
+static int GromarkChainSubstitute (Tcl_Interp *, CipherItem *,
+				char, int);
+static int EncodeGromark (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *GromarkTransform (CipherItem *, const char *, int);
 
 /*
  * This structure contains the data associated with a single gromark cipher.
@@ -937,7 +937,7 @@ static int
 EncodeGromark(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     GromarkItem *gromPtr = (GromarkItem *)itemPtr;
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

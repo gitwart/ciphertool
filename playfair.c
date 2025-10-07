@@ -43,39 +43,39 @@ typedef struct PlayfairItem {
     int maxSolVal;
 } PlayfairItem;
 
-static int  CreatePlayfair	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void  DeletePlayfair		_ANSI_ARGS_((ClientData));
-static int  CreateBigPlayfair	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetPlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetPlayfair		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestorePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolvePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int PlayfairCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int PlayfairUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int PlayfairSubstitute _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int PlayfairLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int PlayfairSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int PlayfairSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static void DecodePair	_ANSI_ARGS_((PlayfairItem *, char, char,
-				char *, char *, int));
-static int PlayfairSetPeriod	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int));
-static int PlayfairLetterToKeyIndex _ANSI_ARGS_((PlayfairItem *, char));
-static int EncodePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *DecodePlayfair	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static char *PlayfairAddNulls   _ANSI_ARGS_((const char *, int));
+static int  CreatePlayfair (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void  DeletePlayfair (ClientData);
+static int  CreateBigPlayfair (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetPlayfair (Tcl_Interp *, CipherItem *);
+static int  SetPlayfair (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestorePlayfair (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolvePlayfair (Tcl_Interp *, CipherItem *,
+				char *);
+int PlayfairCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int PlayfairUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int PlayfairSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int PlayfairLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int PlayfairSwapCols (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int PlayfairSwapRows (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static void DecodePair (PlayfairItem *, char, char,
+				char *, char *, int);
+static int PlayfairSetPeriod (Tcl_Interp *, CipherItem *, int);
+static int PlayfairLetterToKeyIndex (PlayfairItem *, char);
+static int EncodePlayfair (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *DecodePlayfair (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static char *PlayfairAddNulls   (const char *, int);
 
 CipherType PlayfairType = {
     "playfair",
@@ -1028,7 +1028,7 @@ EncodePlayfair(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const ch
     PlayfairItem *playPtr = (PlayfairItem *)itemPtr;
     char *ct = (char *)NULL;
     char *newPt = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

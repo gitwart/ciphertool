@@ -33,32 +33,32 @@
 
 #include <cipherDebug.h>
 
-void DeleteQuagmire		_ANSI_ARGS_((ClientData));
-int QuagmireCmd		        _ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+void DeleteQuagmire (ClientData);
+int QuagmireCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateQuagmire	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetQuagmire	        _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void QuagmireSetPeriod   _ANSI_ARGS_((CipherItem *, int));
-static int QuagmireUndo	        _ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int QuagmireSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int QuagmireLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int EncodeQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int SolveQuagmire	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
+static int  CreateQuagmire (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetQuagmire (Tcl_Interp *, CipherItem *);
+static int  SetQuagmire (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreQuagmire (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void QuagmireSetPeriod   (CipherItem *, int);
+static int QuagmireUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int QuagmireSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int QuagmireLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int EncodeQuagmire (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int SolveQuagmire (Tcl_Interp *, CipherItem *,
+				char *);
 
 /*
  * This structure contains the data associated with a single quagmire cipher.
@@ -910,7 +910,7 @@ static int
 RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, const char *part2)
 {
     QuagmireItem *quagPtr = (QuagmireItem *)itemPtr;
-    int count;
+    Tcl_Size count;
     const char *vertical = part1;
     const char **argv;
 
@@ -987,7 +987,7 @@ RestoreQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *part1, cons
 static int
 EncodeQuagmire(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     /*

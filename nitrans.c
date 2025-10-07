@@ -30,30 +30,30 @@
 
 #include <cipherDebug.h>
 
-static int  CreateNitrans	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteNitrans		_ANSI_ARGS_((ClientData));
-static char *GetNitrans		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetNitrans		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int NitransCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int NitransUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static void NitransInitKey	_ANSI_ARGS_((CipherItem *));
-static int NitransSwapVals	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-int NitransCheckSolutionValue  _ANSI_ARGS_((Tcl_Interp *, ClientData,
-	    			int *, int));
-static int NitransShiftColumn	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int EncodeNitrans	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *NitransTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
+static int  CreateNitrans (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteNitrans (ClientData);
+static char *GetNitrans (Tcl_Interp *, CipherItem *);
+static int  SetNitrans (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreNitrans (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveNitrans (Tcl_Interp *, CipherItem *,
+				char *);
+int NitransCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int NitransUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static void NitransInitKey (CipherItem *);
+static int NitransSwapVals (Tcl_Interp *, CipherItem *,
+	    			int, int);
+int NitransCheckSolutionValue (Tcl_Interp *, ClientData,
+	    			int *, int);
+static int NitransShiftColumn (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int EncodeNitrans (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *NitransTransform (CipherItem *, const char *, int);
 
 #define VERTICAL	1
 #define HORIZONTAL	2
@@ -829,7 +829,7 @@ NitransCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **arg
 static int
 EncodeNitrans(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

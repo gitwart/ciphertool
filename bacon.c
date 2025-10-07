@@ -101,33 +101,33 @@ static char *baconAlphabet[26] = {"aaaaa", "aaaab", "aaaba", "aaabb",
 				  "baabb", "baabb", "babaa", "babab",
 				  "babba", "babbb" };
 
-static int CreateBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, const char **));
-void DeleteBaconian		_ANSI_ARGS_((ClientData));
-static char *GetBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetBaconian		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int BaconianCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int BaconianUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int BaconianSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int BaconianLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int BaconianSingleSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int BaconianGroupSub	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *BaconianTranslate	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static int BaconianCheckSub	_ANSI_ARGS_((CipherItem *, const char *, const char *));
-static int EncodeBaconian	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int CreateBaconian (Tcl_Interp *, CipherItem *,
+				int, const char **);
+void DeleteBaconian (ClientData);
+static char *GetBaconian (Tcl_Interp *, CipherItem *);
+static int  SetBaconian (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreBaconian (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveBaconian (Tcl_Interp *, CipherItem *,
+				char *);
+int BaconianCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int BaconianUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int BaconianSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int BaconianLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int BaconianSingleSub (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int BaconianGroupSub (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *BaconianTranslate (Tcl_Interp *, CipherItem *,
+				char *, char *);
+static int BaconianCheckSub (CipherItem *, const char *, const char *);
+static int EncodeBaconian (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 typedef struct BaconianItem {
     CipherItem header;
@@ -1122,14 +1122,14 @@ GetPtLetter(const char *key, const char *word) {
 static int
 EncodeBaconian(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     int i;
     const char **argv;
     Tcl_Obj *wordlist;
 
     char c;
     int incomplete = 0;
-    int num_5_letter_words;
+    Tcl_Size num_5_letter_words;
     Tcl_Obj *wordListByLetter[26];
     int lengthOfWordListByLetter[26];
 

@@ -27,23 +27,23 @@
 
 #include <cipherDebug.h>
 
-static int  CreateKeyphrase	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, char **));
-static char *GetKeyphrase	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetKeyphrase	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int  RestoreKeyphrase	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
-static int  SolveKeyphrase	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int KeyphraseCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, char **));
-static int KeyphraseUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, int));
-static int KeyphraseSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *, int));
-static int KeyphraseLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *, char *));
+static int  CreateKeyphrase (Tcl_Interp *interp,
+				CipherItem *, int, char **);
+static char *GetKeyphrase (Tcl_Interp *, CipherItem *);
+static int  SetKeyphrase (Tcl_Interp *, CipherItem *,
+				char *);
+static int  RestoreKeyphrase (Tcl_Interp *, CipherItem *,
+				char *, char *);
+static int  SolveKeyphrase (Tcl_Interp *, CipherItem *,
+				char *);
+int KeyphraseCmd (ClientData, Tcl_Interp *,
+				int, char **);
+static int KeyphraseUndo (Tcl_Interp *, CipherItem *,
+				char *, int);
+static int KeyphraseSubstitute (Tcl_Interp *, CipherItem *,
+				char *, char *, int);
+static int KeyphraseLocateTip (Tcl_Interp *, CipherItem *,
+				char *, char *);
 
 typedef struct KeyphraseItem {
     CipherItem header;

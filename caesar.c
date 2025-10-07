@@ -28,30 +28,30 @@
 
 #include <cipherDebug.h>
 
-int CaesarCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
+int CaesarCmd (ClientData, Tcl_Interp *,
+				int, const char **);
 
 /*
  * Prototypes for procedures only referenced in this file.
  */
 
-static int  CreateCaesar	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreCaesar	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-static int CaesarUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int CaesarSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int CaesarLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int EncodeCaesar		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateCaesar (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetCaesar (Tcl_Interp *, CipherItem *);
+static int  SetCaesar (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreCaesar (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveCaesar (Tcl_Interp *, CipherItem *,
+				char *);
+static int CaesarUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int CaesarSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int CaesarLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int EncodeCaesar (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 /* Helper function? */
 static void ShiftString		(char *s, int shift);

@@ -36,11 +36,11 @@
 #define BeaufortGetCt(key, pt) 	( (key-pt+26)%26 + 'a')
 #define BeaufortGetPt(key, ct) 	( (key-ct+26)%26 + 'a')
 
-char PortaGetKey _ANSI_ARGS_((char ct, char pt));
-char PortaGetPt _ANSI_ARGS_((char key, char ct));
-char PortaGetCt _ANSI_ARGS_((char key, char pt));
+char PortaGetKey (char ct, char pt);
+char PortaGetPt (char key, char ct);
+char PortaGetCt (char key, char pt);
 
-int PortaxGetPt	 _ANSI_ARGS_((char key, char ct1, char ct2,
-	    	char *pt1, char *pt2));
+int PortaxGetPt	 (char key, char ct1, char ct2,
+	    	char *pt1, char *pt2);
 
 #endif /* _VIGTYPES_H_INCLUDED */

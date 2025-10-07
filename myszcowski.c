@@ -43,33 +43,33 @@
 
 #include <cipherDebug.h>
 
-static int  CreateMyszcowski	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteMyszcowski		_ANSI_ARGS_((ClientData));
-static char *GetMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int MyszcowskiCmd		_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int MyszcowskiUndo	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int MyszcowskiSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int MyszcowskiLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static void MyszcowskiInitKey	_ANSI_ARGS_((CipherItem *, int));
-static void MyszcowskiAdjustKey	_ANSI_ARGS_((CipherItem *));
-static int RecSolveMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int, int));
-static int MyszcowskiShiftColumn _ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static char *MyszcowskiTransform _ANSI_ARGS_((CipherItem *, const char *, int));
-static int EncodeMyszcowski	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
+static int  CreateMyszcowski (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteMyszcowski (ClientData);
+static char *GetMyszcowski (Tcl_Interp *, CipherItem *);
+static int  SetMyszcowski (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreMyszcowski (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveMyszcowski (Tcl_Interp *, CipherItem *,
+				char *);
+int MyszcowskiCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int MyszcowskiUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int MyszcowskiSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int MyszcowskiLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static void MyszcowskiInitKey (CipherItem *, int);
+static void MyszcowskiAdjustKey (CipherItem *);
+static int RecSolveMyszcowski (Tcl_Interp *, CipherItem *,
+	    			int, int, int);
+static int MyszcowskiShiftColumn (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static char *MyszcowskiTransform (CipherItem *, const char *, int);
+static int EncodeMyszcowski (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
 
 typedef struct MyszcowskiItem {
     CipherItem header;
@@ -1208,7 +1208,7 @@ MyszcowskiShiftColumn(Tcl_Interp *interp, CipherItem *itemPtr, int col, int amou
 static int
 EncodeMyszcowski(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
 
     if (Tcl_SplitList(interp, key, &count, &argv) != TCL_OK) {

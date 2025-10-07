@@ -30,39 +30,39 @@
 
 #include <cipherDebug.h>
 
-static int  CreateCadenus	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-void DeleteCadenus		_ANSI_ARGS_((ClientData));
-static char *GetCadenus		_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetCadenus		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int CadenusCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int CadenusUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int CadenusSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int CadenusLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int CadenusRotate	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				int, int));
-static void CadenusInitKey	_ANSI_ARGS_((CipherItem *, int));
-static int CadenusSwapColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-static int CadenusFitColumns	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, int));
-int CadenusCheckValue		_ANSI_ARGS_((Tcl_Interp *, ClientData,
-				int *, int));
-static void RecSolveCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			int, char *));
-static int EncodeCadenus	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *CadenusTransform	_ANSI_ARGS_((CipherItem *, const char *, int));
-static char *CadenusGenerateKeyOrder _ANSI_ARGS_((const char *));
+static int  CreateCadenus (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+void DeleteCadenus (ClientData);
+static char *GetCadenus (Tcl_Interp *, CipherItem *);
+static int  SetCadenus (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreCadenus (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveCadenus (Tcl_Interp *, CipherItem *,
+				char *);
+int CadenusCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int CadenusUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int CadenusSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int CadenusLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int CadenusRotate (Tcl_Interp *, CipherItem *,
+				int, int);
+static void CadenusInitKey (CipherItem *, int);
+static int CadenusSwapColumns (Tcl_Interp *, CipherItem *,
+	    			int, int);
+static int CadenusFitColumns (Tcl_Interp *, CipherItem *,
+	    			int, int);
+int CadenusCheckValue (Tcl_Interp *, ClientData,
+				int *, int);
+static void RecSolveCadenus (Tcl_Interp *, CipherItem *,
+	    			int, char *);
+static int EncodeCadenus (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *CadenusTransform (CipherItem *, const char *, int);
+static char *CadenusGenerateKeyOrder (const char *);
 
 #define KEY_ROTATE	-2
 #define ALL_ROTATE	-1
@@ -956,7 +956,7 @@ CadenusGenerateKeyOrder(const char *key) {
 static int
 EncodeCadenus(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char *order = (char *)NULL;
     char *generatedOrder = (char *)NULL;
     const char **argv;

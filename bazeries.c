@@ -32,32 +32,32 @@
 #define MAX_SEQ_LENGTH 6
 #define KEY_PERIOD 5
 
-static int  CreateBazeries	_ANSI_ARGS_((Tcl_Interp *interp,
-				CipherItem *, int, const char **));
-static char *GetBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *));
-static int  SetBazeries		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *));
-static int  RestoreBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int  SolveBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				char *));
-int BazeriesCmd			_ANSI_ARGS_((ClientData, Tcl_Interp *,
-				int, const char **));
-static int BazeriesUndo		_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, int));
-static int BazeriesSubstitute	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *, int));
-static int BazeriesLocateTip	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static int BazeriesSwapCols	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int BazeriesSwapRows	_ANSI_ARGS_((Tcl_Interp *, CipherItem *, int,
-	    			int));
-static int BazeriesInitSeq	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-	    			const char *));
-static int EncodeBazeries	_ANSI_ARGS_((Tcl_Interp *, CipherItem *,
-				const char *, const char *));
-static char *BazeriesTransform	_ANSI_ARGS_((CipherItem *, char *, int));
+static int  CreateBazeries (Tcl_Interp *interp,
+				CipherItem *, int, const char **);
+static char *GetBazeries (Tcl_Interp *, CipherItem *);
+static int  SetBazeries (Tcl_Interp *, CipherItem *,
+				const char *);
+static int  RestoreBazeries (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int  SolveBazeries (Tcl_Interp *, CipherItem *,
+				char *);
+int BazeriesCmd (ClientData, Tcl_Interp *,
+				int, const char **);
+static int BazeriesUndo (Tcl_Interp *, CipherItem *,
+				const char *, int);
+static int BazeriesSubstitute (Tcl_Interp *, CipherItem *,
+				const char *, const char *, int);
+static int BazeriesLocateTip (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static int BazeriesSwapCols (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int BazeriesSwapRows (Tcl_Interp *, CipherItem *, int,
+	    			int);
+static int BazeriesInitSeq (Tcl_Interp *, CipherItem *,
+	    			const char *);
+static int EncodeBazeries (Tcl_Interp *, CipherItem *,
+				const char *, const char *);
+static char *BazeriesTransform (CipherItem *, char *, int);
 
 typedef struct BazeriesItem {
     CipherItem header;
@@ -772,7 +772,7 @@ BazeriesCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **ar
 static int
 EncodeBazeries(Tcl_Interp *interp, CipherItem *itemPtr, const char *pt, const char *key) {
     char *ct = (char *)NULL;
-    int count;
+    Tcl_Size count;
     const char **argv;
     const char *keyedAlphabet = (char *)NULL;
     char *generatedKey = (char *)NULL;
