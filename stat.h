@@ -23,3 +23,11 @@
 #include <tcl.h>
 
 int StatCmd(ClientData, Tcl_Interp *, int , const char **);
+
+/*
+ * Statistical analysis functions for cipher identification
+ */
+double StatComputeIoC(const char *text);
+double StatComputePeriodicIoC(const char *text, int period);
+double StatComputeChiSquared(const char *text);
+double StatComputeEntropy(const char *text);

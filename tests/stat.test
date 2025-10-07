@@ -6,3 +6,121 @@ package require cipher
 if {[lsearch [namespace children] ::tcltest] == -1} {
     source [file join [pwd] [file dirname [info script]] defs.tcl]
 }
+
+# Test groups:
+#	1.x	IoC (Index of Coincidence) tests
+#	2.x	Periodic IoC tests
+#	3.x	Chi-squared tests
+#	4.x	Entropy tests
+#	5.x	Kasiski tests
+
+# Known test values for English text
+# Monoalphab etic cipher tends to preserve IoC of plaintext (around 0.065-0.067)
+set englishCipher "abcdefghijklmnopqrstuvwxyz"
+# This is a longer more realistic text sample
+set longEnglishText "thetimehascometowalktheplankthesailorsaidtothepiratecaptainbuthechosetofightbackinstead"
+set randomText "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+
+test stat-1.1 {IoC of English-like text} {
+    set ioc [stat ioc $longEnglishText]
+    # Real English should have IoC > 0.05, random would be around 0.038
+    expr {$ioc > 0.04}
+} {1}
+
+test stat-1.2 {IoC of uniform distribution should be lower than English} {
+    set ioc [stat ioc $randomText]
+    # Uniform distribution (each letter twice) has IoC around 0.019
+    expr {$ioc > 0.01 && $ioc < 0.04}
+} {1}
+
+test stat-1.3 {IoC of empty string should handle edge case} {
+    set result [stat ioc ""]
+    # Empty string edge case - check it doesn't crash
+    expr {[string is double $result] || $result eq "-NaN" || $result eq "NaN"}
+} {1}
+
+test stat-1.4 {IoC of single character should handle edge case} {
+    set result [stat ioc "a"]
+    # Single character edge case - check it doesn't crash
+    expr {[string is double $result] || $result eq "-NaN" || $result eq "NaN"}
+} {1}
+
+test stat-2.1 {Periodic IoC with period 1 equals regular IoC} {
+    set ioc1 [stat ioc $longEnglishText]
+    set ioc2 [stat periodicioc $longEnglishText 1]
+    expr {abs($ioc1 - $ioc2) < 0.001}
+} {1}
+
+test stat-2.2 {Periodic IoC with invalid period (0) should return 0} {
+    set result [stat periodicioc $longEnglishText 0]
+    expr {$result == 0.0}
+} {1}
+
+test stat-2.3 {Periodic IoC with invalid period (negative) should return 0} {
+    set result [stat periodicioc $longEnglishText -1]
+    expr {$result == 0.0}
+} {1}
+
+test stat-2.4 {Periodic IoC with period larger than text should return 0} {
+    set result [stat periodicioc "abc" 10]
+    expr {$result == 0.0}
+} {1}
+
+test stat-2.5 {Periodic IoC requires period argument} {
+    set result [catch {stat periodicioc $longEnglishText} msg]
+    lappend result $msg
+} {1 {Usage:  stat periodicioc string period}}
+
+test stat-2.6 {Periodic IoC requires integer period} {
+    set result [catch {stat periodicioc $longEnglishText abc} msg]
+    lappend result $msg
+} {1 {period must be an integer}}
+
+test stat-3.1 {Chi-squared of English text should be reasonable} {
+    set chi [stat chisquared $longEnglishText]
+    expr {$chi > 0 && $chi < 1000}
+} {1}
+
+test stat-3.2 {Chi-squared of empty string should be 0} {
+    stat chisquared ""
+} {0.0}
+
+test stat-3.3 {Chi-squared requires string argument} {
+    set result [catch {stat chisquared} msg]
+    lappend result $msg
+} {1 {Usage:  stat chisquared string}}
+
+test stat-4.1 {Entropy of English text should be around 4-5 bits} {
+    set entropy [stat entropy $longEnglishText]
+    expr {$entropy > 3.5 && $entropy < 5.5}
+} {1}
+
+test stat-4.2 {Entropy of uniform distribution should be higher} {
+    set entropy [stat entropy $randomText]
+    expr {$entropy > 4.0}
+} {1}
+
+test stat-4.3 {Entropy of empty string should be 0} {
+    stat entropy ""
+} {0.0}
+
+test stat-4.4 {Entropy of single repeated character should be 0} {
+    stat entropy "aaaaaaa"
+} {0.0}
+
+test stat-4.5 {Entropy requires string argument} {
+    set result [catch {stat entropy} msg]
+    lappend result $msg
+} {1 {Usage:  stat entropy string}}
+
+test stat-5.1 {Kasiski test should return list of period/count pairs} {
+    set result [stat kasiski $longEnglishText]
+    expr {[llength $result] > 0}
+} {1}
+
+test stat-5.2 {Kasiski test with custom range} {
+    set result [stat kasiski $longEnglishText 2 10]
+    expr {[llength $result] == 9}
+} {1}
+
+::tcltest::cleanupTests
