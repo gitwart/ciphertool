@@ -25,6 +25,7 @@
 #include <tcl.h>
 #include <cipher.h>
 #include <stat.h>
+#include <cipherIdentify.h>
 #include <perm.h>
 #include <wordtree.h>
 #include <score.h>
@@ -68,6 +69,7 @@ Cipher_Init(Tcl_Interp *interp)
     
     Tcl_CreateCommand(interp, "cipher", CipherCmd, (ClientData)NULL, NULL);
     Tcl_CreateCommand(interp, "stat", StatCmd, (ClientData)NULL, NULL);
+    Tcl_CreateCommand(interp, "identify", CipherIdentifyCmd, (ClientData)NULL, NULL);
     Tcl_CreateCommand(interp, "permute", PermCmd, (ClientData)NULL, NULL);
     Tcl_CreateCommand(interp, "key", KeygenCmd, (ClientData)NULL, NULL);
     Tcl_CreateCommand(interp, "morse", MorseCmd, (ClientData)NULL, NULL);

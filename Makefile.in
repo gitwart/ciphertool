@@ -11,6 +11,7 @@ GENERIC_OBJECTS = cipherInit.@OBJEXT@ \
 	cipher.@OBJEXT@ \
 	hillclimb.@OBJEXT@ \
 	stat.@OBJEXT@ \
+	cipherIdentify.@OBJEXT@ \
 	digram.@OBJEXT@ \
 	keygen.@OBJEXT@ \
 	vigTypes.@OBJEXT@ \
@@ -95,6 +96,7 @@ SCRIPT_FILES = $(srcdir)/library/aristocrat.tcl \
 	$(srcdir)/library/beaufort.tcl \
 	$(srcdir)/library/bifid.tcl \
 	$(srcdir)/library/cadenus.tcl \
+	$(srcdir)/library/cipherIdentify.tcl \
 	$(srcdir)/library/columnar.tcl \
 	$(srcdir)/library/crithm.tcl \
 	$(srcdir)/library/crithm_gui.tcl \

@@ -1,0 +1,77 @@
+# identify.test
+# Tests of the "identify" Tcl command.
+
+package require cipher
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [pwd] [file dirname [info script]] defs.tcl]
+}
+
+# Test groups:
+#	1.x	Feature extraction tests
+
+set englishText "thetimehascometowalktheplankthesailorsaidtothepiratecaptainbuthechosetofightbackinstead"
+set randomText "abcdefghijklmnopqrstuvwxyz"
+
+test identify-1.1 {identify features returns a dictionary} {
+    set result [identify features $englishText]
+    expr {[llength $result] > 0 && [llength $result] % 2 == 0}
+} {1}
+
+test identify-1.2 {identify features includes ioc} {
+    set result [identify features $englishText]
+    dict exists $result ioc
+} {1}
+
+test identify-1.3 {identify features includes chi-squared} {
+    set result [identify features $englishText]
+    dict exists $result chisquared
+} {1}
+
+test identify-1.4 {identify features includes entropy} {
+    set result [identify features $englishText]
+    dict exists $result entropy
+} {1}
+
+test identify-1.5 {identify features includes length} {
+    set result [identify features $englishText]
+    set length [dict get $result length]
+    expr {$length == [string length $englishText]}
+} {1}
+
+test identify-1.6 {identify features includes distinctChars} {
+    set result [identify features $englishText]
+    dict exists $result distinctChars
+} {1}
+
+test identify-1.7 {identify features includes periodic IoC} {
+    set result [identify features $englishText]
+    dict exists $result periodicIoc
+} {1}
+
+test identify-1.8 {identify features includes character frequencies} {
+    set result [identify features $englishText]
+    dict exists $result charFreq
+} {1}
+
+test identify-1.9 {identify features requires subcommand} {
+    set result [catch {identify} msg]
+    lappend result $msg
+} {1 {Usage: identify features ciphertext}}
+
+test identify-1.10 {identify features requires ciphertext argument} {
+    set result [catch {identify features} msg]
+    lappend result $msg
+} {1 {Usage: identify features ciphertext}}
+
+test identify-1.11 {identify rejects unknown subcommand} {
+    set result [catch {identify badsubcmd test} msg]
+    lappend result $msg
+} {1 {Unknown subcommand "badsubcmd": should be features or type}}
+
+test identify-1.12 {identify features works on empty string} {
+    set result [identify features ""]
+    dict get $result length
+} {0}
+
+::tcltest::cleanupTests

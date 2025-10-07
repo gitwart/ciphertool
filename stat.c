@@ -27,6 +27,8 @@
 #include <cipher.h>
 #include <string.h>
 #include <digram.h>
+#include <math.h>
+#include <stat.h>
 
 #include <cipherDebug.h>
 
@@ -40,6 +42,9 @@ static char *_statKasiski(const char *, int, int, int);
  * Usage:   stat histogram string
  *	    stat ioc string
  *	    stat kasiski period string
+ *	    stat periodicioc string period
+ *	    stat chisquared string
+ *	    stat entropy string
  */
 
 int
@@ -264,8 +269,53 @@ StatCmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 	Tcl_SetResult(interp, result, TCL_VOLATILE);
 	ckfree(result);
 	return TCL_OK;
+    } else if (*option == 'p' && (strncmp(option, "periodicioc", 1) == 0)) {
+	int period;
+	double periodicIoc;
+
+	if (argc != 2) {
+	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,
+		    " string period", (char *)NULL);
+	    return TCL_ERROR;
+	}
+
+	if (sscanf(argv[1], "%d", &period) != 1) {
+	    Tcl_SetResult(interp, "period must be an integer", TCL_STATIC);
+	    return TCL_ERROR;
+	}
+
+	periodicIoc = StatComputePeriodicIoC(argv[0], period);
+	Tcl_PrintDouble(interp, periodicIoc, temp);
+	Tcl_SetResult(interp, temp, TCL_VOLATILE);
+	return TCL_OK;
+    } else if (*option == 'c' && (strncmp(option, "chisquared", 1) == 0)) {
+	double chiSquared;
+
+	if (argc != 1) {
+	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,
+		    " string", (char *)NULL);
+	    return TCL_ERROR;
+	}
+
+	chiSquared = StatComputeChiSquared(argv[0]);
+	Tcl_PrintDouble(interp, chiSquared, temp);
+	Tcl_SetResult(interp, temp, TCL_VOLATILE);
+	return TCL_OK;
+    } else if (*option == 'e' && (strncmp(option, "entropy", 1) == 0)) {
+	double entropy;
+
+	if (argc != 1) {
+	    Tcl_AppendResult(interp, "Usage:  ", cmd, " ", option,
+		    " string", (char *)NULL);
+	    return TCL_ERROR;
+	}
+
+	entropy = StatComputeEntropy(argv[0]);
+	Tcl_PrintDouble(interp, entropy, temp);
+	Tcl_SetResult(interp, temp, TCL_VOLATILE);
+	return TCL_OK;
     } else {
-	Tcl_SetResult(interp, "Usage:  stat histogram|ioc|digram|trigram|alphfit|kasiski string", TCL_STATIC);
+	Tcl_SetResult(interp, "Usage:  stat histogram|ioc|periodicioc|chisquared|entropy|alphfit|kasiski string", TCL_STATIC);
 	return TCL_ERROR;
     }
 }
@@ -361,4 +411,189 @@ _statHist(const char *string, int *hist)
     while(*string) {
 	hist[(int)*string++]++;
     }
+}
+
+/*
+ * StatComputeIoC --
+ *
+ *	Computes the Index of Coincidence for the given text.
+ *	IoC measures the probability that two randomly selected letters
+ *	from the text are the same. For English text, IoC is typically
+ *	around 0.065-0.067.
+ *
+ * Results:
+ *	Returns the Index of Coincidence as a double.
+ *
+ * Side effects:
+ *	None.
+ */
+
+double
+StatComputeIoC(const char *text)
+{
+    int hist[256];
+    int i;
+    int count = 0;
+    double ic = 0.0;
+
+    _statHist(text, hist);
+
+    for (i = 'a'; i <= 'z'; i++) {
+        ic += (double) hist[i] * ((double)hist[i] - 1);
+        count += hist[i];
+    }
+
+    if (count <= 1) {
+        return 0.0;
+    }
+
+    ic /= (double) count * (count - 1);
+
+    return ic;
+}
+
+/*
+ * StatComputePeriodicIoC --
+ *
+ *	Computes the Index of Coincidence for every nth character
+ *	in the text, where n is the period. This is useful for
+ *	detecting polyalphabetic ciphers like Vigenere.
+ *
+ * Results:
+ *	Returns the average IoC across all period positions.
+ *
+ * Side effects:
+ *	None.
+ */
+
+double
+StatComputePeriodicIoC(const char *text, int period)
+{
+    int length = strlen(text);
+    int i, j;
+    double totalIoc = 0.0;
+    char *subtext = NULL;
+    int subtextLen;
+
+    if (period <= 0 || period > length) {
+        return 0.0;
+    }
+
+    for (i = 0; i < period; i++) {
+        /* Extract every period-th character starting at position i */
+        subtextLen = (length - i + period - 1) / period;
+        subtext = (char *)ckalloc(sizeof(char) * (subtextLen + 1));
+
+        for (j = 0; j < subtextLen; j++) {
+            if (i + j * period < length) {
+                subtext[j] = text[i + j * period];
+            }
+        }
+        subtext[subtextLen] = '\0';
+
+        totalIoc += StatComputeIoC(subtext);
+        ckfree(subtext);
+    }
+
+    return totalIoc / period;
+}
+
+/*
+ * StatComputeChiSquared --
+ *
+ *	Computes the chi-squared statistic comparing the letter
+ *	frequency distribution of the text to expected English
+ *	letter frequencies. Lower values indicate better fit to English.
+ *
+ * Results:
+ *	Returns the chi-squared statistic as a double.
+ *
+ * Side effects:
+ *	None.
+ */
+
+double
+StatComputeChiSquared(const char *text)
+{
+    int hist[256];
+    int i;
+    int count = 0;
+    double chiSquared = 0.0;
+
+    /* Expected frequencies for English text (from A-Z) */
+    static const double expectedFreq[26] = {
+        0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228,
+        0.02015, 0.06094, 0.06966, 0.00153, 0.00772, 0.04025,
+        0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987,
+        0.06327, 0.09056, 0.02758, 0.00978, 0.02360, 0.00150,
+        0.01974, 0.00074
+    };
+
+    _statHist(text, hist);
+
+    /* Count total letters */
+    for (i = 'a'; i <= 'z'; i++) {
+        count += hist[i];
+    }
+
+    if (count == 0) {
+        return 0.0;
+    }
+
+    /* Compute chi-squared statistic */
+    for (i = 0; i < 26; i++) {
+        double observed = hist['a' + i];
+        double expected = expectedFreq[i] * count;
+
+        if (expected > 0) {
+            chiSquared += (observed - expected) * (observed - expected) / expected;
+        }
+    }
+
+    return chiSquared;
+}
+
+/*
+ * StatComputeEntropy --
+ *
+ *	Computes the Shannon entropy of the text based on letter
+ *	frequencies. Higher entropy indicates more randomness.
+ *	English text typically has entropy around 4.0-4.5 bits per character.
+ *
+ * Results:
+ *	Returns the entropy in bits per character as a double.
+ *
+ * Side effects:
+ *	None.
+ */
+
+double
+StatComputeEntropy(const char *text)
+{
+    int hist[256];
+    int i;
+    int count = 0;
+    double entropy = 0.0;
+    double probability;
+
+    _statHist(text, hist);
+
+    /* Count total letters */
+    for (i = 'a'; i <= 'z'; i++) {
+        count += hist[i];
+    }
+
+    if (count == 0) {
+        return 0.0;
+    }
+
+    /* Compute Shannon entropy */
+    for (i = 'a'; i <= 'z'; i++) {
+        if (hist[i] > 0) {
+            probability = (double)hist[i] / count;
+            entropy -= probability * log2(probability);
+        }
+    }
+
+    return entropy;
 }
