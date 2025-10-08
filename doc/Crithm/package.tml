@@ -7,59 +7,94 @@
 [StartDescription VARIABLES]
 
 [Description "Crithm::stepInterval" stepInterval \
-""]
+"Controls how often progress updates are printed during solving. Default is 200000.
+The <B>permProc</B> will output status information every <B>stepInterval</B> iterations."]
 
 [Description "Crithm::iterCount" iterCount \
-""]
+"Tracks the current iteration number during the permutation search process.
+This counter is incremented each time a new permutation is generated."]
 
 [Description "Crithm::solutionList" solutionList \
-""]
+"Contains the list of all solutions found during the solving process. Each solution
+is represented as a sorted string of unique letters with their corresponding digit assignments."]
 
 [Description "Crithm::nonzeroLetters" nonzeroLetters \
-""]
+"Stores letters that cannot be zero, typically the first letters of multi-letter words
+in the cryptarithm equation."]
 
 [EndDescription]
 
 [StartDescription COMMANDS]
 
-[Description "Crithm::start" start \
-""]
+[Description "Crithm::start letters" start \
+"Initializes and starts the cryptarithm permutation solver with the given list of unique
+letters. The solver will iterate through all possible digit assignments until all solutions
+are found or the search space is exhausted."]
 
 [Description "Crithm::checkKey" checkKey \
-""]
+"This is a stub procedure that must be overridden by the user. It should examine
+the current permutation state and return 1 if the current digit assignments satisfy
+the cryptarithm constraints, 0 otherwise. Typically generated automatically using
+<B>createCheckKeyProc</B>."]
 
-[Description "Crithm::sortKey" sortKey \
-""]
+[Description "Crithm::sortKey keyList" sortKey \
+"Sorts an array numerically by its values. Takes a list of key-value pairs (suitable for
+<B>array set</B>) where values are non-negative integers. Returns a pair of lists:
+the first contains ordered values, the second contains corresponding keys."]
 
 [Description "Crithm::permProc" permProc \
-""]
+"Called automatically by the permutation engine for each generated permutation. Invokes
+<B>checkKey</B> to test if the current permutation is a solution. Prints progress updates
+based on <B>stepInterval</B> and adds valid solutions to <B>solutionList</B>."]
 
-[Description "Crithm::createConstraint" createConstraint \
-""]
+[Description "Crithm::createConstraint args" createConstraint \
+"Creates Tcl code that tests whether a cryptarithm equation is satisfied. Takes an
+expression like 'SEND + MORE == MONEY' and returns executable Tcl code that evaluates
+to 1 if the constraint is satisfied, 0 otherwise. Supports equations with 5 or 7 elements
+in the form 'A op B == C' or 'A op B == C op D'."]
 
-[Description "Crithm::createNonzeroConstraint" createNonzeroConstraint \
-""]
+[Description "Crithm::createNonzeroConstraint expression" createNonzeroConstraint \
+"Generates constraints to ensure that the first letter of each multi-letter word in the
+expression cannot be zero. Returns a list of constraint expressions. For example, in
+'SEND + MORE = MONEY', S, M, and M (again) would be constrained to non-zero values."]
 
-[Description "Crithm::wordToCode" wordToCode \
-""]
+[Description "Crithm::wordToCode string" wordToCode \
+"Converts a string to Tcl code that evaluates to its numeric value. Handles:
+<UL>
+<LI>Single letters: converted to <B>\[crithm cvalue letter\]</B>
+<LI>Multi-letter strings: converted to <B>\[crithm value string\]</B>
+<LI>Numbers: returned as-is
+<LI>Expressions: recursively parsed and converted to Tcl expressions
+</UL>"]
 
-[Description "Crithm::getWordType" getWordType \
-""]
+[Description "Crithm::getWordType value" getWordType \
+"Analyzes a value and returns its type as one of: <B>string</B> (multi-letter),
+<B>letter</B> (single character), <B>number</B> (numeric), <B>expression</B>
+(contains operators like +, -, *, /, ^), or <B>unknown</B>."]
 
-[Description "Crithm::isValidOperator" isValidOperator \
-""]
+[Description "Crithm::isValidOperator char" isValidOperator \
+"Tests if a character is a valid mathematical operator. Returns 1 for +, -, *, /, or ^;
+returns 0 otherwise."]
 
-[Description "Crithm::getUniqueLetters" getUniqueLetters \
-""]
+[Description "Crithm::getUniqueLetters string" getUniqueLetters \
+"Extracts and returns a sorted string of unique alphabetic characters from the input.
+Non-alphabetic characters are ignored. Useful for determining which letters need
+digit assignments in a cryptarithm."]
 
-[Description "Crithm::createCheckKeyProc" createCheckKeyProc \
-""]
+[Description "Crithm::createCheckKeyProc constraintList" createCheckKeyProc \
+"Generates a complete procedure body for <B>Crithm::checkKey</B> from a list of
+constraint expressions. The generated procedure returns 1 if all constraints are
+satisfied, 0 otherwise. Constraints are evaluated in order, with early exit on failure."]
 
-[Description "Crithm::saveCipherFile" saveCipherFile \
-""]
+[Description "Crithm::saveCipherFile filename letterString constraintList ?solfile?" saveCipherFile \
+"Saves a cryptarithm problem to a standalone executable Tcl script. The generated
+script contains all necessary constraints and can be run directly to solve the
+cryptarithm. Solutions are saved to <B>solfile</B> (defaults to <I>filename</I>.out)."]
 
-[Description "Crithm::saveSolution" saveSolution \
-""]
+[Description "Crithm::saveSolution filename" saveSolution \
+"Writes the current solution list to a file in standard cryptarithm output format.
+The file includes the key, keyword, and plaintext fields. Use <B>stdout</B> or
+<B>stderr</B> as the filename to write to standard output or error streams."]
 
 [EndDescription]
 

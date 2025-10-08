@@ -41,12 +41,18 @@ Several new Tcl packages are provided by this software.  Each package provides a
     commands for reading words from a dictionary.</li>
 <li><b>[Link Scoredata/package.html Scoredata]</b> - This package contains
     commands for reading and writing scoring tables to a file.</li>
-<li><b>K3Board</b> - This experimental package contains commands for displaying
+<li><b>[Link Scoretypes/package.html Scoretypes]</b> - This package contains
+    commands for managing different scoring algorithms used in cipher analysis.</li>
+<li><b>[Link GeneticPerm/package.html GeneticPerm]</b> - This package contains
+    commands for solving permutation-based ciphers using genetic algorithms.</li>
+<li><b>[Link K3Board/package.html K3Board]</b> - This experimental package contains commands for displaying
     a fragmented K3 alphabet so that it can be reconstructed.</li>
-<li><b>PatWord</b> - This experimental package contains utility commands for
+<li><b>[Link PatWord/package.html PatWord]</b> - This experimental package contains utility commands for
     implementing a brute-force patristocrat solver.</li>
-<li><b>PatWordUI</b> - This experimental package contains commands for
+<li><b>[Link PatWordUI/package.html PatWordUI]</b> - This experimental package contains commands for
     managing the UI for the brute-force patristocrat solver.</li>
+<li><b>[Link Crithm_gui/package.html Crithm_gui]</b> - This package contains
+    commands for the graphical user interface of the cryptarithm solver.</li>
 </ul>
 <p>
 <H3>Applications</H3>
@@ -103,6 +109,15 @@ Several new Tcl packages are provided by this software.  Each package provides a
 	</DD>
     <DT><B>[Link lethist.html lethist]</B></DT>
 	<DD>Useful letter frequency analyzer.
+	</DD>
+    <DT><B>[Link histogram.html histogram]</B></DT>
+	<DD>Display letter frequency histograms for ciphertext analysis.
+	</DD>
+    <DT><B>[Link kasiski.html kasiski]</B></DT>
+	<DD>Perform Kasiski examination to determine the period of polyalphabetic ciphers.
+	</DD>
+    <DT><B>[Link ioc.html ioc]</B></DT>
+	<DD>Calculate the Index of Coincidence for ciphertext.
 	</DD>
 </DL>
 [footer]
